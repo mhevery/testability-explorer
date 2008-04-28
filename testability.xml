@@ -1,0 +1,20 @@
+<project name="testability" default="testability">
+
+    <taskdef name="testability" classname="com.google.ant.TestabilityTask"  classpath="lib/ant-testability-explorer.jar"/>
+
+    <target name="testability">
+        <!--<testability  filter="" resultfile="testability.out" errorfile="testability.err">-->
+        <testability>
+            <fileset dir="lib">
+                <include name="junit.jar"/>
+            </fileset>
+            <!--<fileset dir="lib/apache-ant-1.7.0/lib">-->
+                <!--<include name="ant-*.jar"/>-->
+            <!--</fileset>-->
+        </testability>
+    </target>
+
+    <target name="testability.test" depends="testability">
+        <fail if="testability.failproperty" message="testability failed"/>
+    </target>
+</project>
