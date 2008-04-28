@@ -47,7 +47,8 @@
 	<target name="compile" depends="init">
 		<javac srcdir="src" destdir="target/bin" debug="true" target="1.5">
 			<classpath refid="compile.classpath" />
-		</javac>
+            <exclude name="com/google/ant/**/*"/>
+        </javac>
 		<copy todir="target/bin">
 			<fileset dir="src">
 				<exclude name="**/*.java"/>
@@ -84,8 +85,10 @@
 			<manifest>
 				<attribute name="Main-Class" value="com.google.test.metric.Testability" />
 			</manifest>
-			<fileset dir="target/bin" />
-			<zipfileset src="lib/asm-3.0.jar" />
+			<fileset dir="target/bin">
+                <exclude name="com/google/ant/**"/>
+            </fileset>
+            <zipfileset src="lib/asm-3.0.jar" />
 			<rule pattern="org.objectweb.asm.**" result="com.google.test.org.objectweb.asm.@1" />
 			<zipfileset src="lib/args4j-2.0.8.jar" />
 			<rule pattern="org.koshuke.args4j.**" result="com.google.test.org.koshuke.args4j.@1" />
@@ -97,18 +100,48 @@
 		</zip>
 	</target>
 
-	<target name="dist" depends="jar">
+    <target name="compile.ant" depends="init">
+        <javac srcdir="src" destdir="target/bin" debug="true" target="1.5">
+            <classpath refid="compile.classpath" />
+            <include name="com/google/ant/**/*"/>
+        </javac>
+        <copy todir="target/bin">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="jar.ant" depends="revision">
+        <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="lib/jarjar.jar" />
+        <jarjar jarfile="target/dist/ant-${project-name}-${version}-r${revision}.jar">
+            <manifest>
+                <attribute name="Version" value="${version}" />
+                <attribute name="Revision" value="${revision}" />
+            </manifest>
+            <fileset dir="target/bin" includes="com/google/ant/**/*.*"/>
+        </jarjar>
+    </target>
+
+    <target name="copy.ant" depends="revision,compile.ant,jar.ant">
+        <copy file="target/dist/ant-${project-name}-${version}-r${revision}.jar" tofile="lib/ant-${project-name}.jar"/>
+    </target>
+
+    <target name="ant.task" depends="copy.ant"/>
+
+    <target name="dist" depends="jar">
 		<zip destfile="target/dist/${project-name}-${version}-r${revision}.zip">
 			<fileset dir=".">
 				<include name="README.txt" />
 				<include name="LICENSE.txt" />
 			</fileset>
 			<fileset dir="target/dist">
+                <include name="ant-${project-name}-${version}-r${revision}.jar" />
 				<include name="${project-name}-${version}-r${revision}.jar" />
 				<include name="${project-name}-${version}-r${revision}-src.jar" />
 			</fileset>
 		</zip>
 	</target>
 	
-	<target name="build" depends="clean,test,dist"/>
+	<target name="build" depends="clean,ant.task,test,dist"/>
 </project>
