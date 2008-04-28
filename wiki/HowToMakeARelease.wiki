@@ -1,0 +1,11 @@
+#summary For project developers, how to release a build
+#labels Phase-Implementation,Featured
+
+ # Make sure to build with Java 1.5, not Java 6.
+ # Make sure all tests pass locally. Run ant test, as well as whatever you use as an IDE.
+ # Update the [Readme] in the wiki, and copy/paste any changes there into the Readme.txt in svn.
+ # Update build.xml to reflect the new version, then `ant dist` to create a jar
+ # Svn commit, and then check a new copy out and verify tests still pass.
+ # Tag your new release, ex. `svn copy https://testability-metrics.googlecode.com/svn/trunk https://testability-metrics.googlecode.com/svn/tags/release-1.0RC1 -m "tagging the 1.0RC1 release of the 'testability-metrics' project"` see [http://svnbook.red-bean.com/en/1.1/ch04s06.html the svn book] for help.
+ # [http://code.google.com/p/testability-metrics/downloads/entry Upload] the zip and choose 'Featured' as a label to create a link from [Home].
+ # Deprecate the old versions' binaries, and remove them from 'Featured.'
