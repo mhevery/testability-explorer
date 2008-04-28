@@ -1,4 +1,4 @@
-<project name="testability-metrics" default="test">
+<project name="testability-explorer" default="test">
 	
 	<taskdef name="svn" classname="org.tigris.subversion.svnant.SvnTask">
 		<classpath>
@@ -10,7 +10,7 @@
 	</taskdef>
 	
 	<property name="version" value="1.1.0RC1" />
-	<property name="project-name" value="testability-metrics" />
+	<property name="project-name" value="testability-explorer" />
 
 	<path id="compile.classpath">
 		<fileset dir="lib">
