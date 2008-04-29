@@ -16,7 +16,8 @@
 		<fileset dir="lib">
 			<include name="*.jar" />
 			<exclude name="junit.jar" />
-		</fileset>
+            <exclude name="testability-explorer.jar"/>    
+        </fileset>
 	</path>
 
 	<path id="test.classpath">
