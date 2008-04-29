@@ -125,6 +125,7 @@
 
     <target name="copy.ant" depends="revision,compile.ant,jar.ant">
         <copy file="target/dist/ant-${project-name}-${version}-r${revision}.jar" tofile="lib/ant-${project-name}.jar"/>
+        <copy file="target/dist/${project-name}-${version}-r${revision}.jar" tofile="lib/${project-name}.jar"/>
     </target>
 
     <target name="ant.task" depends="copy.ant"/>
@@ -143,5 +144,5 @@
 		</zip>
 	</target>
 	
-	<target name="build" depends="clean,ant.task,test,dist"/>
+	<target name="build" depends="clean,compile.ant,test,dist,copy.ant"/>
 </project>

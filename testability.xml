@@ -1,6 +1,6 @@
 <project name="testability" default="testability">
 
-    <taskdef name="testability" classname="com.google.ant.TestabilityTask"  classpath="lib/ant-testability-explorer.jar"/>
+    <taskdef name="testability" classname="com.google.ant.TestabilityTask"  classpath="lib/ant-testability-explorer.jar;lib/testability-explorer.jar"/>
 
     <target name="testability">
         <!--<testability  filter="" resultfile="testability.out" errorfile="testability.err">-->
