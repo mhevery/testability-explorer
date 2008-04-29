@@ -15,33 +15,56 @@ import java.util.Vector;
 
 public class TaskModel {
 
-    public static final String ERROR_RESULT_FILE_NOT_SET = "resultfile must be set. either a filepath or System.(out|err). default is System.out";
-    public static final String ERROR_FILESET_NOT_SET = "fileset to jar and/or classfile directories must be set";    
-    public static final String ERROR_FILTER_NOT_SET = "filter must be set. default is \"\" (all)";
-    public static final String ERROR_RESULT_FILE_CREATION_FAILED = "resultfile could not be created";
-    public static final String ERROR_ERROR_FILE_CREATION_FAILED = "errorfile could not be created";
-    private static final String ERROR_ERROR_FILE_SET_TO_RESULT_FILE = "error file not set. using result file.";
-
     public static final String DEFAULT_RESULT_FILE = "System.out";
     public static final String DEFAULT_ERROR_FILE = "System.err";
     public static final String DEFAULT_FILTER = "";
-    public static final int DEFAULT_MAX_ACCEPTABLE_COST = -1;
-    public static final int DEFAULT_WORS_OFFENDER_COUNT = -1;
-    private static final int DEFAULT_MAX_EXCELLENT_COST = -1;
-    private static final int DEFAULT_MIN_COST = -1;
+    public static final int DEFAULT_MAX_ACCEPTABLE_COST = 100;
+    public static final int DEFAULT_WORS_OFFENDER_COUNT = 20;
+    public static final int DEFAULT_MAX_EXCELLENT_COST = 50;
+    public static final int DEFAULT_MIN_COST = 1;
+    public static final int DEFAULT_PRINT_DEPTH = 2;
+    public static final String DEFAULT_PRINT = "summary"; // summary | detail
+    public static final int DEFAULT_CYCLOMATIC = 1;
+    public static final int DEFAULT_GLOBAL = 10;
+
+    public static final String ERROR_FILESET_NOT_SET = "fileset to jar and/or classfile directories must be set";
+    public static final String ERROR_FILTER_NOT_SET = "filter must be set. default is " + DEFAULT_FILTER + " (all)";
+    public static final String ERROR_RESULT_FILE_NOT_SET = "resultfile must be set. either a filepath or System.(out|err). default is " + DEFAULT_RESULT_FILE;
+    public static final String ERROR_PRINT_DEPTH_NOT_SET = "print depth not set. using default " + DEFAULT_PRINT_DEPTH;
+    public static final String ERROR_MIN_COST_NOT_SET = "min cost not set. using default " + DEFAULT_MIN_COST;
+    public static final String ERROR_MAX_EXCELLENT_COST_NOT_SET = "max excellent cost not set. using default " + DEFAULT_MAX_EXCELLENT_COST;
+    public static final String ERROR_MAX_ACCEPTABLE_COST_NOT_SET = "max acceptable cost not set. using default " + DEFAULT_MAX_ACCEPTABLE_COST;
+    public static final String ERROR_PRINT_NOT_SET = "print not set. using default " + DEFAULT_PRINT;
+    public static final String ERROR_WORST_OFFENDER_COUNT_NOT_SET = "worst offender count not set. using default " + DEFAULT_WORS_OFFENDER_COUNT;
+    public static final String ERROR_CYCLOMATIC_NOT_SET = "cyclomatic not set. using default " + DEFAULT_CYCLOMATIC;
+    public static final String ERROR_GLOBAL_NOT_SET = "global not set. using default " + DEFAULT_GLOBAL;
+    public static final String ERROR_ERROR_FILE_SET_TO_RESULT_FILE = "error file not set. using result file.";
+    public static final String ERROR_RESULT_FILE_CREATION_FAILED = "resultfile could not be created";
+    public static final String ERROR_ERROR_FILE_CREATION_FAILED = "errorfile could not be created";
 
     private Vector fileSets = new Vector();
     private String failProperty;
     private String resultFile = null;
     private String errorFile = null;
+    private String filter = null;
+    private int printDepth = -1;
+    private int minCost = -1;
     private int maxExcellentCost = -1;
     private int maxAcceptableCost = -1;
-    private String filter = null;
-    private int minCost = -1;
-    private String print = null;
-    private int printDepth = -1;
-    private String whiteList = null;
     private int worstOffenderCount = -1;
+    private String whiteList = null;
+    private String print = null;
+    private int cyclomatic = -1;
+    private int global = -1;
+
+
+    public int getCyclomatic() {
+        return cyclomatic;
+    }
+
+    public void setCyclomatic(int cyclomatic) {
+        this.cyclomatic = cyclomatic;
+    }
 
     public void setMaxAcceptableCost(int cost) {
         maxAcceptableCost = cost;
@@ -112,7 +135,15 @@ public class TaskModel {
         this.filter = filter;
     }
 
-    String getFilter() {
+    public int getGlobal() {
+        return global;
+    }
+
+    public void setGlobal(int glob) {
+        global = glob;
+    }
+
+    public String getFilter() {
         return filter;
     }
 
@@ -200,6 +231,46 @@ public class TaskModel {
     {
         boolean allOk = true;
 
+        if (! isPrintDepthSet()) {
+            printDepth = DEFAULT_PRINT_DEPTH;
+            messages.add(TaskModel.ERROR_PRINT_DEPTH_NOT_SET);
+        }
+
+        if (! isMinCostSet()) {
+            minCost = DEFAULT_MIN_COST;
+            messages.add(TaskModel.ERROR_MIN_COST_NOT_SET);
+        }
+
+        if (! isMaxExcellentCostSet()) {
+            maxExcellentCost = DEFAULT_MAX_EXCELLENT_COST;
+            messages.add(TaskModel.ERROR_MAX_EXCELLENT_COST_NOT_SET);
+        }
+
+        if (! isMaxAcceptableCostSet()) {
+            maxExcellentCost = DEFAULT_MAX_ACCEPTABLE_COST;
+            messages.add(TaskModel.ERROR_MAX_ACCEPTABLE_COST_NOT_SET);
+        }
+
+        if (! isWorstOffenderCountSet()) {
+            worstOffenderCount = DEFAULT_WORS_OFFENDER_COUNT;
+            messages.add(TaskModel.ERROR_WORST_OFFENDER_COUNT_NOT_SET);
+        }
+
+        if (! isPrintSet()) {
+            print = DEFAULT_PRINT;
+            messages.add(TaskModel.ERROR_PRINT_NOT_SET);
+        }
+
+        if (! isCyclomaticSet()) {
+            cyclomatic = DEFAULT_CYCLOMATIC;
+            messages.add(TaskModel.ERROR_CYCLOMATIC_NOT_SET);
+        }
+
+        if (! isGlobalSet()) {
+            global = DEFAULT_GLOBAL;
+            messages.add(TaskModel.ERROR_GLOBAL_NOT_SET);
+        }
+
         if (! isResultFileSet()) {
             resultFile = DEFAULT_RESULT_FILE;
             messages.add(TaskModel.ERROR_RESULT_FILE_NOT_SET);
@@ -234,13 +305,43 @@ public class TaskModel {
         return allOk;
     }
 
+    private boolean isPrintDepthSet() {
+        return printDepth != -1;
+    }
+
+    private boolean isMinCostSet() {
+        return minCost != -1;
+    }
+
+    private boolean isMaxExcellentCostSet() {
+        return maxExcellentCost != -1;
+    }
+
+    private boolean isMaxAcceptableCostSet() {
+        return maxAcceptableCost != -1;
+    }
+
+    private boolean isWorstOffenderCountSet() {
+        return worstOffenderCount != -1;
+    }
+
+    private boolean isPrintSet() {
+        return print != null;
+    }
+
+    private boolean isCyclomaticSet() {
+        return cyclomatic != -1;
+    }
+
+    private boolean isGlobalSet() {
+        return global != -1;
+    }
 
     private boolean isFileSetSet() {
         return fileSets.size() > 0;
     }
-
     private boolean isFilterSet() {
-        return !(filter == null);
+        return filter != null;
     }
 
     private boolean isResultFileSet() {
