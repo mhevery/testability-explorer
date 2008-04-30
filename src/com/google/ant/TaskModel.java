@@ -20,8 +20,8 @@ public class TaskModel {
     public static final String DEFAULT_FILTER = "";
     public static final String DEFAULT_WHITE_LIST = "";
     public static final int DEFAULT_MAX_ACCEPTABLE_COST = 100;
-    public static final int DEFAULT_WORST_OFFENDER_COUNT = 20;
     public static final int DEFAULT_MAX_EXCELLENT_COST = 50;
+    public static final int DEFAULT_WORST_OFFENDER_COUNT = 20;
     public static final int DEFAULT_MIN_COST = 1;
     public static final int DEFAULT_PRINT_DEPTH = 2;
     public static final String DEFAULT_PRINT = "summary"; // summary | detail | html
