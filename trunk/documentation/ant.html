@@ -1,0 +1,140 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../stylesheets/style.css">
+<title>Copy Task</title>
+</head>
+
+<body>
+
+<h2><a name="testability">Copy</a></h2>
+<h3>Description</h3>
+<p>Runs the Testability-Explorer from Ant.</p>
+
+<h3>Parameters</h3>
+<table border="1" cellpadding="2" cellspacing="0">
+  <tr>
+    <td valign="top"><b>Attribute</b></td>
+    <td valign="top"><b>Description</b></td>
+    <td align="center" valign="top"><b>Required</b></td>
+  </tr>
+
+  <tr>
+    <td valign="top">resultfile</td>
+    <td valign="top">File to write results into</td>
+    <td valign="top" align="center">No, defaults to System.out.</td>
+  </tr>
+  <tr>
+    <td valign="top">errorfile</td>
+    <td valign="top">File to write errors into.</td>
+    <td valign="top" align="center">No; defaults to restultfile value.</td>
+  </tr>
+  <tr>
+    <td valign="top">failureproperty</td>
+    <td valign="top">Set this property to true if build should fail based on findings, but don't stop the ant process immideately.</td>
+    <td valign="top" align="center">No</td>
+  </tr>
+  <tr>
+    <td valign="top">print</td>
+    <td valign="top">Prints the result in different formats and level of detail.
+        <ul>
+           <li>summary -- print package summary inforamtion</li>
+           <li>detail -- print detail drill down information for each method call</li>
+           <li>html -- print html summary information</li>
+        </ul>
+    </td>
+    <td valign="top" align="center">No; defaults to summary.</td>
+  </tr>
+  <tr>
+    <td valign="top">printDepth</td>
+    <td valign="top">Maximum depth to recurse and print costs of classes/methods that the classes under analysis depend on.</td>
+    <td valign="top" align="center">No; defaults to 0.</td>
+  </tr>
+  <tr>
+    <td valign="top">mincost</td>
+    <td valign="top">Minimum Total Class cost required to print that class' metrics.</td>
+    <td valign="top" align="center">No; defaults to 1.</td>
+  </tr>
+  <tr>
+    <td valign="top">maxexcellentcost</td>
+    <td valign="top">Maximum Total Class cost to classify it as 'excellent'.</td>
+    <td valign="top" align="center">No; defaults 50.</td>
+  </tr>
+  <tr>
+    <td valign="top">maxacceptablecost</td>
+    <td valign="top">Maximum Total Class cost to classify it as 'acceptable'.</td>
+    <td valign="top" align="center">No; defaults to 100.</td>
+  </tr>
+  <tr>
+    <td valign="top">worstoffendercount</td>
+    <td valign="top">Print <i>n</i> number of worst offending classes.</td>
+    <td valign="top" align="center">No; defaults to 20.</td>
+  </tr>
+  <tr>
+    <td valign="top">whitelist</td>
+    <td valign="top">Colon delimited whitelisted packages that will not count against you. Matches packages/classes starting with given values. (Always whitelists java.*).</td>
+    <td valign="top" align="center">No.</td>
+  </tr>
+  <tr>
+    <td valign="top">cyclomatic</td>
+    <td valign="top">Cyclomatic cost multiplier. When computing the overall cost of the method the individual costs are added using the weighted average. This represents the weight of the cyclomatic cost.</td>
+    <td valign="top" align="center">No; defaults to 1</td>
+  </tr>
+  <tr>
+    <td valign="top">global</td>
+    <td valign="top">Global state multiplier. When computing the overal cost of the method the individual costs are added using weighted average. This represents the weight of the global state cost.</td>
+    <td valign="top" align="center">No; defaults to restultfile value.</td>
+  </tr>
+
+</table>
+
+<h3>Parameters specified as nested elements</h3>
+
+<h4>fileset</h4>
+<p>
+<a href="http://jakarta.apache.org/ant/manual/CoreTypes/filterset.html">FileSets</a>
+are used to get the list of jar files and/or class directories.
+</p>
+
+<h3>Examples</h3>
+
+<p><b>Integrate Testability-Explorer into Ant environment</b></p>
+<pre>
+&lt;taskdef name="testability" classname="com.google.ant.TestabilityTask"  classpath="<i>PATH</i>/ant-testability-explorer.jar;<i>PATH</i>/testability-explorer.jar"/&gt;
+</pre>
+
+<p><b>Use Testability-Explore with default settings</b></p>
+<pre>
+&lt;target name="testability-simple"&gt;
+   &lt;testability&gt;
+      &lt;fileset dir="lib"&gt;
+         &lt;include name="project.jar"/&gt;
+      &lt;/fileset&gt;
+   &lt;/testability&gt;
+&lt;/target&gt;
+</pre>
+
+<p><b>Use Testability-Explore customized </b></p>
+This example shows all possible arguments of the ant task including the <i>failproperty</i>. Instead of breaking the build on the spot this property is set and the build continues. The second snippet shows how the property can be read and used to break the build at a well defined timing.
+<pre>
+&lt;target name="testability-complex"&gt;
+   &lt;testability filter="" resultfile="testability.result.html" errorfile="testability.err.txt"
+                printdepth="2" print="html" mincost="1" maxexcellentcost="50"
+                maxacceptablecost="100" worstoffendercount="25" whitelist="com.thirdparty."
+                cyclomatic="1" global="10" failproperty="testability.failproperty"&gt;
+      &lt;fileset dir="lib"&gt;
+         &lt;include name="*.jar"/&gt;
+      &lt;/fileset&gt;
+      &lt;fileset dir="build/classes"&gt;
+         &lt;include name="com/ownstuff/**"/&gt;
+      &lt;/fileset&gt;
+   &lt;/testability&gt;
+&lt;/target&gt;
+
+&lt;target name="testability-break-build.test" depends="testability-complex"&gt;
+   &lt;fail if="testability.failproperty" message="testability failed"/&gt;
+&lt;/target&gt;
+</pre>
+
+</body></html>
