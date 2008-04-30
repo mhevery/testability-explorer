@@ -62,7 +62,7 @@
     <target name="main">
         <ant antfile="build.xml" target="jar"/>
     </target>
-
-
     <target name="build" depends="clean,main,init,compile,test,copy"/>
+    <target name="build.task" depends="compile,test,copy"/>
+
 </project>
