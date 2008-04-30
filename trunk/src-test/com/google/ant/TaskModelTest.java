@@ -26,16 +26,64 @@ public class TaskModelTest extends TestCase {
     {
     }
 
+    public void testDefaultPrintDepth()  throws Exception {
+        assertEquals(model.getPrintDepth(), -1);
+        model.validate(new ArrayList<String>());
+        assertEquals(model.getPrintDepth(), TaskModel.DEFAULT_PRINT_DEPTH);
+    }
+
+    public void testDefaultMinCost()  throws Exception {
+        assertEquals(model.getMinCost(), -1);
+        model.validate(new ArrayList<String>());
+        assertEquals(model.getMinCost(), TaskModel.DEFAULT_MIN_COST);
+    }
+
+    public void testDefaultMaxExcellenceCost()  throws Exception {
+        assertEquals(model.getMaxExcellentCost(), -1);
+        model.validate(new ArrayList<String>());
+        assertEquals(model.getMaxExcellentCost(), TaskModel.DEFAULT_MAX_EXCELLENT_COST);
+    }
+
+    public void testDefaultMaxAcceptableCost()  throws Exception {
+        assertEquals(model.getMaxAcceptableCost(), -1);
+        model.validate(new ArrayList<String>());
+        assertEquals(model.getMaxAcceptableCost(), TaskModel.DEFAULT_MAX_ACCEPTABLE_COST);
+    }
+
+    public void testDefaultWorstOffenderCount()  throws Exception {
+        assertEquals(model.getWorstOffenderCount(), -1);
+        model.validate(new ArrayList<String>());
+        assertEquals(model.getWorstOffenderCount(), TaskModel.DEFAULT_WORST_OFFENDER_COUNT);
+    }
+
+    public void testDefaultWhiteList()  throws Exception {
+        assertEquals(model.getWhiteList(), null);
+        model.validate(new ArrayList<String>());
+        assertEquals(model.getWhiteList(), TaskModel.DEFAULT_WHITE_LIST);
+    }
+
+    public void testDefaultPrint()  throws Exception {
+        assertEquals(model.getPrint(), null);
+        model.validate(new ArrayList<String>());
+        assertEquals(model.getPrint(), TaskModel.DEFAULT_PRINT);
+    }
+
     public void testDefaultResultFile() throws Exception {
         assertEquals(null, model.getResultFile());
+        model.validate(new ArrayList<String>());
+        assertEquals(model.getResultFile(), TaskModel.DEFAULT_RESULT_FILE);
     }
 
     public void testDefaultErrorFile() throws Exception {
         assertEquals(null, model.getErrorFile());
+        model.validate(new ArrayList<String>());
+        assertEquals(model.getErrorFile(), TaskModel.DEFAULT_RESULT_FILE); // error becomes result if not set
     }
 
     public void testDefaultFilter() throws Exception {
         assertEquals(null, model.getFilter());
+        model.validate(new ArrayList<String>());
+        assertEquals(model.getFilter(), TaskModel.DEFAULT_FILTER);
     }
 
     public void testSystemOutOutputStream() throws Exception {

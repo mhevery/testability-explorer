@@ -22,13 +22,20 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TestabilityTask extends Task {
 
     private TaskModel model = new TaskModel();
+
+    public void setCyclomatic(int cost) {
+        model.setCyclomatic(cost);
+    }
+
+    public void setGlobal(int global) {
+        model.setGlobal(global);
+    }
 
     public void setMaxAcceptableCost(int cost) {
         model.setMaxAcceptableCost(cost);
@@ -54,8 +61,8 @@ public class TestabilityTask extends Task {
         model.setWhiteList(whiteListVal);
     }
 
-    public void setWorsOffenderCount(int count) {
-        model.setWorsOffenderCount(count);
+    public void setWorstOffenderCount(int count) {
+        model.setWorstOffenderCount(count);
     }
 
     public void setResultFile(String resultFile) {
@@ -82,14 +89,37 @@ public class TestabilityTask extends Task {
         List<String> validationMessages = new ArrayList<String>();
         boolean allOk = model.validate(validationMessages);
 
-        String cp = model.getClassPath();
-        PrintStream out = model.getResultPrintStream();
-        PrintStream err = model.getErrorPrintStream();
-
         if (allOk) {
             logValidationMessages(validationMessages);
             log("INFO: Testability Starting ...", Project.MSG_VERBOSE);
-            Testability.main(out, err, model.getFilter(), "-cp", cp);
+
+            log("cyclomatic"+ " " +  Integer.toString(model.getCyclomatic()), Project.MSG_VERBOSE);
+            log("global"+ " " +  Integer.toString(model.getGlobal()), Project.MSG_VERBOSE);
+            log("-filter" + " " + model.getFilter(), Project.MSG_VERBOSE);
+            log("-cp"+ " " +  model.getClassPath(), Project.MSG_VERBOSE);
+            log("-printDepth"+ " " +   Integer.toString(model.getPrintDepth()), Project.MSG_VERBOSE);
+            log("-minCost"+ " " +  Integer.toString(model.getMinCost()), Project.MSG_VERBOSE);
+            log("-maxExcellentCost"+ " " +  Integer.toString(model.getMaxAcceptableCost()), Project.MSG_VERBOSE);
+            log("-maxAcceptableCost"+ " " +  Integer.toString(model.getMaxAcceptableCost()), Project.MSG_VERBOSE);
+            log("-worstOffenderCount"+ " " +  Integer.toString(model.getWorstOffenderCount()), Project.MSG_VERBOSE);
+            log("-whitelist"+ " " +  model.getWhiteList(), Project.MSG_VERBOSE);
+            log("-print"+ " " +  model.getPrint(), Project.MSG_VERBOSE);
+
+            Testability.main(
+                    model.getResultPrintStream(),
+                    model.getErrorPrintStream(),
+                    "cyclomatic", Integer.toString(model.getCyclomatic()),
+                    "global", Integer.toString(model.getGlobal()),
+                    model.getFilter(),
+                    "-cp", model.getClassPath(),
+                    "-printDepth", Integer.toString(model.getPrintDepth()),
+                    "-minCost", Integer.toString(model.getMinCost()),
+                    "-maxExcellentCost", Integer.toString(model.getMaxAcceptableCost()),
+                    "-maxAcceptableCost", Integer.toString(model.getMaxAcceptableCost()),
+                    "-worstOffenderCount", Integer.toString(model.getWorstOffenderCount()),
+//                    "-whitelist", model.getWhiteList(),
+                    "-print", model.getPrint()
+            );
             log("INFO: Testability Done", Project.MSG_VERBOSE);
         }
         else {
