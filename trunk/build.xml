@@ -73,5 +73,9 @@
 		</zip>
 	</target>
 	
-	<target name="build" depends="clean,test,dist"/>
+	<target name="build-explorer" depends="clean,test,dist"/>
+
+    <target name="build" depends="clean,test,dist">
+        <ant antfile="task.xml" target="build.task"/>
+    </target>
 </project>

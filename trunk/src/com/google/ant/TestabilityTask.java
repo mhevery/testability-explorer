@@ -90,26 +90,12 @@ public class TestabilityTask extends Task {
         boolean allOk = model.validate(validationMessages);
 
         if (allOk) {
-            logValidationMessages(validationMessages);
             log("INFO: Testability Starting ...", Project.MSG_VERBOSE);
-
+            logValidationMessages(validationMessages);
             logParameters();
 
-            Testability.main(
-                    model.getResultPrintStream(),
-                    model.getErrorPrintStream(),
-                    "cyclomatic", Integer.toString(model.getCyclomatic()),
-                    "global", Integer.toString(model.getGlobal()),
-                    model.getFilter(),
-                    "-cp", model.getClassPath(),
-                    "-printDepth", Integer.toString(model.getPrintDepth()),
-                    "-minCost", Integer.toString(model.getMinCost()),
-                    "-maxExcellentCost", Integer.toString(model.getMaxExcellentCost()),
-                    "-maxAcceptableCost", Integer.toString(model.getMaxAcceptableCost()),
-                    "-worstOffenderCount", Integer.toString(model.getWorstOffenderCount()),
-//                    "-whitelist", model.getWhiteList(),
-                    "-print", model.getPrint()
-            );
+            runTestabilityExplorer();
+
             log("INFO: Testability Done", Project.MSG_VERBOSE);
         }
         else {
@@ -118,6 +104,24 @@ public class TestabilityTask extends Task {
         }
 
         checkResultsAreOk();
+    }
+
+    private void runTestabilityExplorer() {
+        Testability.main(
+                model.getResultPrintStream(),
+                model.getErrorPrintStream(),
+                "cyclomatic", Integer.toString(model.getCyclomatic()),
+                "global", Integer.toString(model.getGlobal()),
+                model.getFilter(),
+                "-cp", model.getClassPath(),
+                "-printDepth", Integer.toString(model.getPrintDepth()),
+                "-minCost", Integer.toString(model.getMinCost()),
+                "-maxExcellentCost", Integer.toString(model.getMaxExcellentCost()),
+                "-maxAcceptableCost", Integer.toString(model.getMaxAcceptableCost()),
+                "-worstOffenderCount", Integer.toString(model.getWorstOffenderCount()),
+//                "-whitelist", model.getWhiteList(),
+                "-print", model.getPrint()
+        );
     }
 
     private void logParameters() {
@@ -144,18 +148,26 @@ public class TestabilityTask extends Task {
 
         if (model.isFailPropertySet())
         {
-            getProject().setNewProperty(model.getFailProperty(), "true");
+            failBySettingFailProperty();
         }
         else
         {
-            String flattened = "";
-
-            for (String message : messages) {
-                flattened += message + ". ";
-            }
-
-            throw new BuildException(flattened);
+            failByDying(messages);
         }
+    }
+
+    private void failByDying(List<String> messages) {
+        String flattened = "";
+
+        for (String message : messages) {
+            flattened += message + ". ";
+        }
+
+        throw new BuildException(flattened);
+    }
+
+    private void failBySettingFailProperty() {
+        getProject().setNewProperty(model.getFailProperty(), "true");
     }
 
     private void logValidationMessages(List<String> messages) {
