@@ -18,24 +18,26 @@ public class TaskModel {
     public static final String DEFAULT_RESULT_FILE = "System.out";
     public static final String DEFAULT_ERROR_FILE = "System.err";
     public static final String DEFAULT_FILTER = "";
+    public static final String DEFAULT_WHITE_LIST = "";
     public static final int DEFAULT_MAX_ACCEPTABLE_COST = 100;
-    public static final int DEFAULT_WORS_OFFENDER_COUNT = 20;
+    public static final int DEFAULT_WORST_OFFENDER_COUNT = 20;
     public static final int DEFAULT_MAX_EXCELLENT_COST = 50;
     public static final int DEFAULT_MIN_COST = 1;
     public static final int DEFAULT_PRINT_DEPTH = 2;
-    public static final String DEFAULT_PRINT = "summary"; // summary | detail
+    public static final String DEFAULT_PRINT = "summary"; // summary | detail | html
     public static final int DEFAULT_CYCLOMATIC = 1;
     public static final int DEFAULT_GLOBAL = 10;
 
     public static final String ERROR_FILESET_NOT_SET = "fileset to jar and/or classfile directories must be set";
     public static final String ERROR_FILTER_NOT_SET = "filter must be set. default is " + DEFAULT_FILTER + " (all)";
+    public static final String ERROR_WHITE_LIST_NOT_SET = "white list not set. using default" + DEFAULT_WHITE_LIST;
     public static final String ERROR_RESULT_FILE_NOT_SET = "resultfile must be set. either a filepath or System.(out|err). default is " + DEFAULT_RESULT_FILE;
     public static final String ERROR_PRINT_DEPTH_NOT_SET = "print depth not set. using default " + DEFAULT_PRINT_DEPTH;
     public static final String ERROR_MIN_COST_NOT_SET = "min cost not set. using default " + DEFAULT_MIN_COST;
     public static final String ERROR_MAX_EXCELLENT_COST_NOT_SET = "max excellent cost not set. using default " + DEFAULT_MAX_EXCELLENT_COST;
     public static final String ERROR_MAX_ACCEPTABLE_COST_NOT_SET = "max acceptable cost not set. using default " + DEFAULT_MAX_ACCEPTABLE_COST;
     public static final String ERROR_PRINT_NOT_SET = "print not set. using default " + DEFAULT_PRINT;
-    public static final String ERROR_WORST_OFFENDER_COUNT_NOT_SET = "worst offender count not set. using default " + DEFAULT_WORS_OFFENDER_COUNT;
+    public static final String ERROR_WORST_OFFENDER_COUNT_NOT_SET = "worst offender count not set. using default " + DEFAULT_WORST_OFFENDER_COUNT;
     public static final String ERROR_CYCLOMATIC_NOT_SET = "cyclomatic not set. using default " + DEFAULT_CYCLOMATIC;
     public static final String ERROR_GLOBAL_NOT_SET = "global not set. using default " + DEFAULT_GLOBAL;
     public static final String ERROR_ERROR_FILE_SET_TO_RESULT_FILE = "error file not set. using result file.";
@@ -57,7 +59,6 @@ public class TaskModel {
     private int cyclomatic = -1;
     private int global = -1;
 
-
     public int getCyclomatic() {
         return cyclomatic;
     }
@@ -70,8 +71,16 @@ public class TaskModel {
         maxAcceptableCost = cost;
     }
 
+    public int getMaxAcceptableCost() {
+        return maxAcceptableCost;
+    }
+
     public void setMaxExcellentCost(int cost) {
         maxExcellentCost = cost;
+    }
+
+    public int getMaxExcellentCost() {
+        return maxExcellentCost;
     }
 
     public void setMinCost(int cost) {
@@ -81,7 +90,6 @@ public class TaskModel {
     public int getMinCost() {
         return minCost;
     }
-
 
     public void setPrint(String printVal) {
         print = printVal;
@@ -107,7 +115,7 @@ public class TaskModel {
         return whiteList;
     }
 
-    public void setWorsOffenderCount(int count) {
+    public void setWorstOffenderCount(int count) {
         worstOffenderCount = count;
     }
 
@@ -215,11 +223,9 @@ public class TaskModel {
 
         if (target.equals(DEFAULT_RESULT_FILE)) {
             os = System.out;
-        }
-        else if (target.equals(DEFAULT_ERROR_FILE)) {
+        } else if (target.equals(DEFAULT_ERROR_FILE)) {
             os = System.err;
-        }
-        else {
+        } else {
             os = new FileOutputStream(target);
         }
 
@@ -247,12 +253,12 @@ public class TaskModel {
         }
 
         if (! isMaxAcceptableCostSet()) {
-            maxExcellentCost = DEFAULT_MAX_ACCEPTABLE_COST;
+            maxAcceptableCost = DEFAULT_MAX_ACCEPTABLE_COST;
             messages.add(TaskModel.ERROR_MAX_ACCEPTABLE_COST_NOT_SET);
         }
 
         if (! isWorstOffenderCountSet()) {
-            worstOffenderCount = DEFAULT_WORS_OFFENDER_COUNT;
+            worstOffenderCount = DEFAULT_WORST_OFFENDER_COUNT;
             messages.add(TaskModel.ERROR_WORST_OFFENDER_COUNT_NOT_SET);
         }
 
@@ -283,6 +289,11 @@ public class TaskModel {
             filter = DEFAULT_FILTER;
             messages.add(TaskModel.ERROR_FILTER_NOT_SET);
         }
+        if (! isWhiteListSet()) {
+            whiteList = DEFAULT_WHITE_LIST;
+            messages.add(TaskModel.ERROR_WHITE_LIST_NOT_SET);
+        }
+
         if (! isFileSetSet()) {
             allOk = false;
             messages.add(TaskModel.ERROR_FILESET_NOT_SET);
@@ -303,6 +314,10 @@ public class TaskModel {
         }
 
         return allOk;
+    }
+
+    private boolean isWhiteListSet() {
+        return whiteList != null;
     }
 
     private boolean isPrintDepthSet() {

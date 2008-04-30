@@ -1,54 +1,11 @@
 <project name="testability-explorer" default="test">
-	
-	<taskdef name="svn" classname="org.tigris.subversion.svnant.SvnTask">
-		<classpath>
-			<fileset dir="lib/svn">
-				<include name="*.jar" />
-				<exclude name="*-src.jar" />
-			</fileset>
-		</classpath>
-	</taskdef>
-	
-	<property name="version" value="1.1.0RC1" />
-	<property name="project-name" value="testability-explorer" />
 
-	<path id="compile.classpath">
-		<fileset dir="lib">
-			<include name="*.jar" />
-			<exclude name="junit.jar" />
-            <exclude name="testability-explorer.jar"/>    
-        </fileset>
-	</path>
+    <import file="base.xml"/>
 
-	<path id="test.classpath">
-		<path refid="compile.classpath" />
-		<pathelement location="lib/junit.jar" />
-		<pathelement location="target/bin" />
-		<pathelement location="target/bin-test" />
-	</path>
-
-	<target name="clean">
-		<delete dir="target" />
-	</target>
-
-	<target name="init">
-		<mkdir dir="target" />
-		<mkdir dir="target/bin" />
-		<mkdir dir="target/bin-test" />
-		<mkdir dir="target/dist" />
-		<mkdir dir="target/reports/junit" />
-	</target>
-
-	<target name="revision">
-		<svn>
-			<status path="." revisionProperty="revision" />
-		</svn>
-	</target>
-	
 	<target name="compile" depends="init">
 		<javac srcdir="src" destdir="target/bin" debug="true" target="1.5">
 			<classpath refid="compile.classpath" />
-            <exclude name="com/google/ant/**/*"/>
+            <exclude name="com/google/ant/**"/>
         </javac>
 		<copy todir="target/bin">
 			<fileset dir="src">
@@ -60,6 +17,7 @@
 	<target name="compile-tests" depends="compile">
 		<javac srcdir="src-test" destdir="target/bin-test" debug="true" target="1.5">
 			<classpath refid="test.classpath" />
+            <exclude name="com/google/ant/**"/>
 		</javac>
 	</target>
 
@@ -75,7 +33,8 @@
 					<exclude name="**/*TestCase.java" />
 					<exclude name="**/AllTests.java" />
 					<exclude name="**/*TestCase.java" />
-				</fileset>
+                    <exclude name="com/google/ant/**"/>
+                </fileset>
 			</batchtest>
 		</junit>
 	</target>
@@ -101,36 +60,6 @@
 		</zip>
 	</target>
 
-    <target name="compile.ant" depends="init">
-        <javac srcdir="src" destdir="target/bin" debug="true" target="1.5">
-            <classpath refid="compile.classpath" />
-            <include name="com/google/ant/**/*"/>
-        </javac>
-        <copy todir="target/bin">
-            <fileset dir="src">
-                <exclude name="**/*.java"/>
-            </fileset>
-        </copy>
-    </target>
-
-    <target name="jar.ant" depends="revision">
-        <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="lib/jarjar.jar" />
-        <jarjar jarfile="target/dist/ant-${project-name}-${version}-r${revision}.jar">
-            <manifest>
-                <attribute name="Version" value="${version}" />
-                <attribute name="Revision" value="${revision}" />
-            </manifest>
-            <fileset dir="target/bin" includes="com/google/ant/**/*.*"/>
-        </jarjar>
-    </target>
-
-    <target name="copy.ant" depends="revision,compile.ant,jar.ant">
-        <copy file="target/dist/ant-${project-name}-${version}-r${revision}.jar" tofile="lib/ant-${project-name}.jar"/>
-        <copy file="target/dist/${project-name}-${version}-r${revision}.jar" tofile="lib/${project-name}.jar"/>
-    </target>
-
-    <target name="ant.task" depends="copy.ant"/>
-
     <target name="dist" depends="jar">
 		<zip destfile="target/dist/${project-name}-${version}-r${revision}.zip">
 			<fileset dir=".">
@@ -138,12 +67,11 @@
 				<include name="LICENSE.txt" />
 			</fileset>
 			<fileset dir="target/dist">
-                <include name="ant-${project-name}-${version}-r${revision}.jar" />
 				<include name="${project-name}-${version}-r${revision}.jar" />
 				<include name="${project-name}-${version}-r${revision}-src.jar" />
 			</fileset>
 		</zip>
 	</target>
 	
-	<target name="build" depends="clean,compile.ant,test,dist,copy.ant"/>
+	<target name="build" depends="clean,test,dist"/>
 </project>

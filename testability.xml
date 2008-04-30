@@ -1,9 +1,8 @@
-<project name="testability" default="testability">
+<project name="testability" default="testability.none">
 
     <taskdef name="testability" classname="com.google.ant.TestabilityTask"  classpath="lib/ant-testability-explorer.jar;lib/testability-explorer.jar"/>
 
-    <target name="testability">
-        <!--<testability  filter="" resultfile="testability.out" errorfile="testability.err">-->
+    <target name="testability.none">
         <testability>
             <fileset dir="lib">
                 <include name="junit.jar"/>
@@ -14,7 +13,21 @@
         </testability>
     </target>
 
-    <target name="testability.test" depends="testability">
+    <target name="testability.all">
+        <testability  filter="" resultfile="System.out" errorfile="System.err"
+                printdepth="2" print="simple" mincost="1" maxexcellentcost="50"
+                maxacceptablecost="100" worstoffendercount="20" whitelist=""
+                cyclomatic="1" global="10">
+            <fileset dir="lib">
+                <include name="junit.jar"/>
+            </fileset>
+            <!--<fileset dir="lib/apache-ant-1.7.0/lib">-->
+                <!--<include name="ant-*.jar"/>-->
+            <!--</fileset>-->
+        </testability>
+    </target>
+
+    <target name="testability.test" depends="testability.all">
         <fail if="testability.failproperty" message="testability failed"/>
     </target>
 </project>
