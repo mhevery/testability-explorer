@@ -93,17 +93,7 @@ public class TestabilityTask extends Task {
             logValidationMessages(validationMessages);
             log("INFO: Testability Starting ...", Project.MSG_VERBOSE);
 
-            log("cyclomatic"+ " " +  Integer.toString(model.getCyclomatic()), Project.MSG_VERBOSE);
-            log("global"+ " " +  Integer.toString(model.getGlobal()), Project.MSG_VERBOSE);
-            log("-filter" + " " + model.getFilter(), Project.MSG_VERBOSE);
-            log("-cp"+ " " +  model.getClassPath(), Project.MSG_VERBOSE);
-            log("-printDepth"+ " " +   Integer.toString(model.getPrintDepth()), Project.MSG_VERBOSE);
-            log("-minCost"+ " " +  Integer.toString(model.getMinCost()), Project.MSG_VERBOSE);
-            log("-maxExcellentCost"+ " " +  Integer.toString(model.getMaxAcceptableCost()), Project.MSG_VERBOSE);
-            log("-maxAcceptableCost"+ " " +  Integer.toString(model.getMaxAcceptableCost()), Project.MSG_VERBOSE);
-            log("-worstOffenderCount"+ " " +  Integer.toString(model.getWorstOffenderCount()), Project.MSG_VERBOSE);
-            log("-whitelist"+ " " +  model.getWhiteList(), Project.MSG_VERBOSE);
-            log("-print"+ " " +  model.getPrint(), Project.MSG_VERBOSE);
+            logParameters();
 
             Testability.main(
                     model.getResultPrintStream(),
@@ -114,7 +104,7 @@ public class TestabilityTask extends Task {
                     "-cp", model.getClassPath(),
                     "-printDepth", Integer.toString(model.getPrintDepth()),
                     "-minCost", Integer.toString(model.getMinCost()),
-                    "-maxExcellentCost", Integer.toString(model.getMaxAcceptableCost()),
+                    "-maxExcellentCost", Integer.toString(model.getMaxExcellentCost()),
                     "-maxAcceptableCost", Integer.toString(model.getMaxAcceptableCost()),
                     "-worstOffenderCount", Integer.toString(model.getWorstOffenderCount()),
 //                    "-whitelist", model.getWhiteList(),
@@ -128,6 +118,20 @@ public class TestabilityTask extends Task {
         }
 
         checkResultsAreOk();
+    }
+
+    private void logParameters() {
+        log("cyclomatic"+ " " +  Integer.toString(model.getCyclomatic()), Project.MSG_VERBOSE);
+        log("global"+ " " +  Integer.toString(model.getGlobal()), Project.MSG_VERBOSE);
+        log("-filter" + " " + model.getFilter(), Project.MSG_VERBOSE);
+        log("-cp"+ " " +  model.getClassPath(), Project.MSG_VERBOSE);
+        log("-printDepth"+ " " +   Integer.toString(model.getPrintDepth()), Project.MSG_VERBOSE);
+        log("-minCost"+ " " +  Integer.toString(model.getMinCost()), Project.MSG_VERBOSE);
+        log("-maxExcellentCost"+ " " +  Integer.toString(model.getMaxExcellentCost()), Project.MSG_VERBOSE);
+        log("-maxAcceptableCost"+ " " +  Integer.toString(model.getMaxAcceptableCost()), Project.MSG_VERBOSE);
+        log("-worstOffenderCount"+ " " +  Integer.toString(model.getWorstOffenderCount()), Project.MSG_VERBOSE);
+        log("-whitelist"+ " " +  model.getWhiteList(), Project.MSG_VERBOSE);
+        log("-print"+ " " +  model.getPrint(), Project.MSG_VERBOSE);
     }
 
     private void checkResultsAreOk() {
