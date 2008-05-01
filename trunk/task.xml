@@ -3,7 +3,7 @@
     <import file="base.xml"/>
 
     <target name="compile" depends="init">
-        <javac srcdir="src" destdir="target/bin" debug="true" target="1.5">
+        <javac srcdir="src" destdir="target/bin" debug="true" target="1.5" fork="true">
             <classpath refid="compile.classpath" />
             <include name="com/google/ant/**/*"/>
         </javac>
@@ -15,7 +15,7 @@
     </target>
 
     <target name="compile-tests" depends="init">
-        <javac srcdir="src-test" destdir="target/bin-test" debug="true" target="1.5">
+        <javac srcdir="src-test" destdir="target/bin-test" debug="true" target="1.5" fork="trues">
             <classpath refid="test.classpath" />
             <include name="com/google/ant/**/*"/>
         </javac>
