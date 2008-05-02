@@ -34,7 +34,6 @@
 		<fileset dir="lib">
 			<include name="*.jar" />
 			<exclude name="junit.jar" />
-            <exclude name="testability-explorer.jar"/>
         </fileset>
 	</path>
 
