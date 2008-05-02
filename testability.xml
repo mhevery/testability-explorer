@@ -1,6 +1,8 @@
 <project name="testability" default="testability.none">
 
-    <taskdef name="testability" classname="com.google.ant.TestabilityTask"  classpath="lib/ant-testability-explorer.jar;lib/testability-explorer.jar"/>
+    <import file="base.xml"/>
+
+    <taskdef name="testability" classname="com.google.ant.TestabilityTask"  classpathref="test.classpath"/>
 
     <target name="testability.none">
         <testability>

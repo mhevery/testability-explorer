@@ -52,17 +52,10 @@
         </jarjar>
     </target>
 
-    <target name="copy" depends="revision,compile,jar">
-        <copy file="target/dist/ant-${project-name}-${version}-r${revision}.jar" tofile="lib/ant-${project-name}.jar"/>
-        <copy file="target/dist/${project-name}-${version}-r${revision}.jar" tofile="lib/${project-name}.jar"/>
-    </target>
-
-    <target name="ant.task" depends="copy"/>
-
     <target name="main">
         <ant antfile="build.xml" target="jar"/>
     </target>
-    <target name="build" depends="clean,main,init,compile,test,copy"/>
-    <target name="build.task" depends="compile,test,copy"/>
+    <target name="build" depends="clean,main,init,compile,test"/>
+    <target name="build.task" depends="compile,test,jar"/>
 
 </project>
