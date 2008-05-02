@@ -1,13 +1,15 @@
 package com.google.ant;
 
-import junit.framework.TestCase;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.types.FileSet;
-
 import java.io.File;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import junit.framework.TestCase;
+
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.types.FileSet;
 
 public class TaskModelTest extends TestCase {
     private TaskModel model;
@@ -17,11 +19,13 @@ public class TaskModelTest extends TestCase {
         super(name);
     }
 
+    @Override
     protected void setUp()
     {
         model = new TaskModel();
     }
 
+    @Override
     protected void tearDown()
     {
     }
@@ -128,7 +132,7 @@ public class TaskModelTest extends TestCase {
         model.addFileSet(fs);
         assertTrue(model.getClassPath().indexOf(":") >= 0);
         String[] cps = model.getClassPath().split(":");
-        assertEquals(2, cps.length);
+        assertEquals(Arrays.toString(cps), 2, cps.length);
         assertTrue(cps[0].endsWith("blah.raj"));
         assertTrue(cps[1].endsWith("foo.raj"));
     }
