@@ -1,9 +1,6 @@
 package com.google.ant;
 
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.resources.FileResource;
-
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -12,6 +9,10 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.resources.FileResource;
 
 public class TaskModel {
 
@@ -44,7 +45,7 @@ public class TaskModel {
     public static final String ERROR_RESULT_FILE_CREATION_FAILED = "resultfile could not be created";
     public static final String ERROR_ERROR_FILE_CREATION_FAILED = "errorfile could not be created";
 
-    private Vector fileSets = new Vector();
+    private final Vector fileSets = new Vector();
     private String failProperty;
     private String resultFile = null;
     private String errorFile = null;
@@ -182,7 +183,7 @@ public class TaskModel {
             FileSet fs = (FileSet) en.nextElement();
             for (Iterator it = fs.iterator(); it.hasNext(); ) {
                 FileResource fr = (FileResource) it.next();
-                cp += fr.getFile().getAbsolutePath() + ":";
+                cp += fr.getFile().getAbsolutePath() + File.pathSeparator;
             }
         }
 
@@ -304,7 +305,7 @@ public class TaskModel {
         } catch (FileNotFoundException e) {
             allOk = false;
             messages.add(TaskModel.ERROR_RESULT_FILE_CREATION_FAILED);
-        }        
+        }
 
         try {
             getOutputStream(errorFile);
