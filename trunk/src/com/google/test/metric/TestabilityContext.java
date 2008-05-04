@@ -111,7 +111,7 @@ public class TestabilityContext {
 
   public void setInjectable(MethodInfo method) {
     if (method.getMethodThis() != null) {
-//      setInjectable(method.getMethodThis());
+      setInjectable(method.getMethodThis());
     }
     setInjectable(method.getParameters());
   }
