@@ -924,6 +924,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
       try {
         field = ownerClass.getField(fieldName);
       } catch (FieldNotFoundException e) {
+        //TODO: remove System.err
         System.err.println("WARNING: field not found: " + fieldName);
         field =
             new FieldInfo(ownerClass, "FAKE:" + fieldName, Type

@@ -130,8 +130,8 @@ public class TaskModelTest extends TestCase {
         fs.setIncludes("**/*.raj");
 
         model.addFileSet(fs);
-        assertTrue(model.getClassPath().indexOf(":") >= 0);
-        String[] cps = model.getClassPath().split(":");
+        assertTrue(model.getClassPath().indexOf(File.pathSeparator) >= 0);
+        String[] cps = model.getClassPath().split(File.pathSeparator);
         assertEquals(Arrays.toString(cps), 2, cps.length);
         assertTrue(cps[0].endsWith("blah.raj"));
         assertTrue(cps[1].endsWith("foo.raj"));
