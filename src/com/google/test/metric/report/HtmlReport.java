@@ -21,6 +21,7 @@ import static com.google.test.metric.report.GoogleChartAPI.YELLOW;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.ceil;
 import static java.lang.Math.log;
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 import java.io.IOException;
@@ -61,17 +62,32 @@ public class HtmlReport extends SummaryReport {
   private void printHistogram() {
     int binCount = min(MAX_HISTOGRAM_BINS, 10 * (int)log(costs.size()) + 1);
     int binWidth = (int)ceil((double)worstCost / binCount);
-    Histogram histogram = new Histogram(0, binWidth, binCount);
+    Histogram excellentHistogram = new Histogram(0, binWidth, binCount);
+    Histogram goodHistogram = new Histogram(0, binWidth, binCount);
+    Histogram needsWorkHistogram = new Histogram(0, binWidth, binCount);
     for (ClassCost cost : costs) {
-      histogram.value((int) cost.getOverallCost());
+      int overallCost = (int) cost.getOverallCost();
+      if (overallCost < maxExcellentCost) {
+        excellentHistogram.value(overallCost);
+      } else if (overallCost < maxAcceptableCost) {
+        goodHistogram.value(overallCost);
+      } else {
+        needsWorkHistogram.value(overallCost);
+      }
     }
+    int maxBin = excellentHistogram.getMaxBin();
+    maxBin = max(maxBin, goodHistogram.getMaxBin());
+    maxBin = max(maxBin, needsWorkHistogram.getMaxBin());
+    excellentHistogram.setMaxBin(maxBin);
+    goodHistogram.setMaxBin(maxBin);
+    needsWorkHistogram.setMaxBin(maxBin);
     HistogramChartUrl chart = new HistogramChartUrl();
-    int[] excellent = histogram.getScaledBinRange(0, maxExcellentCost, 61);
-    int[] good = histogram.getScaledBinRange(maxExcellentCost, maxAcceptableCost, 61);
-    int[] needsWork = histogram.getScaledBinRange(maxAcceptableCost, MAX_VALUE, 61);
-    chart.setItemLabel(histogram.getBinLabels(20));
+    int[] excellent = excellentHistogram.getScaledBinRange(0, MAX_VALUE, 61);
+    int[] good = goodHistogram.getScaledBinRange(0, MAX_VALUE, 61);
+    int[] needsWork = needsWorkHistogram.getScaledBinRange(0, MAX_VALUE, 61);
+    chart.setItemLabel(excellentHistogram.getBinLabels(20));
     chart.setValues(excellent, good, needsWork);
-    chart.setYMark(0, histogram.getMaxBin());
+    chart.setYMark(0, excellentHistogram.getMaxBin());
     chart.setSize(HISTOGRAM_WIDTH, 200);
     chart.setBarWidth((HISTOGRAM_WIDTH - HISTOGRAM_LEGEND_WIDTH) / binCount, 0, 0);
     chart.setChartLabel("Excellent", "Good", "Needs Work");
