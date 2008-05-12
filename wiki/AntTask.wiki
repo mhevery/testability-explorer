@@ -1,4 +1,4 @@
-#labels Phase-Support,Phase-Implementation
+#labels Phase-Support,Phase-Implementation,Ant
 = Testability =
 
 = Description =
@@ -6,8 +6,8 @@ Runs the Testability-Explorer from Ant.
 
 = Parameters =
 
-|*Attribute*|*Description*|*Required*|
-|||
+||*Attribute*||*Description*||*Required*||
+||resultfile||File to write results into||No, defaults to System.out.||
 
 = Parameters specified as nested elements =
 
