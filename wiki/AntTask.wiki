@@ -1,4 +1,4 @@
-#labels Phase-Support,Phase-Implementation,Ant
+#labels Phase-Support,Phase-Implementation
 = Testability =
 
 = Description =
@@ -8,6 +8,18 @@ Runs the Testability-Explorer from Ant.
 
 ||*Attribute*||*Description*||*Required*||
 ||resultfile||File to write results into||No, defaults to System.out.||
+||errorfile||File to write errors into.||No; defaults to restultfile value.||
+||failureproperty||Set this property to true if build should fail based on findings, but don't stop the ant process immideately.||No||
+||print||Prints the result in different formats and level of detail. *summary* prints package summary information. *detail* prints detail drill down information for each method call. *html* prints html summary information||No; defaults to summary.||
+||printDepth||Maximum depth to recurse and print costs of classes/methods that the classes under analysis depend on.||No; defaults to 0.||
+||mincost||Minimum Total Class cost required to print that class' metrics.||No; defaults to 1.||
+||maxexcellentcost||Maximum Total Class cost to classify it as 'excellent'.||No; defaults 50.||
+||maxacceptablecost||Maximum Total Class cost to classify it as 'acceptable'.||No; defaults to 100.||
+||worstoffendercount||Print n number of worst offending classes.||No; defaults to 20.||
+||whitelist||Colon delimited whitelisted packages that will not count against you. Matches packages/classes starting with given values. (Always whitelists java.*).||No.||
+||cyclomatic||Cyclomatic cost multiplier. When computing the overall cost of the method the individual costs are added using the weighted average. This represents the weight of the cyclomatic cost.||No; defaults to 1||
+||global||Global state multiplier. When computing the overal cost of the method the individual costs are added using weighted average. This represents the weight of the global state cost.||No; defaults to restultfile value.||
+
 
 = Parameters specified as nested elements =
 
