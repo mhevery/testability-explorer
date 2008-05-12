@@ -1,0 +1,62 @@
+#labels Phase-Support,Phase-Implementation
+= Testability =
+
+= Description =
+Runs the Testability-Explorer from Ant.
+
+= Parameters =
+
+|*Attribute*|*Description*|*Required*|
+|||
+
+= Parameters specified as nested elements =
+
+*fileset*
+
+[http://jakarta.apache.org/ant/manual/CoreTypes/filterset.html] filesets are used to get the list of jar files and/or class directories.
+
+* Examples *
+
+* Integrate Testability Ant task into Ant environment *
+
+{{{
+<taskdef name="testability" classname="com.google.ant.TestabilityTask"  classpath="PATH/ant-testability-explorer.jar;PATH/testability-explorer.jar"/>
+
+}}}
+
+* Use Testability-Explorer with default settings
+
+{{{
+<target name="testability-simple">
+   <testability>
+      <fileset dir="lib">
+         <include name="project.jar"/>
+      </fileset>
+   </testability>
+</target>
+}}}
+
+* Use Testability-Explorer customized
+
+This example shows all possible arguments of the ant task including the failproperty. Instead of breaking the build on the spot this property is set and the build continues. The second snippet shows how the property can be read and used to break the build at a well defined timing. 
+
+{{{
+<target name="testability-complex">
+   <testability filter="" resultfile="testability.result.html" errorfile="testability.err.txt"
+                printdepth="2" print="html" mincost="1" maxexcellentcost="50"
+                maxacceptablecost="100" worstoffendercount="25" whitelist="com.thirdparty."
+                cyclomatic="1" global="10" failproperty="testability.failproperty">
+      <fileset dir="lib">
+         <include name="*.jar"/>
+      </fileset>
+      <fileset dir="build/classes">
+         <include name="com/ownstuff/**"/>
+      </fileset>
+   </testability>
+</target>
+}}}
+{{{
+<target name="testability-break-build.test" depends="testability-complex">
+   <fail if="testability.failproperty" message="testability failed"/>
+</target>
+}}}
