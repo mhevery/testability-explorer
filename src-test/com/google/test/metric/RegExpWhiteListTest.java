@@ -2,7 +2,7 @@ package com.google.test.metric;
 
 import junit.framework.TestCase;
 
-public class RegExpListTest extends TestCase {
+public class RegExpWhiteListTest extends TestCase {
 
   public void testPositiveHitInWhiteList() throws Exception {
     WhiteList whiteList = new RegExpWhiteList("java.");
@@ -20,6 +20,12 @@ public class RegExpListTest extends TestCase {
     WhiteList whiteList = new RegExpWhiteList("String");
     assertFalse(whiteList.isClassWhiteListed("java.lang.String"));
     assertFalse(whiteList.isClassWhiteListed("com.company.String"));
+  }
+
+  public void testNegativeWhitelist() throws Exception {
+    WhiteList whiteList = new RegExpWhiteList("!java.lang");
+    assertFalse(whiteList.isClassWhiteListed("java.lang.String"));
+    assertTrue(whiteList.isClassWhiteListed("java.x.Z"));
   }
 
 }
