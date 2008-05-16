@@ -22,4 +22,16 @@ public class PieChartUrl extends GoogleChartAPI {
     keys.put("cht", "p3");
   }
 
+  @Override
+  public void setValues(int... values) {
+    double sum = 0;
+    for (int value : values) {
+      sum += value;
+    }
+    for (int i = 0; i < values.length; i++) {
+      values[i] = (int) (100.0 *  values[i] / sum);
+    }
+    super.setValues(values);
+  }
+
 }

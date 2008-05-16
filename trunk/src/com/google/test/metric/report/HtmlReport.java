@@ -48,12 +48,15 @@ public class HtmlReport extends SummaryReport {
     int total = costs.size();
     out.println("<h2>Class breakdown</h2>");
     out.printf("<pre>%n");
+    out.printf("           Overall : %5d%n", getOverall());
     out.printf("  Analyzed classes : %5d%n", total);
     out.printf(" Excellent classes : %5d %5.1f%%%n", excellentCount, 100f * excellentCount / total);
     out.printf("      Good classes : %5d %5.1f%%%n", goodCount, 100f * goodCount / total);
     out.printf("Needs work classes : %5d %5.1f%%%n", needsWorkCount, 100f * needsWorkCount / total);
     out.printf("</pre>%n");
     printPieChart();
+    printOverallChart();
+    out.println("<br>");
     out.printf("%n");
     printHistogram();
     out.printf("%n");
@@ -95,6 +98,14 @@ public class HtmlReport extends SummaryReport {
     out.print(chart.getHtml());
   }
 
+  private void printOverallChart() {
+    GoodnessChart chart = new GoodnessChart(maxExcellentCost,
+        maxAcceptableCost, 10 * maxAcceptableCost, 100 * maxAcceptableCost);
+    chart.setSize(200, 100);
+    chart.setUnscaledValues(getOverall());
+    out.print(chart.getHtml());
+  }
+
   private void printPieChart() {
     PieChartUrl chart = new PieChartUrl();
     chart.setSize(400, 100);
@@ -102,7 +113,6 @@ public class HtmlReport extends SummaryReport {
     chart.setColors(GREEN, YELLOW, RED);
     chart.setValues(excellentCount, goodCount, needsWorkCount);
     out.print(chart.getHtml());
-    out.println("<br>");
   }
 
   public void printWorstOffenders(int worstOffenderCount) {
