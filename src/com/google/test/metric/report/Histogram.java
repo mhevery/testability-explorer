@@ -33,7 +33,7 @@ public class Histogram {
   }
 
   public void value(int value) {
-    maxBin = max(maxBin, ++bins[bin(value)]);
+    maxBin = max(maxBin, ++bins[Math.min(bins.length -1, bin(value))]);
   }
 
   private int bin(int value) {
