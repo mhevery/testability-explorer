@@ -1,12 +1,12 @@
 /*
  * Copyright 2007 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -15,18 +15,21 @@
  */
 package com.google.test.metric.collection;
 
-import junit.framework.TestCase;
-
-import java.util.Arrays;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import junit.framework.TestCase;
 
 public class KeyedMultiStackTest extends TestCase {
 
   public static class Push extends PopClosure<String, Integer> {
 
-    private List<Integer> items;
+    private final List<Integer> items;
 
     public Push(Integer... integers) {
       items = Arrays.asList(integers);
@@ -44,9 +47,28 @@ public class KeyedMultiStackTest extends TestCase {
 
   }
 
-  private final class LoggingClosure extends PopClosure<String, Integer> {
+  private class NoopClosure extends PopClosure<String, Integer> {
 
-    private int size;
+    private final int size;
+
+    public NoopClosure(int size) {
+      this.size = size;
+    }
+
+    @Override
+    public int getSize() {
+      return size;
+    }
+
+    @Override
+    public List<Integer> pop(String key, List<Integer> list) {
+      return emptyList();
+    }
+
+  }
+  private class LoggingClosure extends PopClosure<String, Integer> {
+
+    private final int size;
 
     public LoggingClosure(int size) {
       this.size = size;
@@ -54,7 +76,7 @@ public class KeyedMultiStackTest extends TestCase {
 
     @Override
     public List<Integer> pop(String key, List<Integer> value) {
-      log += value;
+      log.add(value.toString());
       return emptyList();
     }
 
@@ -67,7 +89,7 @@ public class KeyedMultiStackTest extends TestCase {
   KeyedMultiStack<String, Integer> stack = new KeyedMultiStack<String, Integer>(
       "");
 
-  String log = "";
+  Set<String> log = new TreeSet<String>();
 
   public void testBasicOperationsOnSingleDimension() throws Exception {
     stack.apply("", new Push(0));
@@ -77,7 +99,7 @@ public class KeyedMultiStackTest extends TestCase {
         assertEquals("", key);
         assertEquals(1, value.size());
         assertEquals(new Integer(0), value.get(0));
-        log += value.get(0);
+        log.add(value.get(0).toString());
         return emptyList();
       }
 
@@ -86,10 +108,10 @@ public class KeyedMultiStackTest extends TestCase {
         return 1;
       }
     });
-    assertEquals("0", log);
+    assertEquals("[0]", log.toString());
     stack.assertEmpty();
   }
-  
+
   public void testToString() throws Exception {
     assertNotNull(stack.toString());
   }
@@ -101,7 +123,7 @@ public class KeyedMultiStackTest extends TestCase {
     stack.apply("b", new Push(2));
     stack.apply("a", new LoggingClosure(2));
     stack.apply("b", new LoggingClosure(2));
-    assertEquals("[0, 1][0, 2]", log);
+    assertEquals("[[0, 1], [0, 2]]", log.toString());
   }
 
   public void testPushSplitPushJoinPOP() throws Exception {
@@ -112,7 +134,7 @@ public class KeyedMultiStackTest extends TestCase {
     stack.join(asList("a", "b"), "c");
     stack.apply("c", new Push(3));
     stack.apply("c", new LoggingClosure(3));
-    assertEquals("[0, 1, 3][0, 2, 3]", log);
+    assertEquals("[[0, 1, 3], [0, 2, 3]]", log.toString());
   }
 
   public void testSplitAndJoinShouldCollapsMultipleStacksIfTheyAreOfSameContent()
@@ -122,7 +144,7 @@ public class KeyedMultiStackTest extends TestCase {
     stack.join(asList("a", "b"), "");
     stack.apply("", new Push(1));
     stack.apply("", new LoggingClosure(2));
-    assertEquals("[0, 1]", log);
+    assertEquals("[[0, 1]]", log.toString());
   }
 
   public void testConcurentPushInPopClosure() throws Exception {
@@ -141,7 +163,7 @@ public class KeyedMultiStackTest extends TestCase {
       }
     });
     stack.apply("", new LoggingClosure(2));
-    assertEquals("[0, 11]", log);
+    assertEquals("[[0, 11]]", log.toString());
   }
 
   public void testPopTooMuch() throws Exception {
@@ -194,7 +216,7 @@ public class KeyedMultiStackTest extends TestCase {
     stack.split("a", asList("join"));
     stack.split("b", asList("join"));
     stack.apply("join", new LoggingClosure(2));
-    assertEquals("[0, 2][0, 1]", log);
+    assertEquals("[[0, 1], [0, 2]]", log.toString());
   }
 
   public void testParalelPopAndPush() throws Exception {
@@ -205,9 +227,10 @@ public class KeyedMultiStackTest extends TestCase {
     stack.apply("b", new Push(3));
     stack.join(asList("a", "b"), "join");
     stack.apply("join", new PopClosure<String, Integer>() {
+      int id = 3;
       @Override
       public List<Integer> pop(String key, List<Integer> list) {
-        return asList(3, 4);
+        return asList(id++, id++);
       }
 
       @Override
@@ -216,6 +239,52 @@ public class KeyedMultiStackTest extends TestCase {
       }
     });
     stack.apply("join", new LoggingClosure(3));
-    assertEquals("[0, 3, 4][0, 3, 4]", log);
+    assertEquals("[[0, 3, 4], [0, 5, 6]]", log.toString());
+  }
+
+  public void testPathEnsureSize() throws Exception {
+    KeyedMultiStack.Path<String> path = new KeyedMultiStack.Path<String>();
+    path.add("A");
+    path.add("B");
+    path.add("C");
+    path.add("D");
+    path.add("E");
+    path.add("F");
+    path.add("G");
+    assertEquals("A :: B :: C :: D :: E :: F :: G", path.toString());
+  }
+
+  public void testPathHashCode() throws Exception {
+    KeyedMultiStack.Path<String> p1 = new KeyedMultiStack.Path<String>();
+    KeyedMultiStack.Path<String> p2 = new KeyedMultiStack.Path<String>();
+    assertEquals(p1, p2);
+    assertEquals(p1.hashCode(), p2.hashCode());
+  }
+
+  public void testPopTooSlowForVeryLargeSets() throws Exception {
+    long start = System.currentTimeMillis();
+    int counter = 0;
+    String[] subKeys = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p"};
+    stack.split("", asList(subKeys));
+    for (String key : subKeys) {
+      stack.apply(key, new Push(counter++));
+    }
+    stack.join(asList(subKeys), "L1");
+
+    stack.split("L1", asList(subKeys));
+    for (String key : subKeys) {
+      stack.apply(key, new Push(counter++));
+    }
+    stack.join(asList(subKeys), "L2");
+
+    stack.split("L2", asList(subKeys));
+    for (String key : subKeys) {
+      stack.apply(key, new Push(counter++));
+    }
+    stack.join(asList(subKeys), "L3");
+
+    stack.apply("L3", new NoopClosure(3));
+    long duration = System.currentTimeMillis() - start;
+    assertTrue("Duration: " + duration, duration < 50);
   }
 }

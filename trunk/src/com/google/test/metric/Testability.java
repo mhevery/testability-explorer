@@ -166,8 +166,11 @@ public class Testability {
     report.printHeader();
     for (String className : classNames) {
       try {
-        ClassCost classCost = computer.compute(repository.getClass(className));
-        report.addClassCost(classCost);
+        if (!whitelist.isClassWhiteListed(className)) {
+          ClassInfo clazz = repository.getClass(className);
+          ClassCost classCost = computer.compute(clazz);
+          report.addClassCost(classCost);
+        }
       } catch (ClassNotFoundException e) {
         err.println("WARNING: can not analyze class '" + className +
             "' since class '" + e.getClassName() + "' was not found.");
