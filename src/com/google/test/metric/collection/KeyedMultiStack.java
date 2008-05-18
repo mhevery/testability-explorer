@@ -17,10 +17,13 @@ package com.google.test.metric.collection;
 
 import static java.util.Arrays.asList;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This class acts as a stack externally. The difference is that internally it
@@ -59,7 +62,7 @@ public class KeyedMultiStack<KEY, VALUE> {
 
   private static class Entry<VALUE> {
     private final int depth;
-    private final List<Entry<VALUE>> parents;
+    private final Set<Entry<VALUE>> parents;
     private final VALUE value;
 
     private Entry() {
@@ -68,7 +71,7 @@ public class KeyedMultiStack<KEY, VALUE> {
       this.value = null;
     }
 
-    private Entry(List<Entry<VALUE>> parents, VALUE value) {
+    private Entry(Set<Entry<VALUE>> parents, VALUE value) {
       this.value = value;
       this.parents = parents;
       if (parents.size() == 0) {
@@ -101,7 +104,7 @@ public class KeyedMultiStack<KEY, VALUE> {
       }
     }
 
-    public List<Entry<VALUE>> getParents() {
+    public Set<Entry<VALUE>> getParents() {
       if (depth == -1) {
         throw new StackUnderflowException();
       }
@@ -110,9 +113,78 @@ public class KeyedMultiStack<KEY, VALUE> {
 
   }
 
+  @SuppressWarnings("unchecked")
+  public static class Path<VALUE> {
+    private VALUE[] elements = (VALUE[]) new Object[4];
+    private int size = 0;
+    public void add(VALUE value) {
+      ensureSize();
+      elements[size++] = value;
+    }
+
+    private void ensureSize() {
+      if (elements.length == size) {
+        VALUE[] newElements = (VALUE[]) new Object[elements.length * 2];
+        System.arraycopy(elements, 0, newElements, 0, elements.length);
+        elements = newElements;
+      }
+    }
+
+    public List<VALUE> asList() {
+      return Arrays.asList(elements).subList(0, size);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder buf = new StringBuilder();
+      int count = 0;
+      for (VALUE value : elements) {
+        if (count >= size) {
+          break;
+        }
+        if (count > 0) {
+          buf.append(" :: ");
+        }
+        buf.append(value);
+        count++;
+      }
+      return buf.toString();
+    }
+
+    @Override
+    public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + Arrays.hashCode(elements);
+      result = prime * result + size;
+      return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (getClass() != obj.getClass()) {
+        return false;
+      }
+      Path other = (Path) obj;
+      if (!Arrays.equals(elements, other.elements)) {
+        return false;
+      }
+      if (size != other.size) {
+        return false;
+      }
+      return true;
+    }
+  }
+
   private final Entry<VALUE> root = new Entry<VALUE>();
 
-  private final Map<KEY, List<Entry<VALUE>>> head = new HashMap<KEY, List<Entry<VALUE>>>();
+  private final Map<KEY, Set<Entry<VALUE>>> head = new HashMap<KEY, Set<Entry<VALUE>>>();
 
   public KeyedMultiStack() {
   }
@@ -126,10 +198,10 @@ public class KeyedMultiStack<KEY, VALUE> {
 
   public void init(KEY key) {
     head.clear();
-    head.put(key, list(root));
+    head.put(key, set(root));
   }
 
-  private List<Entry<VALUE>> getHead(KEY key) {
+  private Set<Entry<VALUE>> getHead(KEY key) {
     if (!head.containsKey(key)) {
       throw new KeyNotFoundException(key);
     } else {
@@ -137,7 +209,7 @@ public class KeyedMultiStack<KEY, VALUE> {
     }
   }
 
-  private List<Entry<VALUE>> removeHead(KEY key) {
+  private Set<Entry<VALUE>> removeHead(KEY key) {
     if (!head.containsKey(key)) {
       throw new KeyNotFoundException(key);
     } else {
@@ -146,8 +218,8 @@ public class KeyedMultiStack<KEY, VALUE> {
   }
 
   @SuppressWarnings("unchecked")
-  private List<Entry<VALUE>> list(Entry<VALUE> entries) {
-    return new LinkedList<Entry<VALUE>>(asList(entries));
+  private Set<Entry<VALUE>> set(Entry<VALUE> entries) {
+    return new HashSet<Entry<VALUE>>(asList(entries));
   }
 
   /**
@@ -160,28 +232,34 @@ public class KeyedMultiStack<KEY, VALUE> {
   @SuppressWarnings("unchecked")
   public void apply(KEY key, PopClosure<KEY, VALUE> popClosure) {
     int popSize = popClosure.getSize();
-    List<List<VALUE>> paths = fillPopPaths(getHead(key), popSize);
+    Set<Path<VALUE>> paths = fillPopPaths(getHead(key), popSize);
     popPaths(key, popSize);
-    VALUE[][] values = (VALUE[][]) new Object[paths.size()][];
+    VALUE[][] pushValues = (VALUE[][]) new Object[paths.size()][];
     int i = 0;
     int pushSize = -1;
-    for (List<VALUE> path : paths) {
-      VALUE[] pushSet = (VALUE[]) popClosure.pop(key, path).toArray();
+    for (Path<VALUE> path : paths) {
+      VALUE[] pushSet = (VALUE[]) popClosure.pop(key, path.asList()).toArray();
       if (pushSize == -1) {
         pushSize = pushSet.length;
       } else if (pushSize != pushSet.length) {
         throw new IllegalStateException(
             "All push pushes must be of same size.");
       }
-      values[i++] = pushSet;
+      pushValues[i++] = pushSet;
     }
-    for (int depth = 0; depth < pushSize; depth++) {
-      List<Entry<VALUE>> parent = head.get(key);
-      List<Entry<VALUE>> newHead = new LinkedList<Entry<VALUE>>();
-      for (int set = 0; set < values.length; set++) {
-        List<Entry<VALUE>> list;
-        list = depth == 0 ? parent : asList(parent.get(set));
-        newHead.add(new Entry<VALUE>(list, values[set][depth]));
+    if (pushSize > 0) {
+      Set<Entry<VALUE>> parent = head.get(key);
+      Set<Entry<VALUE>> newHead = new HashSet<Entry<VALUE>>();
+      for (VALUE[] values : pushValues) {
+        Entry<VALUE> entry = null;
+        for (VALUE value : values) {
+          if (entry == null) {
+            entry = new Entry<VALUE>(parent, value);
+          } else {
+            entry = new Entry<VALUE>(set(entry), value);
+          }
+        }
+        newHead.add(entry);
       }
       head.put(key, newHead);
     }
@@ -191,26 +269,24 @@ public class KeyedMultiStack<KEY, VALUE> {
     if (size == 0) {
       return;
     }
-    List<Entry<VALUE>> newEntries = new LinkedList<Entry<VALUE>>();
+    Set<Entry<VALUE>> newEntries = new HashSet<Entry<VALUE>>();
     for (Entry<VALUE> entry : getHead(key)) {
-      newEntries.removeAll(entry.getParents());
       newEntries.addAll(entry.getParents());
     }
     head.put(key, newEntries);
     popPaths(key, size - 1);
   }
 
-  private List<List<VALUE>> fillPopPaths(List<Entry<VALUE>> entries, int size) {
-    List<List<VALUE>> paths = new LinkedList<List<VALUE>>();
+  private Set<Path<VALUE>> fillPopPaths(Set<Entry<VALUE>> entries, int size) {
+    Set<Path<VALUE>> paths = new HashSet<Path<VALUE>>();
     if (size == 0) {
-      LinkedList<VALUE> path = new LinkedList<VALUE>();
-      paths.add(path);
+      paths.add(new Path<VALUE>());
     } else {
       for (Entry<VALUE> entry : entries) {
         if (entry.depth < size - 1) {
           throw new StackUnderflowException();
         }
-        for (List<VALUE> path : fillPopPaths(entry.getParents(),
+        for (Path<VALUE> path : fillPopPaths(entry.getParents(),
             size - 1)) {
           path.add(entry.value);
           paths.add(path);
@@ -227,11 +303,10 @@ public class KeyedMultiStack<KEY, VALUE> {
    * @param subKeys New names for those stacks
    */
   public void split(KEY key, List<KEY> subKeys) {
-    List<Entry<VALUE>> entries = removeHead(key);
+    Set<Entry<VALUE>> entries = removeHead(key);
     for (KEY subKey : subKeys) {
       if (head.containsKey(subKey)) {
-        List<Entry<VALUE>> existingList = head.get(subKey);
-        entries.removeAll(existingList); // Don't want duplicates
+        Set<Entry<VALUE>> existingList = head.get(subKey);
         entries.addAll(existingList);
       }
     }
@@ -249,12 +324,11 @@ public class KeyedMultiStack<KEY, VALUE> {
    * @param subKeys a list of keys for the old stacks to join.
    * @param newKey  new name for the stack
    */
-  public void join(List<KEY> subKeys, KEY newKey) {
-    List<Entry<VALUE>> newHead = new LinkedList<Entry<VALUE>>();
+  public void join(Collection<KEY> subKeys, KEY newKey) {
+    Set<Entry<VALUE>> newHead = new HashSet<Entry<VALUE>>();
     for (KEY key : subKeys) {
-      List<Entry<VALUE>> entries = getHead(key);
-      newHead.removeAll(entries); // Remove any duplicates
-      newHead.addAll(entries); // Add everything once.
+      Set<Entry<VALUE>> entries = getHead(key);
+      newHead.addAll(entries);
     }
     assertSameDepth(newHead);
     for (KEY key : subKeys) {
@@ -263,10 +337,10 @@ public class KeyedMultiStack<KEY, VALUE> {
     head.put(newKey, newHead);
   }
 
-  private void assertSameDepth(List<Entry<VALUE>> entries) {
-    int expectedDepth = -1;
+  private void assertSameDepth(Collection<Entry<VALUE>> entries) {
+    int expectedDepth = Integer.MIN_VALUE;
     for (Entry<VALUE> entry : entries) {
-      if (expectedDepth == -1) {
+      if (expectedDepth == Integer.MIN_VALUE) {
         expectedDepth = entry.depth;
       } else if (expectedDepth != entry.depth) {
         throw new IllegalStateException(
@@ -276,7 +350,7 @@ public class KeyedMultiStack<KEY, VALUE> {
   }
 
   public void assertEmpty() {
-    for (List<Entry<VALUE>> entries : head.values()) {
+    for (Collection<Entry<VALUE>> entries : head.values()) {
       for (Entry<VALUE> entry : entries) {
         if (entry.depth > -1) {
           throw new IllegalStateException("Stack not empty.");
