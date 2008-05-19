@@ -15,6 +15,9 @@
  */
 package com.google.test.metric.method;
 
+import static java.util.Arrays.asList;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,10 +44,10 @@ public class MethodBlockTest extends TestCase {
     String error = "\nExpecting:" + Arrays.toString(operations)
         + "\n   Actual:" + block;
     assertEquals(error, operations.length, block.size());
+    List<String> expectingOps = new ArrayList<String>(asList(operations));
     for (int i = 0; i < operations.length; i++) {
-      String expecting = operations[i];
       String actual = block.get(i).toString();
-      assertEquals(error, expecting, actual);
+      assertTrue(actual, expectingOps.remove(actual));
     }
   }
 

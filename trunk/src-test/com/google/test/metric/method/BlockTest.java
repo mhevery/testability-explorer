@@ -15,6 +15,12 @@
  */
 package com.google.test.metric.method;
 
+import static java.util.Arrays.asList;
+
+import java.util.List;
+
+import junit.framework.TestCase;
+
 import com.google.test.metric.FieldInfo;
 import com.google.test.metric.Type;
 import com.google.test.metric.Variable;
@@ -24,11 +30,6 @@ import com.google.test.metric.method.op.stack.Load;
 import com.google.test.metric.method.op.stack.PutField;
 import com.google.test.metric.method.op.turing.MethodInvokation;
 import com.google.test.metric.method.op.turing.Operation;
-
-import junit.framework.TestCase;
-
-import static java.util.Arrays.asList;
-import java.util.List;
 
 public class BlockTest extends TestCase {
 
@@ -116,15 +117,22 @@ public class BlockTest extends TestCase {
 
     List<Operation> operations = new Stack2Turing(root).translate();
     assertEquals(2, operations.size());
-    MethodInvokation m1 = (MethodInvokation) operations.get(0);
-    MethodInvokation m2 = (MethodInvokation) operations.get(1);
+    MethodInvokation mB = (MethodInvokation) operations.get(0);
+    MethodInvokation mA = (MethodInvokation) operations.get(1);
+    // since we use hash order is non-deterministic
+    if (mB.getParameters().get(1).toString().startsWith("A")) {
+      MethodInvokation temp = mB;
+      mB = mA;
+      mA = temp;
+    }
 
-    assertEquals("[root{java.lang.Object}, B{java.lang.Object}, joined{java.lang.Object}]", m1
+    assertEquals("[root{java.lang.Object}, A{java.lang.Object}, joined{java.lang.Object}]", mA
         .getParameters().toString());
-    assertEquals("this{java.lang.Object}", m1.getMethodThis().toString());
-    assertEquals("[root{java.lang.Object}, A{java.lang.Object}, joined{java.lang.Object}]", m2
+    assertEquals("this{java.lang.Object}", mA.getMethodThis().toString());
+
+    assertEquals("[root{java.lang.Object}, B{java.lang.Object}, joined{java.lang.Object}]", mB
         .getParameters().toString());
-    assertEquals("this{java.lang.Object}", m2.getMethodThis().toString());
+    assertEquals("this{java.lang.Object}", mB.getMethodThis().toString());
   }
 
 }
