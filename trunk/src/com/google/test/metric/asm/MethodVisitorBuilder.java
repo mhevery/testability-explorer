@@ -110,6 +110,12 @@ public class MethodVisitorBuilder implements MethodVisitor {
           block.unconditionalGoto(label);
         }
       });
+    } else if (opcode == Opcodes.JSR) {
+      recorder.add(new Runnable() {
+        public void run() {
+          block.jumpSubroutine(label, lineNumber);
+        }
+      });
     } else {
       cyclomaticComplexity++;
       recorder.add(new Runnable() {
@@ -162,10 +168,6 @@ public class MethodVisitorBuilder implements MethodVisitor {
               break;
             case Opcodes.IF_ICMPNE :
               if2("IF_ICMPNE");
-              break;
-            case Opcodes.JSR :
-              // TODO (misko): This is not quite right.
-              block.jumpSubroutine(label, lineNumber);
               break;
             default :
               throw new UnsupportedOperationException("" + opcode);

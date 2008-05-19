@@ -29,6 +29,7 @@ import org.objectweb.asm.Label;
 
 import com.google.test.metric.Type;
 import com.google.test.metric.method.op.stack.JSR;
+import com.google.test.metric.method.op.stack.RetSub;
 import com.google.test.metric.method.op.stack.Return;
 import com.google.test.metric.method.op.stack.StackOperation;
 import com.google.test.metric.method.op.stack.Throw;
@@ -215,6 +216,7 @@ public class BlockDecomposer {
   private void copyToBlocks() {
     Frame frame = firstFrame;
     Block block = null;
+    String prefix = "block_";
     while (frame != null) {
       if (frame.blockStartsHere) {
         block = null;
@@ -224,10 +226,18 @@ public class BlockDecomposer {
         block = blocks.get(frameLabel);
       }
       if (block == null) {
-        block = new Block("block_" + (counter++));
+        block = new Block(prefix + (counter++));
+      } else {
+        if (block.getId().startsWith("sub")) {
+          prefix = "sub_";
+        }
       }
       frame.block = block;
-      frame.block.addOp(frame.operation);
+      StackOperation operation = frame.operation;
+      if (operation instanceof RetSub) {
+        prefix = "block_";
+      }
+      frame.block.addOp(operation);
       if (frame.blockEndsHere) {
         block = null;
       }
