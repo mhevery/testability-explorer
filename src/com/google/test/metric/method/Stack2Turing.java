@@ -40,13 +40,13 @@ public class Stack2Turing {
 
   public List<Operation> translate() {
     stack.init(rootBlock);
-    List<Block> processed = new ArrayList<Block>();
-    translate(rootBlock, processed);
+    translate(rootBlock, new ArrayList<Block>());
     return operations;
   }
 
-  private Block translate(Block block, List<Block> processed) {
+  private Block translate(Block block, List<Block> parentProcessed) {
     List<Block> blocks = new ArrayList<Block>();
+    List<Block> processed = parentProcessed;
     blocks.add(block);
     while (!blocks.isEmpty()) {
       block = blocks.remove(0);
@@ -56,12 +56,10 @@ public class Stack2Turing {
         if (operation instanceof JSR) {
           JSR jsr = (JSR) operation;
           Block jsrBlock = jsr.getBlock();
-          if (!processed.contains(jsrBlock)) {
-            stack.split(block, asList(jsrBlock));
-            Block terminalBlock = translate(jsrBlock, processed);
-            stack.join(asList(terminalBlock), block);
-            processed.add(jsrBlock);
-          }
+          stack.split(block, asList(jsrBlock));
+          Block terminalBlock = translate(jsrBlock, processed);
+          stack.join(asList(terminalBlock), block);
+          processed.add(jsrBlock);
         }
       }
       List<Block> nextBlocks = new ArrayList<Block>(block

@@ -25,6 +25,7 @@ import com.google.test.metric.Variable;
 import com.google.test.metric.method.op.stack.JSR;
 import com.google.test.metric.method.op.stack.Load;
 import com.google.test.metric.method.op.stack.PutField;
+import com.google.test.metric.method.op.stack.RetSub;
 import com.google.test.metric.method.op.stack.Return;
 import com.google.test.metric.method.op.turing.Operation;
 
@@ -62,11 +63,13 @@ public class Stack2TuringTest extends TestCase {
     converter.translate(); // Assert no exceptions
   }
 
-  public void testMakeSureThatJsrWhichCallsItselfDoesNotRecurseForEver() throws Exception {
+  public void testMakeSureThatJsrWhichCallsItselfDoesNotRecurseForever() throws Exception {
     Block main = new Block("main");
     Block sub = new Block("sub");
     main.addOp(new JSR(0, sub));
-    sub.addOp(new JSR(0, sub));
+    main.addOp(new JSR(0, sub));
+    sub.addOp(new RetSub(1));
+    sub.addNextBlock(main);
     Stack2Turing converter = new Stack2Turing(main);
     converter.translate(); // Assert no exceptions and that we don't get into infinite recursion
   }
