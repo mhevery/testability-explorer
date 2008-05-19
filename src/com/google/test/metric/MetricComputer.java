@@ -16,8 +16,8 @@
 package com.google.test.metric;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 import com.google.test.metric.asm.Visibility;
@@ -131,7 +131,7 @@ public class MetricComputer {
   }
 
   public ClassCost compute(ClassInfo clazz) {
-    List<MethodCost> methods = new LinkedList<MethodCost>();
+    List<MethodCost> methods = new ArrayList<MethodCost>();
     for (MethodInfo method : clazz.getMethods()) {
       methods.add(compute(method));
     }

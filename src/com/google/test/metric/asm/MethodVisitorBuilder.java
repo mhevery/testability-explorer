@@ -17,8 +17,8 @@ package com.google.test.metric.asm;
 
 import static com.google.test.metric.asm.SignatureParser.parse;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -67,15 +67,15 @@ public class MethodVisitorBuilder implements MethodVisitor {
   private final Visibility visibility;
   private final Map<Integer, Variable> slots = new HashMap<Integer, Variable>();
   private final BlockDecomposer block = new BlockDecomposer();
-  private final List<Runnable> recorder = new LinkedList<Runnable>();
+  private final List<Runnable> recorder = new ArrayList<Runnable>();
   private final ClassRepository repository;
 
   private long cyclomaticComplexity = 1;
   private Variable methodThis;
   private int lineNumber;
   private int startingLineNumber;
-  private final List<ParameterInfo> parameters = new LinkedList<ParameterInfo>();
-  private final List<LocalVariableInfo> localVariables = new LinkedList<LocalVariableInfo>();
+  private final List<ParameterInfo> parameters = new ArrayList<ParameterInfo>();
+  private final List<LocalVariableInfo> localVariables = new ArrayList<LocalVariableInfo>();
 
   public MethodVisitorBuilder(ClassRepository repository, ClassInfo classInfo,
       String name, String desc, String signature, String[] exceptions,
@@ -240,7 +240,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
   }
 
   public void visitLineNumber(final int line, final Label start) {
-    recorder.add(new Runnable() {
+    recorder.add(new Runnable() { // $6
       public void run() {
         if (lineNumber == 0) {
           startingLineNumber = line;
@@ -382,7 +382,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
   }
 
   public void visitLabel(final Label label) {
-    recorder.add(new Runnable() {
+    recorder.add(new Runnable() { // $11
       public void run() {
         block.label(label);
       }
@@ -722,6 +722,12 @@ public class MethodVisitorBuilder implements MethodVisitor {
           }
         });
         break;
+      case Opcodes.NOP:
+        recorder.add(new Runnable(){
+          public void run() {
+            block.addOp(new Transform(lineNumber, "NOP", null, null, null));
+          }
+        });
     }
   }
 

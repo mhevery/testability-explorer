@@ -15,7 +15,7 @@
  */
 package com.google.test.metric;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MethodCost {
@@ -23,8 +23,8 @@ public class MethodCost {
   private final String methodName;
   private final long cyclomaticCost;
   private final int lineNumber;
-  private final List<LineNumberCost> operationCosts = new LinkedList<LineNumberCost>();
-  private final List<GlobalStateCost> globalStateCosts = new LinkedList<GlobalStateCost>();
+  private final List<LineNumberCost> operationCosts = new ArrayList<LineNumberCost>();
+  private final List<GlobalStateCost> globalStateCosts = new ArrayList<GlobalStateCost>();
   private long totalGlobalCost;
   private long totalComplexityCost;
   private long overallCost;
