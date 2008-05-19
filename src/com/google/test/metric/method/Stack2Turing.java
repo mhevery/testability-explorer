@@ -40,13 +40,13 @@ public class Stack2Turing {
 
   public List<Operation> translate() {
     stack.init(rootBlock);
-    translate(rootBlock);
+    List<Block> processed = new ArrayList<Block>();
+    translate(rootBlock, processed);
     return operations;
   }
 
-  private Block translate(Block block) {
+  private Block translate(Block block, List<Block> processed) {
     List<Block> blocks = new ArrayList<Block>();
-    List<Block> processed = new ArrayList<Block>();
     blocks.add(block);
     while (!blocks.isEmpty()) {
       block = blocks.remove(0);
@@ -58,7 +58,7 @@ public class Stack2Turing {
           Block jsrBlock = jsr.getBlock();
           if (!processed.contains(jsrBlock)) {
             stack.split(block, asList(jsrBlock));
-            Block terminalBlock = translate(jsrBlock);
+            Block terminalBlock = translate(jsrBlock, processed);
             stack.join(asList(terminalBlock), block);
             processed.add(jsrBlock);
           }
