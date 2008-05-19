@@ -19,9 +19,9 @@ import static java.util.Arrays.asList;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -74,7 +74,7 @@ public class BlockDecomposer {
     /**
      * If not null current block will link with block that this field points to.
      */
-    public List<Label> gotoLabels = new LinkedList<Label>();
+    public List<Label> gotoLabels = new ArrayList<Label>();
     /**
      * This instruction ends execution of block (ie return, throw) If this is
      * true then this and subsequent blocks will not be linked
@@ -107,7 +107,7 @@ public class BlockDecomposer {
 
   private final Map<Label, Frame> frames = new HashMap<Label, Frame>();
   private final Map<Label, Block> blocks = new HashMap<Label, Block>();
-  private final List<Runnable> extraLinkSteps = new LinkedList<Runnable>();
+  private final List<Runnable> extraLinkSteps = new ArrayList<Runnable>();
   private Frame firstFrame;
   private Frame lastFrame;
   private Label lastLabel;
@@ -279,7 +279,7 @@ public class BlockDecomposer {
     }
     if (mainBlock != null) {
       frame = firstFrame;
-      List<Block> processed = new LinkedList<Block>();
+      List<Block> processed = new ArrayList<Block>();
       while (frame!= null) {
         Block block = frame.block;
         if (!processed.contains(block)) {

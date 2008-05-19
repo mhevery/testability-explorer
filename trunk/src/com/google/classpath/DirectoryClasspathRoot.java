@@ -18,8 +18,8 @@ package com.google.classpath;
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 public class DirectoryClasspathRoot extends ClasspathRoot {
@@ -32,7 +32,7 @@ public class DirectoryClasspathRoot extends ClasspathRoot {
 
   @Override
   public Collection<String> getResources(String packageName) {
-    List<String> resources = new LinkedList<String>();
+    List<String> resources = new ArrayList<String>();
     File dir = new File(url.getFile() + File.separator + packageName);
     File[] files = dir.listFiles();
     if (files == null) {

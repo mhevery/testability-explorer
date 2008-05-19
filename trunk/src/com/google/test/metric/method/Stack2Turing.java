@@ -1,12 +1,12 @@
 /*
  * Copyright 2007 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -15,6 +15,12 @@
  */
 package com.google.test.metric.method;
 
+import static java.util.Arrays.asList;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import com.google.test.metric.Variable;
 import com.google.test.metric.collection.KeyedMultiStack;
 import com.google.test.metric.collection.PopClosure;
@@ -22,15 +28,10 @@ import com.google.test.metric.method.op.stack.JSR;
 import com.google.test.metric.method.op.stack.StackOperation;
 import com.google.test.metric.method.op.turing.Operation;
 
-import static java.util.Arrays.asList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 public class Stack2Turing {
 
   private final Block rootBlock;
-  private final LinkedList<Operation> operations = new LinkedList<Operation>();
+  private final List<Operation> operations = new ArrayList<Operation>();
   public KeyedMultiStack<Block, Variable> stack = new KeyedMultiStack<Block, Variable>();
 
   public Stack2Turing(Block block) {
@@ -44,8 +45,8 @@ public class Stack2Turing {
   }
 
   private Block translate(Block block) {
-    List<Block> blocks = new LinkedList<Block>();
-    List<Block> processed = new LinkedList<Block>();
+    List<Block> blocks = new ArrayList<Block>();
+    List<Block> processed = new ArrayList<Block>();
     blocks.add(block);
     while (!blocks.isEmpty()) {
       block = blocks.remove(0);
@@ -61,7 +62,7 @@ public class Stack2Turing {
           processed.add(jsrBlock);
         }
       }
-      List<Block> nextBlocks = new LinkedList<Block>(block
+      List<Block> nextBlocks = new ArrayList<Block>(block
           .getNextBlocks());
       nextBlocks.removeAll(processed); // Don't visit already visited
       // blocks
