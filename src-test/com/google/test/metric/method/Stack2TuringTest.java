@@ -15,6 +15,10 @@
  */
 package com.google.test.metric.method;
 
+import java.util.List;
+
+import junit.framework.TestCase;
+
 import com.google.test.metric.FieldInfo;
 import com.google.test.metric.Type;
 import com.google.test.metric.Variable;
@@ -23,10 +27,6 @@ import com.google.test.metric.method.op.stack.Load;
 import com.google.test.metric.method.op.stack.PutField;
 import com.google.test.metric.method.op.stack.Return;
 import com.google.test.metric.method.op.turing.Operation;
-
-import junit.framework.TestCase;
-
-import java.util.List;
 
 public class Stack2TuringTest extends TestCase {
 
@@ -60,6 +60,15 @@ public class Stack2TuringTest extends TestCase {
 
     Stack2Turing converter = new Stack2Turing(main);
     converter.translate(); // Assert no exceptions
+  }
+
+  public void testMakeSureThatJsrWhichCallsItselfDoesNotRecurseForEver() throws Exception {
+    Block main = new Block("main");
+    Block sub = new Block("sub");
+    main.addOp(new JSR(0, sub));
+    sub.addOp(new JSR(0, sub));
+    Stack2Turing converter = new Stack2Turing(main);
+    converter.translate(); // Assert no exceptions and that we don't get into infinite recursion
   }
 
 }

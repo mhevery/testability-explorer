@@ -56,10 +56,12 @@ public class Stack2Turing {
         if (operation instanceof JSR) {
           JSR jsr = (JSR) operation;
           Block jsrBlock = jsr.getBlock();
-          stack.split(block, asList(jsrBlock));
-          Block terminalBlock = translate(jsrBlock);
-          stack.join(asList(terminalBlock), block);
-          processed.add(jsrBlock);
+          if (!processed.contains(jsrBlock)) {
+            stack.split(block, asList(jsrBlock));
+            Block terminalBlock = translate(jsrBlock);
+            stack.join(asList(terminalBlock), block);
+            processed.add(jsrBlock);
+          }
         }
       }
       List<Block> nextBlocks = new ArrayList<Block>(block
