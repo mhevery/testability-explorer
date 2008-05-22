@@ -68,8 +68,7 @@ public class HtmlReport extends SummaryReport {
     Histogram excellentHistogram = new Histogram(0, binWidth, binCount);
     Histogram goodHistogram = new Histogram(0, binWidth, binCount);
     Histogram needsWorkHistogram = new Histogram(0, binWidth, binCount);
-    for (ClassCost cost : costs) {
-      int overallCost = (int) cost.getOverallCost();
+    for (int overallCost : costs) {
       if (overallCost < maxExcellentCost) {
         excellentHistogram.value(overallCost);
       } else if (overallCost < maxAcceptableCost) {
@@ -119,12 +118,8 @@ public class HtmlReport extends SummaryReport {
     out.println();
     out.println("<h2>Highest Cost</h2>");
     out.printf("<pre>%n");
-    int i=0;
-    for (ClassCost cost : costs) {
+    for (ClassCost cost : worstOffenders) {
       out.println(cost);
-      if (++i == worstOffenderCount) {
-        break;
-      }
     }
     out.printf("</pre>%n");
   }
