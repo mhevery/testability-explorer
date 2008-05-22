@@ -37,7 +37,7 @@ public class Block {
   }
 
   public void addNextBlock(Block nextBlock) {
-    if (!nextBlocks.contains(nextBlock)) {
+    if (!nextBlocks.contains(nextBlock) && nextBlock != this) {
       nextBlocks.add(nextBlock);
       nextBlock.previousBlocks.add(this);
     }

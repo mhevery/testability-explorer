@@ -15,6 +15,8 @@
  */
 package com.google.test.metric.report;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -23,7 +25,8 @@ import com.google.test.metric.ClassCost;
 public abstract class SummaryReport implements Report {
 
   private static final double WEIGHT = 0.3;
-  protected final SortedSet<ClassCost> costs = new TreeSet<ClassCost>(new ClassCost.Comparator());
+  protected final SortedSet<ClassCost> worstOffenders = new TreeSet<ClassCost>(new ClassCost.Comparator());
+  protected final List<Integer> costs = new ArrayList<Integer>();
   protected final int maxExcellentCost;
   protected final int maxAcceptableCost;
   protected final int worstOffenderCount;
@@ -49,7 +52,11 @@ public abstract class SummaryReport implements Report {
     } else {
       needsWorkCount++;
     }
-    costs.add(classCost);
+    costs.add((int)classCost.getOverallCost());
+    worstOffenders.add(classCost);
+    if (worstOffenders.size() > worstOffenderCount) {
+      worstOffenders.remove(worstOffenders.last());
+    }
     overallSqr += Math.pow(cost, WEIGHT + 1);
     overallSum += Math.pow(cost, WEIGHT);
     worstCost = Math.max(worstCost, cost);

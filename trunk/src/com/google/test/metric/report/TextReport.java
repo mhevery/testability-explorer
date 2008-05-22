@@ -15,9 +15,9 @@
  */
 
 package com.google.test.metric.report;
-import com.google.test.metric.ClassCost;
-
 import java.io.PrintStream;
+
+import com.google.test.metric.ClassCost;
 
 
 public class TextReport extends SummaryReport {
@@ -53,8 +53,8 @@ public class TextReport extends SummaryReport {
     });
     float[] values = new float[costs.size()];
     int i = 0;
-    for (ClassCost cost : costs) {
-      values[i++] = cost.getOverallCost();
+    for (int cost : costs) {
+      values[i++] = cost;
     }
     for (String graph : histogram.graph(values)) {
       out.println(graph);
@@ -65,12 +65,8 @@ public class TextReport extends SummaryReport {
     out.println();
     out.println("Highest Cost");
     out.println("============");
-    int i=0;
-    for (ClassCost cost : costs) {
+    for (ClassCost cost : worstOffenders) {
       out.println(cost);
-      if (++i == worstOffenderCount) {
-        break;
-      }
     }
   }
 
