@@ -18,12 +18,12 @@ package com.google.test.metric.collection;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 
+import junit.framework.TestCase;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-
-import junit.framework.TestCase;
 
 public class KeyedMultiStackTest extends TestCase {
 
@@ -285,6 +285,6 @@ public class KeyedMultiStackTest extends TestCase {
 
     stack.apply("L3", new NoopClosure(3));
     long duration = System.currentTimeMillis() - start;
-    assertTrue("Duration: " + duration, duration < 50);
+    assertTrue("Duration: " + duration, duration < 60);
   }
 }
