@@ -256,7 +256,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
     for (Runnable runnable : recorder) {
       runnable.run();
     }
-    block.done();
+    block.decomposeIntoBlocks();
     try {
       MethodInfo methodInfo = new MethodInfo(classInfo, name, startingLineNumber,
           desc, methodThis, parameters, localVariables, visibility,

@@ -17,16 +17,6 @@ package com.google.test.metric.method;
 
 import static java.util.Arrays.asList;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.objectweb.asm.Label;
-
 import com.google.test.metric.Type;
 import com.google.test.metric.method.op.stack.JSR;
 import com.google.test.metric.method.op.stack.RetSub;
@@ -34,6 +24,16 @@ import com.google.test.metric.method.op.stack.Return;
 import com.google.test.metric.method.op.stack.StackOperation;
 import com.google.test.metric.method.op.stack.Throw;
 import com.google.test.metric.method.op.turing.Operation;
+
+import org.objectweb.asm.Label;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author misko@google.com <Misko Hevery>
@@ -86,11 +86,11 @@ public class BlockDecomposer {
       this.operation = operation;
       this.label = label;
       if (frame != null) {
-        frame.addFrame(this);
+        frame.nextFrame(this);
       }
     }
 
-    private void addFrame(Frame frame) {
+    private void nextFrame(Frame frame) {
       next = frame;
     }
 
@@ -107,8 +107,9 @@ public class BlockDecomposer {
   }
 
   private final Map<Label, Frame> frames = new HashMap<Label, Frame>();
-  private final Map<Label, Block> blocks = new HashMap<Label, Block>();
+  private final Map<Label, Block> subrutineBlocks = new HashMap<Label, Block>();
   private final List<Runnable> extraLinkSteps = new ArrayList<Runnable>();
+  private final List<Block> exceptionHandlerBlocks = new ArrayList<Block>();
   private Frame firstFrame;
   private Frame lastFrame;
   private Label lastLabel;
@@ -157,12 +158,12 @@ public class BlockDecomposer {
   }
 
   public void jumpSubroutine(Label label, int lineNumber) {
-    Block subBlock = blocks.get(label);
+    Block subBlock = subrutineBlocks.get(label);
     if (subBlock == null) {
       subBlock = new Block("sub_" + (counter++));
     }
     addOp(new JSR(lineNumber, subBlock));
-    blocks.put(label, subBlock);
+    subrutineBlocks.put(label, subBlock);
     applyLastLabel();
   }
 
@@ -170,11 +171,10 @@ public class BlockDecomposer {
       final String eType) {
     extraLinkSteps.add(new Runnable() {
       public void run() {
-        Block endBlock = frames.get(end).block;
         Block handlerBlock = frames.get(handler).block;
         Type type = eType == null ? Type.fromClass(Throwable.class) : Type.fromJava(eType);
         handlerBlock.setExceptionHandler(-1, new Constant("?", type));
-        endBlock.addNextBlock(handlerBlock);
+        exceptionHandlerBlocks.add(handlerBlock);
       }
     });
   }
@@ -187,7 +187,7 @@ public class BlockDecomposer {
     applyLastLabel();
   }
 
-  public void done() {
+  public void decomposeIntoBlocks() {
     if (firstFrame != null) {
       breakIntoBlocks();
       copyToBlocks();
@@ -206,7 +206,7 @@ public class BlockDecomposer {
         frames.get(label).blockStartsHere = true;
         frame.blockEndsHere = true;
       }
-      if (blocks.containsKey(frame.label)) {
+      if (subrutineBlocks.containsKey(frame.label)) {
         frame.blockStartsHere = true;
       }
       frame = frame.next;
@@ -222,8 +222,8 @@ public class BlockDecomposer {
         block = null;
       }
       Label frameLabel = frame.label;
-      if (blocks.containsKey(frameLabel)) {
-        block = blocks.get(frameLabel);
+      if (subrutineBlocks.containsKey(frameLabel)) {
+        block = subrutineBlocks.get(frameLabel);
       }
       if (block == null) {
         block = new Block(prefix + (counter++));
@@ -265,9 +265,13 @@ public class BlockDecomposer {
   public List<Operation> getOperations() {
     if (mainBlock == null) {
       return Collections.emptyList();
-    } else {
-      return new Stack2Turing(mainBlock).translate();
     }
+    List<Operation> operations = new ArrayList<Operation>();
+    operations.addAll(new Stack2Turing(mainBlock).translate());
+    for (Block exceptionHandlerBlock : exceptionHandlerBlocks) {
+      operations.addAll(new Stack2Turing(exceptionHandlerBlock).translate());
+    }
+    return operations;
   }
 
   public Block getBlock(Label label) {
@@ -300,6 +304,10 @@ public class BlockDecomposer {
       }
     }
     return buf.toString();
+  }
+
+  public List<Block> getExceptionHandlerBlocks() {
+    return exceptionHandlerBlocks;
   }
 
 }
