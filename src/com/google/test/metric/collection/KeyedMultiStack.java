@@ -310,12 +310,7 @@ public class KeyedMultiStack<KEY, VALUE> {
         entries.addAll(existingList);
       }
     }
-    // TODO: (misko) I think this check is necessary. Since an Exception
-    // handler does not know when in try block it was thrown from it can make
-    // no assumptions about the depth of the stack. The only think
-    // we need to worrie about is that the stack never goes empty (and we have
-    // a seperate check for that.)
-    //assertSameDepth(entries);
+    assertSameDepth(entries);
     for (KEY subKey : subKeys) {
       head.put(subKey, entries);
     }
