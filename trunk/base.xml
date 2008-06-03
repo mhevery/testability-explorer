@@ -9,7 +9,7 @@
 		</classpath>
 	</taskdef>
 
-	<property name="version" value="1.1.0RC1" />
+	<property name="version" value="1.2.0" />
 	<property name="project-name" value="testability-explorer" />
 
     <target name="clean">
