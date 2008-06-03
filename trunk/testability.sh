@@ -1,0 +1,1 @@
+java -jar testability-explorer-1.1.0RC1-r33.jar

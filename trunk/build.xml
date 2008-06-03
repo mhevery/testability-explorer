@@ -61,10 +61,12 @@
 	</target>
 
     <target name="dist" depends="jar">
+    	<echo file="testability.sh">java -jar ${project-name}-${version}-r${revision}.jar</echo>
 		<zip destfile="target/dist/${project-name}-${version}-r${revision}.zip">
 			<fileset dir=".">
 				<include name="README.txt" />
 				<include name="LICENSE.txt" />
+				<include name="testability.sh" />
 			</fileset>
 			<fileset dir="target/dist">
 				<include name="${project-name}-${version}-r${revision}.jar" />
