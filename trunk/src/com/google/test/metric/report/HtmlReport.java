@@ -24,19 +24,20 @@ import static java.lang.Math.log;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
+import com.google.test.metric.ClassCost;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-
-import com.google.test.metric.ClassCost;
 
 public class HtmlReport extends SummaryReport {
 
   private static final int MAX_HISTOGRAM_BINS = 200;
   private static final int HISTOGRAM_WIDTH = 700;
   private static final int HISTOGRAM_LEGEND_WIDTH = 130;
-  private final PrintStream out;
+  protected final PrintStream out;
 
   public HtmlReport(PrintStream out, int maxExcellentCount, int maxAcceptableCost,
       int worstOffenderCount) {
@@ -117,15 +118,27 @@ public class HtmlReport extends SummaryReport {
   public void printWorstOffenders(int worstOffenderCount) {
     out.println();
     out.println("<h2>Highest Cost</h2>");
-    out.printf("<pre>%n");
+    out.println("<div onclick='clickHandler(event)'>");
+    DetailHtmlReport detail = new DetailHtmlReport(out);
     for (ClassCost cost : worstOffenders) {
-      out.println(cost);
+      detail.write(cost);
     }
-    out.printf("</pre>%n");
+    out.println("</div>");
   }
 
+  /**
+   * Reads preformatted html header file into a string. Replaces the javascript
+   * placeholder with actual javascript code. Prints result to out stream.
+   */
   public void printHeader() {
-    stream(out, getClass().getResourceAsStream("HtmlReportHeader.html"));
+    ByteArrayOutputStream dummy = new ByteArrayOutputStream();
+    stream(dummy, getClass().getResourceAsStream("HtmlReportHeader.html"));
+    String origHeader = dummy.toString();
+    dummy = new ByteArrayOutputStream();
+    stream(dummy, getClass().getResourceAsStream("report.js"));
+    String jsCode = dummy.toString();
+    origHeader = origHeader.replace("{{JSscript}}", jsCode);
+    out.print(origHeader);
   }
 
   public void printFooter() {
@@ -134,7 +147,7 @@ public class HtmlReport extends SummaryReport {
     stream(out, getClass().getResourceAsStream("HtmlReportFooter.html"));
   }
 
-  private void stream(OutputStream  out, InputStream in) {
+  protected void stream(OutputStream  out, InputStream in) {
     try {
       int ch;
       while ((ch = in.read()) != -1) {
