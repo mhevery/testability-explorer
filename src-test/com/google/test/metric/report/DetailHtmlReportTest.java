@@ -15,6 +15,8 @@
  */
 package com.google.test.metric.report;
 
+import static java.lang.System.getProperty;
+
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.LineNumberCost;
@@ -28,6 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DetailHtmlReportTest extends TestCase {
+
+  public static final String NEW_LINE = getProperty("line.separator");
 
   ByteArrayOutputStream out = new ByteArrayOutputStream();
   PrintStream stream = new PrintStream(out, true);
@@ -44,7 +48,7 @@ public class DetailHtmlReportTest extends TestCase {
     assertTrue(text, text.contains("123"));
     assertTrue(text, text.contains("methodName"));
     assertTrue(text, text.contains("64"));
-    assertTrue(text, text.endsWith("</div>\n"));
+    assertTrue(text, text.endsWith("</div>" + NEW_LINE));
   }
 
   private MethodCost createMethodCallWithOverallCost(String methodName, int overallCost) {
@@ -73,7 +77,7 @@ public class DetailHtmlReportTest extends TestCase {
     assertTrue(text, text.contains("[&nbsp;" + (567 + 789) + "&nbsp;]"));
     assertTrue(text, text.contains("MARKER:123"));
     assertTrue(text, text.contains("MARKER:543"));
-    assertTrue(text, text.endsWith("</div>\n"));
+    assertTrue(text, text.endsWith("</div>" + NEW_LINE));
   }
 
   public void testWriteClassCost() throws Exception {
@@ -98,7 +102,7 @@ public class DetailHtmlReportTest extends TestCase {
     assertTrue(text, text.contains("[&nbsp;" + 544 + "&nbsp;]"));
     assertTrue(text, text.contains("MARKER:methodX"));
     assertTrue(text, text.contains("MARKER:methodY"));
-    assertTrue(text, text.endsWith("</div>\n"));
+    assertTrue(text, text.endsWith("</div>" + NEW_LINE));
   }
 
 }
