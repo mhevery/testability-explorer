@@ -15,6 +15,8 @@
  */
 package com.google.test.metric.report;
 
+import static com.google.test.metric.report.Constants.NEW_LINE;
+
 import junit.framework.TestCase;
 
 import java.io.ByteArrayOutputStream;
@@ -54,6 +56,6 @@ public class HtmlReportTest extends TestCase {
     report.printWorstOffenders(65656);
     String text = out.toString();
     assertTrue(text.contains("<div onclick='clickHandler(event)'>"));
-    assertTrue(text.endsWith("</div>\n"));
+    assertTrue(text.endsWith("</div>" + NEW_LINE));
   }
 }
