@@ -33,7 +33,8 @@ public class DetailHtmlReportTest extends TestCase {
   PrintStream stream = new PrintStream(out, true);
 
   public void testWriteLineCost() throws Exception {
-    LineNumberCost lineCost = new LineNumberCost(123, createMethodCallWithOverallCost("methodName", 64));
+    LineNumberCost lineCost = new LineNumberCost(123,
+        createMethodCallWithOverallCost("a.methodName()V", 64));
 
     DetailHtmlReport report = new DetailHtmlReport(stream);
     report.write(lineCost);
@@ -61,15 +62,15 @@ public class DetailHtmlReportTest extends TestCase {
       }
     };
 
-    MethodCost method = createMethodCallWithOverallCost("methodX", 567 + 789);
+    MethodCost method = createMethodCallWithOverallCost("a.methodX()V", 567 + 789);
     method.addMethodCost(123, createMethodCallWithOverallCost("cost1", 567));
     method.addMethodCost(543, createMethodCallWithOverallCost("cost2", 789));
     report.write(method);
     String text = out.toString();
     assertTrue(text, text.contains("<div class=\"Method\""));
-    assertTrue(text, text.contains("<span class='expand'>+</span>"));
+    assertTrue(text, text.contains("<span class='expand'>[+]</span>"));
     assertTrue(text, text.contains("methodX"));
-    assertTrue(text, text.contains("[ " + (567 + 789) + " ]"));
+    assertTrue(text, text.contains("[&nbsp;" + (567 + 789) + "&nbsp;]"));
     assertTrue(text, text.contains("MARKER:123"));
     assertTrue(text, text.contains("MARKER:543"));
     assertTrue(text, text.endsWith("</div>\n"));
@@ -92,9 +93,9 @@ public class DetailHtmlReportTest extends TestCase {
     String text = out.toString();
 
     assertTrue(text, text.contains("<div class=\"Class\""));
-    assertTrue(text, text.contains("<span class='expand'>+</span>"));
+    assertTrue(text, text.contains("<span class='expand'>[+]</span>"));
     assertTrue(text, text.contains("classFoo"));
-    assertTrue(text, text.contains("[ " + 544 + " ]"));
+    assertTrue(text, text.contains("[&nbsp;" + 544 + "&nbsp;]"));
     assertTrue(text, text.contains("MARKER:methodX"));
     assertTrue(text, text.contains("MARKER:methodY"));
     assertTrue(text, text.endsWith("</div>\n"));

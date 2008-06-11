@@ -278,7 +278,6 @@ public class BlockDecomposerTest extends TestCase {
     decomposer.addOp(l2);
     decomposer.addOp(ret);
     decomposer.decomposeIntoBlocks();
-    System.out.println(decomposer);
 
     Block mainBlock = decomposer.getMainBlock();
     assertEquals(0, mainBlock.getNextBlocks().size());
@@ -298,7 +297,6 @@ public class BlockDecomposerTest extends TestCase {
   /**
    *   public static class TryCatchFinally {
    *   public void method() {
-   *     @SuppressWarnings("unused")
    *     int b = 1;
    *     try {
    *       b = 2;
