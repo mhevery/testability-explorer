@@ -40,7 +40,7 @@ public class DetailHtmlReport {
     		"{methodName} [&nbsp;{cost}&nbsp;]" +
     		"</div>";
     text = text.replace("{lineNumber}", "" + lineNumberCost.getLineNumber());
-    text = text.replace("{methodName}", "" +
+    text = text.replace("{methodName}", "" + 
         lineNumberCost.getMethodCost().getPrintableMethodName());
     text = text.replace("{cost}", "" + lineNumberCost.getMethodCost().getOverallCost());
     write(text);

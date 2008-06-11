@@ -15,7 +15,7 @@
  */
 package com.google.test.metric.report;
 
-import static java.lang.System.getProperty;
+import static com.google.test.metric.report.Constants.NEW_LINE;
 
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
@@ -30,8 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DetailHtmlReportTest extends TestCase {
-
-  public static final String NEW_LINE = getProperty("line.separator");
 
   ByteArrayOutputStream out = new ByteArrayOutputStream();
   PrintStream stream = new PrintStream(out, true);

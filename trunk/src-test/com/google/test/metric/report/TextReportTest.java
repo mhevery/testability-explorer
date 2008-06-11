@@ -16,7 +16,6 @@
 
 package com.google.test.metric.report;
 
-import static java.lang.System.getProperty;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -31,7 +30,6 @@ import com.google.test.metric.MethodCost;
 
 public class TextReportTest extends TestCase {
 
-  public static final String NEW_LINE = getProperty("line.separator");
   ByteArrayOutputStream out = new ByteArrayOutputStream();
   TextReport report = new TextReport(new PrintStream(out), 50, 100, 0);
 
@@ -39,7 +37,7 @@ public class TextReportTest extends TestCase {
     StringBuilder buf = new StringBuilder();
     for (String expect : expected) {
       buf.append(expect);
-      buf.append(NEW_LINE);
+      buf.append(Constants.NEW_LINE);
     }
     assertEquals(buf.toString(), out.toString());
   }
