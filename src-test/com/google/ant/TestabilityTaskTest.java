@@ -1,6 +1,7 @@
 package com.google.ant;
 
 import junit.framework.TestCase;
+
 import org.apache.tools.ant.Project;
 
 public class TestabilityTaskTest extends TestCase
@@ -13,6 +14,7 @@ public class TestabilityTaskTest extends TestCase
         super(name);
     }
 
+    @Override
     protected void setUp()
     {
         task = new TestabilityTask();
@@ -21,6 +23,7 @@ public class TestabilityTaskTest extends TestCase
         task.setProject(project);
     }
 
+    @Override
     protected void tearDown()
     {
     }

@@ -9,6 +9,8 @@ function toggleExpandSign(element) {
     var expand = element.firstChild;
   } else if (element.className == 'expand') {
     var expand = element;
+  } else {
+    return;
   }
   expand.innerHTML = expand.innerHTML == '[+]' ? '[-]' : '[+]';
 }

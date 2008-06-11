@@ -40,7 +40,8 @@ public class DetailHtmlReport {
     		"{methodName} [&nbsp;{cost}&nbsp;]" +
     		"</div>";
     text = text.replace("{lineNumber}", "" + lineNumberCost.getLineNumber());
-    text = text.replace("{methodName}", "" + lineNumberCost.getMethodCost().getMethodName());
+    text = text.replace("{methodName}", "" +
+        lineNumberCost.getMethodCost().getPrintableMethodName());
     text = text.replace("{cost}", "" + lineNumberCost.getMethodCost().getOverallCost());
     write(text);
   }
@@ -48,7 +49,7 @@ public class DetailHtmlReport {
   public void write(MethodCost method) {
     String text = "<div class=\"Method\">" + "<span class='expand'>[+]</span>"
         + "{methodName} [&nbsp;{cost}&nbsp;]";
-    text = text.replace("{methodName}", "" + method.getMethodName());
+    text = text.replace("{methodName}", "" + method.getPrintableMethodName());
     text = text.replace("{cost}", "" + method.getOverallCost());
     write(text);
 

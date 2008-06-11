@@ -17,6 +17,7 @@
 package com.google.ant;
 
 import com.google.test.metric.Testability;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
@@ -27,7 +28,7 @@ import java.util.List;
 
 public class TestabilityTask extends Task {
 
-    private TaskModel model = new TaskModel();
+    private final TaskModel model = new TaskModel();
 
     public void setCyclomatic(int cost) {
         model.setCyclomatic(cost);
@@ -85,6 +86,7 @@ public class TestabilityTask extends Task {
         model.addFileSet(fs);
     }
 
+    @Override
     public void execute() throws BuildException {
         List<String> validationMessages = new ArrayList<String>();
         boolean allOk = model.validate(validationMessages);
