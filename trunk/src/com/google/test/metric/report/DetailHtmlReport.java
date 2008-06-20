@@ -20,9 +20,20 @@ import com.google.test.metric.LineNumberCost;
 import com.google.test.metric.MethodCost;
 
 import java.io.PrintStream;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class DetailHtmlReport {
+
+  public static class MethodCostComparator implements
+      Comparator<MethodCost> {
+
+    public int compare(MethodCost arg0, MethodCost arg1) {
+      return 0;
+    }
+
+  }
 
   private final PrintStream out;
 
@@ -40,8 +51,8 @@ public class DetailHtmlReport {
     		"{methodName} [&nbsp;{cost}&nbsp;]" +
     		"</div>";
     text = text.replace("{lineNumber}", "" + lineNumberCost.getLineNumber());
-    text = text.replace("{methodName}", "" + 
-        lineNumberCost.getMethodCost().getPrintableMethodName());
+    text = text.replace("{methodName}", "" +
+        lineNumberCost.getMethodCost().getMethodName());
     text = text.replace("{cost}", "" + lineNumberCost.getMethodCost().getOverallCost());
     write(text);
   }
@@ -49,7 +60,7 @@ public class DetailHtmlReport {
   public void write(MethodCost method) {
     String text = "<div class=\"Method\">" + "<span class='expand'>[+]</span>"
         + "{methodName} [&nbsp;{cost}&nbsp;]";
-    text = text.replace("{methodName}", "" + method.getPrintableMethodName());
+    text = text.replace("{methodName}", "" + method.getMethodName());
     text = text.replace("{cost}", "" + method.getOverallCost());
     write(text);
 
@@ -72,6 +83,8 @@ public class DetailHtmlReport {
     write(text);
 
     List<MethodCost> methods = classCost.getMethods();
+    Collections.sort(methods, new MethodCostComparator());
+
     for (MethodCost method : methods) {
       write(method);
     }

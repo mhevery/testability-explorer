@@ -17,10 +17,10 @@ package com.google.test.metric;
 
 import static java.util.Collections.unmodifiableList;
 
-import java.util.List;
-
 import com.google.test.metric.asm.Visibility;
 import com.google.test.metric.method.op.turing.Operation;
+
+import java.util.List;
 
 public class MethodInfo {
 
@@ -61,9 +61,9 @@ public class MethodInfo {
     return getFullName();
   }
 
-  public String getFullName() {
-    return classInfo.getName() + "." + getNameDesc();
-  }
+//  public String getFullName() {
+//    return classInfo.getName() + "." + getNameDesc();
+//  }
 
   public long getNonRecursiveCyclomaticComplexity() {
     return cyclomaticComplexity;
@@ -71,6 +71,94 @@ public class MethodInfo {
 
   public String getName() {
     return name;
+  }
+
+  public String getFullName() {
+//    int paramsBegin = methodName.indexOf('(');
+//    int paramsEnd = methodName.indexOf(')');
+//    int lastDot = methodName.lastIndexOf('.');
+//
+//    String method = methodName.substring(lastDot + 1,
+//        paramsBegin);
+//    String returnValue = deconstructParameters(
+//        methodName.substring(paramsEnd + 1));
+//
+//    if (isStaticConstructor() || isConstructor()) {
+////      method = " Constructor";
+//      method = " " + methodName.substring(
+//          methodName.lastIndexOf('.', lastDot-1) + 1, lastDot);
+//      returnValue = "";
+//    }
+//    String params = methodName.substring(paramsBegin + 1, paramsEnd);
+    int paramsEnd = desc.indexOf(')');
+    String returnValue = deconstructParameters(desc.substring(paramsEnd + 1));
+    String params = desc.substring(1, paramsEnd);
+    String methodName = name;
+
+    if (isStaticConstructor() || isConstructor()) {
+      returnValue = " ";
+      methodName = classInfo.getName();
+    }
+    return returnValue + methodName + "(" + deconstructParameters(params) + ")";
+  }
+
+  public String deconstructParameters(String params) {
+    StringBuilder paramStr = new StringBuilder();
+    int i = 0;
+    String sep = "";
+    String arrayRefs = "";
+    while (i < params.length()) {
+      switch (params.charAt(i)) {
+      case 'B':
+        paramStr.append(sep + " byte " + arrayRefs);
+        break;
+      case 'C':
+        paramStr.append(sep + " char " + arrayRefs);
+        break;
+      case 'D':
+        paramStr.append(sep + " double " + arrayRefs);
+        break;
+      case 'F':
+        paramStr.append(sep + " float " + arrayRefs);
+        break;
+      case 'I':
+        paramStr.append(sep + " int " + arrayRefs);
+        break;
+      case 'J':
+        paramStr.append(sep + " long " + arrayRefs);
+        break;
+      case 'L':
+        // Object becomes L/java/lang/Object; in internal nomenclature
+        String internalClassName = params.substring(i + 1, params.indexOf(';',
+            i));
+//        String className = internalClassName.substring(
+//            internalClassName.lastIndexOf('/') + 1);
+        String className = internalClassName.replace('/', '.');
+        paramStr.append(sep + " " + className + " " + arrayRefs);
+        i = params.indexOf(';', i);
+        break;
+      case 'S':
+        paramStr.append(sep + " short " + arrayRefs);
+        break;
+      case 'Z':
+        paramStr.append(sep + " boolean " + arrayRefs);
+        break;
+      case 'V':
+        paramStr.append(" void ");
+        break;
+      case '[':
+        arrayRefs += "[]";
+        break;
+      default:
+        throw new UnsupportedOperationException();
+      }
+      if (params.charAt(i) != '[') {
+        arrayRefs = "";
+        sep = ",";
+      }
+      i++;
+    }
+    return paramStr.toString();
   }
 
   public List<ParameterInfo> getParameters() {

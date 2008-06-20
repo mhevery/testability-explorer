@@ -37,7 +37,7 @@ public class ClassCost {
 
   public MethodCost getMethodCost(String methodName) {
     for (MethodCost cost : methods) {
-      if (cost.getMethodName().equals(className + "." + methodName)) {
+      if (cost.getMethodName().equals(methodName)) {
         return cost;
       }
     }
