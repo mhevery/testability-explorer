@@ -16,7 +16,6 @@
 package com.google.test.metric;
 
 import static com.google.classpath.ClasspathRootFactory.makeClasspathRootGroup;
-import static com.google.test.metric.SignatureUtil.L;
 
 import com.google.test.metric.report.DrillDownReport;
 
@@ -245,8 +244,8 @@ public class MetricComputerTest extends ClassRepositoryTestCase {
 
   public void testComputeClassCost() throws Exception {
     ClassCost cost = computer.compute(WholeClassCost.class);
-    assertEquals(1L, cost.getMethodCost("methodA()V").getTotalComplexityCost());
-    assertEquals(1L, cost.getMethodCost("methodB()V").getTotalComplexityCost());
+    assertEquals(1L, cost.getMethodCost(" void methodA()").getTotalComplexityCost());
+    assertEquals(1L, cost.getMethodCost(" void methodB()").getTotalComplexityCost());
   }
 
   static class Array {
@@ -282,9 +281,10 @@ public class MetricComputerTest extends ClassRepositoryTestCase {
 
   public void testInjectabilityIsTransitive() throws Exception {
     ClassCost cost = computer.compute(InjectableClass.class);
-    MethodCost callCost0 = cost.getMethodCost("callCost0("
-        + L(InjectableClass.class) + ")V");
-    MethodCost callCost4 = cost.getMethodCost("callCost4()V");
+    MethodCost callCost0 = cost.getMethodCost(" void callCost0("
+//        + L(InjectableClass.class) + ")");
+          + " com.google.test.metric.MetricComputerTest$InjectableClass )");
+    MethodCost callCost4 = cost.getMethodCost(" void callCost4()");
     assertEquals(0L, callCost0.getTotalComplexityCost());
     assertEquals(4L, callCost4.getTotalComplexityCost());
   }
@@ -337,16 +337,16 @@ public class MetricComputerTest extends ClassRepositoryTestCase {
 
   public void testGlobalLoadWhichAccessesFinalShouldBeZero() {
     ClassCost cost = computer.compute(GlobalState.class);
-    MethodCost method = cost.getMethodCost("toString()Ljava/lang/String;");
+    MethodCost method = cost.getMethodCost(" java.lang.String toString()");
     assertEquals(0L, method.getTotalGlobalCost());
   }
 
   public void testGlobalLoadMethodDispatchNoStateAccessShouldBeZero() {
     ClassCost cost = computer.compute(GlobalStateUser.class);
-    assertEquals(0L, cost.getMethodCost("noLoad()V").getTotalGlobalCost());
-    assertEquals(0L, cost.getMethodCost("accessFinalState()V")
+    assertEquals(0L, cost.getMethodCost(" void noLoad()").getTotalGlobalCost());
+    assertEquals(0L, cost.getMethodCost(" void accessFinalState()")
         .getTotalGlobalCost());
-    assertEquals(0L, cost.getMethodCost("accessFinalState2()V")
+    assertEquals(0L, cost.getMethodCost(" void accessFinalState2()")
         .getTotalGlobalCost());
   }
 
@@ -429,14 +429,14 @@ public class MetricComputerTest extends ClassRepositoryTestCase {
   }
   public void testDoubleCountClassConst() throws Exception {
     ClassCost cost = computer.compute(DoubleCountClassConst.class);
-    assertEquals(1, cost.getMethodCost("<clinit>()V").getTotalGlobalCost());
+    assertEquals(1, cost.getMethodCost(" " + cost.getClassName() + "()").getTotalGlobalCost());
   }
 
   static enum TestEnum1{ ONE }
   public void testEnumerationIsZero() throws Exception {
     whitelist.addPackage("java.");
     ClassCost cost = computer.compute(TestEnum1.class);
-    assertEquals(0, cost.getMethodCost("<clinit>()V").getTotalGlobalCost());
+    assertEquals(0, cost.getMethodCost(" " + cost.getClassName() + "()").getTotalGlobalCost());
   }
 
   private final String testValue = null;

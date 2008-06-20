@@ -17,6 +17,7 @@ package com.google.test.metric;
 
 
 import static java.util.Collections.EMPTY_LIST;
+
 import junit.framework.TestCase;
 
 public class TestabilityContextTest extends TestCase {
@@ -36,7 +37,7 @@ public class TestabilityContextTest extends TestCase {
   @SuppressWarnings("unchecked")
   ClassInfo classInfo = new ClassInfo("c.g.t.A", false, null, EMPTY_LIST);
   MethodInfo method =
-      new MethodInfo(classInfo, "method", 0, null, null, null, null, null, 1, null);
+      new MethodInfo(classInfo, "method", 0, "()V", null, null, null, null, 1, null);
 
   public void testIsInjectable() throws Exception {
     Variable var = new Variable("", Type.fromJava("X"), false, false);
@@ -106,5 +107,18 @@ public class TestabilityContextTest extends TestCase {
     assertEquals(0, context.getLinkedMethodCost(method).getTotalGlobalCost());
   }
 
+//  public void testGrayListCostOverridesActualCost() throws Exception {
+//    ClassRepository repo = null;
+//    PrintStream err = null;
+//    GrayList graylist = new GrayList();
+//    graylist.addCost("c.g.t.A", 20);
+//    CostModel costModel = null;
+//    TestabilityContext context = new TestabilityContext(repo, err, graylist, costModel);
+//    MethodCost cost = context.getMethodCost(method);
+//    assertEquals(0, method.getTestCost());
+//    assertEquals(20, cost.getCyclomaticCost());
+//    assertTrue(context.methodAlreadyVisited(method));
+//      fail();
+//  }
 
 }

@@ -17,12 +17,12 @@
 package com.google.test.metric;
 
 
+import com.google.classpath.ClasspathRootFactory;
+
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
-
-import com.google.classpath.ClasspathRootFactory;
 
 public class ClassInfoTest extends ClassRepositoryTestCase {
 
@@ -68,8 +68,7 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
     ClassInfo clazz = repo.getClass(SingleMethodClass.class);
     MethodInfo method = clazz.getMethod("methodA()V");
     assertEquals("methodA()V", method.getNameDesc());
-    assertEquals(SingleMethodClass.class.getName() + ".methodA()V", method
-        .toString());
+    assertEquals(" void methodA()", method.toString());
     assertSame(method, clazz.getMethod("methodA()V"));
   }
 

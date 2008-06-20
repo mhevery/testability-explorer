@@ -34,13 +34,15 @@ public class TestabilityContext {
   private final WhiteList whitelist;
   private final CostModel linkContext;
   private Variable returnValue;
+  private final GrayList graylist;
 
   public TestabilityContext(ClassRepository classRepository, PrintStream err,
     WhiteList whitelist, CostModel linkContext) {
     this.classRepository = classRepository;
     this.err = err;
-    this.whitelist = whitelist;
+    this.graylist = null;
     this.linkContext = linkContext;
+    this.whitelist = whitelist;
   }
 
   public MethodInfo getMethod(String clazzName, String methodName) {
@@ -67,7 +69,7 @@ public class TestabilityContext {
     return cost;
   }
 
-  private MethodCost getMethodCost(MethodInfo method) {
+  MethodCost getMethodCost(MethodInfo method) {
     MethodCost methodCost = methodCosts.get(method);
     if (methodCost == null) {
       methodCost = new MethodCost(method.getFullName(), method.getStartingLineNumber(), method.getTestCost());
