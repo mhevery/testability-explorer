@@ -34,13 +34,13 @@ public class TestabilityContext {
   private final WhiteList whitelist;
   private final CostModel linkContext;
   private Variable returnValue;
-  private final GrayList graylist;
+//  private final GrayList graylist;
 
   public TestabilityContext(ClassRepository classRepository, PrintStream err,
     WhiteList whitelist, CostModel linkContext) {
     this.classRepository = classRepository;
     this.err = err;
-    this.graylist = null;
+//    this.graylist = null;
     this.linkContext = linkContext;
     this.whitelist = whitelist;
   }
