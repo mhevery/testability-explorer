@@ -17,15 +17,15 @@ package com.google.test.metric.report;
 
 import static com.google.test.metric.report.Constants.NEW_LINE;
 
-import junit.framework.TestCase;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+
+import junit.framework.TestCase;
 
 public class HtmlReportTest extends TestCase {
 
   ByteArrayOutputStream out = new ByteArrayOutputStream();
-  HtmlReport report = new HtmlReport(new PrintStream(out), 10, 20, 5);
+  HtmlReport report = new HtmlReport(new PrintStream(out), 10, 20, 5, null);
 
   public void testPrintHeader() throws Exception {
     report.printHeader();
