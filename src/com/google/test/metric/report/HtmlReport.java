@@ -24,13 +24,13 @@ import static java.lang.Math.log;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
-import com.google.test.metric.ClassCost;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+
+import com.google.test.metric.ClassCost;
 
 public class HtmlReport extends SummaryReport {
 
@@ -38,11 +38,13 @@ public class HtmlReport extends SummaryReport {
   private static final int HISTOGRAM_WIDTH = 700;
   private static final int HISTOGRAM_LEGEND_WIDTH = 130;
   protected final PrintStream out;
+  private final DetailHtmlReport detailHtmlReport;
 
   public HtmlReport(PrintStream out, int maxExcellentCount, int maxAcceptableCost,
-      int worstOffenderCount) {
+      int worstOffenderCount, DetailHtmlReport detailHtmlReport) {
     super(maxExcellentCount, maxAcceptableCost, worstOffenderCount);
     this.out = out;
+    this.detailHtmlReport = detailHtmlReport;
   }
 
   public void printSummary() {
@@ -119,9 +121,8 @@ public class HtmlReport extends SummaryReport {
     out.println();
     out.println("<h2>Highest Cost</h2>");
     out.println("<div onclick='clickHandler(event)'>");
-    DetailHtmlReport detail = new DetailHtmlReport(out);
     for (ClassCost cost : worstOffenders) {
-      detail.write(cost);
+      detailHtmlReport.write(cost);
     }
     out.println("</div>");
   }

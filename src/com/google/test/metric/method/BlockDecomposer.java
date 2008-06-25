@@ -17,16 +17,6 @@ package com.google.test.metric.method;
 
 import static java.util.Arrays.asList;
 
-import com.google.test.metric.Type;
-import com.google.test.metric.method.op.stack.JSR;
-import com.google.test.metric.method.op.stack.RetSub;
-import com.google.test.metric.method.op.stack.Return;
-import com.google.test.metric.method.op.stack.StackOperation;
-import com.google.test.metric.method.op.stack.Throw;
-import com.google.test.metric.method.op.turing.Operation;
-
-import org.objectweb.asm.Label;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -34,6 +24,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.objectweb.asm.Label;
+
+import com.google.test.metric.Type;
+import com.google.test.metric.method.op.stack.JSR;
+import com.google.test.metric.method.op.stack.RetSub;
+import com.google.test.metric.method.op.stack.Return;
+import com.google.test.metric.method.op.stack.StackOperation;
+import com.google.test.metric.method.op.stack.Throw;
+import com.google.test.metric.method.op.turing.Operation;
 
 /**
  * @author misko@google.com <Misko Hevery>

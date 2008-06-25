@@ -17,17 +17,17 @@ package com.google.test.metric.report;
 
 import static com.google.test.metric.report.Constants.NEW_LINE;
 
-import com.google.test.metric.ClassCost;
-import com.google.test.metric.CostModel;
-import com.google.test.metric.LineNumberCost;
-import com.google.test.metric.MethodCost;
-
-import junit.framework.TestCase;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import junit.framework.TestCase;
+
+import com.google.test.metric.ClassCost;
+import com.google.test.metric.CostModel;
+import com.google.test.metric.LineNumberCost;
+import com.google.test.metric.MethodCost;
 
 public class DetailHtmlReportTest extends TestCase {
 
@@ -38,7 +38,7 @@ public class DetailHtmlReportTest extends TestCase {
     LineNumberCost lineCost = new LineNumberCost(123,
         createMethodCallWithOverallCost("a.methodName()V", 64));
 
-    DetailHtmlReport report = new DetailHtmlReport(stream);
+    DetailHtmlReport report = new DetailHtmlReport(stream, 10, 10);
     report.write(lineCost);
     String text = out.toString();
 
@@ -57,7 +57,7 @@ public class DetailHtmlReportTest extends TestCase {
   }
 
   public void testWriteMethodCost() throws Exception {
-    DetailHtmlReport report = new DetailHtmlReport(stream) {
+    DetailHtmlReport report = new DetailHtmlReport(stream, 10, 10) {
       @Override
       public void write(LineNumberCost lineNumberCost) {
         write(" MARKER:" + lineNumberCost.getLineNumber());
@@ -79,7 +79,7 @@ public class DetailHtmlReportTest extends TestCase {
   }
 
   public void testWriteClassCost() throws Exception {
-    DetailHtmlReport report = new DetailHtmlReport(stream) {
+    DetailHtmlReport report = new DetailHtmlReport(stream, 10, 10) {
       @Override
       public void write(MethodCost methodCost) {
         write (" MARKER:" + methodCost.getMethodName());

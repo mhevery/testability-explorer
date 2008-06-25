@@ -27,6 +27,7 @@ import org.kohsuke.args4j.Option;
 import com.google.classpath.ClasspathRootFactory;
 import com.google.classpath.ClasspathRootGroup;
 import com.google.classpath.ColonDelimitedStringParser;
+import com.google.test.metric.report.DetailHtmlReport;
 import com.google.test.metric.report.DrillDownReport;
 import com.google.test.metric.report.HtmlReport;
 import com.google.test.metric.report.Report;
@@ -72,6 +73,14 @@ public class Testability {
       usage = "summary: (default) print package summary information.\n" +
               "detail: print detail drill down information for each method call.")
   String printer = "summary";
+
+  @Option(name = "-maxMethodCount",
+      usage = "max number of methods to print in html summary")
+  int maxMethodCount = 10;
+
+  @Option(name = "-maxLineCount",
+      usage = "max number of lines in method to print in html summary")
+  int maxLineCount = 10;
 
   @Option(name = "cyclomatic",
       metaVar = "cyclomatic cost multiplier",
@@ -148,7 +157,8 @@ public class Testability {
     if (printer.equals("summary")) {
       report = new TextReport(out, maxExcellentCost, maxAcceptableCost, worstOffenderCount);
     } else if (printer.equals("html")) {
-      report = new HtmlReport(out, maxExcellentCost, maxAcceptableCost, worstOffenderCount);
+      report = new HtmlReport(out, maxExcellentCost, maxAcceptableCost,
+          worstOffenderCount, new DetailHtmlReport(out, maxMethodCount, maxLineCount));
     } else if (printer.equals("detail")) {
       report = new DrillDownReport(out, entryList, printDepth, minCost);
     } else {

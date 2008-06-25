@@ -15,30 +15,45 @@
  */
 package com.google.test.metric.report;
 
-import com.google.test.metric.ClassCost;
-import com.google.test.metric.LineNumberCost;
-import com.google.test.metric.MethodCost;
+import static java.lang.Math.min;
 
 import java.io.PrintStream;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.google.test.metric.ClassCost;
+import com.google.test.metric.LineNumberCost;
+import com.google.test.metric.MethodCost;
+
 public class DetailHtmlReport {
+
+  static class LineNumberCostComparator implements
+      Comparator<LineNumberCost> {
+    public int compare(LineNumberCost cost1, LineNumberCost cost2) {
+      long c1 = cost1.getMethodCost().getOverallCost();
+      long c2 = cost2.getMethodCost().getOverallCost();
+      return (int) (c2 - c1);
+    }
+  }
 
   public static class MethodCostComparator implements
       Comparator<MethodCost> {
-
-    public int compare(MethodCost arg0, MethodCost arg1) {
-      return 0;
+    public int compare(MethodCost cost1, MethodCost cost2) {
+      long c1 = cost1.getOverallCost();
+      long c2 = cost2.getOverallCost();
+      return (int) (c2 - c1);
     }
-
   }
 
   private final PrintStream out;
+  private final int maxLineCount;
+  private final int maxMethodCount;
 
-  public DetailHtmlReport(PrintStream out) {
+  public DetailHtmlReport(PrintStream out, int maxMethodCount, int maxLineCount) {
     this.out = out;
+    this.maxMethodCount = maxMethodCount;
+    this.maxLineCount = maxLineCount;
   }
 
   protected void write(String text) {
@@ -65,7 +80,8 @@ public class DetailHtmlReport {
     write(text);
 
     List<LineNumberCost> lines = method.getOperationCosts();
-    for (LineNumberCost line : lines) {
+    Collections.sort(lines, new LineNumberCostComparator());
+    for (LineNumberCost line : lines.subList(0, min(maxLineCount, lines.size()))) {
       write(line);
     }
     write("</div>");
@@ -85,7 +101,7 @@ public class DetailHtmlReport {
     List<MethodCost> methods = classCost.getMethods();
     Collections.sort(methods, new MethodCostComparator());
 
-    for (MethodCost method : methods) {
+    for (MethodCost method : methods.subList(0, min(maxMethodCount, methods.size()))) {
       write(method);
     }
     write("</div>");
