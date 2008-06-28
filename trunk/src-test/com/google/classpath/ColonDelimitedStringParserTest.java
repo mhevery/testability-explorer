@@ -17,8 +17,8 @@ public class ColonDelimitedStringParserTest extends TestCase {
     }
 
     public void testParsesNormally() throws Exception {
-        list = new ColonDelimitedStringParser("one:two:three.and.a.half")
-                .getStrings();
+        list = new ColonDelimitedStringParser("one" + File.pathSeparator + "two"
+        + File.pathSeparator + "three.and.a.half").getStrings();
         assertEquals(3, list.size());
         assertEquals("one", list.get(0));
         assertEquals("two", list.get(1));

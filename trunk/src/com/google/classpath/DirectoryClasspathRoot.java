@@ -16,8 +16,10 @@
 package com.google.classpath;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -33,7 +35,7 @@ public class DirectoryClasspathRoot extends ClasspathRoot {
   @Override
   public Collection<String> getResources(String packageName) {
     List<String> resources = new ArrayList<String>();
-    File dir = new File(url.getFile() + File.separator + packageName);
+    File dir = new File(getPath() + File.separator + packageName);
     File[] files = dir.listFiles();
     if (files == null) {
       return resources;
@@ -42,5 +44,13 @@ public class DirectoryClasspathRoot extends ClasspathRoot {
       resources.add(file.getName());
     }
     return resources;
+  }
+
+  private String getPath() {
+    try {
+      return URLDecoder.decode(url.getFile(), "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException(e);
+    }
   }
 }
