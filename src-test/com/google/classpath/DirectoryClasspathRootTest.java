@@ -23,33 +23,33 @@ import java.util.List;
 import junit.framework.TestCase;
 
 public class DirectoryClasspathRootTest extends TestCase {
-  
+
   /**
    * Directories to be used for testing that contains class files, for testing.
    * These are included in subversion so that any checkout will have a consistent
    * environment for testing.
    */
   public static final String CLASSES_FOR_TEST = "classes-for-test";
-  
+
   /**
-   * Directory root that contains one class with no external 
+   * Directory root that contains one class with no external
    * dependencies.
    */
-  public static final String CLASS_NO_EXTERNAL_DEPS = CLASSES_FOR_TEST + 
+  public static final String CLASS_NO_EXTERNAL_DEPS = CLASSES_FOR_TEST +
     "/root1";
-  
+
   /**
-   * Directory root containing classes that extend from, and reference, external 
-   * classes outside of this directory. 
+   * Directory root containing classes that extend from, and reference, external
+   * classes outside of this directory.
    */
-  public static final String CLASSES_EXTERNAL_DEPS_AND_SUPERCLASSES = 
+  public static final String CLASSES_EXTERNAL_DEPS_AND_SUPERCLASSES =
     CLASSES_FOR_TEST + "/root2";
 
   /**
-   * Directory root containing classes extending from Object that reference 
-   * external classes outside of this directory. 
+   * Directory root containing classes extending from Object that reference
+   * external classes outside of this directory.
    */
-  public static final String CLASSES_EXTERNAL_DEPS_NO_SUPERCLASSES = 
+  public static final String CLASSES_EXTERNAL_DEPS_NO_SUPERCLASSES =
     CLASSES_FOR_TEST + "/root3";
 
   public void testCreateNewDirectoryClasspathRoot() throws Exception {
@@ -61,7 +61,7 @@ public class DirectoryClasspathRootTest extends TestCase {
   }
 
    public void testCreateNewJarsClasspathRootTest() throws Exception {
-    final String cp = CLASS_NO_EXTERNAL_DEPS + ":" + 
+    final String cp = CLASS_NO_EXTERNAL_DEPS + File.pathSeparator +
       CLASSES_EXTERNAL_DEPS_AND_SUPERCLASSES;
     ClasspathRootGroup group = ClasspathRootFactory.makeClasspathRootGroup(cp);
     assertNotNull(group);
@@ -69,10 +69,10 @@ public class DirectoryClasspathRootTest extends TestCase {
     ArrayList<String> packageFilter = new ArrayList<String>();
     packageFilter.add("");
     List<String> names = group.getClassNamesToEnter(packageFilter);
-    assertTrue(names.contains("com.google.classpath.ColonDelimitedStringParser"));
-    assertTrue(names.contains("com.google.test.metric.AutoFieldClearTestCase"));
-    assertTrue(names.contains("com.google.test.metric.ClassInfoTest"));
-    assertTrue(names.contains("com.google.test.metric.x.SelfTest"));
+    assertTrue(names.toString(), names.contains("com.google.classpath.ColonDelimitedStringParser"));
+    assertTrue(names.toString(), names.contains("com.google.test.metric.AutoFieldClearTestCase"));
+    assertTrue(names.toString(), names.contains("com.google.test.metric.ClassInfoTest"));
+    assertTrue(names.toString(), names.contains("com.google.test.metric.x.SelfTest"));
 
     String wantedResource = "com/google/test/metric/x/SelfTest.class";
     InputStream is = group.getResourceAsStream(wantedResource);

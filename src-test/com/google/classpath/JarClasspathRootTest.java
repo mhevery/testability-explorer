@@ -26,7 +26,7 @@ public class JarClasspathRootTest extends TestCase {
   }
 
   public void testCreateNewJarsClasspathRootTest() throws Exception {
-    String classpath = ASM_JAR + ":" + JUNIT_JAR + ":" + JARJAR_JAR;
+    String classpath = ASM_JAR + File.pathSeparator + JUNIT_JAR + File.pathSeparator + JARJAR_JAR;
     ClasspathRootGroup group = ClasspathRootFactory.makeClasspathRootGroup(classpath);
     assertNotNull(group);
     assertEquals(3, group.getGroupCount());
