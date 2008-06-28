@@ -27,7 +27,7 @@
 
 			<formatter type="xml" usefile="true" />
 
-			<batchtest fork="yes" todir="target/reports/junit">
+			<batchtest fork="yes" haltonfailure="false" todir="target/reports/junit">
 				<fileset dir="src-test">
 					<include name="**/*Test*.java" />
 					<exclude name="**/*TestCase.java" />

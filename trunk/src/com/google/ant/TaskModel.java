@@ -1,9 +1,5 @@
 package com.google.ant;
 
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.resources.FileResource;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -12,6 +8,10 @@ import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.resources.FileResource;
 
 public class TaskModel {
 
@@ -191,7 +191,7 @@ public class TaskModel {
     }
 
     private String removeTrailingColonIfExisting(String cp) {
-        if (cp.endsWith(":")) {
+        if (cp.endsWith(File.pathSeparator)) {
             cp = cp.substring(0, cp.length() - 1);
         }
         return cp;

@@ -21,6 +21,7 @@ import static com.google.classpath.DirectoryClasspathRootTest.CLASS_NO_EXTERNAL_
 import static com.google.classpath.JarClasspathRootTest.ASM_JAR;
 import static com.google.classpath.JarClasspathRootTest.JUNIT_JAR;
 
+import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -126,7 +127,7 @@ public class TestabilityTest extends AutoFieldClearTestCase {
   }
 
   public void testJarsAndDirectoryWildcardEntryPattern() throws Exception {
-    testability.cp = ASM_JAR + ":" + JUNIT_JAR + ":" + CLASS_NO_EXTERNAL_DEPS;
+    testability.cp = ASM_JAR + File.pathSeparator + JUNIT_JAR + File.pathSeparator + CLASS_NO_EXTERNAL_DEPS;
     testability.printDepth = 0;
     testability.execute();
     assertTrue(out.toString().length() > 0);
@@ -134,7 +135,7 @@ public class TestabilityTest extends AutoFieldClearTestCase {
   }
 
   public void testJarsAndDirectoryOfClassesAndFilter() throws Exception {
-    testability.cp = JUNIT_JAR + ":" + CLASS_NO_EXTERNAL_DEPS;
+    testability.cp = JUNIT_JAR + File.pathSeparator + CLASS_NO_EXTERNAL_DEPS;
     testability.entryList.add("junit.swingui.ProgressBar");
     testability.execute();
     assertTrue(out.toString(), out.toString().length() > 0);
