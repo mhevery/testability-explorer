@@ -1,5 +1,6 @@
 package com.google.classpath;
 
+import java.io.File;
 import java.net.URL;
 import java.util.List;
 
@@ -12,7 +13,7 @@ public class ColonDelimitedStringParserTest extends TestCase {
         list = new ColonDelimitedStringParser("")
                 .getStrings();
         assertEquals(1, list.size());
-        assertEquals("", list.get(0));        
+        assertEquals("", list.get(0));
     }
 
     public void testParsesNormally() throws Exception {
@@ -25,12 +26,13 @@ public class ColonDelimitedStringParserTest extends TestCase {
     }
 
   public void testParseAndAddToClasspathList() throws Exception {
-    String classpath = "test-one.jar;";
+    String classpath = "test-one.jar" + File.pathSeparator;
     List<URL> completeClasspath = new ColonDelimitedStringParser(classpath).getURLs();
     assertStringEndsWith("test-one.jar", completeClasspath.get(0).toString());
 
     completeClasspath.clear();
-    classpath = "lib/one.jar:lib/two.jar;three.jar";
+    classpath = "lib/one.jar" + File.pathSeparator + "lib/two.jar"
+        + File.pathSeparator + "three.jar";
     completeClasspath = new ColonDelimitedStringParser(classpath).getURLs();
 
     assertStringEndsWith("lib/one.jar", completeClasspath.get(0).toString());
@@ -39,6 +41,6 @@ public class ColonDelimitedStringParserTest extends TestCase {
   }
 
   private void assertStringEndsWith(String expectedEnding, String fullToTest) {
-    assertTrue(fullToTest.endsWith(expectedEnding));
+    assertTrue(fullToTest, fullToTest.endsWith(expectedEnding));
   }
 }
