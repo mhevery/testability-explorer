@@ -12,7 +12,7 @@ import java.util.List;
  * Files, Strings, or URLs.
  */
 public class ColonDelimitedStringParser {
-    private final String DELIMITER_REGEX = "(:|;)";
+    private final String DELIMITER_REGEX = File.pathSeparator;
     private final List<String> list = new ArrayList<String>();
 
     public ColonDelimitedStringParser(String str) {
