@@ -27,6 +27,14 @@
       font-family: monospace;
       cursor: pointer;
     }
+    #timestamp {
+      color: #666;
+      font-style: italic;
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      z-index: 100;
+    }
     </style>
     <script type="text/javascript">
 {{JSscript}}
@@ -34,3 +42,7 @@
   </head>
   <body>
     <h1>Testability Report</h1>
+    <div id="timestamp">
+      Report generated on: {{Tstamp}}
+    </div>
+    
