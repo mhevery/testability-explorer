@@ -1,4 +1,4 @@
-<project name="base" default="test">
+<project name="base">
 
     <taskdef name="svn" classname="org.tigris.subversion.svnant.SvnTask">
 		<classpath>

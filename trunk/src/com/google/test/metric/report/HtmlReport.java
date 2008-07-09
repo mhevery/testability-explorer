@@ -24,13 +24,15 @@ import static java.lang.Math.log;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
+import com.google.test.metric.ClassCost;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-
-import com.google.test.metric.ClassCost;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class HtmlReport extends SummaryReport {
 
@@ -139,6 +141,7 @@ public class HtmlReport extends SummaryReport {
     stream(dummy, getClass().getResourceAsStream("report.js"));
     String jsCode = dummy.toString();
     origHeader = origHeader.replace("{{JSscript}}", jsCode);
+    origHeader = origHeader.replace("{{Tstamp}}", now());
     out.print(origHeader);
   }
 
@@ -157,6 +160,12 @@ public class HtmlReport extends SummaryReport {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public String now() {
+    Calendar cal = Calendar.getInstance();
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    return sdf.format(cal.getTime());
   }
 
 }
