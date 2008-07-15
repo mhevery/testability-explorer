@@ -23,7 +23,6 @@ import com.google.test.metric.report.DrillDownReport;
 import com.google.test.metric.report.HtmlReport;
 import com.google.test.metric.report.Report;
 import com.google.test.metric.report.SourceLinker;
-import com.google.test.metric.report.SourcererLinker;
 import com.google.test.metric.report.TextReport;
 
 import org.kohsuke.args4j.Argument;
@@ -172,8 +171,7 @@ public class Testability {
     if (printer.equals("summary")) {
       report = new TextReport(out, maxExcellentCost, maxAcceptableCost, worstOffenderCount);
     } else if (printer.equals("html")) {
-//      SourceLinker linker = new SourceLinker(templates.get(0), templates.get(1));
-      SourceLinker linker = new SourcererLinker();
+      SourceLinker linker = new SourceLinker(templates.get(0), templates.get(1));
       DetailHtmlReport detailHtmlReport = new DetailHtmlReport(out, linker,
           maxMethodCount, maxLineCount);
       report = new HtmlReport(out, maxExcellentCost, maxAcceptableCost,
