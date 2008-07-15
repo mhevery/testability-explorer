@@ -1,0 +1,24 @@
+   <div style="margin-top: 32px;">
+    <div style="padding-bottom: 24px; font-weight: bold; font-size: 120%">Overall score: <span style="font-weight: normal">{{OverallScore}}<span class="smaller">(<a href="TODO">what is this?</a>)</span></span></div>
+    <div style="float: left;">
+      {{PieChartUrl}}
+    </div>
+    <div style="float: left;">
+      {{OverallChart}}
+    </div>
+    <div style="border: 1px solid #cc6; background: #ffd; padding: 8px; margin-left: 16px; float: left;">
+      <table class="overview_table">
+      <tr><th>Analyzed classes</td><th class="value">{{Total}}</td><th class="percent">&nbsp;</td></tr>
+      <tr><td> - Excellent</td><td class="value">{{Excellent}}</td><td class="percent">{{ExcellentPercent}}%</td></tr>
+
+      <tr><td> - Good</td><td class="value">{{Good}}</td><td class="percent">{{GoodPercent}}%</td></tr>
+      <tr><td> - Needs work</td><td class="value">{{NeedsWork}}</td><td class="percent">{{NeedsWorkPercent}}%</td></tr>
+      </table>
+    </div>
+
+    <div style="clear:both; width: 0">&nbsp;</div>
+  </div>
+
+  <div style="margin-bottom: 32px; margin-left: 32px; margin-top: 16px;">
+    {{HistogramURL}}
+  </div>

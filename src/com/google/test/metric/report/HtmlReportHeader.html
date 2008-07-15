@@ -2,6 +2,11 @@
   <head>
     <title>Testability Report</title>
     <style type="text/css">
+    body {
+      font-family: Verdana;
+      padding: 16px 8px;
+    }
+
     .Class {
       font-family: monospace;
       font-size: 15px;
@@ -20,7 +25,6 @@
       cursor: text;
     }
     .lineNumber {
-      font-weight: bold;
       padding-right: 5px;
     }
     .expand {
@@ -35,6 +39,33 @@
       top: 8px;
       z-index: 100;
     }
+
+    .overview_table {
+    }
+    .overview_table th {
+      font-weight: normal;
+      padding-bottom: 4px;
+    }
+    .overview_table td {
+      font-style: italic;
+    }
+    .overview_table .percent {
+      padding-left: 8px;
+      text-align: right;
+    }
+    .overview_table .value {
+      padding-left: 8px;
+      text-align: right;
+    }
+
+    .cost {
+      font-family: monospace;      
+      padding-left: 12px;
+      text-align: right;
+    }
+    .smaller {
+      font-size: 80%;
+    }
     </style>
     <script type="text/javascript">
 {{JSscript}}
@@ -45,4 +76,4 @@
     <div id="timestamp">
       Report generated on: {{Tstamp}}
     </div>
-    
+

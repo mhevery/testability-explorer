@@ -91,12 +91,12 @@ public class MethodInfo {
 //    }
 //    String params = methodName.substring(paramsBegin + 1, paramsEnd);
     int paramsEnd = desc.indexOf(')');
-    String returnValue = deconstructParameters(desc.substring(paramsEnd + 1));
+    String returnValue = deconstructParameters(desc.substring(paramsEnd + 1)) + " ";
     String params = desc.substring(1, paramsEnd);
     String methodName = name;
 
     if (isStaticConstructor() || isConstructor()) {
-      returnValue = " ";
+      returnValue = "";
       methodName = classInfo.getName();
     }
     return returnValue + methodName + "(" + deconstructParameters(params) + ")";
@@ -110,22 +110,22 @@ public class MethodInfo {
     while (i < params.length()) {
       switch (params.charAt(i)) {
       case 'B':
-        paramStr.append(sep + " byte " + arrayRefs);
+        paramStr.append(sep + "byte" + arrayRefs);
         break;
       case 'C':
-        paramStr.append(sep + " char " + arrayRefs);
+        paramStr.append(sep + "char" + arrayRefs);
         break;
       case 'D':
-        paramStr.append(sep + " double " + arrayRefs);
+        paramStr.append(sep + "double" + arrayRefs);
         break;
       case 'F':
-        paramStr.append(sep + " float " + arrayRefs);
+        paramStr.append(sep + "float" + arrayRefs);
         break;
       case 'I':
-        paramStr.append(sep + " int " + arrayRefs);
+        paramStr.append(sep + "int" + arrayRefs);
         break;
       case 'J':
-        paramStr.append(sep + " long " + arrayRefs);
+        paramStr.append(sep + "long" + arrayRefs);
         break;
       case 'L':
         // Object becomes L/java/lang/Object; in internal nomenclature
@@ -134,17 +134,17 @@ public class MethodInfo {
 //        String className = internalClassName.substring(
 //            internalClassName.lastIndexOf('/') + 1);
         String className = internalClassName.replace('/', '.');
-        paramStr.append(sep + " " + className + " " + arrayRefs);
+        paramStr.append(sep + className + arrayRefs);
         i = params.indexOf(';', i);
         break;
       case 'S':
-        paramStr.append(sep + " short " + arrayRefs);
+        paramStr.append(sep + "short" + arrayRefs);
         break;
       case 'Z':
-        paramStr.append(sep + " boolean " + arrayRefs);
+        paramStr.append(sep + "boolean" + arrayRefs);
         break;
       case 'V':
-        paramStr.append(" void ");
+        paramStr.append("void");
         break;
       case '[':
         arrayRefs += "[]";
@@ -154,7 +154,7 @@ public class MethodInfo {
       }
       if (params.charAt(i) != '[') {
         arrayRefs = "";
-        sep = ",";
+        sep = ", ";
       }
       i++;
     }

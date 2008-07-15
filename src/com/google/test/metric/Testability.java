@@ -15,15 +15,6 @@
  */
 package com.google.test.metric;
 
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.kohsuke.args4j.Argument;
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.Option;
-
 import com.google.classpath.ClasspathRootFactory;
 import com.google.classpath.ClasspathRootGroup;
 import com.google.classpath.ColonDelimitedStringParser;
@@ -31,7 +22,18 @@ import com.google.test.metric.report.DetailHtmlReport;
 import com.google.test.metric.report.DrillDownReport;
 import com.google.test.metric.report.HtmlReport;
 import com.google.test.metric.report.Report;
+import com.google.test.metric.report.SourceLinker;
+import com.google.test.metric.report.SourcererLinker;
 import com.google.test.metric.report.TextReport;
+
+import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
+
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Testability {
 
@@ -73,6 +75,14 @@ public class Testability {
       usage = "summary: (default) print package summary information.\n" +
               "detail: print detail drill down information for each method call.")
   String printer = "summary";
+
+  @Option(name = "-templates",
+      usage = "templates for generating urls to a file in your web source code"
+      + " repository separated by a colon. Template for URL pointing to a line" +
+      		" in the file followed by a template pointing to just the file." +
+      		" Ex. http://code.repository/basepath{path}#{line}:http://code.repository/basepath{path}")
+  String templatesStr = ":";
+  private List<String> templates = new ArrayList<String>();
 
   @Option(name = "-maxMethodCount",
       usage = "max number of methods to print in html summary")
@@ -148,7 +158,12 @@ public class Testability {
 
   private void postParse() throws CmdLineException {
     for (String packageName : new ColonDelimitedStringParser(wl).getStrings()) {
-        whitelist.addPackage(packageName);
+      whitelist.addPackage(packageName);
+    }
+    templates = new ColonDelimitedStringParser(templatesStr).getStrings();
+    if (templates.isEmpty()) {
+      templates.add("");
+      templates.add("");
     }
     if (entryList.isEmpty()) {
       entryList.add("");
@@ -157,8 +172,12 @@ public class Testability {
     if (printer.equals("summary")) {
       report = new TextReport(out, maxExcellentCost, maxAcceptableCost, worstOffenderCount);
     } else if (printer.equals("html")) {
+//      SourceLinker linker = new SourceLinker(templates.get(0), templates.get(1));
+      SourceLinker linker = new SourcererLinker();
+      DetailHtmlReport detailHtmlReport = new DetailHtmlReport(out, linker,
+          maxMethodCount, maxLineCount);
       report = new HtmlReport(out, maxExcellentCost, maxAcceptableCost,
-          worstOffenderCount, new DetailHtmlReport(out, maxMethodCount, maxLineCount));
+          worstOffenderCount, detailHtmlReport);
     } else if (printer.equals("detail")) {
       report = new DrillDownReport(out, entryList, printDepth, minCost);
     } else {
