@@ -17,29 +17,33 @@ package com.google.test.metric.report;
 
 import static com.google.test.metric.report.Constants.NEW_LINE;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import junit.framework.TestCase;
-
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.LineNumberCost;
 import com.google.test.metric.MethodCost;
+
+import junit.framework.TestCase;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DetailHtmlReportTest extends TestCase {
 
   ByteArrayOutputStream out = new ByteArrayOutputStream();
   PrintStream stream = new PrintStream(out, true);
 
+  String lineLinkTemplate = "";
+  String classLinkTemplate = "";
+
   public void testWriteLineCost() throws Exception {
     LineNumberCost lineCost = new LineNumberCost(123,
         createMethodCallWithOverallCost("a.methodName()V", 64));
 
-    DetailHtmlReport report = new DetailHtmlReport(stream, 10, 10);
-    report.write(lineCost);
+    DetailHtmlReport report = new DetailHtmlReport(stream, new SourceLinker(
+        lineLinkTemplate, classLinkTemplate), 10, 10);
+    report.write(lineCost, "");
     String text = out.toString();
 
     assertTrue(text, text.contains("<div class=\"Line\""));
@@ -49,7 +53,8 @@ public class DetailHtmlReportTest extends TestCase {
     assertTrue(text, text.endsWith("</div>" + NEW_LINE));
   }
 
-  private MethodCost createMethodCallWithOverallCost(String methodName, int overallCost) {
+  private MethodCost createMethodCallWithOverallCost(String methodName,
+      int overallCost) {
     MethodCost cost = new MethodCost(methodName, -1, overallCost);
     cost.link(new CostModel(1, 1));
     assertEquals(overallCost, cost.getOverallCost());
@@ -57,17 +62,19 @@ public class DetailHtmlReportTest extends TestCase {
   }
 
   public void testWriteMethodCost() throws Exception {
-    DetailHtmlReport report = new DetailHtmlReport(stream, 10, 10) {
+    DetailHtmlReport report = new DetailHtmlReport(stream, new SourceLinker(
+        lineLinkTemplate, classLinkTemplate), 10, 10) {
       @Override
-      public void write(LineNumberCost lineNumberCost) {
+      public void write(LineNumberCost lineNumberCost, String classFilePath) {
         write(" MARKER:" + lineNumberCost.getLineNumber());
       }
     };
 
-    MethodCost method = createMethodCallWithOverallCost("a.methodX()V", 567 + 789);
+    MethodCost method = createMethodCallWithOverallCost("a.methodX()V",
+        567 + 789);
     method.addMethodCost(123, createMethodCallWithOverallCost("cost1", 567));
     method.addMethodCost(543, createMethodCallWithOverallCost("cost2", 789));
-    report.write(method);
+    report.write(method, "");
     String text = out.toString();
     assertTrue(text, text.contains("<div class=\"Method\""));
     assertTrue(text, text.contains("<span class='expand'>[+]</span>"));
@@ -79,10 +86,11 @@ public class DetailHtmlReportTest extends TestCase {
   }
 
   public void testWriteClassCost() throws Exception {
-    DetailHtmlReport report = new DetailHtmlReport(stream, 10, 10) {
+    DetailHtmlReport report = new DetailHtmlReport(stream, new SourceLinker(
+        lineLinkTemplate, classLinkTemplate), 10, 10) {
       @Override
-      public void write(MethodCost methodCost) {
-        write (" MARKER:" + methodCost.getMethodName());
+      public void write(MethodCost methodCost, String classFilePath) {
+        write(" MARKER:" + methodCost.getMethodName());
       }
     };
 

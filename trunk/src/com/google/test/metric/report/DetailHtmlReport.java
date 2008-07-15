@@ -17,14 +17,14 @@ package com.google.test.metric.report;
 
 import static java.lang.Math.min;
 
+import com.google.test.metric.ClassCost;
+import com.google.test.metric.LineNumberCost;
+import com.google.test.metric.MethodCost;
+
 import java.io.PrintStream;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import com.google.test.metric.ClassCost;
-import com.google.test.metric.LineNumberCost;
-import com.google.test.metric.MethodCost;
 
 public class DetailHtmlReport {
 
@@ -49,9 +49,12 @@ public class DetailHtmlReport {
   private final PrintStream out;
   private final int maxLineCount;
   private final int maxMethodCount;
+  private final SourceLinkGenerator linkGenerator;
 
-  public DetailHtmlReport(PrintStream out, int maxMethodCount, int maxLineCount) {
+  public DetailHtmlReport(PrintStream out, SourceLinkGenerator linkGenerator,
+      int maxMethodCount, int maxLineCount) {
     this.out = out;
+    this.linkGenerator = linkGenerator;
     this.maxMethodCount = maxMethodCount;
     this.maxLineCount = maxLineCount;
   }
@@ -60,19 +63,21 @@ public class DetailHtmlReport {
     out.println(text);
   }
 
-  public void write(LineNumberCost lineNumberCost) {
+  public void write(LineNumberCost lineNumberCost, String classFilePath) {
     String text = "<div class=\"Line\">" +
     		"<span class=\"lineNumber\">line&nbsp;{lineNumber}:</span>" +
     		"{methodName} [&nbsp;{cost}&nbsp;]" +
     		"</div>";
     text = text.replace("{lineNumber}", "" + lineNumberCost.getLineNumber());
     text = text.replace("{methodName}", "" +
-        lineNumberCost.getMethodCost().getMethodName());
+        linkGenerator.buildLineLink(classFilePath,
+            lineNumberCost.getLineNumber(),
+            lineNumberCost.getMethodCost().getMethodName()));
     text = text.replace("{cost}", "" + lineNumberCost.getMethodCost().getOverallCost());
     write(text);
   }
 
-  public void write(MethodCost method) {
+  public void write(MethodCost method, String classFilePath) {
     String text = "<div class=\"Method\">" + "<span class='expand'>[+]</span>"
         + "{methodName} [&nbsp;{cost}&nbsp;]";
     text = text.replace("{methodName}", "" + method.getMethodName());
@@ -82,7 +87,7 @@ public class DetailHtmlReport {
     List<LineNumberCost> lines = method.getOperationCosts();
     Collections.sort(lines, new LineNumberCostComparator());
     for (LineNumberCost line : lines.subList(0, min(maxLineCount, lines.size()))) {
-      write(line);
+      write(line, classFilePath);
     }
     write("</div>");
   }
@@ -93,16 +98,24 @@ public class DetailHtmlReport {
    */
   public void write(ClassCost classCost) {
     String text = "<div class=\"Class\">" + "<span class='expand'>[+]</span>"
-      + "{className} [&nbsp;{cost}&nbsp;]";
-    text = text.replace("{className}", "" + classCost.getClassName());
+      + "{className} {link} [&nbsp;{cost}&nbsp;]";
+    String classFilePath = linkGenerator.getOriginalFilePath(classCost.getClassName());
+    String link = linkGenerator.buildClassLink(classFilePath, "source");
+    text = text.replace("{className}", classCost.getClassName());
     text = text.replace("{cost}", "" + classCost.getOverallCost());
+    // Don't show the link if we don't have one
+    if (!link.equals("source")) {
+      text = text.replace("{link}", "<span class=\"smaller\">(" + link + ")</span>)");
+    } else {
+      text = text.replace("{link}", "");
+    }
     write(text);
 
     List<MethodCost> methods = classCost.getMethods();
     Collections.sort(methods, new MethodCostComparator());
 
     for (MethodCost method : methods.subList(0, min(maxMethodCount, methods.size()))) {
-      write(method);
+      write(method, classFilePath);
     }
     write("</div>");
   }

@@ -42,34 +42,41 @@ public class HtmlReport extends SummaryReport {
   protected final PrintStream out;
   private final DetailHtmlReport detailHtmlReport;
 
-  public HtmlReport(PrintStream out, int maxExcellentCount, int maxAcceptableCost,
-      int worstOffenderCount, DetailHtmlReport detailHtmlReport) {
+  public HtmlReport(PrintStream out, int maxExcellentCount,
+      int maxAcceptableCost, int worstOffenderCount,
+      DetailHtmlReport detailHtmlReport) {
     super(maxExcellentCount, maxAcceptableCost, worstOffenderCount);
     this.out = out;
     this.detailHtmlReport = detailHtmlReport;
   }
 
   public void printSummary() {
+    ByteArrayOutputStream bodyStream = new ByteArrayOutputStream();
+    stream(bodyStream, getClass().getResourceAsStream("HtmlReportBody.html"));
+    String bodyHtml = bodyStream.toString();
+    bodyHtml = bodyHtml.replace("{{OverallScore}}", "" + getOverall());
     int total = costs.size();
-    out.println("<h2>Class breakdown</h2>");
-    out.printf("<pre>%n");
-    out.printf("           Overall : %5d%n", getOverall());
-    out.printf("  Analyzed classes : %5d%n", total);
-    out.printf(" Excellent classes : %5d %5.1f%%%n", excellentCount, 100f * excellentCount / total);
-    out.printf("      Good classes : %5d %5.1f%%%n", goodCount, 100f * goodCount / total);
-    out.printf("Needs work classes : %5d %5.1f%%%n", needsWorkCount, 100f * needsWorkCount / total);
-    out.printf("</pre>%n");
-    printPieChart();
-    printOverallChart();
-    out.println("<br>");
-    out.printf("%n");
-    printHistogram();
-    out.printf("%n");
+    bodyHtml = bodyHtml.replace("{{Total}}", String.valueOf(total));
+    bodyHtml = bodyHtml.replace("{{Excellent}}", "" + excellentCount);
+    bodyHtml = bodyHtml.replace("{{ExcellentPercent}}", String.format("%5.1f",
+        (100f * excellentCount / total)));
+    bodyHtml = bodyHtml.replace("{{Good}}", "" + goodCount);
+    bodyHtml = bodyHtml.replace("{{GoodPercent}}", String.format("%5.1f",
+        (100f * goodCount / total)));
+    bodyHtml = bodyHtml
+        .replace("{{NeedsWork}}", "" + needsWorkCount);
+    bodyHtml = bodyHtml.replace("{{NeedsWorkPercent}}", String.format("%5.1f",
+        (100f * needsWorkCount / total)));
+    bodyHtml = bodyHtml.replace("{{HistogramURL}}", getHistogram());
+    bodyHtml = bodyHtml.replace("{{OverallChart}}", getOverallChart());
+    bodyHtml = bodyHtml.replace("{{PieChartUrl}}", getPieChart());
+
+    out.print(bodyHtml);
   }
 
-  private void printHistogram() {
-    int binCount = min(MAX_HISTOGRAM_BINS, 10 * (int)log(costs.size()) + 1);
-    int binWidth = (int)ceil((double)worstCost / binCount);
+  private String getHistogram() {
+    int binCount = min(MAX_HISTOGRAM_BINS, 10 * (int) log(costs.size()) + 1);
+    int binWidth = (int) ceil((double) worstCost / binCount);
     Histogram excellentHistogram = new Histogram(0, binWidth, binCount);
     Histogram goodHistogram = new Histogram(0, binWidth, binCount);
     Histogram needsWorkHistogram = new Histogram(0, binWidth, binCount);
@@ -96,32 +103,37 @@ public class HtmlReport extends SummaryReport {
     chart.setValues(excellent, good, needsWork);
     chart.setYMark(0, excellentHistogram.getMaxBin());
     chart.setSize(HISTOGRAM_WIDTH, 200);
-    chart.setBarWidth((HISTOGRAM_WIDTH - HISTOGRAM_LEGEND_WIDTH) / binCount, 0, 0);
+    chart.setBarWidth((HISTOGRAM_WIDTH - HISTOGRAM_LEGEND_WIDTH) / binCount, 0,
+        0);
     chart.setChartLabel("Excellent", "Good", "Needs Work");
     chart.setColors(GREEN, YELLOW, RED);
-    out.print(chart.getHtml());
+    // out.print(chart.getHtml());
+    return chart.getHtml();
   }
 
-  private void printOverallChart() {
+  private String getOverallChart() {
     GoodnessChart chart = new GoodnessChart(maxExcellentCost,
         maxAcceptableCost, 10 * maxAcceptableCost, 100 * maxAcceptableCost);
     chart.setSize(200, 100);
     chart.setUnscaledValues(getOverall());
-    out.print(chart.getHtml());
+//    out.print(chart.getHtml());
+    return chart.getHtml();
   }
 
-  private void printPieChart() {
+  private String getPieChart() {
     PieChartUrl chart = new PieChartUrl();
     chart.setSize(400, 100);
     chart.setItemLabel("Excellent", "Good", "Needs Work");
     chart.setColors(GREEN, YELLOW, RED);
     chart.setValues(excellentCount, goodCount, needsWorkCount);
-    out.print(chart.getHtml());
+    // out.print(chart.getHtml());
+    return chart.getHtml();
   }
 
   public void printWorstOffenders(int worstOffenderCount) {
     out.println();
-    out.println("<h2>Highest Cost</h2>");
+    out
+        .println("<h2 style=\"margin-bottom: 12px;\">Least Testable Classes</h2>");
     out.println("<div onclick='clickHandler(event)'>");
     for (ClassCost cost : worstOffenders) {
       detailHtmlReport.write(cost);
@@ -142,6 +154,7 @@ public class HtmlReport extends SummaryReport {
     String jsCode = dummy.toString();
     origHeader = origHeader.replace("{{JSscript}}", jsCode);
     origHeader = origHeader.replace("{{Tstamp}}", now());
+
     out.print(origHeader);
   }
 
@@ -151,7 +164,7 @@ public class HtmlReport extends SummaryReport {
     stream(out, getClass().getResourceAsStream("HtmlReportFooter.html"));
   }
 
-  protected void stream(OutputStream  out, InputStream in) {
+  protected void stream(OutputStream out, InputStream in) {
     try {
       int ch;
       while ((ch = in.read()) != -1) {

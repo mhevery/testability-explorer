@@ -23,30 +23,30 @@ public class MethodInfoTest extends TestCase {
     MethodInfo method = new MethodInfo(new ClassInfo("com.foo.bar", false,
         null, null), "method", 0, "(Ljava/lang/String;)V", null, null, null,
         null, 1, null);
-    assertEquals(" void method( java.lang.String )", method.getFullName());
+    assertEquals("void method(java.lang.String)", method.getFullName());
 
     method = new MethodInfo(new ClassInfo("f.a.b", false, null, null),
         "mymethod", 0, "(IDLjava/lang/Thread;)Ljava/lang/Object;", null, null,
         null, null, 1, null);
-    assertEquals(" java.lang.Object mymethod( int , double , java.lang.Thread )", method
+    assertEquals("java.lang.Object mymethod(int, double, java.lang.Thread)", method
         .getFullName());
 
     method = new MethodInfo(new ClassInfo("c.b.ui.UI$ViewHandler", false, null,
         null), "<clinit>", 0, "()V", null, null, null, null, 1, null);
-    assertEquals(" c.b.ui.UI$ViewHandler()", method.getFullName());
+    assertEquals("c.b.ui.UI$ViewHandler()", method.getFullName());
 
     method = new MethodInfo(new ClassInfo("c.b.ui.UI$ViewHandler", false, null,
         null), "<init>", -1, "(I)V", null, null, null, null, 1, null);
-    assertEquals(" c.b.ui.UI$ViewHandler( int )", method.getFullName());
+    assertEquals("c.b.ui.UI$ViewHandler(int)", method.getFullName());
   }
 
   public void testDeconstructParameters() {
     MethodInfo method = new MethodInfo(null, null, 0, null, null, null, null,
         null, 1, null);
 
-    assertEquals(" int ", method.deconstructParameters("I"));
-    assertEquals(" double [][][]", method.deconstructParameters("[[[D"));
-    assertEquals(" java.lang.Object ", method.deconstructParameters("Ljava/lang/Object;"));
+    assertEquals("int", method.deconstructParameters("I"));
+    assertEquals("double[][][]", method.deconstructParameters("[[[D"));
+    assertEquals("java.lang.Object", method.deconstructParameters("Ljava/lang/Object;"));
 
   }
 }

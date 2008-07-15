@@ -68,7 +68,7 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
     ClassInfo clazz = repo.getClass(SingleMethodClass.class);
     MethodInfo method = clazz.getMethod("methodA()V");
     assertEquals("methodA()V", method.getNameDesc());
-    assertEquals(" void methodA()", method.toString());
+    assertEquals("void methodA()", method.toString());
     assertSame(method, clazz.getMethod("methodA()V"));
   }
 
