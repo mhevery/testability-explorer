@@ -105,7 +105,7 @@ public class DetailHtmlReport {
     text = text.replace("{cost}", "" + classCost.getOverallCost());
     // Don't show the link if we don't have one
     if (!link.equals("source")) {
-      text = text.replace("{link}", "<span class=\"smaller\">(" + link + ")</span>)");
+      text = text.replace("{link}", "<span class=\"smaller\">(" + link + ")</span>");
     } else {
       text = text.replace("{link}", "");
     }

@@ -34,15 +34,18 @@ public class DetailHtmlReportTest extends TestCase {
   ByteArrayOutputStream out = new ByteArrayOutputStream();
   PrintStream stream = new PrintStream(out, true);
 
-  String lineLinkTemplate = "";
-  String classLinkTemplate = "";
+  String emptyLineTemplate = "";
+  String emptyClassTemplate = "";
+
+  String lineTemplate = "http://code.google.com/p/testability-explorer/source/browse/trunk/src/{path}#{line}";
+  String classTemplate = "http://code.google.com/p/testability-explorer/source/browse/trunk/src/{path}";
 
   public void testWriteLineCost() throws Exception {
     LineNumberCost lineCost = new LineNumberCost(123,
         createMethodCallWithOverallCost("a.methodName()V", 64));
 
     DetailHtmlReport report = new DetailHtmlReport(stream, new SourceLinker(
-        lineLinkTemplate, classLinkTemplate), 10, 10);
+        emptyLineTemplate, emptyClassTemplate), 10, 10);
     report.write(lineCost, "");
     String text = out.toString();
 
@@ -51,6 +54,19 @@ public class DetailHtmlReportTest extends TestCase {
     assertTrue(text, text.contains("methodName"));
     assertTrue(text, text.contains("64"));
     assertTrue(text, text.endsWith("</div>" + NEW_LINE));
+  }
+
+  public void testLinkedLineCost() throws Exception {
+    LineNumberCost lineCost = new LineNumberCost(123,
+        createMethodCallWithOverallCost("a.methodName()V", 64));
+
+    DetailHtmlReport report = new DetailHtmlReport(stream, new SourceLinker(
+        lineTemplate, classTemplate), 10, 10);
+    report.write(lineCost, "com/google/ant/TaskModel.java");
+    String text = out.toString();
+
+    assertTrue(text,
+        text.contains("<a href=\"http://code.google.com/p/testability-explorer/source/browse/trunk/src/com/google/ant/TaskModel.java#123"));
   }
 
   private MethodCost createMethodCallWithOverallCost(String methodName,
@@ -63,7 +79,7 @@ public class DetailHtmlReportTest extends TestCase {
 
   public void testWriteMethodCost() throws Exception {
     DetailHtmlReport report = new DetailHtmlReport(stream, new SourceLinker(
-        lineLinkTemplate, classLinkTemplate), 10, 10) {
+        emptyLineTemplate, emptyClassTemplate), 10, 10) {
       @Override
       public void write(LineNumberCost lineNumberCost, String classFilePath) {
         write(" MARKER:" + lineNumberCost.getLineNumber());
@@ -87,7 +103,7 @@ public class DetailHtmlReportTest extends TestCase {
 
   public void testWriteClassCost() throws Exception {
     DetailHtmlReport report = new DetailHtmlReport(stream, new SourceLinker(
-        lineLinkTemplate, classLinkTemplate), 10, 10) {
+        emptyLineTemplate, emptyClassTemplate), 10, 10) {
       @Override
       public void write(MethodCost methodCost, String classFilePath) {
         write(" MARKER:" + methodCost.getMethodName());
@@ -111,4 +127,19 @@ public class DetailHtmlReportTest extends TestCase {
     assertTrue(text, text.endsWith("</div>" + NEW_LINE));
   }
 
+  public void testLinkedClassCost() throws Exception {
+    DetailHtmlReport report = new DetailHtmlReport(stream, new SourceLinker(
+       lineTemplate , classTemplate), 10, 10) ;
+
+    List<MethodCost> methods = new ArrayList<MethodCost>();
+    ClassCost classCost = new ClassCost("com.google.ant.TaskModel", methods);
+    classCost.link(new CostModel(1, 1));
+    report.write(classCost);
+    String text = out.toString();
+
+    assertTrue(
+        text,
+        text.contains("(<a href=\"http://code.google.com/p/testability-explorer/source/browse/trunk/src/com/google/ant/TaskModel.java\">source</a>)"));
+
+  }
 }
