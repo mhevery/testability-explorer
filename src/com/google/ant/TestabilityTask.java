@@ -142,6 +142,7 @@ public class TestabilityTask extends Task {
     log("-maxAcceptableCost"+ " " +  Integer.toString(model.getMaxAcceptableCost()), Project.MSG_VERBOSE);
     log("-worstOffenderCount"+ " " +  Integer.toString(model.getWorstOffenderCount()), Project.MSG_VERBOSE);
     log("-whitelist"+ " " +  model.getWhiteList(), Project.MSG_VERBOSE);
+    log("-grouping"+ " " + model.getGrouing(), Project.MSG_VERBOSE);
     log("-print"+ " " +  model.getPrint(), Project.MSG_VERBOSE);
   }
 
