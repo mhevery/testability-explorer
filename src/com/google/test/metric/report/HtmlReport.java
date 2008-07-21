@@ -33,6 +33,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Comparator;
 
 public class HtmlReport extends SummaryReport {
 
@@ -46,6 +47,14 @@ public class HtmlReport extends SummaryReport {
       int maxAcceptableCost, int worstOffenderCount,
       DetailHtmlReport detailHtmlReport) {
     super(maxExcellentCount, maxAcceptableCost, worstOffenderCount);
+    this.out = out;
+    this.detailHtmlReport = detailHtmlReport;
+  }
+
+  public HtmlReport(PrintStream out, int maxExcellentCount,
+      int maxAcceptableCost, int worstOffenderCount,
+      DetailHtmlReport detailHtmlReport, Comparator comparator) {
+    super(maxExcellentCount, maxAcceptableCost, worstOffenderCount, comparator);
     this.out = out;
     this.detailHtmlReport = detailHtmlReport;
   }

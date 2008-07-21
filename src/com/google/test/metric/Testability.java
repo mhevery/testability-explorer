@@ -18,13 +18,7 @@ package com.google.test.metric;
 import com.google.classpath.ClasspathRootFactory;
 import com.google.classpath.ClasspathRootGroup;
 import com.google.classpath.ColonDelimitedStringParser;
-import com.google.test.metric.report.DetailHtmlReport;
-import com.google.test.metric.report.DrillDownReport;
-import com.google.test.metric.report.HtmlReport;
-import com.google.test.metric.report.Report;
-import com.google.test.metric.report.SourceLinker;
-import com.google.test.metric.report.TextReport;
-
+import com.google.test.metric.report.*;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -32,6 +26,7 @@ import org.kohsuke.args4j.Option;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Testability {
@@ -68,10 +63,16 @@ public class Testability {
                   "count against you. Matches packages/classes starting with " +
                   "given values. (Always whitelists java.*. RegExp OK.)")
   String wl = null;
-  private final RegExpWhiteList whitelist = new RegExpWhiteList();
+  private RegExpWhiteList whitelist = new RegExpWhiteList();
+
+  @Option(name = "-grouping",
+      usage = "cost: (default) groupy by cost.\n" +
+              "package: group by package of classes. Does NOT work with 'detail' print mode.")
+  String grouping = "cost";
 
   @Option(name = "-print",
       usage = "summary: (default) print package summary information.\n" +
+              "html: print package summary information in html format.\n" +
               "detail: print detail drill down information for each method call.")
   String printer = "summary";
 
@@ -156,32 +157,73 @@ public class Testability {
   }
 
   private void postParse() throws CmdLineException {
-    for (String packageName : new ColonDelimitedStringParser(wl).getStrings()) {
-      whitelist.addPackage(packageName);
-    }
-    templates = new ColonDelimitedStringParser(templatesStr).getStrings();
-    if (templates.isEmpty()) {
-      templates.add("");
-      templates.add("");
-    }
-    if (entryList.isEmpty()) {
-      entryList.add("");
-    }
-    classpath = ClasspathRootFactory.makeClasspathRootGroup(cp);
+
+    ensureEntryListIsNotEmpty();
+
+    whitelist = getWhiteList();
+    templates = getTemplates();
+    classpath = getClassPath();
+    Comparator groupingComparator = getGroupingComparator();
+    report = getReportPrinter(groupingComparator);
+  }
+
+  private Report getReportPrinter(Comparator groupingComparator) throws CmdLineException {
     if (printer.equals("summary")) {
-      report = new TextReport(out, maxExcellentCost, maxAcceptableCost, worstOffenderCount);
+      report = new TextReport(out, maxExcellentCost, maxAcceptableCost, worstOffenderCount, groupingComparator);
     } else if (printer.equals("html")) {
       SourceLinker linker = new SourceLinker(templates.get(0), templates.get(1));
       DetailHtmlReport detailHtmlReport = new DetailHtmlReport(out, linker,
           maxMethodCount, maxLineCount);
       report = new HtmlReport(out, maxExcellentCost, maxAcceptableCost,
-          worstOffenderCount, detailHtmlReport);
+          worstOffenderCount, detailHtmlReport, groupingComparator);
     } else if (printer.equals("detail")) {
       report = new DrillDownReport(out, entryList, printDepth, minCost);
     } else {
       throw new CmdLineException("Don't understand '-print' option '"
           + printer + "'");
     }
+
+    return report;
+  }
+
+  private void ensureEntryListIsNotEmpty() {
+    if (entryList.isEmpty()) {
+      entryList.add("");
+    }
+  }
+
+  private RegExpWhiteList getWhiteList() {
+    for (String packageName : new ColonDelimitedStringParser(wl).getStrings()) {
+      whitelist.addPackage(packageName);
+    }
+
+    return whitelist;
+  }
+
+  private ClasspathRootGroup getClassPath() {
+    return ClasspathRootFactory.makeClasspathRootGroup(cp);
+  }
+
+  private List<String> getTemplates() {
+    List<String> templates = new ColonDelimitedStringParser(templatesStr).getStrings();
+    if (templates.isEmpty()) {
+      templates.add("");
+      templates.add("");
+    }
+
+    return templates;
+  }
+
+  private Comparator getGroupingComparator() {
+    Comparator groupingComparator;
+
+    if (grouping.equals("package")) {
+      groupingComparator = new ClassCost.PackageComparator();
+    } else {
+      groupingComparator = new ClassCost.CostComparator();
+    }
+
+    return groupingComparator;
   }
 
   public Report execute() throws CmdLineException {

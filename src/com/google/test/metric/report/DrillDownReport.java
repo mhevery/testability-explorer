@@ -34,7 +34,7 @@ public class DrillDownReport implements Report {
   private static final String DIVIDER  = "-----------------------------------------\n";
   private final PrintStream out;
   private final List<String> entryList;
-  private final SortedSet<ClassCost> toPrint = new TreeSet<ClassCost>(new ClassCost.Comparator());
+  private final SortedSet<ClassCost> toPrint = new TreeSet<ClassCost>(new ClassCost.CostComparator());
   private final int maxDepth;
   private final int minCost;
   private long cumulativeTCC = 0;

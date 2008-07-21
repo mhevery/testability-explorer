@@ -16,8 +16,8 @@
     </target>
 
     <target name="testability.all">
-        <testability  filter="" resultfile="System.out" errorfile="System.err"
-                printdepth="2" print="simple" mincost="1" maxexcellentcost="50"
+        <testability filter="" resultfile="te.html" errorfile="System.err"
+                printdepth="2" grouping="cost" print="html" mincost="1" maxexcellentcost="50"
                 maxacceptablecost="100" worstoffendercount="20" whitelist=""
                 cyclomatic="1" global="10">
             <fileset dir="lib">
@@ -29,6 +29,19 @@
         </testability>
     </target>
 
+    <target name="testability.detail">
+        <testability filter="" resultfile="System.out" errorfile="System.err"
+                printdepth="2" print="detail" mincost="1" maxexcellentcost="50"
+                maxacceptablecost="100" worstoffendercount="20" whitelist=""
+                cyclomatic="1" global="10">
+            <fileset dir="lib">
+                <include name="junit.jar"/>
+            </fileset>
+            <!--<fileset dir="lib/apache-ant-1.7.0/lib">-->
+                <!--<include name="ant-*.jar"/>-->
+            <!--</fileset>-->
+        </testability>
+    </target>
     <target name="testability.test" depends="testability.all">
         <fail if="testability.failproperty" message="testability failed"/>
     </target>
