@@ -19,13 +19,20 @@ import java.util.List;
 
 public class ClassCost {
 
-  public static class Comparator implements java.util.Comparator<ClassCost> {
+  public static class CostComparator implements java.util.Comparator<ClassCost> {
     public int compare(ClassCost c1, ClassCost c2) {
       int diff = (int) (c2.getOverallCost() - c1.getOverallCost());
       return diff == 0 ? c1.className.compareTo(c2.className) : diff;
     }
   }
 
+  public static class PackageComparator implements java.util.Comparator<ClassCost> {
+    public int compare(ClassCost c1, ClassCost c2) {
+      // we sort by fully qualified path to get packages in right order
+      return c1.getClassName().compareTo(c2.getClassName());
+    }
+  }
+  
   private final List<MethodCost> methods;
   private final String className;
   private long overallCost;
@@ -52,6 +59,11 @@ public class ClassCost {
 
   public String getClassName() {
     return className;
+  }
+
+  public String getPackageName() {
+
+    return getClassName().lastIndexOf('.') == -1 ? "" : getClassName().substring(0, getClassName().lastIndexOf('.'));
   }
 
   public List<MethodCost> getMethods() {

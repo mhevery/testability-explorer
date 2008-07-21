@@ -16,6 +16,7 @@
 
 package com.google.test.metric.report;
 import java.io.PrintStream;
+import java.util.Comparator;
 
 import com.google.test.metric.ClassCost;
 
@@ -25,6 +26,12 @@ public class TextReport extends SummaryReport {
   private final PrintStream out;
   public TextReport(PrintStream out, int maxExcellentCost, int maxAcceptableCost, int worstOffenderCount) {
     super(maxExcellentCost, maxAcceptableCost, worstOffenderCount);
+    this.out = out;
+  }
+
+   public TextReport(PrintStream out, int maxExcellentCost, int maxAcceptableCost, int worstOffenderCount,
+                     Comparator comparator) {
+    super(maxExcellentCost, maxAcceptableCost, worstOffenderCount, comparator);    
     this.out = out;
   }
 
