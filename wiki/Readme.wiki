@@ -455,4 +455,4 @@ Method `getGlobalIncrement()` follows the same logic as `getGlobalCount()`.
 
 ==Future Enhancements / Requests==
 Please talk about what you want on the mailing list:
-http://groups.google.com/group/testability-metrics
+http://groups.google.com/group/testability-explorer
