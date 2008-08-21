@@ -15,45 +15,51 @@
  */
 package com.google.test.metric;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.classpath.ClasspathRootGroup;
+import com.google.test.metric.asm.ClassInfoBuilderVisitor;
+import com.google.test.metric.ast.AbstractSyntaxTree;
+import com.google.test.metric.ast.ClassHandle;
 
 import org.objectweb.asm.ClassReader;
 
-import com.google.classpath.ClasspathRootGroup;
-import com.google.test.metric.asm.ClassInfoBuilderVisitor;
+import java.io.IOException;
+import java.io.InputStream;
 
-public class ClassRepository {
+/**
+ * Internal comment: Most code from {@link ClassRepository}.
+ */
+public class JavaParser {
 
-  private final Map<String, ClassInfo> classes = new HashMap<String, ClassInfo>();
-  private ClasspathRootGroup classpathRoots;
+  private final ClasspathRootGroup classpathRoots;
+  private final AbstractSyntaxTree ast;
 
-  public ClassRepository() {
+  public JavaParser(AbstractSyntaxTree ast) {
+    this(null, ast);
   }
 
-  public ClassRepository(ClasspathRootGroup classpathRoots) {
+  public JavaParser(ClasspathRootGroup classpathRoots, AbstractSyntaxTree ast) {
     this.classpathRoots = classpathRoots;
+    this.ast = ast;
   }
 
-  public ClassInfo getClass(Class<?> clazz) {
+  public ClassHandle getClass(Class<?> clazz) {
     return getClass(clazz.getName());
   }
 
-  public ClassInfo getClass(String clazzName) {
+  public ClassHandle getClass(String clazzName) {
     if (clazzName.startsWith("[")) {
       return getClass(Object.class);
     }
-    ClassInfo classInfo = classes.get(clazzName.replace('/', '.'));
-    if (classInfo == null) {
-        try {
-          classInfo = parseClass(inputStreamForClass(clazzName));
-        } catch (ArrayIndexOutOfBoundsException e) {
-          throw new ClassNotFoundException(clazzName);
-        }
+
+    ClassHandle classHandle = ast.getClass(clazzName.replace('/', '.'));
+    if (classHandle == null) {
+      try {
+        classHandle = parseClass(inputStreamForClass(clazzName));
+      } catch (ArrayIndexOutOfBoundsException e) {
+        throw new ClassNotFoundException(clazzName);
+      }
     }
-    return classInfo;
+    return classHandle;
   }
 
   private InputStream inputStreamForClass(String clazzName) {
@@ -70,23 +76,15 @@ public class ClassRepository {
     return classBytes;
   }
 
-  private ClassInfo parseClass(InputStream classBytes) {
-    return null;
-    /*
+  private ClassHandle parseClass(InputStream classBytes) {
     try {
       ClassReader classReader = new ClassReader(classBytes);
-      ClassInfoBuilderVisitor visitor = new ClassInfoBuilderVisitor(this);
+      ClassInfoBuilderVisitor visitor =
+          new ClassInfoBuilderVisitor(this, ast);
       classReader.accept(visitor, 0);
-      return visitor.getClassInfo();
+      return visitor.getClassHandle();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    */
   }
-
-  public void addClass(ClassInfo classInfo) {
-    classes.put(classInfo.getName(), classInfo);
-  }
-
 }
-

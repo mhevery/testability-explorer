@@ -15,8 +15,12 @@
  */
 package com.google.test.metric.asm;
 
-import com.google.test.metric.ClassInfo;
+
 import com.google.test.metric.ClassRepository;
+import com.google.test.metric.JavaParser;
+import com.google.test.metric.ast.AbstractSyntaxTree;
+import com.google.test.metric.ast.ClassHandle;
+import com.google.test.metric.ast.Language;
 
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -27,45 +31,53 @@ import java.util.List;
 
 public class ClassInfoBuilderVisitor extends NoopClassVisitor {
 
-  private final ClassRepository repository;
-  private ClassInfo classInfo;
+  private final AbstractSyntaxTree ast;
+  private ClassHandle classHandle;
+  private final JavaParser parser;
 
-  public ClassInfoBuilderVisitor(ClassRepository repository) {
-    this.repository = repository;
+  public ClassInfoBuilderVisitor(JavaParser parser, AbstractSyntaxTree ast) {
+    this.parser = parser;
+    this.ast = ast;
   }
 
   @Override
   public void visit(int version, int access, String name, String signature,
       String superName, String[] interfaces) {
-    ClassInfo superClass = null;
-    superClass = superName == null ? null : repository.getClass(superName);
+    ClassHandle superClass = null;
+    superClass = superName == null ? null : parser.getClass(superName);
 
-    List<ClassInfo> interfaceList = new ArrayList<ClassInfo>();
+    List<ClassHandle> interfaceList = new ArrayList<ClassHandle>();
     for (String interfaze : interfaces) {
-      interfaceList.add(repository.getClass(interfaze));
+      interfaceList.add(ast.getClass(interfaze));
     }
     boolean isInterface = (access & Opcodes.ACC_INTERFACE) == Opcodes.ACC_INTERFACE;
-    classInfo = new ClassInfo(name, isInterface, superClass, interfaceList);
-    repository.addClass(classInfo);
+    //classHandle = ast.createClass(Language.JAVA, name, isInterface, superClass, interfaceList);
+    classHandle = ast.createClass(Language.JAVA, name, superClass);
+    ast.getJavaClassHandle(classHandle).setIsInterface(isInterface);
   }
 
   @Override
   public MethodVisitor visitMethod(int access, String name, String desc,
       String signature, String[] exceptions) {
+    /*
     boolean isStatic = (access & Opcodes.ACC_STATIC) == Opcodes.ACC_STATIC;
-    return new MethodVisitorBuilder(repository, classInfo, name, desc, signature,
+    return new MethodVisitorBuilder(ast, classInfo, name, desc, signature,
         exceptions, isStatic, Visibility.valueOf(access));
+        */
+    return new NoopMethodVisitor();
   }
 
   @Override
   public FieldVisitor visitField(int access, String name, String desc,
       String signature, Object value) {
+    /*
     return new FieldVisitorBuilder(classInfo, access, name, desc,
         signature, value);
+        */
+    return new NoopFieldVisitor();
   }
-
-  public ClassInfo getClassInfo() {
-    return classInfo;
+  
+  public ClassHandle getClassHandle() {
+    return classHandle;
   }
-
 }
