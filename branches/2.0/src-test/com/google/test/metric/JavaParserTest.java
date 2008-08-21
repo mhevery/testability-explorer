@@ -28,7 +28,6 @@ public class JavaParserTest extends TestCase {
     AbstractSyntaxTree ast = new AbstractSyntaxTree();
     JavaParser parser = new JavaParser(ast);
     parser.getClass(ClassInfoTest.EmptyClass.class);
-    assertTrue(ast.containsClass(
-        ClassInfoTest.EmptyClass.class.getName().replace(".", "/")));
+    assertTrue(ast.containsClass(ClassInfoTest.EmptyClass.class.getName()));
   }
 }

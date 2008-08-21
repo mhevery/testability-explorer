@@ -69,6 +69,14 @@ public final class AbstractSyntaxTree {
     public ClassHandle getHandle() {
       return this;
     }
+
+    public FieldHandle getField(String string) {
+      throw new UnsupportedOperationException();
+    }
+
+    public MethodHandle getMethod(String string) {
+      throw new UnsupportedOperationException();
+    }
   }
 
   /**
@@ -273,6 +281,11 @@ public final class AbstractSyntaxTree {
     for (Module m : modules) {
       v.visitModule(m);
     }
+  }
+
+  public ClassInfo getClassInfo(String name) {
+    //return classDirectory.get(name);
+    throw new UnsupportedOperationException();
   }
 
 }

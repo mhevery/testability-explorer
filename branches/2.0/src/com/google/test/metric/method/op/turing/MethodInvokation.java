@@ -15,13 +15,13 @@
  */
 package com.google.test.metric.method.op.turing;
 
-import java.util.List;
-
 import com.google.test.metric.ClassNotFoundException;
 import com.google.test.metric.MethodInfo;
 import com.google.test.metric.MethodNotFoundException;
 import com.google.test.metric.TestabilityContext;
 import com.google.test.metric.Variable;
+
+import java.util.List;
 
 public class MethodInvokation extends Operation {
 
@@ -100,7 +100,7 @@ public class MethodInvokation extends Operation {
       context.reportError("WARNING: class not found: " + clazzName);
     } catch (MethodNotFoundException e) {
       context.reportError("WARNING: method not found: " + e.getMethodName()
-          + " in " + e.getClassInfo().getName());
+          + " in " + e.getClassHandle().getName());
     }
   }
 

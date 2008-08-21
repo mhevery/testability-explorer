@@ -13,25 +13,18 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.test.metric;
+package com.google.test.metric.ast;
 
-import com.google.test.metric.ast.AbstractSyntaxTree;
+import com.google.test.metric.LocalVariableInfo;
 
+import java.util.List;
 
-public abstract class ClassRepositoryTestCase extends AutoFieldClearTestCase {
+public interface MethodHandle {
 
-  protected JavaParser repo;
-  protected AbstractSyntaxTree ast;
+  String getNameDesc();
 
-  public ClassRepositoryTestCase() {
-    super();
-  }
+  List<ParameterHandle> getParameters();
 
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-    ast = new AbstractSyntaxTree();
-    repo = new JavaParser(ast);
-  }
+  List<LocalVariableInfo> getLocalVariables();
 
 }

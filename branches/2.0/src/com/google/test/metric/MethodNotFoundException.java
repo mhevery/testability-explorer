@@ -1,12 +1,12 @@
 /*
  * Copyright 2007 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -15,25 +15,27 @@
  */
 package com.google.test.metric;
 
+import com.google.test.metric.ast.ClassHandle;
+
 public class MethodNotFoundException extends RuntimeException {
   private static final long serialVersionUID = -259965052038451086L;
 
   private final String methodName;
-  private final ClassInfo classInfo;
+  private final ClassHandle classHandle;
 
-  public MethodNotFoundException(ClassInfo classInfo, String methodName) {
+  public MethodNotFoundException(ClassHandle classHandle, String methodName) {
     super("Method '" + methodName + "' not found in class '"
-        + classInfo.getName() + "'");
+        + classHandle.getName() + "'");
     this.methodName = methodName;
-    this.classInfo = classInfo;
+    this.classHandle = classHandle;
   }
 
   public String getMethodName() {
     return methodName;
   }
 
-  public ClassInfo getClassInfo() {
-    return classInfo;
+  public ClassHandle getClassHandle() {
+    return classHandle;
   }
 
 }

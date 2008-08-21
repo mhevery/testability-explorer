@@ -15,18 +15,16 @@
  */
 package com.google.test.metric.x;
 
-import org.objectweb.asm.ClassReader;
-
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.ClassRepository;
 import com.google.test.metric.ClassRepositoryTestCase;
-import com.google.test.metric.CostModel;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MetricComputer;
-import com.google.test.metric.RegExpWhiteList;
 import com.google.test.metric.example.Primeness;
 import com.google.test.metric.example.SumOfPrimes1;
 import com.google.test.metric.example.SumOfPrimes2;
+
+import org.objectweb.asm.ClassReader;
 
 public class SelfTest extends ClassRepositoryTestCase {
 
@@ -35,7 +33,8 @@ public class SelfTest extends ClassRepositoryTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    computer = new MetricComputer(repo, null, new RegExpWhiteList(), new CostModel());
+    throw new UnsupportedOperationException();
+    //computer = new MetricComputer(repo, null, new RegExpWhiteList(), new CostModel());
   }
 
   @Override

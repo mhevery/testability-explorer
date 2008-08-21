@@ -64,7 +64,8 @@ public class ClassInfo {
       }
       superClasses.addAll(clazz.interfaces);
     }
-    throw new MethodNotFoundException(this, methodName);
+    throw new UnsupportedOperationException();
+    //throw new MethodNotFoundException(this, methodName);
   }
 
   public void addMethod(MethodInfo methodInfo) {
@@ -85,7 +86,8 @@ public class ClassInfo {
       }
       clazz = clazz.superClass;
     }
-    throw new FieldNotFoundException(this, fieldName);
+    throw new UnsupportedOperationException();
+    //throw new FieldNotFoundException(this, fieldName);
   }
 
   public void addField(FieldInfo fieldInfo) {

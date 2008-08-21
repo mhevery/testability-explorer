@@ -15,8 +15,6 @@
  */
 package com.google.test.metric;
 
-import static com.google.classpath.ClasspathRootFactory.makeClasspathRootGroup;
-
 import com.google.test.metric.report.DrillDownReport;
 
 import java.io.ByteArrayOutputStream;
@@ -31,7 +29,8 @@ public class MetricComputerTest extends ClassRepositoryTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    computer = new MetricComputer(repo, null, whitelist, new CostModel());
+    throw new UnsupportedOperationException();
+    //computer = new MetricComputer(repo, null, whitelist, new CostModel());
   }
 
   public static class Medium {
@@ -72,10 +71,13 @@ public class MetricComputerTest extends ClassRepositoryTestCase {
   }
 
   public void testMediumCost1() throws Exception {
+    throw new UnsupportedOperationException();
+    /*
     MethodInfo method = repo.getClass(Medium.class).getMethod("statiCost1()I");
     assertFalse(method.canOverride());
     MethodCost cost = computer.compute(Medium.class, "statiCost1()I");
     assertEquals(1l, cost.getTotalComplexityCost());
+    */
   }
 
   /**
@@ -83,10 +85,13 @@ public class MetricComputerTest extends ClassRepositoryTestCase {
    * don't want to add it twice. But the constructor adds 1 so total cost is 3.
    */
   public void testMediumCost2() throws Exception {
+    throw new UnsupportedOperationException();
+    /*
     MethodInfo method = repo.getClass(Medium.class).getMethod("cost2()I");
     assertTrue(method.canOverride());
     MethodCost cost = computer.compute(Medium.class, "cost2()I");
     assertEquals(3l, cost.getTotalComplexityCost());
+    */
   }
 
   /**
@@ -94,10 +99,13 @@ public class MetricComputerTest extends ClassRepositoryTestCase {
    * as it can not be overridden but not the cost of the instance method.
    */
   public void testMediumInit() throws Exception {
+    throw new UnsupportedOperationException();
+    /*
     MethodInfo method = repo.getClass(Medium.class).getMethod("<init>()V");
     assertFalse(method.canOverride());
     MethodCost cost = computer.compute(Medium.class, "<init>()V");
     assertEquals(1l, cost.getTotalComplexityCost());
+    */
   }
 
   /**
@@ -178,10 +186,13 @@ public class MetricComputerTest extends ClassRepositoryTestCase {
   }
 
   public void testChooseConstructorWithMostParameters() throws Exception {
+    throw new UnsupportedOperationException();
+    /*
     ClassInfo classInfo = repo.getClass(ChoseConstructor.class);
     MethodInfo constructor = computer.getPrefferedConstructor(classInfo);
     assertEquals("<init>(Ljava/lang/Object;Ljava/lang/Object;)V", constructor
         .getNameDesc());
+        */
   }
 
   static class Singleton {
@@ -258,7 +269,8 @@ public class MetricComputerTest extends ClassRepositoryTestCase {
 
   public void testArray() throws Exception {
     repo.getClass(String[].class);
-    computer.compute(repo.getClass(Array.class).getMethod("method()V"));
+    throw new UnsupportedOperationException();
+    //computer.compute(repo.getClass(Array.class).getMethod("method()V"));
   }
 
   static class InjectableClass {
@@ -405,19 +417,25 @@ public class MetricComputerTest extends ClassRepositoryTestCase {
   }
 
   public void testWhiteList() throws Exception {
+    throw new UnsupportedOperationException();
+    /*
     RegExpWhiteList whiteList = new RegExpWhiteList("java.lang");
     computer = new MetricComputer(repo, null, whiteList, new CostModel());
     MethodCost cost = computer.compute(WhiteListTest.class, "testMethod()V");
     assertEquals(0L, cost.getTotalGlobalCost());
+    */
   }
 
   public void testThatOnWindowsWeCanParseTheFonts() throws Exception {
+    throw new UnsupportedOperationException();
+    /*
     repo = new ClassRepository(makeClasspathRootGroup("classes-for-test/jre1.6_TrueTypeBug"));
     WhiteList whitelist = new RegExpWhiteList();
     computer = new MetricComputer(repo, null, whitelist, new CostModel());
     ClassInfo clazz = repo.getClass("sun.font.TrueTypeFont");
     MethodInfo method = clazz.getMethod("getTableBuffer(I)Ljava/nio/ByteBuffer;");
     computer.compute(method);
+    */
     // assert no exception thrown.
   }
 
