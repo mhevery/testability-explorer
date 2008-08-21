@@ -1,0 +1,95 @@
+<html>
+<head>
+<title>Testability test</title>
+
+<script type='text/javascript' src='../../../../../../lib/jsunit/app/jsUnitCore.js'>
+</script>
+<script type='text/javascript' src='../../../../../../src/com/google/test/metric/report/report.js'></script>
+</head>
+
+<body>
+   <script type='text/javascript'>
+   
+   function setUp() {
+      var div = document.createElement('div');
+      div.id = 'id';
+      document.body.appendChild(div);
+      var spanElem = document.createElement('span');
+      spanElem.className = 'expand';
+      spanElem.id = 'spanElem';
+      spanElem.innerHTML = '[+]';
+      div.appendChild(spanElem);
+      var childDiv1 = document.createElement('div');
+      childDiv1.id = 'cDiv1';
+      childDiv1.style.display = 'none';
+      div.appendChild(childDiv1);
+      var childDiv2 = document.createElement('div');
+      childDiv2.id = 'cDiv2';
+      childDiv2.style.display = 'none';
+      childDiv2.className = 'Line';
+      childDiv1.appendChild(childDiv2);
+   }   
+   
+   function tearDown() {
+      var div = document.getElementById('id');
+      document.body.removeChild(div);
+   }
+   
+   function testToggleEmptyToBlock() {
+      var div = document.getElementById('id');
+      assertEquals('', div.style.display);
+      toggle(div);
+      assertEquals('block', div.style.display);
+   }
+   
+   function testToggleNoneToBlock() {
+      var div = document.getElementById('id');
+      div.style.display = 'none';
+      toggle(div);
+      assertEquals('block', div.style.display);
+   }
+   
+   function testToggleBlockToNone() {
+      var div = document.getElementById('id');
+      div.style.display = 'block';
+      toggle(div);
+      assertEquals('none', div.style.display);
+   }
+   
+   function testClickHandlerShowChild() {
+      var div = document.getElementById('id');
+      var event = {target: div};
+      clickHandler(event);
+      var chld = document.getElementById('cDiv1');
+      assertEquals('block', chld.style.display);
+      
+      var span = document.getElementById('spanElem');
+      assertEquals('[-]', span.innerHTML);
+   }
+   
+   function testClickHandlerHideChild() {
+      var div = document.getElementById('id');
+      var event = {target: div};
+      var chld = document.getElementById('cDiv1');
+      var span = document.getElementById('spanElem');
+      span.innerHTML = '[-]';
+      chld.style.display = 'block';
+      clickHandler(event);
+      assertEquals('none', chld.style.display);
+      
+      assertEquals('[+]', span.innerHTML);
+   }
+   
+   function testToggleExpandSign() {
+      var span = document.getElementById('spanElem');
+      var event = {target: span};
+      clickHandler(event);
+      assertEquals('[-]', span.innerHTML);
+      clickHandler(event);
+      assertEquals('[+]', span.innerHTML);
+   }
+   
+
+   </script>
+</body>
+</html>
