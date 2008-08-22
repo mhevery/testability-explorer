@@ -25,11 +25,4 @@ package com.google.test.metric.ast;
  */
 public interface ClassHandle {
 
-  /**
-   * Returns a handle. Classes that implement the ClassHandle
-   * interface need to provide at least a method for creating a
-   * handle.
-   */
-  ClassHandle getHandle();
-
 }

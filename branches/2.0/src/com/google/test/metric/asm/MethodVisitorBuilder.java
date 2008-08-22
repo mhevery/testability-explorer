@@ -17,15 +17,17 @@ package com.google.test.metric.asm;
 
 import static com.google.test.metric.asm.SignatureParser.parse;
 
-import com.google.test.metric.FieldInfo;
 import com.google.test.metric.FieldNotFoundException;
 import com.google.test.metric.JavaParser;
 import com.google.test.metric.LocalVariableInfo;
-import com.google.test.metric.ParameterInfo;
 import com.google.test.metric.Type;
 import com.google.test.metric.Variable;
 import com.google.test.metric.ast.AbstractSyntaxTree;
 import com.google.test.metric.ast.ClassHandle;
+import com.google.test.metric.ast.FieldHandle;
+import com.google.test.metric.ast.Language;
+import com.google.test.metric.ast.MethodHandle;
+import com.google.test.metric.ast.ParameterHandle;
 import com.google.test.metric.method.BlockDecomposer;
 import com.google.test.metric.method.Constant;
 import com.google.test.metric.method.op.stack.ArrayLoad;
@@ -75,8 +77,8 @@ public class MethodVisitorBuilder implements MethodVisitor {
   private Variable methodThis;
   private int lineNumber;
   private int startingLineNumber;
-  private final List<ParameterInfo> parameters = new ArrayList<ParameterInfo>();
-  private final List<LocalVariableInfo> localVariables = new ArrayList<LocalVariableInfo>();
+  private final List<ParameterHandle> parameters = new ArrayList<ParameterHandle>();
+  private final List<LocalVariableHandle> localVariables = new ArrayList<LocalVariableHandle>();
 
   public MethodVisitorBuilder(JavaParser parser, AbstractSyntaxTree ast, ClassHandle classHandle,
       String name, String desc, String signature, String[] exceptions,
@@ -95,7 +97,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
       localVariables.add((LocalVariableInfo) methodThis);
     }
     for (Type type : parse(desc).getParameters()) {
-      ParameterInfo parameterInfo = new ParameterInfo("param_" + slot, type);
+      //ParameterInfo parameterInfo = new ParameterInfo("param_" + slot, type);
       parameters.add(parameterInfo);
       slots.put(slot++, parameterInfo);
       if (type.isDoubleSlot()) {
@@ -260,11 +262,11 @@ public class MethodVisitorBuilder implements MethodVisitor {
     }
     block.decomposeIntoBlocks();
     try {
-      //ast.createMethod(....)
+      MethodHandle methodHandle = ast.createMethod(Language.JAVA, null, null);
       //MethodInfo methodInfo = new MethodInfo(classHandle, name, startingLineNumber,
       //    desc, methodThis, parameters, localVariables, visibility,
       //    cyclomaticComplexity, block.getOperations());
-      classHandle.addMethod(methodInfo);
+      //classHandle.addMethod(methodHandle);
     } catch (IllegalStateException e) {
       throw new IllegalStateException("Error in " + classHandle + "." + name
           + desc, e);
@@ -932,13 +934,13 @@ public class MethodVisitorBuilder implements MethodVisitor {
     }
 
     public void run() {
-      FieldInfo field = null;
+      FieldHandle field = null;
       ClassHandle ownerClass = parser.getClass(fieldOwner);
       try {
         field = ownerClass.getField(fieldName);
       } catch (FieldNotFoundException e) {
-        //field = ast.createField(....)
-        //    new FieldInfo(ownerClass, "FAKE:" + fieldName, Type
+        field = ast.createField(Language.JAVA, null, Type.fromDesc(fieldDesc), false);
+        //    new FieldHandle(ownerClass, "FAKE:" + fieldName, Type
         //        .fromDesc(fieldDesc), false, isStatic, false);
       }
       block.addOp(new com.google.test.metric.method.op.stack.PutField(
@@ -965,13 +967,13 @@ public class MethodVisitorBuilder implements MethodVisitor {
     }
 
     public void run() {
-      FieldInfo field = null;
+      FieldHandle field = null;
       ClassHandle ownerClass = parser.getClass(fieldOwner);
       try {
         field = ownerClass.getField(fieldName);
       } catch (FieldNotFoundException e) {
         //ast.createField(....)
-        //field = new FieldInfo(ownerClass, "FAKE:" + fieldName, Type
+        //field = new FieldHandle(ownerClass, "FAKE:" + fieldName, Type
         //        .fromDesc(fieldDesc), false, isStatic, false);
       }
       block.addOp(new GetField(lineNumber, field));

@@ -15,7 +15,6 @@
  */
 package com.google.test.metric;
 
-
 public class MethodNotFoundException extends RuntimeException {
   private static final long serialVersionUID = -259965052038451086L;
 

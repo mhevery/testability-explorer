@@ -15,7 +15,7 @@
  */
 package com.google.test.metric.asm;
 
-import com.google.test.metric.FieldInfo;
+import com.google.test.metric.ast.FieldInfo;
 import com.google.test.metric.Type;
 import com.google.test.metric.ast.ClassHandle;
 

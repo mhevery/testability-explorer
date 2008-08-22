@@ -39,4 +39,6 @@ public interface MethodInfo {
    * @return a list of local variables defined in this method.
    */
   List<LocalVariableInfo> getLocalVariables();
+
+  String getNameDesc();
 }

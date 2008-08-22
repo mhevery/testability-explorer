@@ -92,7 +92,7 @@ public final class AbstractSyntaxTree {
       if (methods.containsKey(methodName)) {
         return methods.get(methodName);
       }
-      throw new MethodNotFoundException(name, methodName);
+      throw new MethodNotFoundException(this, methodName);
     }
 
     /**
@@ -102,7 +102,7 @@ public final class AbstractSyntaxTree {
       if (fields.containsKey(fieldName)) {
         return fields.get(fieldName);
       }
-      throw new FieldNotFoundException(name, fieldName);
+      throw new FieldNotFoundException(this, fieldName);
     }
   }
 
