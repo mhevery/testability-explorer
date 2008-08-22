@@ -21,6 +21,7 @@ import com.google.classpath.ClasspathRootFactory;
 import com.google.test.metric.ast.ClassHandle;
 import com.google.test.metric.ast.FieldHandle;
 import com.google.test.metric.ast.MethodHandle;
+import com.google.test.metric.ast.MockVisitor;
 import com.google.test.metric.ast.ParameterHandle;
 
 import java.net.InetAddress;
@@ -46,7 +47,9 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
   public void testParseEmptyClass() throws Exception {
     ClassHandle clazz = repo.getClass(EmptyClass.class);
     String name = EmptyClass.class.getName();
-    assertEquals(name, ast.getClassInfo(name).getName());
+    MockVisitor v = new MockVisitor();
+    ast.accept(v);
+    assertEquals(name, v.classes.get(0).getName());
     assertEquals(name, clazz.toString());
     assertSame(clazz, repo.getClass(EmptyClass.class));
   }

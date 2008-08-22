@@ -15,22 +15,24 @@
  */
 package com.google.test.metric.ast;
 
-import junit.framework.TestCase;
-
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Tests interaction with the S-AST, using modules.
- */
-public class ModuleTest extends TestCase {
+public class MockVisitor implements Visitor {
 
-  public void testSimpleModule() {
-    AbstractSyntaxTree ast = new AbstractSyntaxTree();
-    ast.createModule(Language.JAVA, "TestModule");
+  public final List<ClassInfo> classes = new ArrayList<ClassInfo>();
+  public final List<MethodInfo> methods = new ArrayList<MethodInfo>();
+  public final List<ModuleInfo> modules = new ArrayList<ModuleInfo>();
 
-    ModuleVisitor v = new ModuleVisitor();
-    ast.accept(v);
-    List<ModuleInfo> modules = v.getModules();
-    assertEquals("TestModule", modules.get(0).getName());
+  public void visitClass(ClassInfo classInfo) {
+    classes.add(classInfo);
+  }
+
+  public void visitMethod(MethodInfo methodInfo) {
+    methods.add(methodInfo);
+  }
+
+  public void visitModule(ModuleInfo moduleInfo) {
+    modules.add(moduleInfo);
   }
 }
