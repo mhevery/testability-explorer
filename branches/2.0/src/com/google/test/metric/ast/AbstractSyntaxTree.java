@@ -16,7 +16,9 @@
 package com.google.test.metric.ast;
 
 import com.google.test.metric.FieldInfo;
+import com.google.test.metric.FieldNotFoundException;
 import com.google.test.metric.MethodInfo;
+import com.google.test.metric.MethodNotFoundException;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -87,21 +89,21 @@ public final class AbstractSyntaxTree {
      * {@inheritDoc}
      */
     public MethodInfo getMethod(String methodName) throws
-        NoSuchMethodException {
+        MethodNotFoundException {
       if (methods.containsKey(methodName)) {
         return methods.get(methodName);
       }
-      throw new NoSuchMethodException(methodName);
+      throw new MethodNotFoundException(name, methodName);
     }
 
     /**
      * {@inheritDoc}
      */
-    public FieldInfo getField(String fieldName) throws NoSuchFieldException {
+    public FieldInfo getField(String fieldName) throws FieldNotFoundException {
       if (fields.containsKey(fieldName)) {
         return fields.get(fieldName);
       }
-      throw new NoSuchFieldException(fieldName);
+      throw new FieldNotFoundException(name, fieldName);
     }
   }
 
@@ -195,6 +197,8 @@ public final class AbstractSyntaxTree {
   // javaClasses + cppClass is a subset of this map.
   private final Map<ClassHandle, Clazz> classes =
     new HashMap<ClassHandle, Clazz>();
+
+  private ClassHandle type;
 
   /**
    * Add a new top-level module to this AST.
@@ -298,6 +302,18 @@ public final class AbstractSyntaxTree {
   public JavaClassHandle getJavaClassHandle(ClassHandle classHandle) {
     return javaClasses.get(classHandle);
   }
+
+  public MethodHandle createMethod(Language lang, AccessPrivilege access,
+      ClassHandle returnType) {
+        throw new UnsupportedOperationException("createField");
+  }
+
+  public FieldHandle createField(Language lang, AccessPrivilege access,
+      ClassHandle fieldType, boolean isFinal) {
+        throw new UnsupportedOperationException("createField");
+  }
+
+
 
   /**
    * Accepts a new visitor for traversing the tree.
