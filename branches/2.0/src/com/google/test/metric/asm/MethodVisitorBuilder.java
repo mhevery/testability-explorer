@@ -264,7 +264,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
     }
     block.decomposeIntoBlocks();
     try {
-      MethodHandle methodHandle = ast.createMethod(Language.JAVA, classHandle, name, visibility, null);
+      MethodHandle methodHandle = ast.createMethod(Language.JAVA, classHandle, desc, visibility, null);
       //MethodInfo methodInfo = new MethodInfo(classHandle, name, startingLineNumber,
       //    desc, methodThis, parameters, localVariables, visibility,
       //    cyclomaticComplexity, block.getOperations());
