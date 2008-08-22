@@ -16,7 +16,6 @@
 
 package com.google.test.metric;
 
-
 import com.google.classpath.ClasspathRootFactory;
 import com.google.test.metric.ast.ClassHandle;
 import com.google.test.metric.ast.ClassInfo;
@@ -32,6 +31,13 @@ import java.util.List;
 
 public class ClassInfoTest extends ClassRepositoryTestCase {
 
+  private ClassInfo parseClass(Class<?> clazz) {
+    repo.getClass(EmptyClass.class);
+    MockVisitor v = new MockVisitor();
+    ast.accept(v);
+    return v.getClassInfo(clazz.getName());
+  }
+
   public void testNonExistingClass() throws Exception {
     try {
       repo.getClass("IDontExistClass");
@@ -46,31 +52,24 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
   }
 
   public void testParseEmptyClass() throws Exception {
-    ClassHandle clazz = repo.getClass(EmptyClass.class);
-    String name = EmptyClass.class.getName();
+    ClassHandle classHandle = repo.getClass(EmptyClass.class);
+    ClassInfo classInfo = parseClass(EmptyClass.class);
 
-    MockVisitor v = new MockVisitor();
-    ast.accept(v);
-
-    assertNotNull(v.getClassInfo(EmptyClass.class.getName()));
-    assertEquals(name, clazz.toString());
-    assertSame(clazz, repo.getClass(EmptyClass.class));
+    assertNotNull(classInfo);
+    assertEquals(EmptyClass.class.getName(), classInfo.toString());
+    assertSame(classHandle, repo.getClass(EmptyClass.class));
   }
 
   public void testMethodNotFoundException() throws Exception {
-
-    repo.getClass(EmptyClass.class);
-    MockVisitor v = new MockVisitor();
-    ast.accept(v);
-    ClassInfo clazz = v.getClassInfo(EmptyClass.class.getName());
+    ClassInfo classInfo = parseClass(EmptyClass.class);
     try {
-      clazz.getMethod("IDontExistMethod()V");
+      classInfo.getMethod("IDontExistMethod()V");
       fail();
     } catch (MethodNotFoundException e) {
       assertTrue(e.getMessage().contains("IDontExistMethod()V"));
       assertTrue(e.getMessage().contains(EmptyClass.class.getName()));
       assertEquals("IDontExistMethod()V", e.getMethodName());
-      assertEquals(clazz.getName(), e.getClassName());
+      assertEquals(classInfo.getName(), e.getClassName());
     }
   }
 
@@ -80,25 +79,16 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
   }
 
   public void testParseSingleMethodClass() throws Exception {
+    ClassInfo classInfo = parseClass(SingleMethodClass.class);
 
-    repo.getClass(SingleMethodClass.class);
-    MockVisitor v = new MockVisitor();
-    ast.accept(v);
-    ClassInfo clazz = v.getClassInfo(SingleMethodClass.class.getName());
-
-    MethodInfo method = clazz.getMethod("methodA()V");
+    MethodInfo method = classInfo.getMethod("methodA()V");
     assertEquals("methodA()V", method.getName());
     assertEquals("void methodA()", method.toString());
-    assertSame(method, clazz.getMethod("methodA()V"));
+    assertSame(method, classInfo.getMethod("methodA()V"));
   }
 
-  /**
-   *
-   * TODO: Does it makes sense??
-   */
-  /*
   public void testFiledNotFound() throws Exception {
-    ClassInfo clazz = ast.getClassInfo(repo.getClass(EmptyClass.class));
+    ClassInfo clazz = parseClass(EmptyClass.class);
     try {
       clazz.getField("IDontExistField");
       fail();
@@ -109,23 +99,18 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
       assertEquals(clazz.getName(), e.getClassName());
     }
   }
-  */
 
   public static class SingleFieldClass {
     Object fieldA;
   }
 
   public void testParseFields() throws Exception {
-
-    repo.getClass(SingleFieldClass.class);
-    MockVisitor v = new MockVisitor();
-    ast.accept(v);
-    ClassInfo clazz = v.getClassInfo(SingleFieldClass.class.getName());
-    FieldInfo field = clazz.getField("fieldA");
+    ClassInfo classInfo = parseClass(SingleFieldClass.class);
+    FieldInfo field = classInfo.getField("fieldA");
     assertEquals("fieldA", field.getName());
     assertEquals(SingleFieldClass.class.getName()
         + ".fieldA{java.lang.Object}", field.toString());
-    assertSame(field, clazz.getField("fieldA"));
+    assertSame(field, classInfo.getField("fieldA"));
   }
 
   public static class LocalVarsClass {
@@ -165,12 +150,8 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
   }
 
   private void assertLocalVars(String method, String[] params, String[] locals) {
-    repo.getClass(LocalVarsClass.class);
-    MockVisitor v = new MockVisitor();
-    ast.accept(v);
-    ClassInfo clazz = v.getClassInfo(LocalVarsClass.class.getName());
-
-    MethodInfo methodInfo = clazz.getMethod(method);
+    ClassInfo classInfo = parseClass(LocalVarsClass.class);
+    MethodInfo methodInfo = classInfo.getMethod(method);
     List<ParameterInfo> paramsParse = methodInfo.getParameters();
     List<LocalVariableInfo> localsParse = methodInfo.getLocalVariables();
 
