@@ -67,7 +67,7 @@ public class ClassInfoBuilderVisitor extends NoopClassVisitor {
   @Override
   public FieldVisitor visitField(int access, String name, String desc,
       String signature, Object value) {
-    return new FieldVisitorBuilder(classHandle, access, name, desc,
+    return new FieldVisitorBuilder(parser, ast, classHandle, access, name, desc,
         signature, value);
   }
 

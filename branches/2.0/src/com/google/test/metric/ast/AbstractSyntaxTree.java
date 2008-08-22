@@ -17,6 +17,7 @@ package com.google.test.metric.ast;
 
 import com.google.test.metric.FieldNotFoundException;
 import com.google.test.metric.MethodNotFoundException;
+import com.google.test.metric.Type;
 import com.google.test.metric.asm.Visibility;
 
 import java.util.Arrays;
@@ -330,5 +331,9 @@ public final class AbstractSyntaxTree {
    */
   public ClassInfo getClassInfo(ClassHandle handle) {
     return classes.get(handle);
+  }
+
+  public ParameterHandle createMethodParameter(String name, Type type) {
+    throw new UnsupportedOperationException();
   }
 }

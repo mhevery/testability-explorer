@@ -17,7 +17,6 @@ package com.google.test.metric.asm;
 
 import static com.google.test.metric.asm.SignatureParser.parse;
 
-import com.google.test.metric.FieldNotFoundException;
 import com.google.test.metric.JavaParser;
 import com.google.test.metric.LocalVariableInfo;
 import com.google.test.metric.Type;
@@ -26,6 +25,7 @@ import com.google.test.metric.ast.AbstractSyntaxTree;
 import com.google.test.metric.ast.ClassHandle;
 import com.google.test.metric.ast.FieldHandle;
 import com.google.test.metric.ast.Language;
+import com.google.test.metric.ast.LocalVariableHandle;
 import com.google.test.metric.ast.MethodHandle;
 import com.google.test.metric.ast.ParameterHandle;
 import com.google.test.metric.method.BlockDecomposer;
@@ -35,7 +35,6 @@ import com.google.test.metric.method.op.stack.ArrayStore;
 import com.google.test.metric.method.op.stack.Convert;
 import com.google.test.metric.method.op.stack.Duplicate;
 import com.google.test.metric.method.op.stack.Duplicate2;
-import com.google.test.metric.method.op.stack.GetField;
 import com.google.test.metric.method.op.stack.Increment;
 import com.google.test.metric.method.op.stack.Invoke;
 import com.google.test.metric.method.op.stack.Load;
@@ -91,15 +90,17 @@ public class MethodVisitorBuilder implements MethodVisitor {
     this.visibility = visibility;
     int slot = 0;
     if (!isStatic) {
-      Type thisType = Type.fromJava(classHandle.getName());
-      methodThis = new LocalVariableInfo("this", thisType);
+      //Type thisType = Type.fromJava(classHandle.getName());
+      //methodThis = new LocalVariableInfo("this", thisType);
+      //methodThis = new LocalVariableHandle("this", null);
       slots.put(slot++, methodThis);
-      localVariables.add((LocalVariableInfo) methodThis);
+      //localVariables.add((LocalVariableHandle) methodThis);
     }
     for (Type type : parse(desc).getParameters()) {
+      ParameterHandle parameterHandle = ast.createMethodParameter("param_" + slot, type);
       //ParameterInfo parameterInfo = new ParameterInfo("param_" + slot, type);
-      parameters.add(parameterInfo);
-      slots.put(slot++, parameterInfo);
+      parameters.add(parameterHandle);
+      //slots.put(slot++, parameterHandle);
       if (type.isDoubleSlot()) {
         slot++;
       }
@@ -239,7 +240,8 @@ public class MethodVisitorBuilder implements MethodVisitor {
     if (variable == null) {
       LocalVariableInfo localVar = new LocalVariableInfo(name, type);
       slots.put(slotNum, localVar);
-      localVariables.add(localVar);
+      //TODO
+      //localVariables.add(localVar);
     } else {
       variable.setName(name);
     }
@@ -262,7 +264,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
     }
     block.decomposeIntoBlocks();
     try {
-      MethodHandle methodHandle = ast.createMethod(Language.JAVA, null, null);
+      MethodHandle methodHandle = ast.createMethod(Language.JAVA, classHandle, name, visibility, null);
       //MethodInfo methodInfo = new MethodInfo(classHandle, name, startingLineNumber,
       //    desc, methodThis, parameters, localVariables, visibility,
       //    cyclomaticComplexity, block.getOperations());
@@ -374,7 +376,8 @@ public class MethodVisitorBuilder implements MethodVisitor {
     if (variable == null) {
       LocalVariableInfo localVar = new LocalVariableInfo("local_" + varIndex, type);
       slots.put(varIndex, localVar);
-      localVariables.add(localVar);
+      //TODO
+      //localVariables.add(localVar);
       variable = localVar;
     }
     Type varType = variable.getType();
@@ -936,15 +939,18 @@ public class MethodVisitorBuilder implements MethodVisitor {
     public void run() {
       FieldHandle field = null;
       ClassHandle ownerClass = parser.getClass(fieldOwner);
+      /*
       try {
         field = ownerClass.getField(fieldName);
       } catch (FieldNotFoundException e) {
-        field = ast.createField(Language.JAVA, null, Type.fromDesc(fieldDesc), false);
-        //    new FieldHandle(ownerClass, "FAKE:" + fieldName, Type
-        //        .fromDesc(fieldDesc), false, isStatic, false);
+           new FieldHandle(ownerClass, "FAKE:" + fieldName, Type
+                .fromDesc(fieldDesc), false, isStatic, false);
       }
-      block.addOp(new com.google.test.metric.method.op.stack.PutField(
-          lineNumber, field));
+      */
+      field = ast.createField(Language.JAVA, classHandle, fieldName, null, null, false);
+      //TODO
+      //block.addOp(new com.google.test.metric.method.op.stack.PutField(
+      //    lineNumber, field));
     }
   }
 
@@ -969,14 +975,19 @@ public class MethodVisitorBuilder implements MethodVisitor {
     public void run() {
       FieldHandle field = null;
       ClassHandle ownerClass = parser.getClass(fieldOwner);
+      /*
       try {
         field = ownerClass.getField(fieldName);
       } catch (FieldNotFoundException e) {
-        //ast.createField(....)
+
         //field = new FieldHandle(ownerClass, "FAKE:" + fieldName, Type
         //        .fromDesc(fieldDesc), false, isStatic, false);
       }
-      block.addOp(new GetField(lineNumber, field));
+      */
+      //block.addOp(new GetField(lineNumber, field));
+      //TODO
+
+      ast.createField(Language.JAVA, classHandle, fieldName, null, null, false);
     }
 
   }

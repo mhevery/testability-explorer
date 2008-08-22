@@ -20,6 +20,4 @@ package com.google.test.metric.ast;
  */
 public interface CppClassHandle extends ClassHandle {
 
-  CppClassHandle getHandle();
-
 }

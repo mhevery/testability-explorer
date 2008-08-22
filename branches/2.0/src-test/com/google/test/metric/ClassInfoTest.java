@@ -21,6 +21,7 @@ import com.google.classpath.ClasspathRootFactory;
 import com.google.test.metric.ast.ClassHandle;
 import com.google.test.metric.ast.ClassInfo;
 import com.google.test.metric.ast.FieldInfo;
+import com.google.test.metric.ast.LocalVariableInfo;
 import com.google.test.metric.ast.MethodInfo;
 import com.google.test.metric.ast.MockVisitor;
 

@@ -20,8 +20,6 @@ package com.google.test.metric.ast;
  */
 public interface JavaClassHandle extends ClassHandle {
 
-  public JavaClassHandle getHandle();
-
   /**
    * Recognize the described Java-Class as an interface.
    * @param isInterface

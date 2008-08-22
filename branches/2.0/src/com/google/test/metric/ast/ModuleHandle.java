@@ -22,6 +22,4 @@ package com.google.test.metric.ast;
  */
 public interface ModuleHandle {
 
-  ModuleHandle getHandle();
-
 }

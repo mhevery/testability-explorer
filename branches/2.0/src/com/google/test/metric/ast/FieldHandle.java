@@ -17,6 +17,4 @@ package com.google.test.metric.ast;
 
 public interface FieldHandle {
 
-  String getName();
-
 }
