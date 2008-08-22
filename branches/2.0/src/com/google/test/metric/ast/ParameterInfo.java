@@ -17,4 +17,6 @@ package com.google.test.metric.ast;
 
 public interface ParameterInfo {
 
+  String getName();
+
 }

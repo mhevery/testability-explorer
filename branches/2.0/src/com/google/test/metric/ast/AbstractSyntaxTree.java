@@ -22,8 +22,10 @@ import com.google.test.metric.asm.Visibility;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,6 +34,15 @@ import java.util.Set;
  * and iterating the structure.
  */
 public final class AbstractSyntaxTree {
+
+  private static final Collection<ClassHandle> EMPTY_CLAZZ_LIST =
+      Collections.emptySet();
+
+  private final static Clazz PRIMITIVE_CLAZZ =
+      new Clazz(null, "", EMPTY_CLAZZ_LIST);
+
+  public final static ClassHandle PRIMITIVE = PRIMITIVE_CLAZZ;
+
 
   /**
    * Internal representation of a "Module". Will never ever be passed to
@@ -60,7 +71,9 @@ public final class AbstractSyntaxTree {
     Module module;
     Collection<ClassHandle> superClasses;
     Map<String, FieldInfo> fields = new HashMap<String, FieldInfo>();
-    Map<String, MethodInfo> methods = new HashMap<String, MethodInfo>();
+
+    Set<Method> methods = new HashSet<Method>();
+
 
     private Clazz(Module newModule, String newName,
         Collection<ClassHandle> theSuperClasses) {
@@ -90,8 +103,13 @@ public final class AbstractSyntaxTree {
      */
     public MethodInfo getMethod(String methodName) throws
         MethodNotFoundException {
-      if (methods.containsKey(methodName)) {
-        return methods.get(methodName);
+
+      System.out.println("Looking for " + methodName);
+      for (MethodInfo info : methods) {
+        System.out.println("Looking at " + info.getName());
+        if (info.getName().equals(methodName)) {
+          return info;
+        }
       }
       throw new MethodNotFoundException(name, methodName);
     }
@@ -105,12 +123,81 @@ public final class AbstractSyntaxTree {
       }
       throw new FieldNotFoundException(name, fieldName);
     }
+
+    public void registerMethod(Method method) {
+      methods.add(method);
+    }
+
+    public void registerField(Field field) {
+      fields.put(field.getName(), field);
+    }
   }
 
   /**
+   * Internal representation of a method.
+   */
+  private static class Method implements MethodInfo, MethodHandle {
+
+    Clazz owner;
+    String name;
+    Visibility access;
+    Clazz returnType;
+
+    private Method(Clazz newOwner, String newName, Clazz newReturnType,
+        Visibility newAccess) {
+      owner = newOwner;
+      name = newName;
+      returnType = newReturnType;
+      access = newAccess;
+
+      owner.registerMethod(this);
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public String getNameDesc() {
+      return name;
+    }
+
+    public List<LocalVariableInfo> getLocalVariables() {
+      throw new UnsupportedOperationException();
+    }
+
+    public List<ParameterInfo> getParameters() {
+      throw new UnsupportedOperationException();
+    }
+  }
+
+  private static class Field implements FieldInfo, FieldHandle {
+
+    private final Clazz owner;
+    private final String name;
+    private final Clazz type;
+    private final Visibility access;
+    private final boolean isConstant;
+
+    private Field(Clazz newOwner, String newName, Clazz newType,
+        Visibility newAccess, boolean newIsConstant) {
+      owner = newOwner;
+      name = newName;
+      type = newType;
+      access = newAccess;
+      isConstant = newIsConstant;
+
+      owner.registerField(this);
+    }
+
+    public String getName() {
+      return name;
+    }
+  }
+  /**
    * Internal representation of a Java-Package.
    */
-  private static class JavaModule extends Module implements JavaModuleHandle {
+  private static final class JavaModule extends Module
+      implements JavaModuleHandle {
 
     private JavaModule(String newName) {
       super(newName);
@@ -125,7 +212,7 @@ public final class AbstractSyntaxTree {
   /**
    * Internal representation of a C++ Module.
    */
-  static class CppModule extends Module implements CppModuleHandle {
+  static final class CppModule extends Module implements CppModuleHandle {
 
     private CppModule(String newName) {
       super(newName);
@@ -140,7 +227,7 @@ public final class AbstractSyntaxTree {
   /**
    * Internal representation of a Cpp-Class
    */
-  private static class CppClazz extends Clazz implements CppClassHandle,
+  private static final class CppClazz extends Clazz implements CppClassHandle,
       CppClassInfo {
 
     public CppClazz(Module newModule, String newName,
@@ -157,7 +244,7 @@ public final class AbstractSyntaxTree {
   /**
    * Internal representation of a Java Class
    */
-  private static class JavaClazz extends Clazz
+  private static final class JavaClazz extends Clazz
       implements JavaClassHandle, JavaClassInfo {
 
     boolean isInterface;
@@ -177,6 +264,32 @@ public final class AbstractSyntaxTree {
     }
   }
 
+  private static final class JavaMethod extends Method
+      implements JavaMethodHandle, JavaMethodInfo {
+
+    boolean isAbstract;
+    boolean isFinal;
+
+    JavaMethod(Clazz owner, String name, Clazz returnType, Visibility access) {
+      super(owner, name, returnType, access);
+    }
+
+    private void setIsFinal(boolean newFinal) {
+      isFinal = newFinal;
+    }
+
+    public boolean getIsFinal() {
+      return isFinal;
+    }
+
+    private void setIsAbstract(boolean newIsAbstract) {
+      isAbstract = newIsAbstract;
+    }
+
+    public boolean getIsAbstract() {
+      return isAbstract;
+    }
+  }
 
   // All the defined modules.
   private final Set<Module> modules = new HashSet<Module>();
@@ -198,7 +311,13 @@ public final class AbstractSyntaxTree {
   private final Map<ClassHandle, Clazz> classes =
     new HashMap<ClassHandle, Clazz>();
 
-  private ClassHandle type;
+  private final Map<JavaMethodHandle, JavaMethod> javaMethods =
+      new HashMap<JavaMethodHandle, JavaMethod>();
+  private final Map<MethodHandle, Method> methods =
+      new HashMap<MethodHandle, Method>();
+
+  private final Map<FieldHandle, Field> fields =
+      new HashMap<FieldHandle, Field>();
 
   /**
    * Add a new top-level module to this AST.
@@ -304,16 +423,54 @@ public final class AbstractSyntaxTree {
   }
 
   public MethodHandle createMethod(Language lang, ClassHandle owner,
-      String name, Visibility access, ClassHandle returnType) {
-        throw new UnsupportedOperationException("createField");
+      String name, Visibility access, ClassHandle returnTypeHandle) {
+
+    Clazz ownerClazz = classes.get(owner);
+
+    System.out.println("Creating method " + name + " in class " + ownerClazz.getName());
+
+    if (returnTypeHandle == null) {
+      returnTypeHandle = PRIMITIVE;
+    }
+
+    Clazz returnType = returnTypeHandle.equals(PRIMITIVE) ? PRIMITIVE_CLAZZ :
+      classes.get(returnTypeHandle);
+
+    Method method;
+
+    switch (lang) {
+      case JAVA:
+      {
+        JavaMethod jMethod = new JavaMethod(ownerClazz, name,
+            returnType, access);
+        javaMethods.put(jMethod, jMethod);
+        method = jMethod;
+        break;
+      }
+      case CPP:
+        // Not yet defined- we use the independent case here.
+      case INDEPENDENT:
+        method = new Method(ownerClazz, name, returnType, access);
+        break;
+      default:
+        throw new IllegalArgumentException("Undefined Language!");
+    }
+
+    methods.put(method, method);
+    return method;
   }
 
   public FieldHandle createField(Language lang, ClassHandle owner, String name,
-      Visibility access, ClassHandle fieldType, boolean isFinal) {
-        throw new UnsupportedOperationException("createField");
+      Visibility access, ClassHandle fieldTypeHandle, boolean isFinal) {
+
+    Clazz ownerClazz = classes.get(owner);
+    Clazz fieldType = fieldTypeHandle.equals(PRIMITIVE) ? PRIMITIVE_CLAZZ :
+      classes.get(fieldTypeHandle);
+
+    Field field = new Field(ownerClazz, name, fieldType, access, isFinal);
+    fields.put(field, field);
+    return field;
   }
-
-
 
   /**
    * Accepts a new visitor for traversing the tree.
@@ -322,6 +479,9 @@ public final class AbstractSyntaxTree {
   public void accept(Visitor v) {
     for (Module m : modules) {
       v.visitModule(m);
+    }
+    for (ClassInfo c : classes.values()) {
+      v.visitClass(c);
     }
   }
 
@@ -333,7 +493,8 @@ public final class AbstractSyntaxTree {
     return classes.get(handle);
   }
 
-  public ParameterHandle createMethodParameter(String name, Type type) {
+  public ParameterHandle createMethodParameter(MethodHandle method, String name,
+      Type type) {
     throw new UnsupportedOperationException();
   }
 }

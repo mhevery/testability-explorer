@@ -15,8 +15,6 @@
  */
 package com.google.test.metric.ast;
 
-import com.google.test.metric.ParameterInfo;
-
 import java.util.List;
 
 /**
@@ -39,5 +37,14 @@ public interface MethodInfo {
    */
   List<LocalVariableInfo> getLocalVariables();
 
+  /**
+   * @return ?
+   */
   String getNameDesc();
+
+  /**
+   * @return the string representation of this Method.
+   */
+  String toString();
+
 }

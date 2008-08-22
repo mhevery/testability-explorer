@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,8 +16,12 @@
 package com.google.test.metric.ast;
 
 /**
- * Handle to a method node in the AST. To be used on the parsing side only.
- * Has no methods.
+ * Additional information available for java-methods.
  */
-public interface MethodHandle {
+public interface JavaMethodInfo extends MethodInfo {
+
+  public boolean getIsFinal();
+
+  public boolean getIsAbstract();
+
 }

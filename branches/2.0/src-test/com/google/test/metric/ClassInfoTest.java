@@ -23,6 +23,7 @@ import com.google.test.metric.ast.FieldInfo;
 import com.google.test.metric.ast.LocalVariableInfo;
 import com.google.test.metric.ast.MethodInfo;
 import com.google.test.metric.ast.MockVisitor;
+import com.google.test.metric.ast.ParameterInfo;
 
 import java.net.InetAddress;
 import java.util.Arrays;
@@ -32,7 +33,7 @@ import java.util.List;
 public class ClassInfoTest extends ClassRepositoryTestCase {
 
   private ClassInfo parseClass(Class<?> clazz) {
-    repo.getClass(EmptyClass.class);
+    repo.getClass(clazz);
     MockVisitor v = new MockVisitor();
     ast.accept(v);
     return v.getClassInfo(clazz.getName());
@@ -79,8 +80,8 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
   }
 
   public void testParseSingleMethodClass() throws Exception {
+    System.out.println("SINGLEMETHODCLASS");
     ClassInfo classInfo = parseClass(SingleMethodClass.class);
-
     MethodInfo method = classInfo.getMethod("methodA()V");
     assertEquals("methodA()V", method.getName());
     assertEquals("void methodA()", method.toString());
