@@ -96,6 +96,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
       slots.put(slot++, methodThis);
       //localVariables.add((LocalVariableHandle) methodThis);
     }
+    /*
     for (Type type : parse(desc).getParameters()) {
       ParameterHandle parameterHandle = ast.createMethodParameter("param_" + slot, type);
       //ParameterInfo parameterInfo = new ParameterInfo("param_" + slot, type);
@@ -104,7 +105,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
       if (type.isDoubleSlot()) {
         slot++;
       }
-    }
+    }*/
   }
 
   public void visitJumpInsn(final int opcode, final Label label) {
@@ -264,7 +265,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
     }
     block.decomposeIntoBlocks();
     try {
-      MethodHandle methodHandle = ast.createMethod(Language.JAVA, classHandle, desc, visibility, null);
+      MethodHandle methodHandle = ast.createMethod(Language.JAVA, classHandle, name + desc, visibility, null);
       //MethodInfo methodInfo = new MethodInfo(classHandle, name, startingLineNumber,
       //    desc, methodThis, parameters, localVariables, visibility,
       //    cyclomaticComplexity, block.getOperations());
