@@ -60,19 +60,15 @@ public class ClassInfoBuilderVisitor extends NoopClassVisitor {
   public MethodVisitor visitMethod(int access, String name, String desc,
       String signature, String[] exceptions) {
     boolean isStatic = (access & Opcodes.ACC_STATIC) == Opcodes.ACC_STATIC;
-    return new MethodVisitorBuilder(ast, classHandle, name, desc, signature,
+    return new MethodVisitorBuilder(parser, ast, classHandle, name, desc, signature,
         exceptions, isStatic, Visibility.valueOf(access));
-    return new NoopMethodVisitor();
   }
 
   @Override
   public FieldVisitor visitField(int access, String name, String desc,
       String signature, Object value) {
-    /*
-    return new FieldVisitorBuilder(classInfo, access, name, desc,
+    return new FieldVisitorBuilder(classHandle, access, name, desc,
         signature, value);
-        */
-    return new NoopFieldVisitor();
   }
 
   public ClassHandle getClassHandle() {
