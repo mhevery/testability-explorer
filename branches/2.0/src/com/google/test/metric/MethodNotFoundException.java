@@ -20,21 +20,24 @@ public class MethodNotFoundException extends RuntimeException {
   private static final long serialVersionUID = -259965052038451086L;
 
   private final String methodName;
-  private final ClassInfo classInfo;
+  private final String className;
 
-  public MethodNotFoundException(ClassInfo classInfo, String methodName) {
+
+  public MethodNotFoundException(String className, String methodName) {
+
     super("Method '" + methodName + "' not found in class '"
-        + classInfo.getName() + "'");
+        + className + "'");
+
     this.methodName = methodName;
-    this.classInfo = classInfo;
+    this.className = className;
   }
 
   public String getMethodName() {
     return methodName;
   }
 
-  public ClassInfo getClassInfo() {
-    return classInfo;
+  public String getClassName() {
+    return className;
   }
 
 }

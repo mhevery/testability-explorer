@@ -15,25 +15,25 @@
  */
 package com.google.test.metric;
 
-
 public class FieldNotFoundException extends RuntimeException {
   private static final long serialVersionUID = -5544082288915184750L;
 
-  private final ClassInfo classInfo;
   private final String fieldName;
+  private final String className;
 
-  public FieldNotFoundException(ClassInfo classInfo, String fieldName) {
-    super("Field '" + fieldName + "' not found in '" + classInfo.getName() + "'.");
-    this.classInfo = classInfo;
+  public FieldNotFoundException(String className, String fieldName) {
+    super("Field '" + fieldName + "' not found in '" + className + "'.");
+
     this.fieldName = fieldName;
-  }
-
-  public ClassInfo getClassInfo() {
-    return classInfo;
+    this.className = className;
   }
 
   public String getFieldName() {
     return fieldName;
+  }
+
+  public String getClassName() {
+    return className;
   }
 
 }
