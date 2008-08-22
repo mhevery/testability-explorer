@@ -19,9 +19,6 @@ package com.google.test.metric.ast;
 /**
  * Handle to classes. This interface (and its subinterfaces) should be the
  * one and only reference that the parser ever holds to a class in the AST.
- *
- * The ClassHandle and each subclasses shouldn't have any more methods than
- * the 'getHandle' method.
  */
 public interface ClassHandle {
 
