@@ -17,26 +17,15 @@ package com.google.test.metric.asm;
 
 import static com.google.test.metric.asm.SignatureParser.parse;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-
-import com.google.test.metric.ClassInfo;
-import com.google.test.metric.ClassRepository;
 import com.google.test.metric.FieldInfo;
 import com.google.test.metric.FieldNotFoundException;
+import com.google.test.metric.JavaParser;
 import com.google.test.metric.LocalVariableInfo;
-import com.google.test.metric.MethodInfo;
 import com.google.test.metric.ParameterInfo;
 import com.google.test.metric.Type;
 import com.google.test.metric.Variable;
+import com.google.test.metric.ast.AbstractSyntaxTree;
+import com.google.test.metric.ast.ClassHandle;
 import com.google.test.metric.method.BlockDecomposer;
 import com.google.test.metric.method.Constant;
 import com.google.test.metric.method.op.stack.ArrayLoad;
@@ -59,16 +48,28 @@ import com.google.test.metric.method.op.stack.Swap;
 import com.google.test.metric.method.op.stack.Throw;
 import com.google.test.metric.method.op.stack.Transform;
 
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.Attribute;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class MethodVisitorBuilder implements MethodVisitor {
 
-  private final ClassInfo classInfo;
+  private final ClassHandle classHandle;
   private final String name;
   private final String desc;
   private final Visibility visibility;
   private final Map<Integer, Variable> slots = new HashMap<Integer, Variable>();
   private final BlockDecomposer block = new BlockDecomposer();
   private final List<Runnable> recorder = new ArrayList<Runnable>();
-  private final ClassRepository repository;
+  private final AbstractSyntaxTree ast;
+  private final JavaParser parser;
 
   private long cyclomaticComplexity = 1;
   private Variable methodThis;
@@ -77,17 +78,18 @@ public class MethodVisitorBuilder implements MethodVisitor {
   private final List<ParameterInfo> parameters = new ArrayList<ParameterInfo>();
   private final List<LocalVariableInfo> localVariables = new ArrayList<LocalVariableInfo>();
 
-  public MethodVisitorBuilder(ClassRepository repository, ClassInfo classInfo,
+  public MethodVisitorBuilder(JavaParser parser, AbstractSyntaxTree ast, ClassHandle classHandle,
       String name, String desc, String signature, String[] exceptions,
       boolean isStatic, Visibility visibility) {
-    this.repository = repository;
-    this.classInfo = classInfo;
+    this.parser = parser;
+    this.ast = ast;
+    this.classHandle = classHandle;
     this.name = name;
     this.desc = desc;
     this.visibility = visibility;
     int slot = 0;
     if (!isStatic) {
-      Type thisType = Type.fromJava(classInfo.getName());
+      Type thisType = Type.fromJava(classHandle.getName());
       methodThis = new LocalVariableInfo("this", thisType);
       slots.put(slot++, methodThis);
       localVariables.add((LocalVariableInfo) methodThis);
@@ -258,12 +260,13 @@ public class MethodVisitorBuilder implements MethodVisitor {
     }
     block.decomposeIntoBlocks();
     try {
-      MethodInfo methodInfo = new MethodInfo(classInfo, name, startingLineNumber,
-          desc, methodThis, parameters, localVariables, visibility,
-          cyclomaticComplexity, block.getOperations());
-      classInfo.addMethod(methodInfo);
+      //ast.createMethod(....)
+      //MethodInfo methodInfo = new MethodInfo(classHandle, name, startingLineNumber,
+      //    desc, methodThis, parameters, localVariables, visibility,
+      //    cyclomaticComplexity, block.getOperations());
+      classHandle.addMethod(methodInfo);
     } catch (IllegalStateException e) {
-      throw new IllegalStateException("Error in " + classInfo + "." + name
+      throw new IllegalStateException("Error in " + classHandle + "." + name
           + desc, e);
     }
   }
@@ -786,16 +789,16 @@ public class MethodVisitorBuilder implements MethodVisitor {
       final String name, final String desc) {
     switch (opcode) {
       case Opcodes.PUTSTATIC :
-          recorder.add(new PutFieldRunnable(repository, owner, name, desc, true));
+          recorder.add(new PutFieldRunnable(parser, ast, owner, name, desc, true));
           break;
       case Opcodes.PUTFIELD :
-        recorder.add(new PutFieldRunnable(repository, owner, name, desc, false));
+        recorder.add(new PutFieldRunnable(parser, ast, owner, name, desc, false));
         break;
       case Opcodes.GETSTATIC :
-          recorder.add(new GetFieldRunnable(repository, owner, name, desc, true));
+          recorder.add(new GetFieldRunnable(parser, ast, owner, name, desc, true));
           break;
       case Opcodes.GETFIELD :
-        recorder.add(new GetFieldRunnable(repository, owner, name, desc, false));
+        recorder.add(new GetFieldRunnable(parser, ast, owner, name, desc, false));
         break;
     }
   }
@@ -907,7 +910,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
 
   @Override
   public String toString() {
-    return classInfo + "." + name + desc + "\n" + block;
+    return classHandle + "." + name + desc + "\n" + block;
   }
 
   private class PutFieldRunnable implements Runnable {
@@ -915,11 +918,13 @@ public class MethodVisitorBuilder implements MethodVisitor {
     private final String fieldName;
     private final String fieldDesc;
     private final boolean isStatic;
-    private final ClassRepository repository;
+    private final AbstractSyntaxTree ast;
+    private final JavaParser parser;
 
-    public PutFieldRunnable(ClassRepository repository, String owner, String name, String desc,
+    public PutFieldRunnable(JavaParser parser, AbstractSyntaxTree ast, String owner, String name, String desc,
         boolean isStatic) {
-      this.repository = repository;
+      this.parser = parser;
+      this.ast = ast;
       this.fieldOwner = owner;
       this.fieldName = name;
       this.fieldDesc = desc;
@@ -928,13 +933,13 @@ public class MethodVisitorBuilder implements MethodVisitor {
 
     public void run() {
       FieldInfo field = null;
-      ClassInfo ownerClass = repository.getClass(fieldOwner);
+      ClassHandle ownerClass = parser.getClass(fieldOwner);
       try {
         field = ownerClass.getField(fieldName);
       } catch (FieldNotFoundException e) {
-        field =
-            new FieldInfo(ownerClass, "FAKE:" + fieldName, Type
-                .fromDesc(fieldDesc), false, isStatic, false);
+        //field = ast.createField(....)
+        //    new FieldInfo(ownerClass, "FAKE:" + fieldName, Type
+        //        .fromDesc(fieldDesc), false, isStatic, false);
       }
       block.addOp(new com.google.test.metric.method.op.stack.PutField(
           lineNumber, field));
@@ -946,11 +951,13 @@ public class MethodVisitorBuilder implements MethodVisitor {
     private final String fieldName;
     private final String fieldDesc;
     private final boolean isStatic;
-    private final ClassRepository repository;
+    private final AbstractSyntaxTree ast;
+    private final JavaParser parser;
 
-    public GetFieldRunnable(ClassRepository repository, String owner, String name, String desc,
+    public GetFieldRunnable(JavaParser parser, AbstractSyntaxTree ast, String owner, String name, String desc,
         boolean isStatic) {
-      this.repository = repository;
+      this.parser = parser;
+      this.ast = ast;
       this.fieldOwner = owner;
       this.fieldName = name;
       this.fieldDesc = desc;
@@ -959,12 +966,13 @@ public class MethodVisitorBuilder implements MethodVisitor {
 
     public void run() {
       FieldInfo field = null;
-      ClassInfo ownerClass = repository.getClass(fieldOwner);
+      ClassHandle ownerClass = parser.getClass(fieldOwner);
       try {
         field = ownerClass.getField(fieldName);
       } catch (FieldNotFoundException e) {
-        field = new FieldInfo(ownerClass, "FAKE:" + fieldName, Type
-                .fromDesc(fieldDesc), false, isStatic, false);
+        //ast.createField(....)
+        //field = new FieldInfo(ownerClass, "FAKE:" + fieldName, Type
+        //        .fromDesc(fieldDesc), false, isStatic, false);
       }
       block.addOp(new GetField(lineNumber, field));
     }

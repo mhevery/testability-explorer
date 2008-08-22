@@ -50,20 +50,18 @@ public class ClassInfoBuilderVisitor extends NoopClassVisitor {
       interfaceList.add(ast.getClass(interfaze));
     }
     boolean isInterface = (access & Opcodes.ACC_INTERFACE) == Opcodes.ACC_INTERFACE;
-    //classHandle = ast.createClass(Language.JAVA, name, isInterface, superClass, interfaceList);
+    interfaceList.add(superClass);
     classHandle = ast.createClass(Language.JAVA, name.replace('/', '.'),
-        superClass);
+        interfaceList.toArray(new ClassHandle[0]));
     ast.getJavaClassHandle(classHandle).setIsInterface(isInterface);
   }
 
   @Override
   public MethodVisitor visitMethod(int access, String name, String desc,
       String signature, String[] exceptions) {
-    /*
     boolean isStatic = (access & Opcodes.ACC_STATIC) == Opcodes.ACC_STATIC;
-    return new MethodVisitorBuilder(ast, classInfo, name, desc, signature,
+    return new MethodVisitorBuilder(ast, classHandle, name, desc, signature,
         exceptions, isStatic, Visibility.valueOf(access));
-        */
     return new NoopMethodVisitor();
   }
 
