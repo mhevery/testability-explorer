@@ -15,6 +15,9 @@
  */
 package com.google.test.metric.ast;
 
+import com.google.test.metric.FieldInfo;
+import com.google.test.metric.MethodInfo;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -54,6 +57,8 @@ public final class AbstractSyntaxTree {
     String name;
     Module module;
     Collection<ClassHandle> superClasses;
+    Map<String, FieldInfo> fields = new HashMap<String, FieldInfo>();
+    Map<String, MethodInfo> methods = new HashMap<String, MethodInfo>();
 
     private Clazz(Module newModule, String newName,
         Collection<ClassHandle> theSuperClasses) {
@@ -66,16 +71,37 @@ public final class AbstractSyntaxTree {
       return name;
     }
 
+    @Override
+    public String toString() {
+      return name;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public ClassHandle getHandle() {
       return this;
     }
 
-    public FieldHandle getField(String string) {
-      throw new UnsupportedOperationException();
+    /**
+     * {@inheritDoc}
+     */
+    public MethodInfo getMethod(String methodName) throws
+        NoSuchMethodException {
+      if (methods.containsKey(methodName)) {
+        return methods.get(methodName);
+      }
+      throw new NoSuchMethodException(methodName);
     }
 
-    public MethodHandle getMethod(String string) {
-      throw new UnsupportedOperationException();
+    /**
+     * {@inheritDoc}
+     */
+    public FieldInfo getField(String fieldName) throws NoSuchFieldException {
+      if (fields.containsKey(fieldName)) {
+        return fields.get(fieldName);
+      }
+      throw new NoSuchFieldException(fieldName);
     }
   }
 
@@ -283,9 +309,11 @@ public final class AbstractSyntaxTree {
     }
   }
 
-  public ClassInfo getClassInfo(String name) {
-    //return classDirectory.get(name);
-    throw new UnsupportedOperationException();
+  /**
+   * Visible for testing only (!).
+   * Retrieves the class-info for a given handle.
+   */
+  public ClassInfo getClassInfo(ClassHandle handle) {
+    return classes.get(handle);
   }
-
 }
