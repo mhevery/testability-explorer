@@ -175,38 +175,40 @@ public final class AbstractSyntaxTree {
       nameBuilder.insert(0, returnType.toString() + " ");
       return nameBuilder.toString();
     }
+
+    public void addParameter(Parameter parameter) {
+      parameters.add(parameter);
+    }
   }
 
-  private static class Parameter implements ParameterInfo, ParameterHandle {
+  private static class Parameter extends VariableImpl
+      implements ParameterInfo, ParameterHandle {
 
-    public String getName() {
-      throw new UnsupportedOperationException();
+    Method owner;
+
+    Parameter(Method newOwner, String newName, Type newType) {
+      super(newName, newType, false, false);
+      owner = newOwner;
+      owner.addParameter(this);
     }
 
   }
 
-  private static class Field implements FieldInfo, FieldHandle {
+  private static class Field extends VariableImpl
+      implements FieldInfo, FieldHandle {
 
     private final Clazz owner;
-    private final String name;
-    private final Type type;
     private final Visibility access;
-    private final boolean isConstant;
+
     private final static String FIELD_FORMAT = "%s.%s{%s}";
 
     private Field(Clazz newOwner, String newName, Type newType,
         Visibility newAccess, boolean newIsConstant) {
+      super(newName, newType, newIsConstant, false);
       owner = newOwner;
-      name = newName;
-      type = newType;
       access = newAccess;
-      isConstant = newIsConstant;
 
       owner.registerField(this);
-    }
-
-    public String getName() {
-      return name;
     }
 
     @Override
@@ -496,15 +498,12 @@ public final class AbstractSyntaxTree {
     }
   }
 
-  /**
-   * Visible for testing only (!).
-   * Retrieves the class-info for a given handle.
-   */
-  public ClassInfo getClassInfo(ClassHandle handle) {
-    return classes.get(handle);
+  public ParameterHandle createMethodParameter(MethodHandle method, String name,
+      Type type) {
+    throw new UnsupportedOperationException();
   }
 
-  public ParameterHandle createMethodParameter(MethodHandle method, String name,
+  public LocalVariableHandle createLocalVariable(MethodHandle method, String name,
       Type type) {
     throw new UnsupportedOperationException();
   }

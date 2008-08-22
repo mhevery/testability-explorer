@@ -15,5 +15,20 @@
  */
 package com.google.test.metric.ast;
 
-public interface LocalVariableInfo extends Variable {
+import com.google.test.metric.Type;
+
+/**
+ * Describes functionality that is common to all variables (fields, local-vars,
+ * parameters, ...).
+ */
+public interface Variable {
+
+  public String getName();
+
+  public Type getType();
+
+  public boolean isGlobal();
+
+  public boolean isFinal();
+
 }

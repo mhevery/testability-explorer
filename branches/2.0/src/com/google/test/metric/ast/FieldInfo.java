@@ -19,11 +19,5 @@ package com.google.test.metric.ast;
 /**
  * Language-Independent Field-Specific information.
  */
-public interface FieldInfo {
-
-  /**
-   * @return the name of the field.
-   */
-  String getName();
-
+public interface FieldInfo extends Variable {
 }

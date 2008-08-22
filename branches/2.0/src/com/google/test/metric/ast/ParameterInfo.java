@@ -15,8 +15,6 @@
  */
 package com.google.test.metric.ast;
 
-public interface ParameterInfo {
-
-  String getName();
+public interface ParameterInfo extends Variable {
 
 }
