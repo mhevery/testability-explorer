@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,7 +15,37 @@
  */
 package com.google.test.metric.ast;
 
+import com.google.test.metric.FieldInfo;
+import com.google.test.metric.MethodInfo;
+
+/**
+ * Contains methods to retrieve all language independent information of a class
+ * in the AST.
+ */
 public interface ClassInfo {
 
+  /**
+   * @return The name of the represented class.
+   */
   String getName();
+
+  /**
+   * @return A string representation of the represented class.
+   */
+  String toString();
+
+  /**
+   * @param methodName The name of a method in this class.
+   * @return a handle to ANY method of this class with this name.
+   * @throws NoSuchMethodException if no such method exists.
+   */
+  MethodInfo getMethod(String methodName) throws NoSuchMethodException;
+
+  /**
+   * @param fieldName The name of a field in this class.
+   * @return a handle to the field in this class with this name.
+   * @throws NoSuchFieldException if no such method exists.
+   */
+  FieldInfo getField(String fieldName) throws NoSuchFieldException;
+
 }
