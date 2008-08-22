@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,30 +13,17 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.google.test.metric.ast;
 
-import com.google.test.metric.LocalVariableInfo;
-import com.google.test.metric.ParameterInfo;
-
-import java.util.List;
-
 /**
- * Language-Independent method-specific information.
+ * Language-Independent Field-Specific information.
  */
-public interface MethodInfo {
+public interface FieldInfo {
 
   /**
-   * @return the name of the method.
+   * @return the name of the field.
    */
   String getName();
 
-  /**
-   * @return a list of the parameters that this method will accept.
-   */
-  List<ParameterInfo> getParameters();
-
-  /**
-   * @return a list of local variables defined in this method.
-   */
-  List<LocalVariableInfo> getLocalVariables();
 }

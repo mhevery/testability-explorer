@@ -15,10 +15,9 @@
  */
 package com.google.test.metric.ast;
 
-import com.google.test.metric.FieldInfo;
 import com.google.test.metric.FieldNotFoundException;
-import com.google.test.metric.MethodInfo;
 import com.google.test.metric.MethodNotFoundException;
+import com.google.test.metric.asm.Visibility;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -233,13 +232,13 @@ public final class AbstractSyntaxTree {
 
   /**
    * Adds a new class to the repository, not yet associated with a module.
-   * @param lang The language of this class. See {@link createModule} for a
+   * @param lang The language of this class. See {} for a
    * discussion.
    * @param name The name of the class.
    * @param superClassList All interfaces and superclasses that this class is
    * implementing / extending.
    * @return A handle to the newly created class.
-   * @throws IllegalArgumentExcpetion if the language is not supported.
+   * @throws IllegalArgumentException if the language is not supported.
    */
   public ClassHandle createClass(Language lang, String name,
       ClassHandle... superClassList) {
@@ -303,12 +302,12 @@ public final class AbstractSyntaxTree {
     return javaClasses.get(classHandle);
   }
 
-  public MethodHandle createMethod(Language lang, AccessPrivilege access,
-      ClassHandle returnType) {
+  public MethodHandle createMethod(Language lang, String name,
+      Visibility access, ClassHandle returnType) {
         throw new UnsupportedOperationException("createField");
   }
 
-  public FieldHandle createField(Language lang, AccessPrivilege access,
+  public FieldHandle createField(Language lang, String name, Visibility access,
       ClassHandle fieldType, boolean isFinal) {
         throw new UnsupportedOperationException("createField");
   }

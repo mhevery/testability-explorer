@@ -15,8 +15,12 @@
  */
 package com.google.test.metric.ast;
 
-import com.google.test.metric.FieldInfo;
-import com.google.test.metric.MethodInfo;
+//For now we use our own FieldInfo and MethodInfo interfaces. Once they are
+//done and tested, we'll move them to test.metric
+//import com.google.test.metric.FieldInfo;
+//import com.google.test.metric.MethodInfo;
+
+import com.google.test.metric.FieldNotFoundException;
 import com.google.test.metric.MethodNotFoundException;
 
 /**
@@ -45,8 +49,8 @@ public interface ClassInfo {
   /**
    * @param fieldName The name of a field in this class.
    * @return a handle to the field in this class with this name.
-   * @throws NoSuchMethodException if no such method exists.
+   * @throws FieldNotFoundException if no such field exists.
    */
-  FieldInfo getField(String fieldName) throws NoSuchMethodException;
+  FieldInfo getField(String fieldName) throws FieldNotFoundException;
 
 }
