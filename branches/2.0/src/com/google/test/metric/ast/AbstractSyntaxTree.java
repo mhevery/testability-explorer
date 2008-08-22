@@ -302,13 +302,13 @@ public final class AbstractSyntaxTree {
     return javaClasses.get(classHandle);
   }
 
-  public MethodHandle createMethod(Language lang, String name,
-      Visibility access, ClassHandle returnType) {
+  public MethodHandle createMethod(Language lang, ClassHandle owner,
+      String name, Visibility access, ClassHandle returnType) {
         throw new UnsupportedOperationException("createField");
   }
 
-  public FieldHandle createField(Language lang, String name, Visibility access,
-      ClassHandle fieldType, boolean isFinal) {
+  public FieldHandle createField(Language lang, ClassHandle owner, String name,
+      Visibility access, ClassHandle fieldType, boolean isFinal) {
         throw new UnsupportedOperationException("createField");
   }
 
