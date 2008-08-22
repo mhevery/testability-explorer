@@ -31,7 +31,7 @@ public class FieldVisitorBuilder extends NoopFieldVisitor {
     boolean isPrivate = Visibility.valueOf(access) == Visibility.PRIVATE;
     boolean isFinal = (access & Opcodes.ACC_FINAL) == Opcodes.ACC_FINAL;
     Type type = Type.fromDesc(desc);
-    ast.createField(Language.JAVA, classHandle, name, null, type, isFinal);
+    ast.createField(Language.JAVA, classHandle, name, Visibility.valueOf(access), type, isFinal);
     //classHandle.addField(new FieldInfo(classHandle, name, type, isFinal,
     //    isStatic, isPrivate));
   }

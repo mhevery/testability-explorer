@@ -987,8 +987,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
       */
       //block.addOp(new GetField(lineNumber, field));
       //TODO
-
-      ast.createField(Language.JAVA, classHandle, fieldName, null, null, false);
+      ast.createField(Language.JAVA, classHandle, fieldName, Visibility.valueOf(0), null, false);
     }
 
   }
