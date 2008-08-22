@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -103,10 +104,7 @@ public final class AbstractSyntaxTree {
      */
     public MethodInfo getMethod(String methodName) throws
         MethodNotFoundException {
-
-      System.out.println("Looking for " + methodName);
       for (MethodInfo info : methods) {
-        System.out.println("Looking at " + info.getName());
         if (info.getName().equals(methodName)) {
           return info;
         }
@@ -141,9 +139,10 @@ public final class AbstractSyntaxTree {
     Clazz owner;
     String name;
     Visibility access;
-    Clazz returnType;
+    Type returnType;
+    final List<Parameter> parameters = new LinkedList<Parameter>();
 
-    private Method(Clazz newOwner, String newName, Clazz newReturnType,
+    private Method(Clazz newOwner, String newName, Type newReturnType,
         Visibility newAccess) {
       owner = newOwner;
       name = newName;
@@ -168,17 +167,33 @@ public final class AbstractSyntaxTree {
     public List<ParameterInfo> getParameters() {
       throw new UnsupportedOperationException();
     }
+
+    @Override
+    public String toString() {
+      StringBuilder nameBuilder =
+          new StringBuilder(name.substring(0, name.indexOf(")")));
+      nameBuilder.insert(0, returnType.toString() + " ");
+      return nameBuilder.toString();
+    }
+  }
+
+  private static class Parameter implements ParameterInfo, ParameterHandle {
+
+    public String getName() {
+      throw new UnsupportedOperationException();
+    }
+
   }
 
   private static class Field implements FieldInfo, FieldHandle {
 
     private final Clazz owner;
     private final String name;
-    private final Clazz type;
+    private final Type type;
     private final Visibility access;
     private final boolean isConstant;
 
-    private Field(Clazz newOwner, String newName, Clazz newType,
+    private Field(Clazz newOwner, String newName, Type newType,
         Visibility newAccess, boolean newIsConstant) {
       owner = newOwner;
       name = newName;
@@ -270,7 +285,7 @@ public final class AbstractSyntaxTree {
     boolean isAbstract;
     boolean isFinal;
 
-    JavaMethod(Clazz owner, String name, Clazz returnType, Visibility access) {
+    JavaMethod(Clazz owner, String name, Type returnType, Visibility access) {
       super(owner, name, returnType, access);
     }
 
@@ -423,18 +438,9 @@ public final class AbstractSyntaxTree {
   }
 
   public MethodHandle createMethod(Language lang, ClassHandle owner,
-      String name, Visibility access, ClassHandle returnTypeHandle) {
+      String name, Visibility access, Type returnType) {
 
     Clazz ownerClazz = classes.get(owner);
-
-    System.out.println("Creating method " + name + " in class " + ownerClazz.getName());
-
-    if (returnTypeHandle == null) {
-      returnTypeHandle = PRIMITIVE;
-    }
-
-    Clazz returnType = returnTypeHandle.equals(PRIMITIVE) ? PRIMITIVE_CLAZZ :
-      classes.get(returnTypeHandle);
 
     Method method;
 
@@ -461,13 +467,11 @@ public final class AbstractSyntaxTree {
   }
 
   public FieldHandle createField(Language lang, ClassHandle owner, String name,
-      Visibility access, ClassHandle fieldTypeHandle, boolean isFinal) {
+      Visibility access, Type type, boolean isFinal) {
 
     Clazz ownerClazz = classes.get(owner);
-    Clazz fieldType = fieldTypeHandle.equals(PRIMITIVE) ? PRIMITIVE_CLAZZ :
-      classes.get(fieldTypeHandle);
 
-    Field field = new Field(ownerClazz, name, fieldType, access, isFinal);
+    Field field = new Field(ownerClazz, name, type, access, isFinal);
     fields.put(field, field);
     return field;
   }
