@@ -15,14 +15,14 @@
  */
 package com.google.test.metric.ast;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MockVisitor implements Visitor {
 
-  public final List<ClassInfo> classes = new ArrayList<ClassInfo>();
-  public final List<MethodInfo> methods = new ArrayList<MethodInfo>();
-  public final List<ModuleInfo> modules = new ArrayList<ModuleInfo>();
+  public final Set<ClassInfo> classes = new HashSet<ClassInfo>();
+  public final Set<MethodInfo> methods = new HashSet<MethodInfo>();
+  public final Set<ModuleInfo> modules = new HashSet<ModuleInfo>();
 
   public void visitClass(ClassInfo classInfo) {
     classes.add(classInfo);
@@ -34,5 +34,14 @@ public class MockVisitor implements Visitor {
 
   public void visitModule(ModuleInfo moduleInfo) {
     modules.add(moduleInfo);
+  }
+
+  public ClassInfo getClassInfo(String name) {
+    for (ClassInfo info : classes) {
+      if (info.getName().equals(name)) {
+        return info;
+      }
+    }
+    return null;
   }
 }

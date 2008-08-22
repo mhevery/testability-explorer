@@ -50,7 +50,8 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
 
     MockVisitor v = new MockVisitor();
     ast.accept(v);
-    assertEquals(name, v.classes.get(0).getName());
+
+    assertNotNull(v.getClassInfo(EmptyClass.class.getName()));
     assertEquals(name, clazz.toString());
     assertSame(clazz, repo.getClass(EmptyClass.class));
   }
@@ -60,7 +61,7 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
     repo.getClass(EmptyClass.class);
     MockVisitor v = new MockVisitor();
     ast.accept(v);
-    ClassInfo clazz = v.classes.get(0);
+    ClassInfo clazz = v.getClassInfo(EmptyClass.class.getName());
     try {
       clazz.getMethod("IDontExistMethod()V");
       fail();
@@ -82,7 +83,7 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
     repo.getClass(SingleMethodClass.class);
     MockVisitor v = new MockVisitor();
     ast.accept(v);
-    ClassInfo clazz = v.classes.get(0);
+    ClassInfo clazz = v.getClassInfo(SingleMethodClass.class.getName());
 
     MethodInfo method = clazz.getMethod("methodA()V");
     assertEquals("methodA()V", method.getName());
@@ -118,7 +119,7 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
     repo.getClass(SingleFieldClass.class);
     MockVisitor v = new MockVisitor();
     ast.accept(v);
-    ClassInfo clazz = v.classes.get(0);
+    ClassInfo clazz = v.getClassInfo(SingleFieldClass.class.getName());
     FieldInfo field = clazz.getField("fieldA");
     assertEquals("fieldA", field.getName());
     assertEquals(SingleFieldClass.class.getName()
@@ -166,7 +167,7 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
     repo.getClass(LocalVarsClass.class);
     MockVisitor v = new MockVisitor();
     ast.accept(v);
-    ClassInfo clazz = v.classes.get(0);
+    ClassInfo clazz = v.getClassInfo(LocalVarsClass.class.getName());
 
     MethodInfo methodInfo = clazz.getMethod(method);
     List<ParameterInfo> paramsParse = methodInfo.getParameters();
