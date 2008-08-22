@@ -3,13 +3,14 @@ package com.google.ant;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
 
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.Path;
 
 public class TaskModelTest extends TestCase {
   private TaskModel model;
@@ -111,7 +112,7 @@ public class TaskModelTest extends TestCase {
   public void testResultStreamError() throws Exception {
     List<String> messages = new ArrayList<String>();
 
-    model.addFileSet(new FileSet());
+    model.addClasspath(new Path(new Project()));
     model.setResultFile("/this/result/file/does/not/exist.txt");
     assertFalse(model.validate(messages));
     assertTrue(messages.contains(TaskModel.ERROR_RESULT_FILE_CREATION_FAILED));
@@ -120,33 +121,28 @@ public class TaskModelTest extends TestCase {
   public void testErrorStreamError() throws Exception {
     List<String> messages = new ArrayList<String>();
 
-    model.addFileSet(new FileSet());
+    model.addClasspath(new Path(new Project()));
     model.setErrorFile("/this/error/file/does/not/exist.txt");
     assertFalse(model.validate(messages));
     assertTrue(messages.contains(TaskModel.ERROR_ERROR_FILE_CREATION_FAILED));
   }
 
   public void testGetClassPath() throws Exception {
-    FileSet fs = new FileSet();
-    Project p = new Project();
+    Project proj = new Project();
+    Path p = new Path(proj);
 
-    p.setBasedir(".");
-    fs.setProject(p);
-    fs.setDir(new File("src-test/com/google/ant"));
-    fs.setIncludes("**/*.raj");
+    proj.setBasedir(".");
+    p.setLocation(new File("src-test/com/google/ant"));
 
-    model.addFileSet(fs);
-    assertTrue(model.getClassPath().indexOf(File.pathSeparator) >= 0);
-    String[] cps = model.getClassPath().split(File.pathSeparator);
-    assertEquals(Arrays.toString(cps), 2, cps.length);
-    assertTrue(cps[0].endsWith("blah.raj"));
-    assertTrue(cps[1].endsWith("foo.raj"));
+    model.addClasspath(p);
+    Matcher matcher = Pattern.compile("src-test.com.google.ant").matcher(model.getClassPath());
+    assertTrue(matcher.find());
   }
 
   public void testResultFileNotSet() throws Exception {
     List<String> messages = new ArrayList<String>();
 
-    model.addFileSet(new FileSet());
+    model.addClasspath(new Path(new Project()));
     model.setResultFile(null);
     assertTrue(model.validate(messages));
     assertTrue(messages.contains(TaskModel.ERROR_RESULT_FILE_NOT_SET));
@@ -155,7 +151,7 @@ public class TaskModelTest extends TestCase {
   public void testFilterNotSet() throws Exception {
     List<String> messages = new ArrayList<String>();
 
-    model.addFileSet(new FileSet());
+    model.addClasspath(new Path(new Project()));
     model.setFilter(null);
     assertTrue(model.validate(messages));
     assertTrue(messages.contains(TaskModel.ERROR_FILTER_NOT_SET));
@@ -164,7 +160,7 @@ public class TaskModelTest extends TestCase {
   public void testErrorFileSameAsResultFile() throws Exception {
     List<String> messages = new ArrayList<String>();
 
-    model.addFileSet(new FileSet());
+    model.addClasspath(new Path(new Project()));
     model.setErrorFile(null);
     model.setResultFile("anyfile");
     assertTrue(model.validate(messages));
