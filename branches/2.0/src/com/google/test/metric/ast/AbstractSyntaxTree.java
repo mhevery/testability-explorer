@@ -146,7 +146,7 @@ public final class AbstractSyntaxTree {
         Visibility newAccess) {
       owner = newOwner;
       name = newName;
-      returnType = newReturnType;
+      returnType = newReturnType == null ? Type.VOID : newReturnType;
       access = newAccess;
 
       owner.registerMethod(this);
@@ -171,7 +171,7 @@ public final class AbstractSyntaxTree {
     @Override
     public String toString() {
       StringBuilder nameBuilder =
-          new StringBuilder(name.substring(0, name.indexOf(")")));
+          new StringBuilder(name.substring(0, name.indexOf(")") + 1));
       nameBuilder.insert(0, returnType.toString() + " ");
       return nameBuilder.toString();
     }
@@ -192,6 +192,7 @@ public final class AbstractSyntaxTree {
     private final Type type;
     private final Visibility access;
     private final boolean isConstant;
+    private final static String FIELD_FORMAT = "%s.%s{%s}";
 
     private Field(Clazz newOwner, String newName, Type newType,
         Visibility newAccess, boolean newIsConstant) {
@@ -206,6 +207,12 @@ public final class AbstractSyntaxTree {
 
     public String getName() {
       return name;
+    }
+
+    @Override
+    public String toString() {
+      return String.format(FIELD_FORMAT, owner.getName(), getName(),
+          type.toString());
     }
   }
   /**
