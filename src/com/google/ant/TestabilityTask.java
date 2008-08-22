@@ -16,15 +16,15 @@
 
 package com.google.ant;
 
-import com.google.test.metric.Testability;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
-import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.Path;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.test.metric.Testability;
 
 public class TestabilityTask extends Task {
 
@@ -86,8 +86,8 @@ public class TestabilityTask extends Task {
     model.setFailProperty(property);
   }
 
-  public void addFileSet(FileSet fs) {
-    model.addFileSet(fs);
+  public void addClasspath(Path p) {
+    model.addClasspath(p);
   }
 
   @Override

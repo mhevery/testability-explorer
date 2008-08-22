@@ -1,17 +1,14 @@
 package com.google.ant;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.resources.FileResource;
+import org.apache.tools.ant.types.Path;
 
 public class TaskModel {
 
@@ -46,7 +43,7 @@ public class TaskModel {
   public static final String ERROR_RESULT_FILE_CREATION_FAILED = "resultfile could not be created";
   public static final String ERROR_ERROR_FILE_CREATION_FAILED = "errorfile could not be created";
 
-  private final Vector<FileSet> fileSets = new Vector<FileSet>();
+  private final Vector<Path> classPaths = new Vector<Path>();
   private String failProperty;
   private String resultFile = null;
   private String errorFile = null;
@@ -177,34 +174,25 @@ public class TaskModel {
     return failProperty;
   }
 
-  public void addFileSet(FileSet fs) {
-    fileSets.addElement(fs);
+  public void addClasspath(Path path) {
+    classPaths.addElement(path);
   }
 
-  public Vector<FileSet> getFileSets() {
-    return fileSets;
+  public Vector<Path> getFileSets() {
+    return classPaths;
   }
 
   public String getClassPath() {
-    String cp = DEFAULT_FILTER;
-
-    for (FileSet fs : fileSets) {
-      for (Iterator<?> it = fs.iterator(); it.hasNext(); ) {
-        FileResource fr = (FileResource) it.next();
-        cp += fr.getFile().getAbsolutePath() + File.pathSeparator;
+    Path totalPath = null;
+    for (Path p : classPaths) {
+      if (totalPath == null) {
+        totalPath = p;
+        continue;
       }
+      totalPath.add(p);
     }
 
-    cp = removeTrailingColonIfExisting(cp);
-
-    return cp;
-  }
-
-  private String removeTrailingColonIfExisting(String cp) {
-    if (cp.endsWith(File.pathSeparator)) {
-      cp = cp.substring(0, cp.length() - 1);
-    }
-    return cp;
+    return totalPath != null ? totalPath.toString() : DEFAULT_FILTER;
   }
 
   public PrintStream getResultPrintStream() {
@@ -370,7 +358,7 @@ public class TaskModel {
   }
 
   private boolean isFileSetSet() {
-    return fileSets.size() > 0;
+    return classPaths.size() > 0;
   }
   private boolean isFilterSet() {
     return filter != null;

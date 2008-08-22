@@ -15,19 +15,26 @@
  */
 package com.google.test.metric;
 
-import com.google.classpath.ClasspathRootFactory;
-import com.google.classpath.ClasspathRootGroup;
-import com.google.classpath.ColonDelimitedStringParser;
-import com.google.test.metric.report.*;
+import java.io.File;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import com.google.classpath.ClasspathRootFactory;
+import com.google.classpath.ClasspathRootGroup;
+import com.google.classpath.ColonDelimitedStringParser;
+import com.google.test.metric.report.DetailHtmlReport;
+import com.google.test.metric.report.DrillDownReport;
+import com.google.test.metric.report.HtmlReport;
+import com.google.test.metric.report.Report;
+import com.google.test.metric.report.SourceLinker;
+import com.google.test.metric.report.TextReport;
 
 public class Testability {
 
@@ -81,7 +88,7 @@ public class Testability {
       + " repository separated by a colon. Template for URL pointing to a line" +
       		" in the file followed by a template pointing to just the file." +
       		" Ex. http://code.repository/basepath{path}#{line}:http://code.repository/basepath{path}")
-  String templatesStr = ":";
+  String templatesStr = File.pathSeparator;
   private List<String> templates = new ArrayList<String>();
 
   @Option(name = "-maxMethodCount",
