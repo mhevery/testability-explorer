@@ -17,6 +17,7 @@ package com.google.classpath;
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,7 +61,7 @@ public class DirectoryClasspathRootTest extends TestCase {
     assertTrue(root instanceof DirectoryClasspathRoot);
   }
 
-   public void testCreateNewJarsClasspathRootTest() throws Exception {
+  public void testCreateNewJarsClasspathRootTest() throws Exception {
     final String cp = CLASS_NO_EXTERNAL_DEPS + File.pathSeparator +
       CLASSES_EXTERNAL_DEPS_AND_SUPERCLASSES;
     ClasspathRootGroup group = ClasspathRootFactory.makeClasspathRootGroup(cp);
@@ -77,6 +78,12 @@ public class DirectoryClasspathRootTest extends TestCase {
     String wantedResource = "com/google/test/metric/x/SelfTest.class";
     InputStream is = group.getResourceAsStream(wantedResource);
     assertNotNull(is);
+  }
+
+  public void testWeirdBehaviorWithSpacesInFilenames() throws Exception {
+    File file = new File("one and two");
+    assertEquals("one and two", file.getName());
+    System.out.println(file.toURI());
   }
 
 }
