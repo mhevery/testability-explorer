@@ -100,7 +100,7 @@ public class MethodInvokation extends Operation {
       context.reportError("WARNING: class not found: " + clazzName);
     } catch (MethodNotFoundException e) {
       context.reportError("WARNING: method not found: " + e.getMethodName()
-          + " in " + e.getClassHandle().getName());
+          + " in " + e.getClassInfo().getName());
     }
   }
 

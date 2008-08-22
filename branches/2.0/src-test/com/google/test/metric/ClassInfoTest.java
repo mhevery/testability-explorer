@@ -19,10 +19,8 @@ package com.google.test.metric;
 
 import com.google.classpath.ClasspathRootFactory;
 import com.google.test.metric.ast.ClassHandle;
-import com.google.test.metric.ast.FieldHandle;
-import com.google.test.metric.ast.MethodHandle;
+import com.google.test.metric.ast.ClassInfo;
 import com.google.test.metric.ast.MockVisitor;
-import com.google.test.metric.ast.ParameterHandle;
 
 import java.net.InetAddress;
 import java.util.Arrays;
@@ -55,7 +53,11 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
   }
 
   public void testMethodNotFoundException() throws Exception {
-    ClassHandle clazz = repo.getClass(EmptyClass.class);
+    repo.getClass(EmptyClass.class);
+    MockVisitor v = new MockVisitor();
+    ast.accept(v);
+    ClassInfo clazz = v.classes.get(0);
+
     try {
       clazz.getMethod("IDontExistMethod()V");
       fail();
@@ -63,7 +65,7 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
       assertTrue(e.getMessage().contains("IDontExistMethod()V"));
       assertTrue(e.getMessage().contains(EmptyClass.class.getName()));
       assertEquals("IDontExistMethod()V", e.getMethodName());
-      assertEquals(clazz, e.getClassHandle());
+      assertEquals(clazz, e.getClassInfo());
     }
   }
 
@@ -73,13 +75,22 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
   }
 
   public void testParseSingleMethodClass() throws Exception {
-    ClassHandle clazz = repo.getClass(SingleMethodClass.class);
-    MethodHandle method = clazz.getMethod("methodA()V");
+    repo.getClass(SingleMethodClass.class);
+    MockVisitor v = new MockVisitor();
+    ast.accept(v);
+    ClassInfo clazz = v.classes.get(0);
+
+    MethodInfo method = clazz.getMethod("methodA()V");
     assertEquals("methodA()V", method.getNameDesc());
     assertEquals("void methodA()", method.toString());
     assertSame(method, clazz.getMethod("methodA()V"));
   }
 
+  /**
+   *
+   * TODO: Does it makes sense??
+   */
+  /*
   public void testFiledNotFound() throws Exception {
     ClassHandle clazz = repo.getClass(EmptyClass.class);
     try {
@@ -92,14 +103,19 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
       assertEquals(clazz, e.getClassHandle());
     }
   }
+  */
 
   public static class SingleFieldClass {
     Object fieldA;
   }
 
   public void testParseFields() throws Exception {
-    ClassHandle clazz = repo.getClass(SingleFieldClass.class);
-    FieldHandle field = clazz.getField("fieldA");
+    repo.getClass(SingleFieldClass.class);
+    MockVisitor v = new MockVisitor();
+    ast.accept(v);
+    ClassInfo clazz = v.classes.get(0);
+
+    FieldInfo field = clazz.getField("fieldA");
     assertEquals("fieldA", field.getName());
     assertEquals(SingleFieldClass.class.getName()
         + ".fieldA{java.lang.Object}", field.toString());
@@ -143,10 +159,14 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
   }
 
   private void assertLocalVars(String method, String[] params, String[] locals) {
-    ClassHandle ClassHandle = repo.getClass(LocalVarsClass.class);
-    MethodHandle methodHandle = ClassHandle.getMethod(method);
-    List<ParameterHandle> paramsParse = methodHandle.getParameters();
-    List<LocalVariableInfo> localsParse = methodHandle.getLocalVariables();
+    repo.getClass(LocalVarsClass.class);
+    MockVisitor v = new MockVisitor();
+    ast.accept(v);
+    ClassInfo clazz = v.classes.get(0);
+
+    MethodInfo methodInfo = clazz.getMethod(method);
+    List<ParameterInfo> paramsParse = methodInfo.getParameters();
+    List<LocalVariableInfo> localsParse = methodInfo.getLocalVariables();
     assertEquals("Expecting " + Arrays.toString(params) + " found "
         + paramsParse, params.length, paramsParse.size());
     assertEquals("Expecting " + Arrays.toString(locals) + " found "
@@ -244,7 +264,7 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
   public void testPickConcreteMethodOverInterfaceMethod() throws Exception {
     ClassHandle ClassHandle = repo.getClass(ImplementsSubTestInterface.class);
     ClassHandle interfaceClassHandle = repo.getClass(SubTestInterface.class);
-    MethodHandle method = ClassHandle.getMethod("get(Ljava/lang/Object;)Ljava/lang/Object;");
+    MethodInfo method = ClassHandle.getMethod("get(Ljava/lang/Object;)Ljava/lang/Object;");
     assertSame(ClassHandle, method.getClassHandle());
     assertNotSame(interfaceClassHandle, method.getClassHandle());
   }

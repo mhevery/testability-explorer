@@ -17,6 +17,7 @@ package com.google.test.metric.ast;
 
 import com.google.test.metric.FieldInfo;
 import com.google.test.metric.MethodInfo;
+import com.google.test.metric.MethodNotFoundException;
 
 /**
  * Contains methods to retrieve all language independent information of a class
@@ -37,15 +38,15 @@ public interface ClassInfo {
   /**
    * @param methodName The name of a method in this class.
    * @return a handle to ANY method of this class with this name.
-   * @throws NoSuchMethodException if no such method exists.
+   * @throws MethodNotFoundException if no such method exists.
    */
-  MethodInfo getMethod(String methodName) throws NoSuchMethodException;
+  MethodInfo getMethod(String methodName) throws MethodNotFoundException;
 
   /**
    * @param fieldName The name of a field in this class.
    * @return a handle to the field in this class with this name.
-   * @throws NoSuchFieldException if no such method exists.
+   * @throws NoSuchMethodException if no such method exists.
    */
-  FieldInfo getField(String fieldName) throws NoSuchFieldException;
+  FieldInfo getField(String fieldName) throws NoSuchMethodException;
 
 }

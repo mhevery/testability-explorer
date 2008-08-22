@@ -19,6 +19,9 @@ import com.google.test.metric.LocalVariableInfo;
 
 import java.util.List;
 
+/**
+ * Handle to a method node in the AST. To be used on the parsing side only.
+ */
 public interface MethodHandle {
 
   String getNameDesc();
