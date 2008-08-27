@@ -1,12 +1,12 @@
 /*
  * Copyright 2007 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -21,7 +21,9 @@ import com.google.test.metric.FieldNotFoundException;
 import com.google.test.metric.MethodNotFoundException;
 import com.google.test.metric.ast.AbstractSyntaxTree.Node;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -90,10 +92,14 @@ class Clazz extends Node implements ClassHandle, ClassInfo {
   }
 
   public Collection<FieldInfo> getFields() {
-    throw new UnsupportedOperationException();
+    return Collections.unmodifiableCollection(fields.values());
   }
 
   public Collection<MethodInfo> getMethods() {
-    throw new UnsupportedOperationException();
+    Collection<MethodInfo> result = new ArrayList<MethodInfo>(methods.size());
+    for (Method m : methods) {
+      result.add(m);
+    }
+    return result;
   }
 }

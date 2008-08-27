@@ -112,56 +112,6 @@ public final class AbstractSyntaxTree {
     }
   }
 
-  /**
-   * Internal representation of a Java Class
-   */
-  static final class JavaClazz extends Clazz implements
-      JavaClassHandle, JavaClassInfo {
-
-    boolean isInterface;
-
-    public JavaClazz(Module newModule, String newName,
-        Collection<ClassHandle> superClasses) {
-      super(newModule, newName, superClasses);
-    }
-
-    public void setIsInterface(boolean newIsInterface) {
-      isInterface = newIsInterface;
-    }
-
-    @Override
-    public JavaClassHandle getHandle() {
-      return this;
-    }
-  }
-
-  static final class JavaMethod extends Method implements
-      JavaMethodHandle, JavaMethodInfo {
-
-    boolean isAbstract;
-    boolean isFinal;
-
-    JavaMethod(Node owner, String name, Type returnType, Visibility access) {
-      super(owner, name, returnType, access);
-    }
-
-    private void setIsFinal(boolean newFinal) {
-      isFinal = newFinal;
-    }
-
-    public boolean getIsFinal() {
-      return isFinal;
-    }
-
-    private void setIsAbstract(boolean newIsAbstract) {
-      isAbstract = newIsAbstract;
-    }
-
-    public boolean getIsAbstract() {
-      return isAbstract;
-    }
-  }
-
   static final class CppMethod extends Method implements
       CppMethodHandle, CppMethodInfo {
 
@@ -325,16 +275,12 @@ public final class AbstractSyntaxTree {
       String name, Visibility access, Type returnType) {
 
     Node ownerNode = nodes.get(owner);
-
-    if (ownerNode == null) {
-      throw new IllegalArgumentException("Owner not found.");
-    }
-
     Method method;
 
     switch (lang) {
     case JAVA: {
-      JavaMethod jMethod = new JavaMethod(ownerNode, name, returnType, access);
+      JavaClazz ownerClazz = javaClasses.get(owner);
+      JavaMethod jMethod = new JavaMethod(ownerClazz, name, returnType, access);
       javaMethods.put(jMethod, jMethod);
       method = jMethod;
       break;

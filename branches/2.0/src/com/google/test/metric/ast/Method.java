@@ -7,8 +7,10 @@ import com.google.test.metric.asm.Visibility;
 import com.google.test.metric.ast.AbstractSyntaxTree.Node;
 import com.google.test.metric.method.op.turing.Operation;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Internal representation of a method.
@@ -20,7 +22,7 @@ public class Method extends Node implements MethodInfo, MethodHandle {
   Visibility access;
   Type returnType;
   final List<Parameter> parameters = new LinkedList<Parameter>();
-  final List<LocalVariable> localVars = new LinkedList<LocalVariable>();
+  final Map<String, LocalVariable> localVars = new HashMap<String, LocalVariable>();
   final List<Operation> operations = new LinkedList<Operation>();
 
   public Method(Node newOwner, String newName, Type newReturnType,
@@ -52,7 +54,7 @@ public class Method extends Node implements MethodInfo, MethodHandle {
 
   public List<LocalVariableInfo> getLocalVariables() {
     List<LocalVariableInfo> result = new LinkedList<LocalVariableInfo>();
-    for (LocalVariable l : localVars) {
+    for (LocalVariable l : localVars.values()) {
       result.add(l);
     }
     return result;
@@ -79,7 +81,7 @@ public class Method extends Node implements MethodInfo, MethodHandle {
   }
 
   public void addLocalVariable(LocalVariable var) {
-    localVars.add(var);
+    localVars.put(var.getName(), var);
   }
 
   public List<Operation> getOperations() {
