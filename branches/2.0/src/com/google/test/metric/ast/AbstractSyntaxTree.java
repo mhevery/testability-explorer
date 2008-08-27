@@ -21,6 +21,7 @@ import com.google.test.metric.Type;
 import com.google.test.metric.asm.Visibility;
 import com.google.test.metric.method.op.turing.Operation;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,7 +43,6 @@ public final class AbstractSyntaxTree {
 
   private final static Clazz PRIMITIVE_CLAZZ = new Clazz(null, "",
       EMPTY_CLAZZ_LIST);
-  private final static Module DEFAULT_MODULE = new Module("default");
 
   public final static ClassHandle PRIMITIVE = PRIMITIVE_CLAZZ;
 
@@ -56,7 +56,7 @@ public final class AbstractSyntaxTree {
    */
   private static class Module extends Node implements ModuleHandle, ModuleInfo {
     String name;
-    Set<Method> methods = new HashSet<Method>();
+    List<MethodInfo> methods = new ArrayList<MethodInfo>();
 
     private Module(String newName) {
       name = newName;
@@ -70,12 +70,16 @@ public final class AbstractSyntaxTree {
       return name;
     }
 
+    public List<MethodInfo> getMethods() {
+      return methods;
+    }
+
     public void registerMethod(Method method) {
       methods.add(method);
     }
 
     public void accept(Visitor v) {
-      for (Method m : methods) {
+      for (MethodInfo m : methods) {
         v.visitMethod(m);
       }
     }
@@ -160,9 +164,6 @@ public final class AbstractSyntaxTree {
 
     private Method(Node newOwner, String newName, Type newReturnType,
         Visibility newAccess) {
-      if (newOwner == null) {
-        newOwner = DEFAULT_MODULE;
-      }
 
       this.owner = newOwner;
       this.name = newName;
@@ -274,15 +275,35 @@ public final class AbstractSyntaxTree {
   /**
    * Internal representation of a C++ Module.
    */
-  static final class CppModule extends Module implements CppModuleHandle {
+  static final class CppModule extends Module implements CppModuleHandle,
+    CppModuleInfo {
 
-    private CppModule(String newName) {
+    final CppModule parent;
+    final List<CppModule> children = new ArrayList<CppModule>();
+
+    private CppModule(String newName, CppModule parent) {
       super(newName);
+      this.parent = parent;
+      if (parent != null) {
+        parent.addModule(this);
+      }
     }
 
     @Override
     public CppModuleHandle getHandle() {
       return this;
+    }
+
+    public void addModule(CppModule child) {
+      children.add(child);
+    }
+
+    public List<CppModuleInfo> getChildren() {
+      List<CppModuleInfo> result = new ArrayList<CppModuleInfo>();
+      for (CppModule m : children) {
+        result.add(m);
+      }
+      return result;
     }
   }
 
@@ -385,10 +406,6 @@ public final class AbstractSyntaxTree {
 
   private final Map<FieldHandle, Field> fields = new HashMap<FieldHandle, Field>();
 
-  public AbstractSyntaxTree() {
-    modules.put(DEFAULT_MODULE.getHandle(), DEFAULT_MODULE);
-  }
-
   /**
    * Add a new top-level module to this AST.
    *
@@ -401,15 +418,26 @@ public final class AbstractSyntaxTree {
    * @throws IllegalArgumentException
    *           if the language is not supported.
    */
-  public ModuleHandle createModule(Language lang, String name) {
+  public ModuleHandle createModule(Language lang, ModuleHandle parent, String name) {
     Module module;
 
     switch (lang) {
     case JAVA:
+      if (parent != null) {
+        throw new IllegalArgumentException();
+      }
       module = new JavaModule(name);
       break;
     case CPP:
-      module = new CppModule(name);
+      CppModule cppParent = null;
+      if (parent != null) {
+        if (parent instanceof CppModule) {
+          cppParent = (CppModule) parent;
+        } else {
+          throw new IllegalArgumentException();
+        }
+      }
+      module = new CppModule(name, cppParent);
       break;
     case INDEPENDENT:
       module = new Module(name);
@@ -418,7 +446,10 @@ public final class AbstractSyntaxTree {
       throw new IllegalArgumentException("Undefined Language!");
     }
 
-    modules.put(module.getHandle(), module);
+    nodes.put(module.getHandle(), module);
+    if (parent == null) {
+      modules.put(module.getHandle(), module);
+    }
     return module.getHandle();
 
   }

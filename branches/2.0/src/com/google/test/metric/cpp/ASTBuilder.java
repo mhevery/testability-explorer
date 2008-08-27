@@ -20,16 +20,24 @@ import com.google.test.metric.asm.Visibility;
 import com.google.test.metric.ast.AbstractSyntaxTree;
 import com.google.test.metric.ast.ClassHandle;
 import com.google.test.metric.ast.Language;
+import com.google.test.metric.ast.ModuleHandle;
+import com.google.test.metric.ast.NodeHandle;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Stack;
 
 public class ASTBuilder implements Builder {
 
   private final AbstractSyntaxTree ast;
+  private final Stack<NodeHandle> nodeStack = new Stack<NodeHandle>();
 
   public ASTBuilder(AbstractSyntaxTree ast) {
     this.ast = ast;
+
+    ModuleHandle defaultNamespace =
+      ast.createModule(Language.CPP, null, "default");
+    nodeStack.add(defaultNamespace);
   }
 
   public void accessSpecifier(String accessSpec) {
@@ -189,15 +197,19 @@ public class ASTBuilder implements Builder {
   }
 
   public void enterNamespaceScope(String ns) {
-    throw new UnsupportedOperationException();
+    NodeHandle parent = nodeStack.peek();
+    ModuleHandle moduleHandle = ast.createModule(
+        Language.CPP, (ModuleHandle) parent, ns);
+    nodeStack.push(moduleHandle);
   }
 
   public void exitNamespaceScope() {
-    throw new UnsupportedOperationException();
+    nodeStack.pop();
   }
 
   public void functionDirectDeclarator(String identifier) {
-    ast.createMethod(Language.CPP, null, identifier, Visibility.PUBLIC, Type.VOID);
+    NodeHandle parent = nodeStack.peek();
+    ast.createMethod(Language.CPP, parent, identifier, Visibility.PUBLIC, Type.VOID);
   }
 
   public Collection getNewElements() {

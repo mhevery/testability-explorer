@@ -17,13 +17,7 @@ package com.google.test.metric.ast;
 
 import java.util.List;
 
-/**
- * Language independent information about a module that should be made available
- * for visitors.
- */
-public interface ModuleInfo {
+public interface CppModuleInfo extends ModuleInfo {
 
-  String getName();
-
-  List<MethodInfo> getMethods();
+  public List<CppModuleInfo> getChildren();
 }

@@ -17,6 +17,7 @@ package com.google.test.metric.cpp;
 
 import com.google.test.metric.ast.AbstractSyntaxTree;
 import com.google.test.metric.ast.ClassInfo;
+import com.google.test.metric.ast.CppModuleInfo;
 import com.google.test.metric.ast.MethodInfo;
 import com.google.test.metric.ast.ModuleInfo;
 import com.google.test.metric.ast.Visitor;
@@ -25,6 +26,7 @@ import junit.framework.TestCase;
 
 import java.io.CharArrayReader;
 import java.io.Reader;
+import java.util.List;
 
 public class CPPParserTest extends TestCase {
 
@@ -60,8 +62,59 @@ public class CPPParserTest extends TestCase {
     AbstractSyntaxTree ast = parse(source);
     TestVisitor v = new TestVisitor();
     ast.accept(v);
+    assertNull(v.classInfo);
     assertNotNull(v.methodInfo);
     assertEquals("foo", v.methodInfo.getName());
+  }
+
+  public void testEmptyNamespace() throws Exception {
+    String source = "namespace foo {}";
+    AbstractSyntaxTree ast = parse(source);
+    TestVisitor v = new TestVisitor();
+    ast.accept(v);
+    assertNull(v.classInfo);
+    assertNull(v.methodInfo);
+    assertNotNull(v.moduleInfo);
+    assertTrue(v.moduleInfo instanceof CppModuleInfo);
+    CppModuleInfo cppModuleInfo = (CppModuleInfo) v.moduleInfo;
+    assertEquals("default", cppModuleInfo.getName());
+    List<CppModuleInfo> children = cppModuleInfo.getChildren();
+    assertEquals(1, children.size());
+    assertEquals("foo", children.get(0).getName());
+  }
+
+  public void testNestedNamespace() throws Exception {
+    String source = "namespace foo { namespace bar {} }";
+    AbstractSyntaxTree ast = parse(source);
+    TestVisitor v = new TestVisitor();
+    ast.accept(v);
+    assertNotNull(v.moduleInfo);
+    assertTrue(v.moduleInfo instanceof CppModuleInfo);
+    CppModuleInfo cppModuleInfo = (CppModuleInfo) v.moduleInfo;
+    assertEquals("default", cppModuleInfo.getName());
+    List<CppModuleInfo> children = cppModuleInfo.getChildren();
+    assertEquals(1, children.size());
+    assertEquals("foo", children.get(0).getName());
+    children = children.get(0).getChildren();
+    assertEquals(1, children.size());
+    assertEquals("bar", children.get(0).getName());
+  }
+
+  public void testEmptyMethodInNamespace() throws Exception {
+    String source = "namespace foo { void bar() {} }";
+    AbstractSyntaxTree ast = parse(source);
+    TestVisitor v = new TestVisitor();
+    ast.accept(v);
+    assertNotNull(v.moduleInfo);
+    assertEquals("default", v.moduleInfo.getName());
+    CppModuleInfo cppModuleInfo = (CppModuleInfo) v.moduleInfo;
+    List<CppModuleInfo> children = cppModuleInfo.getChildren();
+    assertEquals(1, children.size());
+    assertEquals("foo", children.get(0).getName());
+    cppModuleInfo = children.get(0);
+    assertEquals(1, cppModuleInfo.getMethods().size());
+    MethodInfo methodInfo = cppModuleInfo.getMethods().get(0);
+    assertEquals("bar", methodInfo.getName());
   }
 
   private AbstractSyntaxTree parse(String source) throws Exception {
