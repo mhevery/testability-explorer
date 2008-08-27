@@ -115,7 +115,8 @@ public class TestabilityContext {
     if (method.getMethodThis() != null) {
       setInjectable(method.getMethodThis());
     }
-    setInjectable(method.getParameters());
+    //TODO
+    //setInjectable(method.getParameters());
   }
 
   public void localAssignment(MethodInfo inMethod, int lineNumber,
@@ -134,20 +135,24 @@ public class TestabilityContext {
   public boolean isGlobal(Variable var) {
     if (var instanceof LocalField) {
       LocalField field = (LocalField) var;
-      return isGlobal(field.getInstance()) || isGlobal(field.getField());
+      //TODO
+      //return isGlobal(field.getInstance()) || isGlobal(field.getField());
     }
     return var != null && (var.isGlobal() || statics.contains(var));
   }
 
   public void fieldAssignment(Variable fieldInstance, FieldInfo field,
       Variable value, MethodInfo inMethod, int lineNumber) {
-    localAssignment(inMethod, lineNumber, field, value);
+    //TODO
+    //localAssignment(inMethod, lineNumber, field, value);
+    /*
     if (fieldInstance == null || statics.contains(fieldInstance)) {
       if (!field.isFinal()) {
         getMethodCost(inMethod).addGlobalCost(lineNumber, fieldInstance);
       }
       statics.add(field);
     }
+    */
   }
 
   public void arrayAssignment(Variable array, Variable index, Variable value,
@@ -163,7 +168,8 @@ public class TestabilityContext {
 
   public boolean isInjectable(Variable var) {
     if (var instanceof LocalField) {
-      return isInjectable(((LocalField)var).getField());
+      //TODO
+      //return isInjectable(((LocalField)var).getField());
     }
     return injectables.contains(var);
   }

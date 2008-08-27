@@ -15,8 +15,10 @@
  */
 package com.google.test.metric;
 
+import com.google.test.metric.ast.VariableImpl;
 
-public class FieldInfo extends Variable {
+
+public class FieldInfo extends VariableImpl {
 
   private final ClassInfo classInfo;
   private final boolean isPrivate;

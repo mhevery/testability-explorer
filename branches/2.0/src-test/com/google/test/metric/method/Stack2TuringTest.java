@@ -15,13 +15,8 @@
  */
 package com.google.test.metric.method;
 
-import java.util.List;
-
-import junit.framework.TestCase;
-
 import com.google.test.metric.FieldInfo;
 import com.google.test.metric.Type;
-import com.google.test.metric.Variable;
 import com.google.test.metric.method.op.stack.JSR;
 import com.google.test.metric.method.op.stack.Load;
 import com.google.test.metric.method.op.stack.PutField;
@@ -29,13 +24,18 @@ import com.google.test.metric.method.op.stack.RetSub;
 import com.google.test.metric.method.op.stack.Return;
 import com.google.test.metric.method.op.turing.Operation;
 
+import junit.framework.TestCase;
+
+import java.util.List;
+
 public class Stack2TuringTest extends TestCase {
 
   public void testJSRSingleBlock() throws Exception {
     Block main = new Block("main");
     Block sub = new Block("sub");
 
-    main.addOp(new Load(0, new Variable("this", Type.OBJECT, false, false)));
+    //todo
+    //main.addOp(new Load(0, new Variable("this", Type.OBJECT, false, false)));
     main.addOp(new JSR(0, sub));
     main.addOp(new PutField(0, new FieldInfo(null, "a", Type.INT, false, false,
         false)));

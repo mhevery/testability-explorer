@@ -18,7 +18,6 @@ package com.google.test.metric.asm;
 import static com.google.test.metric.asm.SignatureParser.parse;
 
 import com.google.test.metric.JavaParser;
-import com.google.test.metric.LocalVariableInfo;
 import com.google.test.metric.Type;
 import com.google.test.metric.Variable;
 import com.google.test.metric.ast.AbstractSyntaxTree;
@@ -73,11 +72,12 @@ public class MethodVisitorBuilder implements MethodVisitor {
   private final JavaParser parser;
 
   private long cyclomaticComplexity = 1;
-  private Variable methodThis;
+  private LocalVariableHandle methodThis;
   private int lineNumber;
   private int startingLineNumber;
   private final List<ParameterHandle> parameters = new ArrayList<ParameterHandle>();
   private final List<LocalVariableHandle> localVariables = new ArrayList<LocalVariableHandle>();
+  private final MethodHandle methodHandle;
 
   public MethodVisitorBuilder(JavaParser parser, AbstractSyntaxTree ast, ClassHandle classHandle,
       String name, String desc, String signature, String[] exceptions,
@@ -89,23 +89,21 @@ public class MethodVisitorBuilder implements MethodVisitor {
     this.desc = desc;
     this.visibility = visibility;
     int slot = 0;
+    this.methodHandle = ast.createMethod(Language.JAVA, classHandle, name + desc, visibility, null);
     if (!isStatic) {
-      //Type thisType = Type.fromJava(classHandle.getName());
-      //methodThis = new LocalVariableInfo("this", thisType);
-      //methodThis = new LocalVariableHandle("this", null);
+      Type thisType = Type.fromJava(name);
+      methodThis = ast.createLocalVariable(methodHandle, "this", thisType);
       slots.put(slot++, methodThis);
-      //localVariables.add((LocalVariableHandle) methodThis);
     }
-    /*
     for (Type type : parse(desc).getParameters()) {
-      ParameterHandle parameterHandle = ast.createMethodParameter("param_" + slot, type);
+      ParameterHandle parameterHandle = ast.createMethodParameter(methodHandle, "param_" + slot, type);
       //ParameterInfo parameterInfo = new ParameterInfo("param_" + slot, type);
       parameters.add(parameterHandle);
-      //slots.put(slot++, parameterHandle);
+      slots.put(slot++, (Variable) parameterHandle);
       if (type.isDoubleSlot()) {
         slot++;
       }
-    }*/
+    }
   }
 
   public void visitJumpInsn(final int opcode, final Label label) {
@@ -239,12 +237,11 @@ public class MethodVisitorBuilder implements MethodVisitor {
     Type type = Type.fromDesc(desc);
     Variable variable = slots.get(slotNum);
     if (variable == null) {
-      LocalVariableInfo localVar = new LocalVariableInfo(name, type);
+      LocalVariableHandle localVar = ast.createLocalVariable(methodHandle, name, type);
       slots.put(slotNum, localVar);
-      //TODO
-      //localVariables.add(localVar);
+      localVariables.add(localVar);
     } else {
-      variable.setName(name);
+      //variable.setName(name);
     }
   }
 
@@ -375,10 +372,9 @@ public class MethodVisitorBuilder implements MethodVisitor {
   private Variable variable(int varIndex, Type type) {
     Variable variable = slots.get(varIndex);
     if (variable == null) {
-      LocalVariableInfo localVar = new LocalVariableInfo("local_" + varIndex, type);
+      LocalVariableHandle localVar = ast.createLocalVariable(methodHandle, "local_" + varIndex, type);
       slots.put(varIndex, localVar);
-      //TODO
-      //localVariables.add(localVar);
+      localVariables.add(localVar);
       variable = localVar;
     }
     Type varType = variable.getType();

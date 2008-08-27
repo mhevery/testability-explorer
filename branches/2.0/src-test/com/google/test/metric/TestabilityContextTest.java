@@ -16,12 +16,10 @@
 package com.google.test.metric;
 
 
-import static java.util.Collections.EMPTY_LIST;
-
 import junit.framework.TestCase;
 
 public class TestabilityContextTest extends TestCase {
-
+/*
   TestabilityContext context =
       new TestabilityContext(null, null, new RegExpWhiteList(), new CostModel());
 
@@ -106,7 +104,7 @@ public class TestabilityContextTest extends TestCase {
     assertFalse(context.isInjectable(dst));
     assertEquals(0, context.getLinkedMethodCost(method).getTotalGlobalCost());
   }
-
+*/
 //  public void testGrayListCostOverridesActualCost() throws Exception {
 //    ClassRepository repo = null;
 //    PrintStream err = null;

@@ -15,8 +15,10 @@
  */
 package com.google.test.metric;
 
+import com.google.test.metric.ast.VariableImpl;
 
-public class LocalField extends Variable {
+
+public class LocalField extends VariableImpl {
 
   private final Variable instance;
   private final FieldInfo fieldInfo;

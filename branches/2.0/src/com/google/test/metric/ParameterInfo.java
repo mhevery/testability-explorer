@@ -15,7 +15,9 @@
  */
 package com.google.test.metric;
 
-public class ParameterInfo extends Variable {
+import com.google.test.metric.ast.VariableImpl;
+
+public class ParameterInfo extends VariableImpl {
 
   public ParameterInfo(String name, Type type) {
     super(name, type, false, false);

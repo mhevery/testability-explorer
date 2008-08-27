@@ -16,6 +16,8 @@
 
 package com.google.test.metric.ast;
 
+import com.google.test.metric.Variable;
+
 /**
  * Language-Independent Field-Specific information.
  */

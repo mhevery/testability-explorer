@@ -15,7 +15,9 @@
  */
 package com.google.test.metric;
 
-public class LocalVariableInfo extends Variable {
+import com.google.test.metric.ast.VariableImpl;
+
+public class LocalVariableInfo extends VariableImpl {
 
   public LocalVariableInfo(String name, Type type) {
     super(name, type, false, false);

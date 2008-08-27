@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,43 +15,20 @@
  */
 package com.google.test.metric;
 
-public class Variable {
+import com.google.test.metric.Type;
 
-  protected final Type type;
-  private final boolean isFinal;
-  private final boolean isGlobal;
-  private String name;
+/**
+ * Describes functionality that is common to all variables (fields, local-vars,
+ * parameters, ...).
+ */
+public interface Variable {
 
-  public Variable(String name, Type type, boolean isFinal, boolean isGlobal) {
-    this.name = name;
-    this.type = type;
-    this.isFinal = isFinal;
-    this.isGlobal = isGlobal;
-  }
+  public String getName();
 
-  public String getName() {
-    return name;
-  }
+  public Type getType();
 
-  @Override
-  public String toString() {
-    return name + "{" + type + "}";
-  }
+  public boolean isGlobal();
 
-  public Type getType() {
-    return type;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public boolean isGlobal() {
-    return isGlobal;
-  }
-
-  public boolean isFinal() {
-    return isFinal;
-  }
+  public boolean isFinal();
 
 }

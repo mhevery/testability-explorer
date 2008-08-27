@@ -16,9 +16,9 @@
 package com.google.test.metric.method;
 
 import com.google.test.metric.Type;
-import com.google.test.metric.Variable;
+import com.google.test.metric.ast.VariableImpl;
 
-public class Constant extends Variable {
+public class Constant extends VariableImpl {
   public Constant(Object value, Type type) {
     super(String.valueOf(value), type, false, false);
   }

@@ -15,6 +15,8 @@
  */
 package com.google.test.metric.ast;
 
+import com.google.test.metric.Variable;
+
 public interface ParameterInfo extends Variable {
 
 }

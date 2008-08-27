@@ -16,6 +16,7 @@
 package com.google.test.metric.ast;
 
 import com.google.test.metric.Type;
+import com.google.test.metric.Variable;
 
 public class VariableImpl implements Variable {
 // Stolen the code from com.google.test.metric.Variable
