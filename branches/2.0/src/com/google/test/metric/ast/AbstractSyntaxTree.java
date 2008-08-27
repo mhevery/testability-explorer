@@ -495,6 +495,7 @@ public final class AbstractSyntaxTree {
 
     classDirectory.put(name, clazz.getHandle());
     classes.put(clazz.getHandle(), clazz);
+    nodes.put(clazz.getHandle(), clazz);
     return clazz.getHandle();
   }
 
