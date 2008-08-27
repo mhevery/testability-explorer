@@ -15,6 +15,8 @@
  */
 package com.google.test.metric.ast;
 
-public interface FieldHandle {
+import com.google.test.metric.Variable;
+
+public interface FieldHandle extends Variable {
 
 }

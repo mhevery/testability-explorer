@@ -17,19 +17,18 @@ package com.google.test.metric.method;
 
 import static java.util.Arrays.asList;
 
-import java.util.List;
-
-import junit.framework.TestCase;
-
 import com.google.test.metric.FieldInfo;
 import com.google.test.metric.Type;
 import com.google.test.metric.Variable;
 import com.google.test.metric.method.op.stack.GetField;
 import com.google.test.metric.method.op.stack.Invoke;
 import com.google.test.metric.method.op.stack.Load;
-import com.google.test.metric.method.op.stack.PutField;
 import com.google.test.metric.method.op.turing.MethodInvokation;
 import com.google.test.metric.method.op.turing.Operation;
+
+import junit.framework.TestCase;
+
+import java.util.List;
 
 public class BlockTest extends TestCase {
 
@@ -46,8 +45,9 @@ public class BlockTest extends TestCase {
   public void testVariableStaticAssignment() throws Exception {
     Block block = new Block("1");
     block.addOp(new Load(-1, var(1)));
-    block.addOp(new PutField(-1, new FieldInfo(null, "abc", OBJECT,
-        false, true, false)));
+    //TODO
+    //block.addOp(new PutField(-1, new FieldInfo(null, "abc", OBJECT,
+    //    false, true, false)));
 
     List<Operation> operations = new Stack2Turing(block).translate();
     assertEquals("[null.abc{java.lang.Object} <- 1{java.lang.Object}]", operations.toString());
@@ -57,8 +57,9 @@ public class BlockTest extends TestCase {
     Block block = new Block("1");
     block.addOp(new Load(-1, var("this"))); // this
     block.addOp(new Load(-1, var(1)));
-    block.addOp(new PutField(-1, new FieldInfo(null, "abc", OBJECT,
-        false, false, false)));
+    //TODO
+    //block.addOp(new PutField(-1, new FieldInfo(null, "abc", OBJECT,
+    //    false, false, false)));
 
     List<Operation> operations = new Stack2Turing(block).translate();
     assertEquals("[null.abc{java.lang.Object} <- 1{java.lang.Object}]", operations.toString());
@@ -68,8 +69,9 @@ public class BlockTest extends TestCase {
     Block block = new Block("1");
     block.addOp(new GetField(-1, new FieldInfo(null, "src", OBJECT,
         false, true, false)));
-    block.addOp(new PutField(-1, new FieldInfo(null, "dst", OBJECT,
-        false, true, false)));
+    //TODO
+    //block.addOp(new PutField(-1, new FieldInfo(null, "dst", OBJECT,
+    //    false, true, false)));
 
     List<Operation> operations = new Stack2Turing(block).translate();
     assertEquals("[null.dst{java.lang.Object} <- null.src{java.lang.Object}]", operations
@@ -85,8 +87,9 @@ public class BlockTest extends TestCase {
         false, true, false)));
     block.addOp(new Invoke(-1, null, "methodA", "(II)A", asList(Type.INT,
         Type.INT), false, OBJECT));
-    block.addOp(new PutField(-1, new FieldInfo(null, "dst", OBJECT,
-        false, true, false)));
+    //TODO
+    //block.addOp(new PutField(-1, new FieldInfo(null, "dst", OBJECT,
+    //    false, true, false)));
 
     List<Operation> operations = new Stack2Turing(block).translate();
     assertEquals("[null.methodA(II)A, null.dst{java.lang.Object} <- ?{java.lang.Object}]",

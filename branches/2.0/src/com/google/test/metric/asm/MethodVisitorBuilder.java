@@ -41,6 +41,7 @@ import com.google.test.metric.method.op.stack.MonitorEnter;
 import com.google.test.metric.method.op.stack.MonitorExit;
 import com.google.test.metric.method.op.stack.MultiANewArrayIns;
 import com.google.test.metric.method.op.stack.Pop;
+import com.google.test.metric.method.op.stack.PutField;
 import com.google.test.metric.method.op.stack.RetSub;
 import com.google.test.metric.method.op.stack.Return;
 import com.google.test.metric.method.op.stack.Store;
@@ -945,9 +946,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
       }
       */
       field = ast.createField(Language.JAVA, classHandle, fieldName, null, null, false);
-      //TODO
-      //block.addOp(new com.google.test.metric.method.op.stack.PutField(
-      //    lineNumber, field));
+      block.addOp(new PutField(lineNumber, field));
     }
   }
 

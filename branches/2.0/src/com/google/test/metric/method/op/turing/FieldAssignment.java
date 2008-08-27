@@ -15,19 +15,19 @@
  */
 package com.google.test.metric.method.op.turing;
 
-import com.google.test.metric.FieldInfo;
 import com.google.test.metric.MethodInfo;
 import com.google.test.metric.TestabilityContext;
 import com.google.test.metric.Variable;
+import com.google.test.metric.ast.FieldHandle;
 
 public class FieldAssignment extends Operation {
 
   private final Variable fieldInstance;
-  private final FieldInfo field;
+  private final FieldHandle field;
   private final Variable value;
 
   public FieldAssignment(int lineNumber, Variable fieldInstance,
-      FieldInfo field, Variable value) {
+      FieldHandle field, Variable value) {
     super(lineNumber);
     this.fieldInstance = fieldInstance;
     this.field = field;

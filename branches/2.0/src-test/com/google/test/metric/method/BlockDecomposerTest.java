@@ -258,7 +258,7 @@ public class BlockDecomposerTest extends TestCase {
     Label lTry = new Label();
     Load l1 = load(1);
     Load l2 = load(2);
-    //TODOhttp://www.battleorders.co.uk/acatalog/RAMBO3SIG.jpg
+    //TODO
     //Store store = new Store(-1, new Variable("a", Type.INT, false, false));
     Store store = null;
     Return ret = new Return(1, Type.INT);

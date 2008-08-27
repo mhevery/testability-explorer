@@ -17,6 +17,8 @@ package com.google.test.metric;
 
 
 
+import com.google.test.metric.ast.FieldHandle;
+
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -115,8 +117,7 @@ public class TestabilityContext {
     if (method.getMethodThis() != null) {
       setInjectable(method.getMethodThis());
     }
-    //TODO
-    //setInjectable(method.getParameters());
+    setInjectable(method.getParameters());
   }
 
   public void localAssignment(MethodInfo inMethod, int lineNumber,
@@ -141,18 +142,15 @@ public class TestabilityContext {
     return var != null && (var.isGlobal() || statics.contains(var));
   }
 
-  public void fieldAssignment(Variable fieldInstance, FieldInfo field,
+  public void fieldAssignment(Variable fieldInstance, FieldHandle field,
       Variable value, MethodInfo inMethod, int lineNumber) {
-    //TODO
-    //localAssignment(inMethod, lineNumber, field, value);
-    /*
+    localAssignment(inMethod, lineNumber, field, value);
     if (fieldInstance == null || statics.contains(fieldInstance)) {
       if (!field.isFinal()) {
         getMethodCost(inMethod).addGlobalCost(lineNumber, fieldInstance);
       }
       statics.add(field);
     }
-    */
   }
 
   public void arrayAssignment(Variable array, Variable index, Variable value,
@@ -168,8 +166,7 @@ public class TestabilityContext {
 
   public boolean isInjectable(Variable var) {
     if (var instanceof LocalField) {
-      //TODO
-      //return isInjectable(((LocalField)var).getField());
+      return isInjectable(((LocalField)var).getField());
     }
     return injectables.contains(var);
   }

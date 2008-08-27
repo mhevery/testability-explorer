@@ -15,11 +15,10 @@
  */
 package com.google.test.metric.method;
 
-import com.google.test.metric.FieldInfo;
 import com.google.test.metric.Type;
+import com.google.test.metric.ast.VariableImpl;
 import com.google.test.metric.method.op.stack.JSR;
 import com.google.test.metric.method.op.stack.Load;
-import com.google.test.metric.method.op.stack.PutField;
 import com.google.test.metric.method.op.stack.RetSub;
 import com.google.test.metric.method.op.stack.Return;
 import com.google.test.metric.method.op.turing.Operation;
@@ -34,11 +33,11 @@ public class Stack2TuringTest extends TestCase {
     Block main = new Block("main");
     Block sub = new Block("sub");
 
-    //todo
-    //main.addOp(new Load(0, new Variable("this", Type.OBJECT, false, false)));
+    main.addOp(new Load(0, new VariableImpl("this", Type.OBJECT, false, false)));
     main.addOp(new JSR(0, sub));
-    main.addOp(new PutField(0, new FieldInfo(null, "a", Type.INT, false, false,
-        false)));
+    //TODOcurrentMethod
+    //main.addOp(new PutField(0, new FieldInfo(null, "a", Type.INT, false, false,
+    //    false)));
 
     sub.addOp(new Load(0, new Constant(1, Type.INT)));
     sub.addOp(new Return(0, Type.VOID));
