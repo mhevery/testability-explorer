@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,8 +16,7 @@
 package com.google.test.metric.ast;
 
 /**
- * Handle to classes. This interface (and its subinterfaces) should be the
- * one and only reference that the parser ever holds to a class in the AST.
+ * Additional information available for cpp-methods.
  */
-public interface ClassHandle extends NodeHandle {
+public interface CppMethodInfo extends MethodInfo {
 }

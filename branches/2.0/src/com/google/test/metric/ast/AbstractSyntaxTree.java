@@ -32,27 +32,31 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A simplified Abstract Syntax Tree interface, for adding the syntax nodes,
- * and iterating the structure.
+ * A simplified Abstract Syntax Tree interface, for adding the syntax nodes, and
+ * iterating the structure.
  */
 public final class AbstractSyntaxTree {
 
-  private static final Collection<ClassHandle> EMPTY_CLAZZ_LIST =
-      Collections.emptySet();
+  private static final Collection<ClassHandle> EMPTY_CLAZZ_LIST = Collections
+      .emptySet();
 
-  private final static Clazz PRIMITIVE_CLAZZ =
-      new Clazz(null, "", EMPTY_CLAZZ_LIST);
+  private final static Clazz PRIMITIVE_CLAZZ = new Clazz(null, "",
+      EMPTY_CLAZZ_LIST);
+  private final static Module DEFAULT_MODULE = new Module("default");
 
   public final static ClassHandle PRIMITIVE = PRIMITIVE_CLAZZ;
 
+  private static class Node {
+  }
 
   /**
    * Internal representation of a "Module". Will never ever be passed to
    * somebody outside this class- only either as a ModuleHandle for creating
    * children, or as a ModuleInfo for reading the necessary data.
    */
-  private static class Module implements ModuleHandle, ModuleInfo {
+  private static class Module extends Node implements ModuleHandle, ModuleInfo {
     String name;
+    Set<Method> methods = new HashSet<Method>();
 
     private Module(String newName) {
       name = newName;
@@ -65,9 +69,19 @@ public final class AbstractSyntaxTree {
     public String getName() {
       return name;
     }
+
+    public void registerMethod(Method method) {
+      methods.add(method);
+    }
+
+    public void accept(Visitor v) {
+      for (Method m : methods) {
+        v.visitMethod(m);
+      }
+    }
   }
 
-  private static class Clazz implements ClassHandle, ClassInfo {
+  private static class Clazz extends Node implements ClassHandle, ClassInfo {
 
     String name;
     Module module;
@@ -75,7 +89,6 @@ public final class AbstractSyntaxTree {
     Map<String, FieldInfo> fields = new HashMap<String, FieldInfo>();
 
     Set<Method> methods = new HashSet<Method>();
-
 
     private Clazz(Module newModule, String newName,
         Collection<ClassHandle> theSuperClasses) {
@@ -103,8 +116,8 @@ public final class AbstractSyntaxTree {
     /**
      * {@inheritDoc}
      */
-    public MethodInfo getMethod(String methodName) throws
-        MethodNotFoundException {
+    public MethodInfo getMethod(String methodName)
+        throws MethodNotFoundException {
       for (MethodInfo info : methods) {
         if (info.getName().equals(methodName)) {
           return info;
@@ -135,23 +148,35 @@ public final class AbstractSyntaxTree {
   /**
    * Internal representation of a method.
    */
-  private static class Method implements MethodInfo, MethodHandle {
+  private static class Method extends Node implements MethodInfo, MethodHandle {
 
-    Clazz owner;
+    Node owner;
     String name;
     Visibility access;
     Type returnType;
     final List<Parameter> parameters = new LinkedList<Parameter>();
     final List<LocalVariable> localVars = new LinkedList<LocalVariable>();
 
-    private Method(Clazz newOwner, String newName, Type newReturnType,
+    private Method(Node newOwner, String newName, Type newReturnType,
         Visibility newAccess) {
-      owner = newOwner;
-      name = newName;
-      returnType = newReturnType == null ? Type.VOID : newReturnType;
-      access = newAccess;
+      if (newOwner == null) {
+        newOwner = DEFAULT_MODULE;
+      }
 
-      owner.registerMethod(this);
+      this.owner = newOwner;
+      this.name = newName;
+      this.returnType = newReturnType == null ? Type.VOID : newReturnType;
+      this.access = newAccess;
+
+      if (owner instanceof Clazz) {
+        Clazz clazz = (Clazz) owner;
+        clazz.registerMethod(this);
+      } else if (owner instanceof Module) {
+        Module module = (Module) owner;
+        module.registerMethod(this);
+      } else {
+        throw new IllegalArgumentException();
+      }
     }
 
     public String getName() {
@@ -180,8 +205,8 @@ public final class AbstractSyntaxTree {
 
     @Override
     public String toString() {
-      StringBuilder nameBuilder =
-          new StringBuilder(name.substring(0, name.indexOf(")") + 1));
+      StringBuilder nameBuilder = new StringBuilder(name.substring(0, name
+          .indexOf(")") + 1));
       nameBuilder.insert(0, returnType.toString() + " ");
       return nameBuilder.toString();
     }
@@ -199,8 +224,8 @@ public final class AbstractSyntaxTree {
     }
   }
 
-  private static class Parameter extends VariableImpl
-      implements ParameterInfo, ParameterHandle {
+  private static class Parameter extends VariableImpl implements ParameterInfo,
+      ParameterHandle {
 
     Method owner;
 
@@ -223,8 +248,8 @@ public final class AbstractSyntaxTree {
     }
   }
 
-  private static class Field extends VariableImpl
-      implements FieldInfo, FieldHandle {
+  private static class Field extends VariableImpl implements FieldInfo,
+      FieldHandle {
 
     private final Clazz owner;
     private final Visibility access;
@@ -242,15 +267,16 @@ public final class AbstractSyntaxTree {
 
     @Override
     public String toString() {
-      return String.format(FIELD_FORMAT, owner.getName(), getName(),
-          type.toString());
+      return String.format(FIELD_FORMAT, owner.getName(), getName(), type
+          .toString());
     }
   }
+
   /**
    * Internal representation of a Java-Package.
    */
-  private static final class JavaModule extends Module
-      implements JavaModuleHandle {
+  private static final class JavaModule extends Module implements
+      JavaModuleHandle {
 
     private JavaModule(String newName) {
       super(newName);
@@ -297,13 +323,13 @@ public final class AbstractSyntaxTree {
   /**
    * Internal representation of a Java Class
    */
-  private static final class JavaClazz extends Clazz
-      implements JavaClassHandle, JavaClassInfo {
+  private static final class JavaClazz extends Clazz implements
+      JavaClassHandle, JavaClassInfo {
 
     boolean isInterface;
 
     public JavaClazz(Module newModule, String newName,
-        Collection<ClassHandle> superClasses ) {
+        Collection<ClassHandle> superClasses) {
       super(newModule, newName, superClasses);
     }
 
@@ -317,13 +343,13 @@ public final class AbstractSyntaxTree {
     }
   }
 
-  private static final class JavaMethod extends Method
-      implements JavaMethodHandle, JavaMethodInfo {
+  private static final class JavaMethod extends Method implements
+      JavaMethodHandle, JavaMethodInfo {
 
     boolean isAbstract;
     boolean isFinal;
 
-    JavaMethod(Clazz owner, String name, Type returnType, Visibility access) {
+    JavaMethod(Node owner, String name, Type returnType, Visibility access) {
       super(owner, name, returnType, access);
     }
 
@@ -344,74 +370,89 @@ public final class AbstractSyntaxTree {
     }
   }
 
+  private static final class CppMethod extends Method implements
+      CppMethodHandle, CppMethodInfo {
+
+    CppMethod(Node owner, String name, Type returnType, Visibility access) {
+      super(owner, name, returnType, access);
+    }
+  }
+
+  private final Map<NodeHandle, Node> nodes = new HashMap<NodeHandle, Node>();
+
   // All the defined modules.
-  private final Set<Module> modules = new HashSet<Module>();
+  private final Map<ModuleHandle, Module> modules = new HashMap<ModuleHandle, Module>();
 
   // Mapping of name : handle for all defined classes.
-  private final Map<String, ClassHandle> classDirectory =
-      new HashMap<String, ClassHandle>();
+  private final Map<String, ClassHandle> classDirectory = new HashMap<String, ClassHandle>();
 
   // Mapping of JavaClassHandle : JavaClazz
-  private final Map<JavaClassHandle, JavaClazz> javaClasses =
-      new HashMap<JavaClassHandle, JavaClazz>();
+  private final Map<JavaClassHandle, JavaClazz> javaClasses = new HashMap<JavaClassHandle, JavaClazz>();
 
   // Mapping of CppClassHandle : CppClazz
-  private final Map<CppClassHandle, CppClazz> cppClasses =
-    new HashMap<CppClassHandle, CppClazz>();
+  private final Map<CppClassHandle, CppClazz> cppClasses = new HashMap<CppClassHandle, CppClazz>();
 
   // Mapping ClassHandle : Clazz. Contains entries for ALL classes-
   // javaClasses + cppClass is a subset of this map.
-  private final Map<ClassHandle, Clazz> classes =
-    new HashMap<ClassHandle, Clazz>();
+  private final Map<ClassHandle, Clazz> classes = new HashMap<ClassHandle, Clazz>();
 
-  private final Map<JavaMethodHandle, JavaMethod> javaMethods =
-      new HashMap<JavaMethodHandle, JavaMethod>();
-  private final Map<MethodHandle, Method> methods =
-      new HashMap<MethodHandle, Method>();
+  private final Map<JavaMethodHandle, JavaMethod> javaMethods = new HashMap<JavaMethodHandle, JavaMethod>();
+  private final Map<CppMethodHandle, CppMethod> cppMethods = new HashMap<CppMethodHandle, CppMethod>();
+  private final Map<MethodHandle, Method> methods = new HashMap<MethodHandle, Method>();
 
-  private final Map<FieldHandle, Field> fields =
-      new HashMap<FieldHandle, Field>();
+  private final Map<FieldHandle, Field> fields = new HashMap<FieldHandle, Field>();
+
+  public AbstractSyntaxTree() {
+    modules.put(DEFAULT_MODULE.getHandle(), DEFAULT_MODULE);
+  }
 
   /**
    * Add a new top-level module to this AST.
    *
-   * @param lang The language of this module. If we don't care about language
-   *        specific features, {@code Language.INDEPENDENT} should be passen.
-   * @param name The name of the module
+   * @param lang
+   *          The language of this module. If we don't care about language
+   *          specific features, {@code Language.INDEPENDENT} should be passen.
+   * @param name
+   *          The name of the module
    * @return A handle to the newly created module.
-   * @throws IllegalArgumentException if the language is not supported.
+   * @throws IllegalArgumentException
+   *           if the language is not supported.
    */
   public ModuleHandle createModule(Language lang, String name) {
     Module module;
 
     switch (lang) {
-      case JAVA:
-        module = new JavaModule(name);
-        break;
-      case CPP:
-        module = new CppModule(name);
-        break;
-      case INDEPENDENT:
-        module = new Module(name);
-        break;
-      default:
-        throw new IllegalArgumentException("Undefined Language!");
+    case JAVA:
+      module = new JavaModule(name);
+      break;
+    case CPP:
+      module = new CppModule(name);
+      break;
+    case INDEPENDENT:
+      module = new Module(name);
+      break;
+    default:
+      throw new IllegalArgumentException("Undefined Language!");
     }
 
-    modules.add(module);
+    modules.put(module.getHandle(), module);
     return module.getHandle();
 
   }
 
   /**
    * Adds a new class to the repository, not yet associated with a module.
-   * @param lang The language of this class. See {} for a
-   * discussion.
-   * @param name The name of the class.
-   * @param superClassList All interfaces and superclasses that this class is
-   * implementing / extending.
+   *
+   * @param lang
+   *          The language of this class. See {} for a discussion.
+   * @param name
+   *          The name of the class.
+   * @param superClassList
+   *          All interfaces and superclasses that this class is implementing /
+   *          extending.
    * @return A handle to the newly created class.
-   * @throws IllegalArgumentException if the language is not supported.
+   * @throws IllegalArgumentException
+   *           if the language is not supported.
    */
   public ClassHandle createClass(Language lang, String name,
       ClassHandle... superClassList) {
@@ -419,25 +460,23 @@ public final class AbstractSyntaxTree {
     Collection<ClassHandle> superClasses = Arrays.asList(superClassList);
 
     switch (lang) {
-      case JAVA:
-        {
-          JavaClazz newClazz = new JavaClazz(null, name, superClasses);
-          javaClasses.put(newClazz.getHandle(), newClazz);
-          clazz = newClazz;
-        }
-        break;
-      case CPP:
-        {
-          CppClazz newClazz = new CppClazz(null, name, superClasses);
-          cppClasses.put(newClazz.getHandle(), newClazz);
-          clazz = newClazz;
-        }
-        break;
-      case INDEPENDENT:
-        clazz = new Clazz(null, name, superClasses);
-        break;
-      default:
-        throw new IllegalArgumentException("Undefined Language!");
+    case JAVA: {
+      JavaClazz newClazz = new JavaClazz(null, name, superClasses);
+      javaClasses.put(newClazz.getHandle(), newClazz);
+      clazz = newClazz;
+    }
+      break;
+    case CPP: {
+      CppClazz newClazz = new CppClazz(null, name, superClasses);
+      cppClasses.put(newClazz.getHandle(), newClazz);
+      clazz = newClazz;
+    }
+      break;
+    case INDEPENDENT:
+      clazz = new Clazz(null, name, superClasses);
+      break;
+    default:
+      throw new IllegalArgumentException("Undefined Language!");
     }
 
     classDirectory.put(name, clazz.getHandle());
@@ -447,9 +486,11 @@ public final class AbstractSyntaxTree {
 
   /**
    * Checks whether the given class is defined. Language independent.
-   * @param clazzName The name of the class.
+   *
+   * @param clazzName
+   *          The name of the class.
    * @return {@code true} if this class is defined in any language,
-   * {@code false} else.
+   *         {@code false} else.
    */
   public boolean containsClass(String clazzName) {
     return classDirectory.containsKey(clazzName);
@@ -457,7 +498,9 @@ public final class AbstractSyntaxTree {
 
   /**
    * Retrieves a language-independent handle to the class.
-   * @param clazzName The name of the class.
+   *
+   * @param clazzName
+   *          The name of the class.
    * @return A handle to the class.
    */
   public ClassHandle getClass(String clazzName) {
@@ -466,36 +509,40 @@ public final class AbstractSyntaxTree {
 
   /**
    * Retrieves a java-specific handle to a class.
-   * @param classHandle The language-independent class handle
+   *
+   * @param classHandle
+   *          The language-independent class handle
    * @return A handle to the class if it exists, {@code null} else.
    */
   public JavaClassHandle getJavaClassHandle(ClassHandle classHandle) {
     return javaClasses.get(classHandle);
   }
 
-  public MethodHandle createMethod(Language lang, ClassHandle owner,
+  public MethodHandle createMethod(Language lang, NodeHandle owner,
       String name, Visibility access, Type returnType) {
 
-    Clazz ownerClazz = classes.get(owner);
+    Node ownerNode = nodes.get(owner);
 
     Method method;
 
     switch (lang) {
-      case JAVA:
-      {
-        JavaMethod jMethod = new JavaMethod(ownerClazz, name,
-            returnType, access);
-        javaMethods.put(jMethod, jMethod);
-        method = jMethod;
-        break;
-      }
-      case CPP:
-        // Not yet defined- we use the independent case here.
-      case INDEPENDENT:
-        method = new Method(ownerClazz, name, returnType, access);
-        break;
-      default:
-        throw new IllegalArgumentException("Undefined Language!");
+    case JAVA: {
+      JavaMethod jMethod = new JavaMethod(ownerNode, name, returnType, access);
+      javaMethods.put(jMethod, jMethod);
+      method = jMethod;
+      break;
+    }
+    case CPP: {
+      CppMethod jMethod = new CppMethod(ownerNode, name, returnType, access);
+      cppMethods.put(jMethod, jMethod);
+      method = jMethod;
+      break;
+    }
+    case INDEPENDENT:
+      method = new Method(ownerNode, name, returnType, access);
+      break;
+    default:
+      throw new IllegalArgumentException("Undefined Language!");
     }
 
     methods.put(method, method);
@@ -514,11 +561,13 @@ public final class AbstractSyntaxTree {
 
   /**
    * Accepts a new visitor for traversing the tree.
+   *
    * @param v
    */
   public void accept(Visitor v) {
-    for (Module m : modules) {
+    for (Module m : modules.values()) {
       v.visitModule(m);
+      m.accept(v);
     }
     for (ClassInfo c : classes.values()) {
       v.visitClass(c);

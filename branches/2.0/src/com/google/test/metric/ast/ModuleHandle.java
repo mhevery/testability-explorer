@@ -20,6 +20,6 @@ package com.google.test.metric.ast;
  * no functionality on its own, but can be used as a key to retrieve other
  * associated information.
  */
-public interface ModuleHandle {
+public interface ModuleHandle extends NodeHandle {
 
 }
