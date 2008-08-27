@@ -15,6 +15,8 @@
  */
 package com.google.test.metric;
 
+import com.google.test.metric.ast.MethodInfo;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;

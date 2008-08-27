@@ -15,9 +15,9 @@
  */
 package com.google.test.metric.method.op.turing;
 
-import com.google.test.metric.MethodInfo;
 import com.google.test.metric.TestabilityContext;
 import com.google.test.metric.Variable;
+import com.google.test.metric.ast.MethodInfo;
 
 public class ReturnOperation extends Operation {
 
@@ -37,5 +37,4 @@ public class ReturnOperation extends Operation {
   public String toString() {
     return "return " + value;
   }
-
 }

@@ -15,6 +15,9 @@
  */
 package com.google.test.metric.ast;
 
+import com.google.test.metric.TestabilityContext;
+import com.google.test.metric.Variable;
+import com.google.test.metric.asm.Visibility;
 import com.google.test.metric.method.op.turing.Operation;
 
 import java.util.List;
@@ -50,5 +53,33 @@ public interface MethodInfo {
   String toString();
 
   List<Operation> getOperations();
+
+  void computeMetric(TestabilityContext testabilityContext);
+
+  String getFullName();
+
+  int getStartingLineNumber();
+
+  //TODO: this should probably not be here
+  long getTestCost();
+
+  Variable getMethodThis();
+
+  ClassInfo getClassInfo();
+
+  boolean isStatic();
+
+  boolean isConstructor();
+
+  Visibility getVisibility();
+
+  boolean canOverride();
+
+  boolean isInstance();
+
+  boolean isStaticConstructor();
+
+  //TODO: this should probably not be here
+  long getNonRecursiveCyclomaticComplexity();
 
 }

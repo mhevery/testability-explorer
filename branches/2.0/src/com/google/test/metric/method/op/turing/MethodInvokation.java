@@ -16,10 +16,10 @@
 package com.google.test.metric.method.op.turing;
 
 import com.google.test.metric.ClassNotFoundException;
-import com.google.test.metric.MethodInfo;
 import com.google.test.metric.MethodNotFoundException;
 import com.google.test.metric.TestabilityContext;
 import com.google.test.metric.Variable;
+import com.google.test.metric.ast.MethodInfo;
 
 import java.util.List;
 

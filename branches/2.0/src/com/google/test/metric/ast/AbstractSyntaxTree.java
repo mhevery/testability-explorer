@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,7 +45,7 @@ public final class AbstractSyntaxTree {
 
   public final static ClassHandle PRIMITIVE = PRIMITIVE_CLAZZ;
 
-  private static class Node {
+  static class Node {
   }
 
   /**
@@ -54,7 +53,7 @@ public final class AbstractSyntaxTree {
    * somebody outside this class- only either as a ModuleHandle for creating
    * children, or as a ModuleInfo for reading the necessary data.
    */
-  private static class Module extends Node implements ModuleHandle, ModuleInfo {
+  static class Module extends Node implements ModuleHandle, ModuleInfo {
     String name;
     List<MethodInfo> methods = new ArrayList<MethodInfo>();
 
@@ -147,92 +146,17 @@ public final class AbstractSyntaxTree {
     public void registerField(Field field) {
       fields.put(field.getName(), field);
     }
-  }
 
-  /**
-   * Internal representation of a method.
-   */
-  private static class Method extends Node implements MethodInfo, MethodHandle {
-
-    Node owner;
-    String name;
-    Visibility access;
-    Type returnType;
-    final List<Parameter> parameters = new LinkedList<Parameter>();
-    final List<LocalVariable> localVars = new LinkedList<LocalVariable>();
-    final List<Operation> operations = new LinkedList<Operation>();
-
-    private Method(Node newOwner, String newName, Type newReturnType,
-        Visibility newAccess) {
-
-      this.owner = newOwner;
-      this.name = newName;
-      this.returnType = newReturnType == null ? Type.VOID : newReturnType;
-      this.access = newAccess;
-
-      if (owner instanceof Clazz) {
-        Clazz clazz = (Clazz) owner;
-        clazz.registerMethod(this);
-      } else if (owner instanceof Module) {
-        Module module = (Module) owner;
-        module.registerMethod(this);
-      } else {
-        throw new IllegalArgumentException();
-      }
+    public Collection<FieldInfo> getFields() {
+      throw new UnsupportedOperationException();
     }
 
-    public String getName() {
-      return name;
-    }
-
-    public String getNameDesc() {
-      return name;
-    }
-
-    public List<LocalVariableInfo> getLocalVariables() {
-      List<LocalVariableInfo> result = new LinkedList<LocalVariableInfo>();
-      for (LocalVariable l : localVars) {
-        result.add(l);
-      }
-      return result;
-    }
-
-    public List<ParameterInfo> getParameters() {
-      List<ParameterInfo> result = new LinkedList<ParameterInfo>();
-      for (Parameter p : parameters) {
-        result.add(p);
-      }
-      return result;
-    }
-
-    @Override
-    public String toString() {
-      StringBuilder nameBuilder = new StringBuilder(name.substring(0, name
-          .indexOf(")") + 1));
-      nameBuilder.insert(0, returnType.toString() + " ");
-      return nameBuilder.toString();
-    }
-
-    public void addParameter(Parameter parameter) {
-      parameters.add(parameter);
-    }
-
-    public void addLocalVariable(LocalVariable var) {
-      localVars.add(var);
-    }
-
-    public List<Operation> getOperations() {
-      // TODO: this probably needs fixing
-      return operations;
-    }
-
-    public void addOperations(List<Operation> operations) {
-      //TODO: this probably needs fixing
-      this.operations.addAll(operations);
+    public Collection<MethodInfo> getMethods() {
+      throw new UnsupportedOperationException();
     }
   }
 
-  private static class Parameter extends VariableImpl implements ParameterInfo,
+  static class Parameter extends VariableImpl implements ParameterInfo,
       ParameterHandle {
 
     Method owner;
@@ -244,7 +168,7 @@ public final class AbstractSyntaxTree {
     }
   }
 
-  private static class LocalVariable extends VariableImpl
+  static class LocalVariable extends VariableImpl
       implements LocalVariableInfo, LocalVariableHandle {
 
     Method owner;

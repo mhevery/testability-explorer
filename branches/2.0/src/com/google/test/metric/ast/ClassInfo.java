@@ -23,6 +23,8 @@ package com.google.test.metric.ast;
 import com.google.test.metric.FieldNotFoundException;
 import com.google.test.metric.MethodNotFoundException;
 
+import java.util.Collection;
+
 /**
  * Contains methods to retrieve all language independent information of a class
  * in the AST.
@@ -52,5 +54,9 @@ public interface ClassInfo {
    * @throws FieldNotFoundException if no such field exists.
    */
   FieldInfo getField(String fieldName) throws FieldNotFoundException;
+
+  Collection<MethodInfo> getMethods();
+
+  Collection<FieldInfo> getFields();
 
 }

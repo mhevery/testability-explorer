@@ -15,6 +15,7 @@
  */
 package com.google.test.metric;
 
+import com.google.test.metric.ast.MethodInfo;
 
 public class CyclomaticComplexityTest extends ClassRepositoryTestCase {
 

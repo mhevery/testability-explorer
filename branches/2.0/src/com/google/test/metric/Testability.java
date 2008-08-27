@@ -18,7 +18,13 @@ package com.google.test.metric;
 import com.google.classpath.ClasspathRootFactory;
 import com.google.classpath.ClasspathRootGroup;
 import com.google.classpath.ColonDelimitedStringParser;
-import com.google.test.metric.report.*;
+import com.google.test.metric.report.DetailHtmlReport;
+import com.google.test.metric.report.DrillDownReport;
+import com.google.test.metric.report.HtmlReport;
+import com.google.test.metric.report.Report;
+import com.google.test.metric.report.SourceLinker;
+import com.google.test.metric.report.TextReport;
+
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -236,8 +242,8 @@ public class Testability {
     for (String className : classNames) {
       try {
         if (!whitelist.isClassWhiteListed(className)) {
-          ClassInfo clazz = repository.getClass(className);
-          ClassCost classCost = computer.compute(clazz);
+          //ClassInfo clazz = repository.getClass(className);
+          ClassCost classCost = computer.compute(className);
           report.addClassCost(classCost);
         }
       } catch (ClassNotFoundException e) {

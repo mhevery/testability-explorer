@@ -19,9 +19,9 @@ import com.google.test.metric.AutoFieldClearTestCase;
 import com.google.test.metric.ClassRepository;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.MethodCost;
-import com.google.test.metric.MethodInfo;
 import com.google.test.metric.MetricComputer;
 import com.google.test.metric.RegExpWhiteList;
+import com.google.test.metric.ast.MethodInfo;
 import com.google.test.metric.example.GlobalExample.Gadget;
 
 public class GlobalExampleTest extends AutoFieldClearTestCase {

@@ -22,4 +22,6 @@ import com.google.test.metric.Variable;
  * Language-Independent Field-Specific information.
  */
 public interface FieldInfo extends Variable {
+
+  boolean isPrivate();
 }

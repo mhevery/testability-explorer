@@ -15,9 +15,10 @@
  */
 package com.google.test.metric;
 
-
-
+import com.google.test.metric.ast.AbstractSyntaxTree;
 import com.google.test.metric.ast.FieldHandle;
+import com.google.test.metric.ast.MethodInfo;
+import com.google.test.metric.ast.MockVisitor;
 
 import java.io.PrintStream;
 import java.util.HashMap;
@@ -48,7 +49,15 @@ public class TestabilityContext {
   }
 
   public MethodInfo getMethod(String clazzName, String methodName) {
-    return classRepository.getClass(clazzName).getMethod(methodName);
+    AbstractSyntaxTree ast = new AbstractSyntaxTree();
+    JavaParser repo = new JavaParser(ast);
+    repo.getClass(Object.class); // pre-cache for easier debugging.
+    repo.getClass(clazzName);
+    MockVisitor v = new MockVisitor();
+    ast.accept(v);
+    return v.getClassInfo(clazzName).getMethod(methodName);
+
+    //return classRepository.getClass(clazzName).getMethod(methodName);
   }
 
   public boolean methodAlreadyVisited(MethodInfo method) {

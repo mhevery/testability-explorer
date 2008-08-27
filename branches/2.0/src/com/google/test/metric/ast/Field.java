@@ -47,4 +47,8 @@ public class Field extends VariableImpl
     return String.format(FIELD_FORMAT, owner.getName(), getName(),
         type.toString());
   }
+
+  public boolean isPrivate() {
+    throw new UnsupportedOperationException();
+  }
 }

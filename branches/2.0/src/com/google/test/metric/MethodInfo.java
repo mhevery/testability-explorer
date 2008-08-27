@@ -50,6 +50,9 @@ public class MethodInfo {
     this.cyclomaticComplexity = cylomaticComplexity;
     this.visibility = visibility;
     this.operations = operations;
+
+    //depricate class. switched to metric.ast.MethodInfo
+    throw new UnsupportedOperationException();
   }
 
   public String getNameDesc() {
@@ -222,7 +225,7 @@ public class MethodInfo {
 
   public void computeMetric(TestabilityContext context) {
     for (Operation operation : getOperations()) {
-      operation.computeMetric(context, this);
+      //operation.computeMetric(context, this);
     }
   }
 

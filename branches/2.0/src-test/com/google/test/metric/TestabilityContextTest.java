@@ -17,6 +17,8 @@ package com.google.test.metric;
 
 
 import com.google.test.metric.ast.Field;
+import com.google.test.metric.ast.Method;
+import com.google.test.metric.ast.MethodInfo;
 import com.google.test.metric.ast.VariableImpl;
 
 import junit.framework.TestCase;
@@ -40,8 +42,10 @@ public class TestabilityContextTest extends TestCase {
   Variable dst = new VariableImpl("dst", null, false, false);
   @SuppressWarnings("unchecked")
   ClassInfo classInfo = new ClassInfo("c.g.t.A", false, null, new ArrayList<ClassInfo>());
-  MethodInfo method =
-      new MethodInfo(classInfo, "method", 0, "()V", null, null, null, null, 1, null);
+  //MethodInfo method =
+  //    new MethodInfo(classInfo, "method", 0, "()V", null, null, null, null, 1, null);
+  MethodInfo method = new Method(null, "method", null, null);
+
 
   public void testIsInjectable() throws Exception {
     Variable var = new VariableImpl("", Type.fromJava("X"), false, false);

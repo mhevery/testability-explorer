@@ -29,8 +29,7 @@ public class MetricComputerTest extends ClassRepositoryTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    throw new UnsupportedOperationException();
-    //computer = new MetricComputer(repo, null, whitelist, new CostModel());
+    computer = new MetricComputer(null, null, whitelist, new CostModel());
   }
 
   public static class Medium {

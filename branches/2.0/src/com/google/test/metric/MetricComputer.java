@@ -15,12 +15,18 @@
  */
 package com.google.test.metric;
 
+import com.google.test.metric.asm.Visibility;
+import com.google.test.metric.ast.AbstractSyntaxTree;
+import com.google.test.metric.ast.ClassInfo;
+import com.google.test.metric.ast.FieldInfo;
+import com.google.test.metric.ast.MethodInfo;
+import com.google.test.metric.ast.MockVisitor;
+import com.google.test.metric.ast.ParameterInfo;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import com.google.test.metric.asm.Visibility;
 
 public class MetricComputer {
 
@@ -39,8 +45,12 @@ public class MetricComputer {
 
   /* used for testing */
   public MethodCost compute(Class<?> clazz, String methodName) {
-    ClassInfo classInfo = classRepository.getClass(clazz);
-    MethodInfo method = classInfo.getMethod(methodName);
+    AbstractSyntaxTree ast = new AbstractSyntaxTree();
+    JavaParser repo = new JavaParser(ast);
+    repo.getClass(clazz);
+    MockVisitor v = new MockVisitor();
+    ast.accept(v);
+    MethodInfo method = v.getClassInfo(clazz.getName()).getMethod(methodName);
     return compute(method);
   }
 
@@ -126,8 +136,25 @@ public class MetricComputer {
   }
 
   /* used for testing   */
+  public ClassCost compute(String className) {
+    //TODO: fix duplicate code here (and elsewhere)
+    AbstractSyntaxTree ast = new AbstractSyntaxTree();
+    JavaParser repo = new JavaParser(ast);
+    repo.getClass(className);
+    MockVisitor v = new MockVisitor();
+    ast.accept(v);
+    ClassInfo classInfo = v.getClassInfo(className);
+    return compute(classInfo);
+  }
+
   public ClassCost compute(Class<?> clazz) {
-    return compute(classRepository.getClass(clazz));
+    AbstractSyntaxTree ast = new AbstractSyntaxTree();
+    JavaParser repo = new JavaParser(ast);
+    repo.getClass(clazz);
+    MockVisitor v = new MockVisitor();
+    ast.accept(v);
+    ClassInfo classInfo = v.getClassInfo(clazz.getName());
+    return compute(classInfo);
   }
 
   public ClassCost compute(ClassInfo clazz) {
