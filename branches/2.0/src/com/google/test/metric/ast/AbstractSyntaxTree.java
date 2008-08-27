@@ -141,6 +141,7 @@ public final class AbstractSyntaxTree {
     Visibility access;
     Type returnType;
     final List<Parameter> parameters = new LinkedList<Parameter>();
+    final List<LocalVariable> localVars = new LinkedList<LocalVariable>();
 
     private Method(Clazz newOwner, String newName, Type newReturnType,
         Visibility newAccess) {
@@ -161,11 +162,19 @@ public final class AbstractSyntaxTree {
     }
 
     public List<LocalVariableInfo> getLocalVariables() {
-      throw new UnsupportedOperationException();
+      List<LocalVariableInfo> result = new LinkedList<LocalVariableInfo>();
+      for (LocalVariable l : localVars) {
+        result.add(l);
+      }
+      return result;
     }
 
     public List<ParameterInfo> getParameters() {
-      throw new UnsupportedOperationException();
+      List<ParameterInfo> result = new LinkedList<ParameterInfo>();
+      for (Parameter p : parameters) {
+        result.add(p);
+      }
+      return result;
     }
 
     @Override
@@ -179,6 +188,10 @@ public final class AbstractSyntaxTree {
     public void addParameter(Parameter parameter) {
       parameters.add(parameter);
     }
+
+    public void addLocalVariable(LocalVariable var) {
+      localVars.add(var);
+    }
   }
 
   private static class Parameter extends VariableImpl
@@ -191,7 +204,18 @@ public final class AbstractSyntaxTree {
       owner = newOwner;
       owner.addParameter(this);
     }
+  }
 
+  private static class LocalVariable extends VariableImpl
+      implements LocalVariableInfo, LocalVariableHandle {
+
+    Method owner;
+
+    public LocalVariable(Method newOwner, String name, Type type) {
+      super(name, type, false, false);
+      owner = newOwner;
+      owner.addLocalVariable(this);
+    }
   }
 
   private static class Field extends VariableImpl
@@ -498,13 +522,17 @@ public final class AbstractSyntaxTree {
     }
   }
 
-  public ParameterHandle createMethodParameter(MethodHandle method, String name,
-      Type type) {
-    throw new UnsupportedOperationException();
+  public ParameterHandle createMethodParameter(MethodHandle methodHandle,
+      String name, Type type) {
+    Method method = methods.get(methodHandle);
+    Parameter p = new Parameter(method, name, type);
+    return p;
   }
 
-  public LocalVariableHandle createLocalVariable(MethodHandle method, String name,
-      Type type) {
-    throw new UnsupportedOperationException();
+  public LocalVariableHandle createLocalVariable(MethodHandle methodHandle,
+      String name, Type type) {
+    Method method = methods.get(methodHandle);
+    LocalVariable v = new LocalVariable(method, name, type);
+    return v;
   }
 }
