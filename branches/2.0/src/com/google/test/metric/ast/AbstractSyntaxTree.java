@@ -15,8 +15,6 @@
  */
 package com.google.test.metric.ast;
 
-import com.google.test.metric.FieldNotFoundException;
-import com.google.test.metric.MethodNotFoundException;
 import com.google.test.metric.Type;
 import com.google.test.metric.asm.Visibility;
 import com.google.test.metric.method.op.turing.Operation;
@@ -26,10 +24,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * A simplified Abstract Syntax Tree interface, for adding the syntax nodes, and
@@ -49,141 +45,9 @@ public final class AbstractSyntaxTree {
   }
 
   /**
-   * Internal representation of a "Module". Will never ever be passed to
-   * somebody outside this class- only either as a ModuleHandle for creating
-   * children, or as a ModuleInfo for reading the necessary data.
-   */
-  static class Module extends Node implements ModuleHandle, ModuleInfo {
-    String name;
-    List<MethodInfo> methods = new ArrayList<MethodInfo>();
-
-    private Module(String newName) {
-      name = newName;
-    }
-
-    public ModuleHandle getHandle() {
-      return this;
-    }
-
-    public String getName() {
-      return name;
-    }
-
-    public List<MethodInfo> getMethods() {
-      return methods;
-    }
-
-    public void registerMethod(Method method) {
-      methods.add(method);
-    }
-
-    public void accept(Visitor v) {
-      for (MethodInfo m : methods) {
-        v.visitMethod(m);
-      }
-    }
-  }
-
-
-  static class Clazz extends Node implements ClassHandle, ClassInfo {
-    String name;
-    Module module;
-    Collection<ClassHandle> superClasses;
-    Map<String, FieldInfo> fields = new HashMap<String, FieldInfo>();
-
-    Set<Method> methods = new HashSet<Method>();
-
-    private Clazz(Module newModule, String newName,
-        Collection<ClassHandle> theSuperClasses) {
-      module = newModule;
-      name = newName;
-      superClasses = new HashSet<ClassHandle>(theSuperClasses);
-    }
-
-    public String getName() {
-      return name;
-    }
-
-    @Override
-    public String toString() {
-      return name;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public ClassHandle getHandle() {
-      return this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public MethodInfo getMethod(String methodName)
-        throws MethodNotFoundException {
-      for (MethodInfo info : methods) {
-        if (info.getName().equals(methodName)) {
-          return info;
-        }
-      }
-      throw new MethodNotFoundException(name, methodName);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public FieldInfo getField(String fieldName) throws FieldNotFoundException {
-      if (fields.containsKey(fieldName)) {
-        return fields.get(fieldName);
-      }
-      throw new FieldNotFoundException(name, fieldName);
-    }
-
-    public void registerMethod(Method method) {
-      methods.add(method);
-    }
-
-    public void registerField(Field field) {
-      fields.put(field.getName(), field);
-    }
-
-    public Collection<FieldInfo> getFields() {
-      throw new UnsupportedOperationException();
-    }
-
-    public Collection<MethodInfo> getMethods() {
-      throw new UnsupportedOperationException();
-    }
-  }
-
-  static class Parameter extends VariableImpl implements ParameterInfo,
-      ParameterHandle {
-
-    Method owner;
-
-    Parameter(Method newOwner, String newName, Type newType) {
-      super(newName, newType, false, false);
-      owner = newOwner;
-      owner.addParameter(this);
-    }
-  }
-
-  static class LocalVariable extends VariableImpl
-      implements LocalVariableInfo, LocalVariableHandle {
-
-    Method owner;
-
-    public LocalVariable(Method newOwner, String name, Type type) {
-      super(name, type, false, false);
-      owner = newOwner;
-      owner.addLocalVariable(this);
-    }
-  }
-
-  /**
    * Internal representation of a Java-Package.
    */
-  private static final class JavaModule extends Module implements
+  static final class JavaModule extends Module implements
       JavaModuleHandle {
 
     private JavaModule(String newName) {
@@ -234,7 +98,7 @@ public final class AbstractSyntaxTree {
   /**
    * Internal representation of a Cpp-Class
    */
-  private static final class CppClazz extends Clazz implements CppClassHandle,
+  static final class CppClazz extends Clazz implements CppClassHandle,
       CppClassInfo {
 
     public CppClazz(Module newModule, String newName,
@@ -251,7 +115,7 @@ public final class AbstractSyntaxTree {
   /**
    * Internal representation of a Java Class
    */
-  private static final class JavaClazz extends Clazz implements
+  static final class JavaClazz extends Clazz implements
       JavaClassHandle, JavaClassInfo {
 
     boolean isInterface;
@@ -271,7 +135,7 @@ public final class AbstractSyntaxTree {
     }
   }
 
-  private static final class JavaMethod extends Method implements
+  static final class JavaMethod extends Method implements
       JavaMethodHandle, JavaMethodInfo {
 
     boolean isAbstract;
@@ -298,7 +162,7 @@ public final class AbstractSyntaxTree {
     }
   }
 
-  private static final class CppMethod extends Method implements
+  static final class CppMethod extends Method implements
       CppMethodHandle, CppMethodInfo {
 
     CppMethod(Node owner, String name, Type returnType, Visibility access) {
@@ -461,6 +325,10 @@ public final class AbstractSyntaxTree {
       String name, Visibility access, Type returnType) {
 
     Node ownerNode = nodes.get(owner);
+
+    if (ownerNode == null) {
+      throw new IllegalArgumentException("Owner not found.");
+    }
 
     Method method;
 

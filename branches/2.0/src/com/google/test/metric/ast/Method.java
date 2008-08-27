@@ -4,11 +4,7 @@ import com.google.test.metric.TestabilityContext;
 import com.google.test.metric.Type;
 import com.google.test.metric.Variable;
 import com.google.test.metric.asm.Visibility;
-import com.google.test.metric.ast.AbstractSyntaxTree.Clazz;
-import com.google.test.metric.ast.AbstractSyntaxTree.LocalVariable;
-import com.google.test.metric.ast.AbstractSyntaxTree.Module;
 import com.google.test.metric.ast.AbstractSyntaxTree.Node;
-import com.google.test.metric.ast.AbstractSyntaxTree.Parameter;
 import com.google.test.metric.method.op.turing.Operation;
 
 import java.util.LinkedList;

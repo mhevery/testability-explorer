@@ -19,7 +19,6 @@ package com.google.test.metric.ast;
 
 import com.google.test.metric.Type;
 import com.google.test.metric.asm.Visibility;
-import com.google.test.metric.ast.AbstractSyntaxTree.Clazz;
 
 public class Field extends VariableImpl
     implements FieldInfo, FieldHandle {
