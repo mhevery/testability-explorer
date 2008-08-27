@@ -106,6 +106,7 @@ public class TestabilityContextTest extends TestCase {
 
   public void testReadFinalStaticField() throws Exception {
     context.localAssignment(method, 1, dst, localStaticFinalField);
+    //TODO: this fails because the usage of the Field class and related classes is wrong.
     assertTrue(context.isGlobal(dst));
     assertFalse(context.isInjectable(dst));
     assertEquals(0, context.getLinkedMethodCost(method).getTotalGlobalCost());

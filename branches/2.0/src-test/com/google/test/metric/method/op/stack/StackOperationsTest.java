@@ -1,7 +1,9 @@
 package com.google.test.metric.method.op.stack;
 
-import com.google.test.metric.ClassRepository;
-import com.google.test.metric.MethodInfo;
+import com.google.test.metric.JavaParser;
+import com.google.test.metric.ast.AbstractSyntaxTree;
+import com.google.test.metric.ast.MethodInfo;
+import com.google.test.metric.ast.MockVisitor;
 import com.google.test.metric.method.op.turing.Operation;
 
 import junit.framework.TestCase;
@@ -24,7 +26,12 @@ public class StackOperationsTest extends TestCase {
   }
 
   private MethodInfo methodForClass(Class<?> clazz) {
-    return new ClassRepository().getClass(clazz).getMethod("<init>()V");
+    AbstractSyntaxTree ast = new AbstractSyntaxTree();
+    JavaParser repo = new JavaParser(ast);
+    repo.getClass(clazz);
+    MockVisitor v = new MockVisitor();
+    ast.accept(v);
+    return v.getClassInfo(clazz.getName()).getMethod("<init>()V");
   }
 
   private static class LoadClass {
