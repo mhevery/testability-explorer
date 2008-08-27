@@ -15,6 +15,8 @@
  */
 package com.google.test.metric.ast;
 
+import com.google.test.metric.method.op.turing.Operation;
+
 import java.util.List;
 
 /**
@@ -46,5 +48,7 @@ public interface MethodInfo {
    * @return the string representation of this Method.
    */
   String toString();
+
+  List<Operation> getOperations();
 
 }

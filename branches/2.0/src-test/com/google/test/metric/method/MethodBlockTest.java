@@ -17,16 +17,17 @@ package com.google.test.metric.method;
 
 import static java.util.Arrays.asList;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.google.test.metric.JavaParser;
+import com.google.test.metric.ast.AbstractSyntaxTree;
+import com.google.test.metric.ast.MethodInfo;
+import com.google.test.metric.ast.MockVisitor;
+import com.google.test.metric.method.op.turing.Operation;
 
 import junit.framework.TestCase;
 
-import com.google.test.metric.ClassInfo;
-import com.google.test.metric.ClassRepository;
-import com.google.test.metric.MethodInfo;
-import com.google.test.metric.method.op.turing.Operation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class MethodBlockTest extends TestCase {
 
@@ -102,10 +103,14 @@ public class MethodBlockTest extends TestCase {
   }
 
   private MethodInfo getMethod(String methodName, Class<?> clazz) {
-    ClassRepository repo = new ClassRepository();
+    AbstractSyntaxTree ast = new AbstractSyntaxTree();
+    JavaParser repo = new JavaParser(ast);
     repo.getClass(Object.class); // pre-cache for easier debugging.
-    ClassInfo classInfo = repo.getClass(clazz);
-    return classInfo.getMethod(methodName);
+    repo.getClass(clazz);
+    MockVisitor v = new MockVisitor();
+    ast.accept(v);
+    return v.getClassInfo(clazz.getName()).getMethod(methodName);
+    //return classInfo.getMethod(methodName);
   }
 
   public void testMethodWithIIF() throws Exception {
@@ -178,8 +183,6 @@ public class MethodBlockTest extends TestCase {
   }
 
   public void testForEach() throws Exception {
-    ClassRepository repo = new ClassRepository();
-    repo.getClass(Foreach.class).getMethod("method()V");
+    getMethod("method()V", Foreach.class);
   }
-
 }

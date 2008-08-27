@@ -19,6 +19,7 @@ import com.google.test.metric.FieldNotFoundException;
 import com.google.test.metric.MethodNotFoundException;
 import com.google.test.metric.Type;
 import com.google.test.metric.asm.Visibility;
+import com.google.test.metric.method.op.turing.Operation;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -191,6 +192,10 @@ public final class AbstractSyntaxTree {
 
     public void addLocalVariable(LocalVariable var) {
       localVars.add(var);
+    }
+
+    public List<Operation> getOperations() {
+      throw new UnsupportedOperationException();
     }
   }
 
