@@ -15,36 +15,36 @@
  */
 package com.google.test.metric.method.op.stack;
 
-import com.google.test.metric.FieldInfo;
 import com.google.test.metric.LocalField;
 import com.google.test.metric.Variable;
+import com.google.test.metric.ast.FieldHandle;
 
 import java.util.List;
 
 public class GetField extends StackOperation {
 
-  private final FieldInfo fieldInfo;
+  private final FieldHandle fieldHandle;
 
-  public GetField(int lineNumber, FieldInfo fieldInfo) {
+  public GetField(int lineNumber, FieldHandle fieldHandle) {
     super(lineNumber);
-    this.fieldInfo = fieldInfo;
+    this.fieldHandle = fieldHandle;
   }
 
   @Override
   public String toString() {
-    return "get " + (fieldInfo.isGlobal() ? "static " : "") + fieldInfo;
+    return "get " + (fieldHandle.isGlobal() ? "static " : "") + fieldHandle;
   }
 
   @Override
   public int getOperatorCount() {
-    return fieldInfo.isGlobal() ? 0 : 1;
+    return fieldHandle.isGlobal() ? 0 : 1;
   }
 
   @Override
   public List<Variable> apply(List<Variable> input) {
-    Variable instance = fieldInfo.isGlobal() ? null : input.get(0);
-    return list(new LocalField(instance, fieldInfo));
-//    return list(fieldInfo);
+    Variable instance = fieldHandle.isGlobal() ? null : input.get(0);
+    return list(new LocalField(instance, fieldHandle));
+    //return list(fieldHandle);
   }
 
 }

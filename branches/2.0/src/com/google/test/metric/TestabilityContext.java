@@ -136,8 +136,7 @@ public class TestabilityContext {
   public boolean isGlobal(Variable var) {
     if (var instanceof LocalField) {
       LocalField field = (LocalField) var;
-      //TODO
-      //return isGlobal(field.getInstance()) || isGlobal(field.getField());
+      return isGlobal(field.getInstance()) || isGlobal(field.getField());
     }
     return var != null && (var.isGlobal() || statics.contains(var));
   }

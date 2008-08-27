@@ -15,28 +15,29 @@
  */
 package com.google.test.metric;
 
+import com.google.test.metric.ast.FieldHandle;
 import com.google.test.metric.ast.VariableImpl;
 
 
 public class LocalField extends VariableImpl {
 
   private final Variable instance;
-  private final FieldInfo fieldInfo;
+  private final FieldHandle fieldHandle;
 
-  public LocalField(Variable instance, FieldInfo fieldInfo) {
-    super(fieldInfo.getName(), fieldInfo.getType(), fieldInfo.isFinal(),
-        fieldInfo.isGlobal());
+  public LocalField(Variable instance, FieldHandle fieldHandle) {
+    super(fieldHandle.getName(), fieldHandle.getType(), fieldHandle.isFinal(),
+        fieldHandle.isGlobal());
     this.instance = instance;
-    this.fieldInfo = fieldInfo;
+    this.fieldHandle = fieldHandle;
   }
 
   @Override
   public String toString() {
-    return fieldInfo.toString();
+    return fieldHandle.toString();
   }
 
-  public FieldInfo getField() {
-    return fieldInfo;
+  public FieldHandle getField() {
+    return fieldHandle;
   }
 
   public Variable getInstance() {

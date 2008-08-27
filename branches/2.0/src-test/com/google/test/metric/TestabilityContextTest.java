@@ -16,29 +16,35 @@
 package com.google.test.metric;
 
 
+import com.google.test.metric.ast.Field;
+import com.google.test.metric.ast.VariableImpl;
+
 import junit.framework.TestCase;
 
+import java.util.ArrayList;
+
 public class TestabilityContextTest extends TestCase {
-/*
+
   TestabilityContext context =
       new TestabilityContext(null, null, new RegExpWhiteList(), new CostModel());
 
-  Variable instance = new Variable("instance", null, false, false);
-  Variable finalInstance = new Variable("instance", null, true, false);
-  FieldInfo field = new FieldInfo(null, "field", null, false, false, false);
-  FieldInfo finalField = new FieldInfo(null, "field", null, true, false, false);
-  FieldInfo finalStaticField = new FieldInfo(null, "field", null, true, true, false);
+  Variable instance = new VariableImpl("instance", null, false, false);
+  Variable finalInstance = new VariableImpl("instance", null, true, false);
+  //TODO: used to be FieldInfo
+  Field field = new Field(null, "field", null, null, false);
+  Field finalField = new Field(null, "field", null, null, true);
+  Field finalStaticField = new Field(null, "field", null, null, true);
   LocalField localField = new LocalField(instance, field);
   LocalField localFinalField = new LocalField(instance, finalField);
   LocalField localStaticFinalField = new LocalField(null, finalStaticField);
-  Variable dst = new Variable("dst", null, false, false);
+  Variable dst = new VariableImpl("dst", null, false, false);
   @SuppressWarnings("unchecked")
-  ClassInfo classInfo = new ClassInfo("c.g.t.A", false, null, EMPTY_LIST);
+  ClassInfo classInfo = new ClassInfo("c.g.t.A", false, null, new ArrayList<ClassInfo>());
   MethodInfo method =
       new MethodInfo(classInfo, "method", 0, "()V", null, null, null, null, 1, null);
 
   public void testIsInjectable() throws Exception {
-    Variable var = new Variable("", Type.fromJava("X"), false, false);
+    Variable var = new VariableImpl("", Type.fromJava("X"), false, false);
     assertFalse(context.isInjectable(var));
     context.setInjectable(var);
     assertTrue(context.isInjectable(var));
@@ -104,7 +110,7 @@ public class TestabilityContextTest extends TestCase {
     assertFalse(context.isInjectable(dst));
     assertEquals(0, context.getLinkedMethodCost(method).getTotalGlobalCost());
   }
-*/
+
 //  public void testGrayListCostOverridesActualCost() throws Exception {
 //    ClassRepository repo = null;
 //    PrintStream err = null;

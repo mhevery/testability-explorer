@@ -81,8 +81,8 @@ public final class AbstractSyntaxTree {
     }
   }
 
-  private static class Clazz extends Node implements ClassHandle, ClassInfo {
 
+  static class Clazz extends Node implements ClassHandle, ClassInfo {
     String name;
     Module module;
     Collection<ClassHandle> superClasses;
@@ -156,6 +156,7 @@ public final class AbstractSyntaxTree {
     Type returnType;
     final List<Parameter> parameters = new LinkedList<Parameter>();
     final List<LocalVariable> localVars = new LinkedList<LocalVariable>();
+    final List<Operation> operations = new LinkedList<Operation>();
 
     private Method(Node newOwner, String newName, Type newReturnType,
         Visibility newAccess) {
@@ -220,7 +221,13 @@ public final class AbstractSyntaxTree {
     }
 
     public List<Operation> getOperations() {
-      throw new UnsupportedOperationException();
+      // TODO: this probably needs fixing
+      return operations;
+    }
+
+    public void addOperations(List<Operation> operations) {
+      //TODO: this probably needs fixing
+      this.operations.addAll(operations);
     }
   }
 
@@ -245,30 +252,6 @@ public final class AbstractSyntaxTree {
       super(name, type, false, false);
       owner = newOwner;
       owner.addLocalVariable(this);
-    }
-  }
-
-  private static class Field extends VariableImpl implements FieldInfo,
-      FieldHandle {
-
-    private final Clazz owner;
-    private final Visibility access;
-
-    private final static String FIELD_FORMAT = "%s.%s{%s}";
-
-    private Field(Clazz newOwner, String newName, Type newType,
-        Visibility newAccess, boolean newIsConstant) {
-      super(newName, newType, newIsConstant, false);
-      owner = newOwner;
-      access = newAccess;
-
-      owner.registerField(this);
-    }
-
-    @Override
-    public String toString() {
-      return String.format(FIELD_FORMAT, owner.getName(), getName(), type
-          .toString());
     }
   }
 
@@ -555,7 +538,19 @@ public final class AbstractSyntaxTree {
     Clazz ownerClazz = classes.get(owner);
 
     Field field = new Field(ownerClazz, name, type, access, isFinal);
+    for(Field f : fields.values()) {
+      //TODO: Field should implement equals and hashCode
+      if(f.getName().equals(field.getName()) &&
+         f.type.equals(field.type) &&
+         //f.isFinal() == field.isFinal() &&
+         f.isGlobal() == field.isGlobal() &&
+         f.getClass().equals(field.getClass() )) {
+        System.out.println("Returned old: "+f);
+        return f;
+      }
+    }
     fields.put(field, field);
+    System.out.println("Returned new: "+field);
     return field;
   }
 
@@ -586,5 +581,11 @@ public final class AbstractSyntaxTree {
     Method method = methods.get(methodHandle);
     LocalVariable v = new LocalVariable(method, name, type);
     return v;
+  }
+
+  public void createOperations(MethodHandle methodHandle,
+      List<Operation> operations) {
+    Method method = methods.get(methodHandle);
+    method.addOperations(operations);
   }
 }

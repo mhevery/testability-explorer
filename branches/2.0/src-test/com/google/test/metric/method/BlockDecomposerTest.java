@@ -18,8 +18,10 @@ package com.google.test.metric.method;
 import static com.google.test.metric.Type.VOID;
 
 import com.google.test.metric.ClassRepository;
+import com.google.test.metric.LocalVariableInfo;
 import com.google.test.metric.Type;
 import com.google.test.metric.Variable;
+import com.google.test.metric.ast.VariableImpl;
 import com.google.test.metric.method.op.stack.JSR;
 import com.google.test.metric.method.op.stack.Load;
 import com.google.test.metric.method.op.stack.RetSub;
@@ -258,9 +260,7 @@ public class BlockDecomposerTest extends TestCase {
     Label lTry = new Label();
     Load l1 = load(1);
     Load l2 = load(2);
-    //TODO
-    //Store store = new Store(-1, new Variable("a", Type.INT, false, false));
-    Store store = null;
+    Store store = new Store(-1, new VariableImpl("a", Type.INT, false, false));
     Return ret = new Return(1, Type.INT);
     Label lTryEnd = new Label();
     Label lHandle = new Label();
@@ -349,15 +349,9 @@ public class BlockDecomposerTest extends TestCase {
     Label finallyHandler = new Label();
     Label l20 = new Label();
     Label l22 = new Label();
-    //TODO
-    /*
     Variable b = new LocalVariableInfo("b", Type.INT);
     Variable e = new LocalVariableInfo("e", Type.OBJECT);
     Variable any = new LocalVariableInfo("any", Type.OBJECT);
-    */
-    Variable b = null;
-    Variable e = null;
-    Variable any = null;
     decomposer.tryCatchBlock(tryStart, tryEnd, runtimeHandler, "java/lang/RuntimeException");
     decomposer.tryCatchBlock(tryStart, catchEnd, finallyHandler, null);
 

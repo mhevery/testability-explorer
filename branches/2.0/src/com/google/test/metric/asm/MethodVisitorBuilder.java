@@ -34,6 +34,7 @@ import com.google.test.metric.method.op.stack.ArrayStore;
 import com.google.test.metric.method.op.stack.Convert;
 import com.google.test.metric.method.op.stack.Duplicate;
 import com.google.test.metric.method.op.stack.Duplicate2;
+import com.google.test.metric.method.op.stack.GetField;
 import com.google.test.metric.method.op.stack.Increment;
 import com.google.test.metric.method.op.stack.Invoke;
 import com.google.test.metric.method.op.stack.Load;
@@ -263,6 +264,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
       runnable.run();
     }
     block.decomposeIntoBlocks();
+    ast.createOperations(methodHandle, block.getOperations());
     //try {
       //MethodInfo methodInfo = new MethodInfo(classHandle, name, startingLineNumber,
       //    desc, methodThis, parameters, localVariables, visibility,
@@ -945,7 +947,8 @@ public class MethodVisitorBuilder implements MethodVisitor {
                 .fromDesc(fieldDesc), false, isStatic, false);
       }
       */
-      field = ast.createField(Language.JAVA, classHandle, fieldName, null, null, false);
+      field = ast.createField(Language.JAVA, classHandle, fieldName, null, Type
+          .fromDesc(fieldDesc), false);
       block.addOp(new PutField(lineNumber, field));
     }
   }
@@ -982,7 +985,8 @@ public class MethodVisitorBuilder implements MethodVisitor {
       */
       //block.addOp(new GetField(lineNumber, field));
       //TODO
-      ast.createField(Language.JAVA, classHandle, fieldName, Visibility.valueOf(0), null, false);
+      field = ast.createField(Language.JAVA, classHandle, fieldName, Visibility.valueOf(0), Type.fromDesc(fieldDesc), false);
+      block.addOp(new GetField(lineNumber, field));
     }
 
   }
