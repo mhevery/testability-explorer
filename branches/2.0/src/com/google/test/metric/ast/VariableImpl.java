@@ -46,8 +46,20 @@ public class VariableImpl implements Variable {
     return type;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  /**
+   * Assigns a name to the variable. Only allowed, if no name (null-value) was
+   * set in the constructor.
+   * @throws IllegalStateException if the variable already has a valid name.
+   */
+  public void setName(String name) throws IllegalStateException {
+    if (this.name == null) {
+      this.name = name;
+    } else if (this.name.equals(name)) {
+      return;
+    } else {
+      throw new IllegalStateException("Cannot change the name of a variable\n" +
+          "Old name: " + this.name + ", new name: " + name);
+    }
   }
 
   public boolean isGlobal() {

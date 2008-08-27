@@ -142,6 +142,7 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
   }
 
   public void testLocalVarsMethod3() throws Exception {
+    System.out.println("----------------------->EXPECTING: THIS, d");
     assertLocalVars("method3(Ljava/lang/Object;I[I)V",
         params("a", "b", "c"), locals("this", "d"));
   }

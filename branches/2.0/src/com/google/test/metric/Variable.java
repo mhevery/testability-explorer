@@ -15,13 +15,14 @@
  */
 package com.google.test.metric;
 
-import com.google.test.metric.Type;
 
 /**
  * Describes functionality that is common to all variables (fields, local-vars,
  * parameters, ...).
  */
 public interface Variable {
+
+  public void setName(String name) throws IllegalStateException;
 
   public String getName();
 

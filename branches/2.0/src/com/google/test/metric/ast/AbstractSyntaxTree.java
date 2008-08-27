@@ -437,7 +437,6 @@ public final class AbstractSyntaxTree {
 
     classDirectory.put(name, clazz.getHandle());
     classes.put(clazz.getHandle(), clazz);
-    System.out.println("Created class " + name);
     return clazz.getHandle();
   }
 
@@ -448,7 +447,6 @@ public final class AbstractSyntaxTree {
    * {@code false} else.
    */
   public boolean containsClass(String clazzName) {
-    System.out.println("Querying for class " + clazzName);
     return classDirectory.containsKey(clazzName);
   }
 

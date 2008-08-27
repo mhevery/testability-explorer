@@ -97,7 +97,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
       slots.put(slot++, methodThis);
     }
     for (Type type : parse(desc).getParameters()) {
-      ParameterHandle parameterHandle = ast.createMethodParameter(methodHandle, "param_" + slot, type);
+      ParameterHandle parameterHandle = ast.createMethodParameter(methodHandle, null, type);
       //ParameterInfo parameterInfo = new ParameterInfo("param_" + slot, type);
       parameters.add(parameterHandle);
       slots.put(slot++, (Variable) parameterHandle);
@@ -238,11 +238,12 @@ public class MethodVisitorBuilder implements MethodVisitor {
     Type type = Type.fromDesc(desc);
     Variable variable = slots.get(slotNum);
     if (variable == null) {
-      LocalVariableHandle localVar = ast.createLocalVariable(methodHandle, name, type);
+      LocalVariableHandle localVar =
+        ast.createLocalVariable(methodHandle, name, type);
       slots.put(slotNum, localVar);
       localVariables.add(localVar);
     } else {
-      //variable.setName(name);
+      variable.setName(name);
     }
   }
 
@@ -262,16 +263,15 @@ public class MethodVisitorBuilder implements MethodVisitor {
       runnable.run();
     }
     block.decomposeIntoBlocks();
-    try {
-      MethodHandle methodHandle = ast.createMethod(Language.JAVA, classHandle, name + desc, visibility, null);
+    //try {
       //MethodInfo methodInfo = new MethodInfo(classHandle, name, startingLineNumber,
       //    desc, methodThis, parameters, localVariables, visibility,
       //    cyclomaticComplexity, block.getOperations());
       //classHandle.addMethod(methodHandle);
-    } catch (IllegalStateException e) {
-      throw new IllegalStateException("Error in " + classHandle + "." + name
-          + desc, e);
-    }
+    //} catch (IllegalStateException e) {
+//      throw new IllegalStateException("Error in " + classHandle + "." + name
+          //+ desc, e);
+//    }
   }
 
   public void visitTypeInsn(final int opcode, final String desc) {
