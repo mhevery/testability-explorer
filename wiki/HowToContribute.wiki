@@ -1,4 +1,4 @@
-#How to contribute to the Testability Explorer
+# How to contribute to the Testability Explorer
 
 == Philosophy ==
 
