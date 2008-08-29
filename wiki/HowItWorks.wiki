@@ -1,4 +1,4 @@
-How it Works
+#summary How it Works
 
 = Introduction =
 
