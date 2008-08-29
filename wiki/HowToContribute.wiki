@@ -16,7 +16,7 @@ The purpose of the TE is to show/teach developers how to write a more testable c
 We are always eager to have people contribute new features to the project. So your feedback and work are more than welcome. We are here to help you with any questions and guidance so please ask. But we have few rules:
 
 === As a New Contributor ===
-As a new contributor we expect you to follow our philosophy and expectations above. Please send us your patch and we will incorporate it in on your behalf or give your feedback if it does not fallow our guidelines.
+As a new contributor we expect you to follow our philosophy and expectations above. Please send us your patch and we will incorporate it in on your behalf or give your feedback if it does not follow our guidelines.
 
 === As a Seasoned Contributor ===
 As a someone who has sent us a lot of patches and who follows our guidelines we are happy to add your to our project list owners and we trust that you will adhere to our guidelines on code quality.
