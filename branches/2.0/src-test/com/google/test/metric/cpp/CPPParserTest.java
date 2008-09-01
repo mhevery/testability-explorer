@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,81 +18,74 @@ package com.google.test.metric.cpp;
 import com.google.test.metric.ast.AbstractSyntaxTree;
 import com.google.test.metric.ast.ClassInfo;
 import com.google.test.metric.ast.CppModuleInfo;
+import com.google.test.metric.ast.FieldInfo;
 import com.google.test.metric.ast.MethodInfo;
+import com.google.test.metric.ast.MockVisitor;
 import com.google.test.metric.ast.ModuleInfo;
-import com.google.test.metric.ast.Visitor;
+import com.google.test.metric.ast.ParameterInfo;
 
 import junit.framework.TestCase;
 
 import java.io.CharArrayReader;
 import java.io.Reader;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 public class CPPParserTest extends TestCase {
 
-  class TestVisitor implements Visitor {
-    public ClassInfo classInfo;
-    public MethodInfo methodInfo;
-    public ModuleInfo moduleInfo;
-
-    public void visitClass(ClassInfo classInfo) {
-      this.classInfo = classInfo;
-    }
-
-    public void visitMethod(MethodInfo methodInfo) {
-      this.methodInfo = methodInfo;
-    }
-
-    public void visitModule(ModuleInfo moduleInfo) {
-      this.moduleInfo = moduleInfo;
-    }
+  private static MockVisitor parse(String source) throws Exception {
+    AbstractSyntaxTree ast = new AbstractSyntaxTree();
+    ASTNamespaceBuilder builder = new ASTNamespaceBuilder(ast);
+    ASTBuilderLink link = new ASTBuilderLink(builder);
+    builder.setLink(link);
+    Reader reader = new CharArrayReader(source.toCharArray());
+    CPPLexer lexer = new CPPLexer(reader);
+    CPPParser parser = new CPPParser(lexer);
+    parser.translation_unit(link);
+    MockVisitor v = new MockVisitor();
+    ast.accept(v);
+    return v;
   }
 
   public void testEmptyClass() throws Exception {
-    String source = "class A {};";
-    AbstractSyntaxTree ast = parse(source);
-    TestVisitor v = new TestVisitor();
-    ast.accept(v);
-    assertNotNull(v.classInfo);
-    assertEquals("A", v.classInfo.getName());
+    MockVisitor v = parse("class A {};");
+    assertEquals(1, v.classes.size());
+    Iterator<ClassInfo> it = v.classes.iterator();
+    ClassInfo clazz = it.next();
+    assertEquals("A", clazz.getName());
   }
 
   public void testEmptyMethod() throws Exception {
-    String source = "void foo() {}";
-    AbstractSyntaxTree ast = parse(source);
-    TestVisitor v = new TestVisitor();
-    ast.accept(v);
-    assertNull(v.classInfo);
-    assertNotNull(v.methodInfo);
-    assertEquals("foo", v.methodInfo.getName());
+    MockVisitor v = parse("void foo() {}");
+    assertEquals(1, v.methods.size());
+    Iterator<MethodInfo> it = v.methods.iterator();
+    MethodInfo method = it.next();
+    assertEquals("foo", method.getName());
   }
 
   public void testEmptyNamespace() throws Exception {
-    String source = "namespace foo {}";
-    AbstractSyntaxTree ast = parse(source);
-    TestVisitor v = new TestVisitor();
-    ast.accept(v);
-    assertNull(v.classInfo);
-    assertNull(v.methodInfo);
-    assertNotNull(v.moduleInfo);
-    assertTrue(v.moduleInfo instanceof CppModuleInfo);
-    CppModuleInfo cppModuleInfo = (CppModuleInfo) v.moduleInfo;
-    assertEquals("default", cppModuleInfo.getName());
-    List<CppModuleInfo> children = cppModuleInfo.getChildren();
+    MockVisitor v = parse("namespace foo {}");
+    assertEquals(1, v.modules.size());
+    Iterator<ModuleInfo> it = v.modules.iterator();
+    ModuleInfo module = it.next();
+    assertTrue(module instanceof CppModuleInfo);
+    CppModuleInfo cppModule = (CppModuleInfo) module;
+    assertEquals("default", cppModule.getName());
+    List<CppModuleInfo> children = cppModule.getChildren();
     assertEquals(1, children.size());
     assertEquals("foo", children.get(0).getName());
   }
 
   public void testNestedNamespace() throws Exception {
-    String source = "namespace foo { namespace bar {} }";
-    AbstractSyntaxTree ast = parse(source);
-    TestVisitor v = new TestVisitor();
-    ast.accept(v);
-    assertNotNull(v.moduleInfo);
-    assertTrue(v.moduleInfo instanceof CppModuleInfo);
-    CppModuleInfo cppModuleInfo = (CppModuleInfo) v.moduleInfo;
-    assertEquals("default", cppModuleInfo.getName());
-    List<CppModuleInfo> children = cppModuleInfo.getChildren();
+    MockVisitor v = parse("namespace foo { namespace bar {} }");
+    assertEquals(1, v.modules.size());
+    Iterator<ModuleInfo> it = v.modules.iterator();
+    ModuleInfo module = it.next();
+    assertTrue(module instanceof CppModuleInfo);
+    CppModuleInfo cppModule = (CppModuleInfo) module;
+    assertEquals("default", cppModule.getName());
+    List<CppModuleInfo> children = cppModule.getChildren();
     assertEquals(1, children.size());
     assertEquals("foo", children.get(0).getName());
     children = children.get(0).getChildren();
@@ -101,29 +94,68 @@ public class CPPParserTest extends TestCase {
   }
 
   public void testEmptyMethodInNamespace() throws Exception {
-    String source = "namespace foo { void bar() {} }";
-    AbstractSyntaxTree ast = parse(source);
-    TestVisitor v = new TestVisitor();
-    ast.accept(v);
-    assertNotNull(v.moduleInfo);
-    assertEquals("default", v.moduleInfo.getName());
-    CppModuleInfo cppModuleInfo = (CppModuleInfo) v.moduleInfo;
-    List<CppModuleInfo> children = cppModuleInfo.getChildren();
+    MockVisitor v = parse("namespace foo { void bar() {} }");
+    assertEquals(1, v.modules.size());
+    Iterator<ModuleInfo> it = v.modules.iterator();
+    ModuleInfo module = it.next();
+    assertTrue(module instanceof CppModuleInfo);
+    CppModuleInfo cppModule = (CppModuleInfo) module;
+    assertEquals("default", module.getName());
+    List<CppModuleInfo> children = cppModule.getChildren();
     assertEquals(1, children.size());
     assertEquals("foo", children.get(0).getName());
-    cppModuleInfo = children.get(0);
-    assertEquals(1, cppModuleInfo.getMethods().size());
-    MethodInfo methodInfo = cppModuleInfo.getMethods().get(0);
+    cppModule = children.get(0);
+    assertEquals(1, cppModule.getMethods().size());
+    MethodInfo methodInfo = cppModule.getMethods().get(0);
     assertEquals("bar", methodInfo.getName());
   }
 
-  private AbstractSyntaxTree parse(String source) throws Exception {
-    AbstractSyntaxTree ast = new AbstractSyntaxTree();
-    ASTBuilder builder = new ASTBuilder(ast);
-    Reader reader = new CharArrayReader(source.toCharArray());
-    CPPLexer lexer = new CPPLexer(reader);
-    CPPParser parser = new CPPParser(lexer);
-    parser.translation_unit(builder);
-    return ast;
+  public void testClassWithIntField() throws Exception {
+    MockVisitor v = parse("class foo { int bar; };");
+    assertEquals(1, v.classes.size());
+    Iterator<ClassInfo> it = v.classes.iterator();
+    ClassInfo clazz = it.next();
+    assertEquals("foo", clazz.getName());
+    Collection<FieldInfo> fields = clazz.getFields();
+    assertEquals(1, fields.size());
+    Iterator<FieldInfo> fieldIt = fields.iterator();
+    FieldInfo field = fieldIt.next();
+    assertEquals("bar", field.getName());
+    assertEquals("int", field.getType().toString());
+  }
+
+  public void testClassWithPointerField() throws Exception {
+    MockVisitor v = parse("class foo { int* bar; };");
+    assertEquals(1, v.classes.size());
+    Iterator<ClassInfo> it = v.classes.iterator();
+    ClassInfo clazz = it.next();
+    assertEquals("foo", clazz.getName());
+    Collection<FieldInfo> fields = clazz.getFields();
+    assertEquals(1, fields.size());
+    Iterator<FieldInfo> fieldIt = fields.iterator();
+    FieldInfo field = fieldIt.next();
+    assertEquals("bar", field.getName());
+// How do we represent pointers in our AST?
+//    assertEquals("int*", field.getType().toString());
+  }
+
+  public void testMethodWithParameter() throws Exception {
+    MockVisitor v = parse("void foo(int a) {}");
+    assertEquals(1, v.methods.size());
+    Iterator<MethodInfo> it = v.methods.iterator();
+    MethodInfo method = it.next();
+    assertEquals("foo", method.getName());
+    List<ParameterInfo> parameters = method.getParameters();
+    assertEquals(1, parameters.size());
+    ParameterInfo parameterInfo = parameters.get(0);
+    assertEquals("a", parameterInfo.getName());
+  }
+
+  public void testTemplateClass() throws Exception {
+    MockVisitor v = parse("template<typename T> class foo {};");
+    assertEquals(1, v.classes.size());
+    Iterator<ClassInfo> it = v.classes.iterator();
+    ClassInfo clazz = it.next();
+    assertEquals("foo", clazz.getName());
   }
 }

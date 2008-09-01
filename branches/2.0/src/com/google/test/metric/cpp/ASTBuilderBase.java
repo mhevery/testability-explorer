@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2008 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,29 +15,29 @@
  */
 package com.google.test.metric.cpp;
 
-import com.google.test.metric.Type;
-import com.google.test.metric.asm.Visibility;
-import com.google.test.metric.ast.AbstractSyntaxTree;
-import com.google.test.metric.ast.ClassHandle;
-import com.google.test.metric.ast.Language;
-import com.google.test.metric.ast.ModuleHandle;
-import com.google.test.metric.ast.NodeHandle;
-
 import java.util.Collection;
 import java.util.List;
-import java.util.Stack;
 
-public class ASTBuilder implements Builder {
+public class ASTBuilderBase implements Builder {
 
-  private final AbstractSyntaxTree ast;
-  private final Stack<NodeHandle> nodeStack = new Stack<NodeHandle>();
+  private ASTBuilderLink link;
 
-  public ASTBuilder(AbstractSyntaxTree ast) {
-    this.ast = ast;
+  void setLink(ASTBuilderLink link) {
+    if (this.link != null) {
+      throw new IllegalStateException("Link is already set");
+    }
+    this.link = link;
+  }
 
-    ModuleHandle defaultNamespace =
-      ast.createModule(Language.CPP, null, "default");
-    nodeStack.add(defaultNamespace);
+  protected void finished() {
+    if (link == null) {
+      throw new IllegalStateException("Link is not set");
+    }
+    link.finished();
+  }
+
+  protected void pushBuilder(ASTBuilderBase builder) {
+    link.createNextLink(builder);
   }
 
   public void accessSpecifier(String accessSpec) {
@@ -53,10 +53,11 @@ public class ASTBuilder implements Builder {
   }
 
   public void beginClassDefinition(String type, String identifier) {
-    ast.createClass(Language.CPP, identifier, new ClassHandle[0]);
+    throw new UnsupportedOperationException();
   }
 
   public void beginCompoundStatement() {
+    throw new UnsupportedOperationException();
   }
 
   public void beginCtorDefinition() {
@@ -84,6 +85,7 @@ public class ASTBuilder implements Builder {
   }
 
   public void beginFunctionDefinition() {
+    throw new UnsupportedOperationException();
   }
 
   public void beginIfStatement() {
@@ -107,7 +109,7 @@ public class ASTBuilder implements Builder {
   }
 
   public void beginTranslationUnit() {
-//    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException();
   }
 
   public void beginWhileStatement() {
@@ -139,10 +141,11 @@ public class ASTBuilder implements Builder {
   }
 
   public void endClassDefinition() {
-//    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException();
   }
 
   public void endCompoundStatement() {
+    throw new UnsupportedOperationException();
   }
 
   public void endCtorDefinition() {
@@ -166,6 +169,7 @@ public class ASTBuilder implements Builder {
   }
 
   public void endFunctionDefinition() {
+    throw new UnsupportedOperationException();
   }
 
   public void endIfElseStatement() {
@@ -189,7 +193,7 @@ public class ASTBuilder implements Builder {
   }
 
   public void endTranslationUnit() {
-//    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException();
   }
 
   public void endWhileStatement() {
@@ -197,19 +201,15 @@ public class ASTBuilder implements Builder {
   }
 
   public void enterNamespaceScope(String ns) {
-    NodeHandle parent = nodeStack.peek();
-    ModuleHandle moduleHandle = ast.createModule(
-        Language.CPP, (ModuleHandle) parent, ns);
-    nodeStack.push(moduleHandle);
+    throw new UnsupportedOperationException();
   }
 
   public void exitNamespaceScope() {
-    nodeStack.pop();
+    throw new UnsupportedOperationException();
   }
 
   public void functionDirectDeclarator(String identifier) {
-    NodeHandle parent = nodeStack.peek();
-    ast.createMethod(Language.CPP, parent, identifier, Visibility.PUBLIC, Type.VOID);
+    throw new UnsupportedOperationException();
   }
 
   public Collection getNewElements() {
@@ -241,6 +241,7 @@ public class ASTBuilder implements Builder {
   }
 
   public void simpleTypeSpecifier(List sts) {
+    throw new UnsupportedOperationException();
   }
 
   public void storageClassSpecifier(String storageClassSpec) {
@@ -250,5 +251,4 @@ public class ASTBuilder implements Builder {
   public void typeQualifier(String typeQualifier) {
     throw new UnsupportedOperationException();
   }
-
 }
