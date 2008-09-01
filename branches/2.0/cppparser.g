@@ -562,7 +562,7 @@ decl_namespace
   :
     "namespace"
     (
-      (ns:ID{ _td = true;declaratorID(ns.getText(),CPPvariables.QI_TYPE);})?
+      ns:ID{ _td = true;declaratorID(ns.getText(),CPPvariables.QI_TYPE);}
 
       // The following statement can be invoked to trigger selective antlr trace
       // Also see below
@@ -578,6 +578,12 @@ decl_namespace
       ns2:ID {_td=true;declaratorID(ns2.getText(),CPPvariables.QI_TYPE);}
       ASSIGNEQUAL qid = qualified_id SEMICOLON
       {b.makeNamespaceAlias(qid, ns2.getText());}
+    | 
+    LCURLY
+      {b.enterNamespaceScope("");}
+      (external_declaration)*
+      {b.exitNamespaceScope();}
+    RCURLY
     )
   ;
 

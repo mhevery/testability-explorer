@@ -42,7 +42,10 @@ public class CPPParserTest extends TestCase {
     Reader reader = new CharArrayReader(source.toCharArray());
     CPPLexer lexer = new CPPLexer(reader);
     CPPParser parser = new CPPParser(lexer);
+
     parser.translation_unit(link);
+
+
     MockVisitor v = new MockVisitor();
     ast.accept(v);
     return v;
@@ -75,6 +78,19 @@ public class CPPParserTest extends TestCase {
     List<CppModuleInfo> children = cppModule.getChildren();
     assertEquals(1, children.size());
     assertEquals("foo", children.get(0).getName());
+  }
+
+  public void testAnonymousNamespace() throws Exception {
+    MockVisitor v = parse("namespace {}");
+    assertEquals(1, v.modules.size());
+    Iterator<ModuleInfo> it = v.modules.iterator();
+    ModuleInfo module = it.next();
+    assertTrue(module instanceof CppModuleInfo);
+    CppModuleInfo cppModule = (CppModuleInfo) module;
+    assertEquals("default", cppModule.getName());
+    List<CppModuleInfo> children = cppModule.getChildren();
+    assertEquals(1, children.size());
+    assertEquals("", children.get(0).getName());
   }
 
   public void testNestedNamespace() throws Exception {
