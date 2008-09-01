@@ -42,10 +42,12 @@ Runs the Testability-Explorer from Ant.
 
 {{{
 <target name="testability-simple">
-   <testability>
+  <testability>
+    <classpath>
       <fileset dir="lib">
-         <include name="project.jar"/>
+        <include name="project.jar"/>
       </fileset>
+    </classpath>
    </testability>
 </target>
 }}}
@@ -56,17 +58,19 @@ This example shows all possible arguments of the ant task including the failprop
 
 {{{
 <target name="testability-complex">
-   <testability filter="" resultfile="testability.result.html" errorfile="testability.err.txt"
+  <testability filter="" resultfile="testability.result.html" errorfile="testability.err.txt"
                 printdepth="2" print="html" mincost="1" maxexcellentcost="50"
                 maxacceptablecost="100" worstoffendercount="25" whitelist="com.thirdparty."
                 cyclomatic="1" global="10" failproperty="testability.failproperty">
+    <classpath>
       <fileset dir="lib">
          <include name="*.jar"/>
       </fileset>
       <fileset dir="build/classes">
          <include name="com/ownstuff/**"/>
       </fileset>
-   </testability>
+    </classpath>
+  </testability>
 </target>
 }}}
 {{{
