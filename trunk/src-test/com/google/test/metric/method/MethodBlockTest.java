@@ -25,6 +25,7 @@ import junit.framework.TestCase;
 
 import com.google.test.metric.ClassInfo;
 import com.google.test.metric.ClassRepository;
+import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MethodInfo;
 import com.google.test.metric.method.op.turing.Operation;
 
@@ -102,9 +103,9 @@ public class MethodBlockTest extends TestCase {
   }
 
   private MethodInfo getMethod(String methodName, Class<?> clazz) {
-    ClassRepository repo = new ClassRepository();
-    repo.getClass(Object.class); // pre-cache for easier debugging.
-    ClassInfo classInfo = repo.getClass(clazz);
+    ClassRepository repo = new JavaClassRepository();
+    repo.getClass(Object.class.getName()); // pre-cache for easier debugging.
+    ClassInfo classInfo = repo.getClass(clazz.getName());
     return classInfo.getMethod(methodName);
   }
 
@@ -178,8 +179,8 @@ public class MethodBlockTest extends TestCase {
   }
 
   public void testForEach() throws Exception {
-    ClassRepository repo = new ClassRepository();
-    repo.getClass(Foreach.class).getMethod("method()V");
+    ClassRepository repo = new JavaClassRepository();
+    repo.getClass(Foreach.class.getName()).getMethod("method()V");
   }
 
 }

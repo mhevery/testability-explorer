@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.test.metric.MetricComputerTest.GlobalState;
 import com.google.test.metric.asm.Visibility;
 
 public class MetricComputer {
@@ -38,7 +39,7 @@ public class MetricComputer {
   }
 
   /* used for testing */
-  public MethodCost compute(Class<?> clazz, String methodName) {
+  public MethodCost compute(String clazz, String methodName) {
     ClassInfo classInfo = classRepository.getClass(clazz);
     MethodInfo method = classInfo.getMethod(methodName);
     return compute(method);
@@ -126,7 +127,7 @@ public class MetricComputer {
   }
 
   /* used for testing   */
-  public ClassCost compute(Class<?> clazz) {
+  public ClassCost compute(String clazz) {
     return compute(classRepository.getClass(clazz));
   }
 

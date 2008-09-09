@@ -17,7 +17,14 @@ package com.google.test.metric.method;
 
 import static com.google.test.metric.Type.VOID;
 
-import com.google.test.metric.ClassRepository;
+import java.util.Arrays;
+import java.util.List;
+
+import junit.framework.TestCase;
+
+import org.objectweb.asm.Label;
+
+import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.LocalVariableInfo;
 import com.google.test.metric.Type;
 import com.google.test.metric.Variable;
@@ -29,13 +36,6 @@ import com.google.test.metric.method.op.stack.StackOperation;
 import com.google.test.metric.method.op.stack.Store;
 import com.google.test.metric.method.op.stack.Throw;
 import com.google.test.metric.method.op.turing.Operation;
-
-import junit.framework.TestCase;
-
-import org.objectweb.asm.Label;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class BlockDecomposerTest extends TestCase {
 
@@ -445,8 +445,8 @@ public class BlockDecomposerTest extends TestCase {
   }
 
   public void testExperiment() throws Exception {
-    ClassRepository repo = new ClassRepository();
-    repo.getClass(TestClass.class);
+    JavaClassRepository repo = new JavaClassRepository();
+    repo.getClass(TestClass.class.getName());
   }
 
 }

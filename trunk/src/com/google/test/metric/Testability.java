@@ -235,7 +235,7 @@ public class Testability {
 
   public Report execute() throws CmdLineException {
     postParse();
-    ClassRepository repository = new ClassRepository(classpath);
+    ClassRepository repository = new JavaClassRepository(classpath);
     CostModel costModel = new CostModel(cyclomaticMultiplier, globalMultiplier);
     MetricComputer computer = new MetricComputer(repository, err, whitelist, costModel);
     List<String> classNames = classpath.getClassNamesToEnter(entryList);

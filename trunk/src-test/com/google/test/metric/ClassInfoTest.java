@@ -17,12 +17,12 @@
 package com.google.test.metric;
 
 
-import com.google.classpath.ClasspathRootFactory;
-
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
+
+import com.google.classpath.ClasspathRootFactory;
 
 public class ClassInfoTest extends ClassRepositoryTestCase {
 
@@ -40,14 +40,14 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
   }
 
   public void testParseEmptyClass() throws Exception {
-    ClassInfo clazz = repo.getClass(EmptyClass.class);
+    ClassInfo clazz = repo.getClass(EmptyClass.class.getName());
     assertEquals(EmptyClass.class.getName(), clazz.getName());
     assertEquals(EmptyClass.class.getName(), clazz.toString());
-    assertSame(clazz, repo.getClass(EmptyClass.class));
+    assertSame(clazz, repo.getClass(EmptyClass.class.getName()));
   }
 
   public void testMethodNotFoundException() throws Exception {
-    ClassInfo clazz = repo.getClass(EmptyClass.class);
+    ClassInfo clazz = repo.getClass(EmptyClass.class.getName());
     try {
       clazz.getMethod("IDontExistMethod()V");
       fail();
@@ -65,7 +65,7 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
   }
 
   public void testParseSingleMethodClass() throws Exception {
-    ClassInfo clazz = repo.getClass(SingleMethodClass.class);
+    ClassInfo clazz = repo.getClass(SingleMethodClass.class.getName());
     MethodInfo method = clazz.getMethod("methodA()V");
     assertEquals("methodA()V", method.getNameDesc());
     assertEquals("void methodA()", method.toString());
@@ -73,7 +73,7 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
   }
 
   public void testFiledNotFound() throws Exception {
-    ClassInfo clazz = repo.getClass(EmptyClass.class);
+    ClassInfo clazz = repo.getClass(EmptyClass.class.getName());
     try {
       clazz.getField("IDontExistField");
       fail();
@@ -90,7 +90,7 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
   }
 
   public void testParseFields() throws Exception {
-    ClassInfo clazz = repo.getClass(SingleFieldClass.class);
+    ClassInfo clazz = repo.getClass(SingleFieldClass.class.getName());
     FieldInfo field = clazz.getField("fieldA");
     assertEquals("fieldA", field.getName());
     assertEquals(SingleFieldClass.class.getName()
@@ -135,7 +135,7 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
   }
 
   private void assertLocalVars(String method, String[] params, String[] locals) {
-    ClassInfo classInfo = repo.getClass(LocalVarsClass.class);
+    ClassInfo classInfo = repo.getClass(LocalVarsClass.class.getName());
     MethodInfo methodInfo = classInfo.getMethod(method);
     List<ParameterInfo> paramsParse = methodInfo.getParameters();
     List<LocalVariableInfo> localsParse = methodInfo.getLocalVariables();
@@ -160,15 +160,15 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
   }
 
   public void testJavaLangObject() throws Exception {
-    repo.getClass(Object.class);
+    repo.getClass(Object.class.getName());
   }
 
   public void testJavaLangString() throws Exception {
-    repo.getClass(String.class);
+    repo.getClass(String.class.getName());
   }
 
   public void testJavaUtilBitSet() throws Exception {
-    repo.getClass(BitSet.class);
+    repo.getClass(BitSet.class.getName());
   }
 
   static class BitSetGetMethod {
@@ -183,7 +183,7 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
   }
 
   public void testJavaUtilBitSetGetMethod() throws Exception {
-    repo.getClass(BitSetGetMethod.class);
+    repo.getClass(BitSetGetMethod.class.getName());
   }
 
   private static class Monitor {
@@ -203,11 +203,11 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
   }
 
   public void testMonitor() throws Exception {
-    repo.getClass(Monitor.class);
+    repo.getClass(Monitor.class.getName());
   }
 
   public void testJSRinstructionInTryCatchFinally() throws Exception {
-    repo.getClass(InetAddress.class);
+    repo.getClass(InetAddress.class.getName());
   }
 
   interface TestInterface {
@@ -224,24 +224,24 @@ public class ClassInfoTest extends ClassRepositoryTestCase {
   }
 
   public void testMethodInSuperInterface() throws Exception {
-    ClassInfo interfaceClassInfo = repo.getClass(SubTestInterface.class);
-    assertEquals(repo.getClass(Object.class), interfaceClassInfo.getSuperClass());
+    ClassInfo interfaceClassInfo = repo.getClass(SubTestInterface.class.getName());
+    assertEquals(repo.getClass(Object.class.getName()), interfaceClassInfo.getSuperClass());
     List<ClassInfo> superInterfaces = interfaceClassInfo.getInterfaces();
     assertEquals(1, superInterfaces.size());
-    assertEquals(repo.getClass(TestInterface.class), superInterfaces.get(0));
+    assertEquals(repo.getClass(TestInterface.class.getName()), superInterfaces.get(0));
     assertNotNull(interfaceClassInfo.getMethod("get(Ljava/lang/Object;)Ljava/lang/Object;"));
   }
 
   public void testPickConcreteMethodOverInterfaceMethod() throws Exception {
-    ClassInfo classInfo = repo.getClass(ImplementsSubTestInterface.class);
-    ClassInfo interfaceClassInfo = repo.getClass(SubTestInterface.class);
+    ClassInfo classInfo = repo.getClass(ImplementsSubTestInterface.class.getName());
+    ClassInfo interfaceClassInfo = repo.getClass(SubTestInterface.class.getName());
     MethodInfo method = classInfo.getMethod("get(Ljava/lang/Object;)Ljava/lang/Object;");
     assertSame(classInfo, method.getClassInfo());
     assertNotSame(interfaceClassInfo, method.getClassInfo());
   }
 
   public void testReadInvalidByteCodeClassFile() throws Exception {
-    ClassRepository repo = new ClassRepository(ClasspathRootFactory.makeClasspathRootGroup("classes-for-test"));
+    ClassRepository repo = new JavaClassRepository(ClasspathRootFactory.makeClasspathRootGroup("classes-for-test"));
     try {
       repo.getClass("invalidByteCode");
       fail();

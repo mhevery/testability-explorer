@@ -1,13 +1,13 @@
 package com.google.test.metric.method.op.stack;
 
-import com.google.test.metric.ClassRepository;
-import com.google.test.metric.MethodInfo;
-import com.google.test.metric.method.op.turing.Operation;
+import java.util.Arrays;
+import java.util.LinkedList;
 
 import junit.framework.TestCase;
 
-import java.util.Arrays;
-import java.util.LinkedList;
+import com.google.test.metric.JavaClassRepository;
+import com.google.test.metric.MethodInfo;
+import com.google.test.metric.method.op.turing.Operation;
 
 public class StackOperationsTest extends TestCase {
 
@@ -24,7 +24,7 @@ public class StackOperationsTest extends TestCase {
   }
 
   private MethodInfo methodForClass(Class<?> clazz) {
-    return new ClassRepository().getClass(clazz).getMethod("<init>()V");
+    return new JavaClassRepository().getClass(clazz.getName()).getMethod("<init>()V");
   }
 
   private static class LoadClass {

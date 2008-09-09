@@ -18,9 +18,9 @@ package com.google.test.metric.x;
 import org.objectweb.asm.ClassReader;
 
 import com.google.test.metric.ClassCost;
-import com.google.test.metric.ClassRepository;
 import com.google.test.metric.ClassRepositoryTestCase;
 import com.google.test.metric.CostModel;
+import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MetricComputer;
 import com.google.test.metric.RegExpWhiteList;
@@ -45,31 +45,31 @@ public class SelfTest extends ClassRepositoryTestCase {
   }
 
   public void testMethodCost() throws Exception {
-    System.out.println(computer.compute(MethodCost.class));
+    System.out.println(computer.compute(MethodCost.class.getName()));
   }
 
   public void testClassCost() throws Exception {
-    System.out.println(computer.compute(ClassCost.class));
+    System.out.println(computer.compute(ClassCost.class.getName()));
   }
 
   public void testClassRepository() throws Exception {
-    System.out.println(computer.compute(ClassRepository.class));
+    System.out.println(computer.compute(JavaClassRepository.class.getName()));
   }
 
   public void testClassReader() throws Exception {
-    System.out.println(computer.compute(ClassReader.class));
+    System.out.println(computer.compute(ClassReader.class.getName()));
   }
 
   public void testPrimeness() throws Exception {
-    System.out.println(computer.compute(Primeness.class));
+    System.out.println(computer.compute(Primeness.class.getName()));
   }
 
   public void testSumOfPrimes() throws Exception {
-    System.out.println(computer.compute(SumOfPrimes1.class));
+    System.out.println(computer.compute(SumOfPrimes1.class.getName()));
   }
 
   public void testSumOfPrimes2() throws Exception {
-    System.out.println(computer.compute(SumOfPrimes2.class));
+    System.out.println(computer.compute(SumOfPrimes2.class.getName()));
   }
 
 
