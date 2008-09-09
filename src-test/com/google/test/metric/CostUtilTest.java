@@ -51,9 +51,9 @@ public class CostUtilTest extends TestCase {
   }
 
   private long cost(String method) {
-    MetricComputer computer = new MetricComputer(new ClassRepository(), null,
+    MetricComputer computer = new MetricComputer(new JavaClassRepository(), null,
         new RegExpWhiteList(), new CostModel());
-    MethodCost cost = computer.compute(CostUtil.class, method);
+    MethodCost cost = computer.compute(CostUtil.class.getName(), method);
     return cost.getTotalComplexityCost();
   }
 }

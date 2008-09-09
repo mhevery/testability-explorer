@@ -15,75 +15,9 @@
  */
 package com.google.test.metric;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+public interface ClassRepository {
 
-import org.objectweb.asm.ClassReader;
+  public ClassInfo getClass(String clazzName);
 
-import com.google.classpath.ClasspathRootGroup;
-import com.google.test.metric.asm.ClassInfoBuilderVisitor;
-
-public class ClassRepository {
-
-  private final Map<String, ClassInfo> classes = new HashMap<String, ClassInfo>();
-  private ClasspathRootGroup classpathRoots;
-
-  public ClassRepository() {
-  }
-
-  public ClassRepository(ClasspathRootGroup classpathRoots) {
-    this.classpathRoots = classpathRoots;
-  }
-
-  public ClassInfo getClass(Class<?> clazz) {
-    return getClass(clazz.getName());
-  }
-
-  public ClassInfo getClass(String clazzName) {
-    if (clazzName.startsWith("[")) {
-      return getClass(Object.class);
-    }
-    ClassInfo classInfo = classes.get(clazzName.replace('/', '.'));
-    if (classInfo == null) {
-        try {
-          classInfo = parseClass(inputStreamForClass(clazzName));
-        } catch (ArrayIndexOutOfBoundsException e) {
-          throw new ClassNotFoundException(clazzName);
-        }
-    }
-    return classInfo;
-  }
-
-  private InputStream inputStreamForClass(String clazzName) {
-    String classResource = clazzName.replace(".", "/") + ".class";
-    InputStream classBytes;
-    if (classpathRoots != null) {
-      classBytes = classpathRoots.getResourceAsStream(classResource);
-    } else {
-      classBytes = ClassLoader.getSystemResourceAsStream(classResource);
-    }
-    if (classBytes == null) {
-      throw new ClassNotFoundException(clazzName);
-    }
-    return classBytes;
-  }
-
-  private ClassInfo parseClass(InputStream classBytes) {
-    try {
-      ClassReader classReader = new ClassReader(classBytes);
-      ClassInfoBuilderVisitor visitor = new ClassInfoBuilderVisitor(this);
-      classReader.accept(visitor, 0);
-      return visitor.getClassInfo();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  public void addClass(ClassInfo classInfo) {
-    classes.put(classInfo.getName(), classInfo);
-  }
-
+  public void addClass(ClassInfo classInfo);
 }
-

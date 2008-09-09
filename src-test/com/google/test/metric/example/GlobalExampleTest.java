@@ -18,6 +18,7 @@ package com.google.test.metric.example;
 import com.google.test.metric.AutoFieldClearTestCase;
 import com.google.test.metric.ClassRepository;
 import com.google.test.metric.CostModel;
+import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInfo;
 import com.google.test.metric.MetricComputer;
@@ -26,12 +27,12 @@ import com.google.test.metric.example.GlobalExample.Gadget;
 
 public class GlobalExampleTest extends AutoFieldClearTestCase {
 
-  ClassRepository repo = new ClassRepository();
+  ClassRepository repo = new JavaClassRepository();
   RegExpWhiteList whitelist = new RegExpWhiteList();
   MetricComputer computer = new MetricComputer(repo, null, whitelist, new CostModel());
 
   private MethodCost cost(Class<?> clazz, String method) {
-    return computer.compute(clazz, method);
+    return computer.compute(clazz.getName(), method);
   }
 
   public void testAccessingAFinalStaticIsOK() throws Exception {
@@ -57,7 +58,7 @@ public class GlobalExampleTest extends AutoFieldClearTestCase {
   }
 
   public void testGadgetGetCountHasOneReturnOperation() throws Exception {
-    MethodInfo getCount = repo.getClass(Gadget.class).getMethod("getCount()I");
+    MethodInfo getCount = repo.getClass(Gadget.class.getName()).getMethod("getCount()I");
     assertEquals(1, getCount.getOperations().size());
   }
 

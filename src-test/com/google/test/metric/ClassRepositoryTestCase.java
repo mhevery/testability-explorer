@@ -27,7 +27,7 @@ public abstract class ClassRepositoryTestCase extends AutoFieldClearTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    repo = new ClassRepository();
+    repo = new JavaClassRepository();
   }
 
 }
