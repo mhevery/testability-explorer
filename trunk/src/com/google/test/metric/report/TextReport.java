@@ -30,8 +30,8 @@ public class TextReport extends SummaryReport {
   }
 
    public TextReport(PrintStream out, int maxExcellentCost, int maxAcceptableCost, int worstOffenderCount,
-                     Comparator comparator) {
-    super(maxExcellentCost, maxAcceptableCost, worstOffenderCount, comparator);    
+                     Comparator<ClassCost> comparator) {
+    super(maxExcellentCost, maxAcceptableCost, worstOffenderCount, comparator);
     this.out = out;
   }
 

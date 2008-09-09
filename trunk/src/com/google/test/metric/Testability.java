@@ -170,11 +170,11 @@ public class Testability {
     whitelist = getWhiteList();
     templates = getTemplates();
     classpath = getClassPath();
-    Comparator groupingComparator = getGroupingComparator();
+    Comparator<ClassCost> groupingComparator = getGroupingComparator();
     report = getReportPrinter(groupingComparator);
   }
 
-  private Report getReportPrinter(Comparator groupingComparator) throws CmdLineException {
+  private Report getReportPrinter(Comparator<ClassCost> groupingComparator) throws CmdLineException {
     if (printer.equals("summary")) {
       report = new TextReport(out, maxExcellentCost, maxAcceptableCost, worstOffenderCount, groupingComparator);
     } else if (printer.equals("html")) {
@@ -221,8 +221,8 @@ public class Testability {
     return templates;
   }
 
-  private Comparator getGroupingComparator() {
-    Comparator groupingComparator;
+  private Comparator<ClassCost> getGroupingComparator() {
+    Comparator<ClassCost> groupingComparator;
 
     if (grouping.equals("package")) {
       groupingComparator = new ClassCost.PackageComparator();
