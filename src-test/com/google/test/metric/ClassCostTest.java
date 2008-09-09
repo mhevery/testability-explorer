@@ -15,7 +15,11 @@
  */
 package com.google.test.metric;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import junit.framework.TestCase;
 
@@ -95,14 +99,14 @@ public class ClassCostTest extends TestCase {
     ClassCost classCost2 = new ClassCost("com.a.b.c.Daa", methodCosts0);
     ClassCost classCost3 = new ClassCost("com.a.b.c.Dxx", methodCosts2);
 
-    SortedSet ss = new TreeSet<ClassCost>(new ClassCost.PackageComparator());
+    SortedSet<ClassCost> ss = new TreeSet<ClassCost>(new ClassCost.PackageComparator());
 
     ss.add(classCost3);
     ss.add(classCost0);
     ss.add(classCost2);
     ss.add(classCost1);
 
-    ClassCost[] ccs = (ClassCost[]) ss.toArray(new ClassCost[ss.size()]);
+    ClassCost[] ccs = ss.toArray(new ClassCost[ss.size()]);
 
     assertEquals(ccs[0], classCost2);
     assertEquals(ccs[1], classCost0);

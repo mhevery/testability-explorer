@@ -15,7 +15,11 @@
  */
 package com.google.test.metric.report;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.google.test.metric.ClassCost;
 
@@ -42,7 +46,7 @@ public abstract class SummaryReport implements Report {
   }
 
   public SummaryReport(int maxExcellentCost, int maxAcceptableCost, int worstOffenderCount,
-                       Comparator comparator) {
+                       Comparator<ClassCost> comparator) {
     this(maxExcellentCost, maxAcceptableCost, worstOffenderCount);
     this.worstOffenders = new TreeSet<ClassCost>(comparator);
   }
