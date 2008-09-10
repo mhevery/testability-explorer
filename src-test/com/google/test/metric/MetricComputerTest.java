@@ -17,14 +17,13 @@ package com.google.test.metric;
 
 import static com.google.classpath.ClasspathRootFactory.makeClasspathRootGroup;
 
+import com.google.test.metric.report.DrillDownReport;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.List;
 
-import com.google.test.metric.report.DrillDownReport;
-
 public class MetricComputerTest extends ClassRepositoryTestCase {
-
   private MetricComputer computer;
   private final RegExpWhiteList whitelist = new RegExpWhiteList();
 
@@ -447,6 +446,30 @@ public class MetricComputerTest extends ClassRepositoryTestCase {
   }
   public void XtestInnerClassInjectability() throws Exception {
     MethodCost cost = computer.compute(InnerClassTest.class.getName(), "test()V");
+    assertEquals(0, cost.getTotalComplexityCost());
+  }
+  
+  private static class ScoreTooHigh {
+    public void doMockery(Builder builder) {
+      Product product = builder.build();
+      product.execute();
+    }
+    public static class Product {
+      public void execute() {
+        CostUtil.staticCost2();
+      }
+    }
+    public static class Builder {
+      public Product build() {
+        CostUtil.staticCost4();
+        return null;
+      }
+    }
+  }
+
+  public void testReturnValueFromInjectableIsInjectable() throws Exception {
+    MethodCost cost = computer.compute(ScoreTooHigh.class.getName(),
+        "doMockery(Lcom/google/test/metric/MetricComputerTest$ScoreTooHigh$Builder;)V");
     assertEquals(0, cost.getTotalComplexityCost());
   }
 

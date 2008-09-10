@@ -61,10 +61,6 @@ public class MethodInfo {
     return getFullName();
   }
 
-//  public String getFullName() {
-//    return classInfo.getName() + "." + getNameDesc();
-//  }
-
   public long getNonRecursiveCyclomaticComplexity() {
     return cyclomaticComplexity;
   }
@@ -74,22 +70,6 @@ public class MethodInfo {
   }
 
   public String getFullName() {
-//    int paramsBegin = methodName.indexOf('(');
-//    int paramsEnd = methodName.indexOf(')');
-//    int lastDot = methodName.lastIndexOf('.');
-//
-//    String method = methodName.substring(lastDot + 1,
-//        paramsBegin);
-//    String returnValue = deconstructParameters(
-//        methodName.substring(paramsEnd + 1));
-//
-//    if (isStaticConstructor() || isConstructor()) {
-////      method = " Constructor";
-//      method = " " + methodName.substring(
-//          methodName.lastIndexOf('.', lastDot-1) + 1, lastDot);
-//      returnValue = "";
-//    }
-//    String params = methodName.substring(paramsBegin + 1, paramsEnd);
     int paramsEnd = desc.indexOf(')');
     String returnValue = deconstructParameters(desc.substring(paramsEnd + 1)) + " ";
     String params = desc.substring(1, paramsEnd);
