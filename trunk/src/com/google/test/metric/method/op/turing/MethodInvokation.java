@@ -15,13 +15,13 @@
  */
 package com.google.test.metric.method.op.turing;
 
-import java.util.List;
-
 import com.google.test.metric.ClassNotFoundException;
 import com.google.test.metric.MethodInfo;
 import com.google.test.metric.MethodNotFoundException;
 import com.google.test.metric.TestabilityContext;
 import com.google.test.metric.Variable;
+
+import java.util.List;
 
 public class MethodInvokation extends Operation {
 
@@ -76,6 +76,10 @@ public class MethodInvokation extends Operation {
         // Method already counted, skip (to prevent recursion)
       } else if (toMethod.canOverride() && context.isInjectable(methodThis)) {
         // Method can be overridden / injectable
+        if (returnValue != null) {
+          context.setInjectable(returnValue);
+          context.setReturnValue(returnValue);
+        }
       } else {
         // Method can not be intercepted we have to add the cost
         // recursively
