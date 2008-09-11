@@ -8,5 +8,6 @@
 	<classpathentry kind="lib" path="lib/jarjar.jar"/>
 	<classpathentry kind="lib" path="lib/junit.jar"/>
 	<classpathentry kind="lib" path="lib/ant.jar"/>
+	<classpathentry kind="lib" path="lib/antlr-2.7.7.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

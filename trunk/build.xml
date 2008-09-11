@@ -2,6 +2,12 @@
 
     <import file="base.xml"/>
 
+  <target name="generate-cpp-grammar" depends="init">
+    <antlr target="src/com/google/test/metric/cpp/cppparser.g"
+           outputdirectory="src/com/google/test/metric/cpp">
+    </antlr>
+  </target>
+
 	<target name="compile" depends="init">
 		<javac srcdir="src" destdir="target/bin" debug="true" target="1.5">
 			<classpath refid="compile.classpath" />
