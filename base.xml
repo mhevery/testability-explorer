@@ -9,11 +9,19 @@
 		</classpath>
 	</taskdef>
 
+  <taskdef name="antlr"
+  	       classname="org.apache.tools.ant.taskdefs.optional.ANTLR">
+    <classpath>
+      <pathelement path="lib/ant-antlr.jar"/>
+    </classpath>
+  </taskdef>
+
 	<property name="version" value="1.2.0" />
 	<property name="project-name" value="testability-explorer" />
 
     <target name="clean">
         <delete dir="target" />
+        <delete dir="src-gen/com"/>
     </target>
     
     <target name="init">

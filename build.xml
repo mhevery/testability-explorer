@@ -3,16 +3,24 @@
     <import file="base.xml"/>
 
   <target name="generate-cpp-grammar" depends="init">
+    <mkdir dir="src-gen/com/google/test/metric/cpp" />
     <antlr target="src/com/google/test/metric/cpp/cppparser.g"
-           outputdirectory="src/com/google/test/metric/cpp">
+           outputdirectory="src-gen/com/google/test/metric/cpp">
+      <classpath>
+        <pathelement path="lib/antlr-2.7.7.jar"/>
+      </classpath>
     </antlr>
   </target>
 
-	<target name="compile" depends="init">
+	<target name="compile" depends="generate-cpp-grammar">
 		<javac srcdir="src" destdir="target/bin" debug="true" target="1.5">
 			<classpath refid="compile.classpath" />
             <exclude name="com/google/ant/**"/>
         </javac>
+    <javac srcdir="src-gen" destdir="target/bin" debug="true" target="1.5">
+        <classpath refid="compile.classpath" />
+        <exclude name="com/google/ant/**"/>
+    </javac>
 		<copy todir="target/bin">
 			<fileset dir="src">
 				<exclude name="**/*.java"/>

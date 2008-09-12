@@ -162,7 +162,7 @@ public class TaskModelTest extends TestCase {
 
     model.addClasspath(new Path(new Project()));
     model.setErrorFile(null);
-    model.setResultFile("anyfile");
+    model.setResultFile(File.createTempFile("anyfile", ".temp").toString());
     assertTrue(model.validate(messages));
     assertEquals(model.getResultFile(), model.getErrorFile());
   }
