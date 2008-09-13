@@ -18,12 +18,12 @@ package com.google.test.metric.collection;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 
-import junit.framework.TestCase;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+
+import junit.framework.TestCase;
 
 public class KeyedMultiStackTest extends TestCase {
 
@@ -113,6 +113,7 @@ public class KeyedMultiStackTest extends TestCase {
   }
 
   public void testToString() throws Exception {
+    stack.apply("", new Push(0));
     assertNotNull(stack.toString());
   }
 
