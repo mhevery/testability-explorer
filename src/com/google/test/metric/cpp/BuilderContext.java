@@ -15,32 +15,9 @@
  */
 package com.google.test.metric.cpp;
 
-import com.google.test.metric.cpp.dom.ClassDeclaration;
-import com.google.test.metric.cpp.dom.Node;
+public interface BuilderContext {
 
-class ClassBuilder extends DefaultBuilder {
-  private final Node node;
+  void pushBuilder(DefaultBuilder builder);
 
-  public ClassBuilder(Node parent, String identifier) {
-    node = new ClassDeclaration(identifier);
-    parent.addChild(node);
-  }
-
-  @Override
-  public void beginClassDefinition(String type, String identifier) {
-    pushBuilder(new ClassBuilder(node, identifier));
-  }
-
-  @Override
-  public void endClassDefinition() {
-    finished();
-  }
-
-  @Override
-  public void beginMemberDeclaration() {
-  }
-
-  @Override
-  public void endMemberDeclaration() {
-  }
+  void popBuilder();
 }
