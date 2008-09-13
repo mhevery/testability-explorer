@@ -41,4 +41,8 @@ public class CppParserTest extends TestCase {
     ClassDeclaration classDeclaration = (ClassDeclaration) node;
     assertEquals("A", classDeclaration.getName());
   }
+
+  public void testClassLoadCppVariables() throws Exception {
+    assertEquals(64, CPPvariables.QI_TYPE.size());
+  }
 }
