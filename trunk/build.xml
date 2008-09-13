@@ -1,56 +1,80 @@
 <project name="testability-explorer" default="test">
 
-    <import file="base.xml"/>
+	<import file="base.xml" />
 
-  <target name="generate-cpp-grammar" depends="init">
-    <mkdir dir="src-gen/com/google/test/metric/cpp" />
-    <antlr target="src/com/google/test/metric/cpp/cppparser.g"
-           outputdirectory="src-gen/com/google/test/metric/cpp">
-      <classpath>
-        <pathelement path="lib/antlr-2.7.7.jar"/>
-      </classpath>
-    </antlr>
-  </target>
+	<target name="generate-cpp-grammar" depends="init">
+		<mkdir dir="src-gen/com/google/test/metric/cpp" />
+		<antlr target="src/com/google/test/metric/cpp/cppparser.g" outputdirectory="src-gen/com/google/test/metric/cpp">
+			<classpath>
+				<pathelement path="lib/antlr-2.7.7.jar" />
+			</classpath>
+		</antlr>
+	</target>
 
 	<target name="compile" depends="generate-cpp-grammar">
 		<javac srcdir="src" destdir="target/bin" debug="true" target="1.5">
 			<classpath refid="compile.classpath" />
-            <exclude name="com/google/ant/**"/>
-        </javac>
-    <javac srcdir="src-gen" destdir="target/bin" debug="true" target="1.5">
-        <classpath refid="compile.classpath" />
-        <exclude name="com/google/ant/**"/>
-    </javac>
+			<exclude name="com/google/ant/**" />
+		</javac>
+		<javac srcdir="src-gen" destdir="target/bin" debug="true" target="1.5">
+			<classpath refid="compile.classpath" />
+			<exclude name="com/google/ant/**" />
+		</javac>
 		<copy todir="target/bin">
 			<fileset dir="src">
-				<exclude name="**/*.java"/>
+				<exclude name="**/*.java" />
 			</fileset>
 		</copy>
 	</target>
 
-	<target name="compile-tests" depends="compile">
+	<target name="instrument" depends="compile">
+		<path id="bin.path">
+			<pathelement path="target/bin" />
+		</path>
+		<emma>
+			<instr instrpathref="bin.path" destdir="target/bin-emma" metadatafile="target/emma/metadata.emma" merge="true" />
+		</emma>
+	</target>
+
+	<target name="compile-tests" depends="instrument">
 		<javac srcdir="src-test" destdir="target/bin-test" debug="true" target="1.5">
 			<classpath refid="test.classpath" />
-            <exclude name="com/google/ant/**"/>
+			<exclude name="com/google/ant/**" />
 		</javac>
 	</target>
 
 	<target name="test" depends="compile-tests">
 		<junit printsummary="yes" haltonfailure="yes" fork="yes" maxmemory="750M">
+			<jvmarg value="-Demma.coverage.out.file=target/emma/coverage.emma" />
+			<jvmarg value="-Demma.coverage.out.merge=true" />
 			<classpath refid="test.classpath" />
 
 			<formatter type="xml" usefile="true" />
 
 			<batchtest fork="yes" haltonfailure="false" todir="target/reports/junit">
 				<fileset dir="src-test">
-					<include name="**/*Test*.java" />
+					<include name="**/*Test.java" />
 					<exclude name="**/*TestCase.java" />
 					<exclude name="**/AllTests.java" />
 					<exclude name="**/*TestCase.java" />
-                    <exclude name="com/google/ant/**"/>
-                </fileset>
+					<exclude name="com/google/ant/**" />
+				</fileset>
 			</batchtest>
 		</junit>
+	</target>
+
+	<target name="coverage" depends="test">
+		<emma>
+			<report sourcepath="src">
+				<fileset dir="target/emma">
+					<include name="*.emma" />
+				</fileset>
+
+				<txt outfile="target/emma/coverage.txt" />
+				<html outfile="target/emma/coverage.html" />
+				<xml outfile="target/emma/coverage.xml" />
+			</report>
+		</emma>
 	</target>
 
 	<target name="jar" depends="compile, revision">
@@ -60,9 +84,9 @@
 				<attribute name="Main-Class" value="com.google.test.metric.Testability" />
 			</manifest>
 			<fileset dir="target/bin">
-                <exclude name="com/google/ant/**"/>
-            </fileset>
-            <zipfileset src="lib/asm-3.0.jar" />
+				<exclude name="com/google/ant/**" />
+			</fileset>
+			<zipfileset src="lib/asm-3.0.jar" />
 			<rule pattern="org.objectweb.asm.**" result="com.google.test.org.objectweb.asm.@1" />
 			<zipfileset src="lib/args4j-2.0.8.jar" />
 			<rule pattern="org.koshuke.args4j.**" result="com.google.test.org.koshuke.args4j.@1" />
@@ -74,8 +98,8 @@
 		</zip>
 	</target>
 
-    <target name="dist" depends="jar">
-    	<echo file="testability.sh">java -jar ${project-name}-${version}-r${revision}.jar</echo>
+	<target name="dist" depends="jar">
+		<echo file="testability.sh">java -jar ${project-name}-${version}-r${revision}.jar</echo>
 		<zip destfile="target/dist/${project-name}-${version}-r${revision}.zip">
 			<fileset dir=".">
 				<include name="README.txt" />
@@ -88,10 +112,10 @@
 			</fileset>
 		</zip>
 	</target>
-	
-	<target name="build-explorer" depends="clean,test,dist"/>
 
-    <target name="build" depends="clean,test,dist">
-        <ant antfile="task.xml" target="build.task"/>
-    </target>
+	<target name="build-explorer" depends="clean,coverage,dist" />
+
+	<target name="build" depends="clean,test,dist">
+		<ant antfile="task.xml" target="build.task" />
+	</target>
 </project>

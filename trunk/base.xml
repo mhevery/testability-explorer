@@ -1,6 +1,6 @@
 <project name="base">
 
-    <taskdef name="svn" classname="org.tigris.subversion.svnant.SvnTask">
+	<taskdef name="svn" classname="org.tigris.subversion.svnant.SvnTask">
 		<classpath>
 			<fileset dir="lib/svn">
 				<include name="*.jar" />
@@ -9,45 +9,54 @@
 		</classpath>
 	</taskdef>
 
-  <taskdef name="antlr"
-  	       classname="org.apache.tools.ant.taskdefs.optional.ANTLR">
-    <classpath>
-      <pathelement path="lib/ant-antlr.jar"/>
-    </classpath>
-  </taskdef>
+	<taskdef name="antlr" classname="org.apache.tools.ant.taskdefs.optional.ANTLR">
+		<classpath>
+			<pathelement path="lib/ant-antlr.jar" />
+		</classpath>
+	</taskdef>
+
+	<path id="emma.lib">
+		<pathelement location="lib/emma/emma.jar" />
+		<pathelement location="lib/emma/emma_ant.jar" />
+	</path>
+	<taskdef resource="emma_ant.properties" classpathref="emma.lib" />
 
 	<property name="version" value="1.2.0" />
 	<property name="project-name" value="testability-explorer" />
 
-    <target name="clean">
-        <delete dir="target" />
-        <delete dir="src-gen/com"/>
-    </target>
-    
-    <target name="init">
-        <mkdir dir="target" />
-        <mkdir dir="target/bin" />
-        <mkdir dir="target/bin-test" />
-        <mkdir dir="target/dist" />
-        <mkdir dir="target/reports/junit" />
-    </target>
+	<target name="clean">
+		<delete dir="target" />
+		<delete dir="src-gen/com" />
+	</target>
 
-    <target name="revision">
-        <svn>
-            <status path="." revisionProperty="revision" />
-        </svn>
-    </target>
+	<target name="init">
+		<mkdir dir="target" />
+		<mkdir dir="target/bin" />
+		<mkdir dir="target/bin-emma" />
+		<mkdir dir="target/emma" />
+		<mkdir dir="target/bin-test" />
+		<mkdir dir="target/dist" />
+		<mkdir dir="target/reports/junit" />
+	</target>
 
-    <path id="compile.classpath">
+	<target name="revision">
+		<svn>
+			<status path="." revisionProperty="revision" />
+		</svn>
+	</target>
+
+	<path id="compile.classpath">
 		<fileset dir="lib">
 			<include name="*.jar" />
 			<exclude name="junit.jar" />
-        </fileset>
+		</fileset>
 	</path>
 
 	<path id="test.classpath">
 		<path refid="compile.classpath" />
 		<pathelement location="lib/junit.jar" />
+		<pathelement location="lib/emma/emma.jar" />
+		<pathelement location="target/bin-emma" />
 		<pathelement location="target/bin" />
 		<pathelement location="target/bin-test" />
 	</path>
