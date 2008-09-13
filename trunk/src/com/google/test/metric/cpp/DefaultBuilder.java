@@ -20,6 +20,20 @@ import java.util.List;
 
 class DefaultBuilder implements Builder {
 
+  private BuilderContext context;
+
+  void setContext(BuilderContext context) {
+    this.context = context;
+  }
+
+  protected void pushBuilder(DefaultBuilder builder) {
+    context.pushBuilder(builder);
+  }
+
+  protected void finished() {
+    context.popBuilder();
+  }
+
   public void accessSpecifier(String accessSpec) {
     throw new UnsupportedOperationException();
   }

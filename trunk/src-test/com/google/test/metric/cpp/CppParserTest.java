@@ -21,12 +21,11 @@ import java.io.Reader;
 import junit.framework.TestCase;
 
 import com.google.test.metric.cpp.dom.ClassDeclaration;
-import com.google.test.metric.cpp.dom.Node;
 
 public class CppParserTest extends TestCase {
 
-  private Node parse(String source) throws Exception {
-    ClassBuilder builder = new ClassBuilder();
+  private TranslationUnit parse(String source) throws Exception {
+    RootBuilder builder = new RootBuilder();
     Reader reader = new CharArrayReader(source.toCharArray());
     CPPLexer lexer = new CPPLexer(reader);
     CPPParser parser = new CPPParser(lexer);
@@ -35,11 +34,25 @@ public class CppParserTest extends TestCase {
   }
 
   public void testEmptyClass() throws Exception {
-    Node node = parse("class A{};");
-    assertNotNull(node);
-    assertTrue(node instanceof ClassDeclaration);
-    ClassDeclaration classDeclaration = (ClassDeclaration) node;
-    assertEquals("A", classDeclaration.getName());
+    TranslationUnit unit = parse("class A{};");
+    ClassDeclaration classA = unit.getChild(0);
+    assertEquals("A", classA.getName());
+  }
+
+  public void testTwoClasses() throws Exception {
+    TranslationUnit unit = parse("class A{}; class B{};");
+    ClassDeclaration classA = unit.getChild(0);
+    assertEquals("A", classA.getName());
+    ClassDeclaration classB = unit.getChild(1);
+    assertEquals("B", classB.getName());
+  }
+
+  public void testNestedClass() throws Exception {
+    TranslationUnit unit = parse("class A{ class B{}; };");
+    ClassDeclaration classA = unit.getChild(0);
+    assertEquals("A", classA.getName());
+    ClassDeclaration classB = classA.getChild(0);
+    assertEquals("B", classB.getName());
   }
 
   public void testClassLoadCppVariables() throws Exception {

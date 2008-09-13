@@ -15,8 +15,21 @@
  */
 package com.google.test.metric.cpp.dom;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /*
  * Base class for all C++ AST nodes.
  */
 public class Node {
+  private final List<Node> children = new ArrayList<Node>();
+
+  @SuppressWarnings("unchecked")
+  public <T> T getChild(int index) {
+    return (T) children.get(index);
+  }
+
+  public void addChild(Node child) {
+    children.add(child);
+  }
 }
