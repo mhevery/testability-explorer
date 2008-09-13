@@ -65,13 +65,13 @@ public class KeyedMultiStack<KEY, VALUE> {
     private final Set<Entry<VALUE>> parents;
     private final VALUE value;
 
-    private Entry() {
+    public Entry() {
       this.depth = -1;
       this.parents = null;
       this.value = null;
     }
 
-    private Entry(Set<Entry<VALUE>> parents, VALUE value) {
+    public Entry(Set<Entry<VALUE>> parents, VALUE value) {
       this.value = value;
       this.parents = parents;
       if (parents.size() == 0) {
@@ -186,14 +186,14 @@ public class KeyedMultiStack<KEY, VALUE> {
 
   private final Map<KEY, Set<Entry<VALUE>>> head = new HashMap<KEY, Set<Entry<VALUE>>>();
 
-  public KeyedMultiStack() {
-  }
-
   /**
    * @param key Initial key for the primordial stack.
    */
   public KeyedMultiStack(KEY key) {
     init(key);
+  }
+
+  public KeyedMultiStack() {
   }
 
   public void init(KEY key) {

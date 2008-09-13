@@ -32,7 +32,11 @@
 			<pathelement path="target/bin" />
 		</path>
 		<emma>
-			<instr instrpathref="bin.path" destdir="target/bin-emma" metadatafile="target/emma/metadata.emma" merge="true" />
+			<instr instrpathref="bin.path" destdir="target/bin-emma" metadatafile="target/emma/metadata.emma" merge="true">
+				<filter excludes="com.google.test.metric.example.*" />
+				<filter excludes="com.google.test.metric.cpp.CPPLexer" />
+				<filter excludes="com.google.test.metric.cpp.CPPParser" />
+			</instr>
 		</emma>
 	</target>
 
@@ -65,7 +69,7 @@
 
 	<target name="coverage" depends="test">
 		<emma>
-			<report sourcepath="src">
+			<report sourcepath="src" metrics="method:70,block:80,line:80,class:100">
 				<fileset dir="target/emma">
 					<include name="*.emma" />
 				</fileset>
