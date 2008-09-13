@@ -37,6 +37,7 @@
 		<mkdir dir="target/bin-test" />
 		<mkdir dir="target/dist" />
 		<mkdir dir="target/reports/junit" />
+		<mkdir dir="target/reports/emma" />
 	</target>
 
 	<target name="revision">

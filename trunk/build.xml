@@ -70,9 +70,9 @@
 					<include name="*.emma" />
 				</fileset>
 
-				<txt outfile="target/emma/coverage.txt" />
-				<html outfile="target/emma/coverage.html" />
-				<xml outfile="target/emma/coverage.xml" />
+				<txt outfile="target/reports/emma/coverage.txt" />
+				<html outfile="target/reports/emma/coverage.html" />
+				<xml outfile="target/reports/emma/coverage.xml" />
 			</report>
 		</emma>
 	</target>
@@ -115,7 +115,7 @@
 
 	<target name="build-explorer" depends="clean,coverage,dist" />
 
-	<target name="build" depends="clean,test,dist">
+	<target name="build" depends="clean,coverage,dist">
 		<ant antfile="task.xml" target="build.task" />
 	</target>
 </project>
