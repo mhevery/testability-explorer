@@ -40,4 +40,14 @@ class NamespaceBuilder extends DefaultBuilder {
   public void beginClassDefinition(String type, String identifier) {
     pushBuilder(new ClassBuilder(node, identifier));
   }
+
+  @Override
+  public void beginFunctionDeclaration() {
+    pushBuilder(new FunctionDeclarationBuilder(node));
+  }
+
+  @Override
+  public void beginFunctionDefinition() {
+    pushBuilder(new FunctionDefinitionBuilder(node));
+  }
 }

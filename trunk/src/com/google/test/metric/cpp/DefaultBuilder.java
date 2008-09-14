@@ -234,7 +234,7 @@ class DefaultBuilder implements Builder {
     throw new UnsupportedOperationException();
   }
 
-  public void simpleTypeSpecifier(List sts) {
+  public void simpleTypeSpecifier(List<String> sts) {
     throw new UnsupportedOperationException();
   }
 

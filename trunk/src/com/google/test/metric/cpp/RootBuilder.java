@@ -15,6 +15,7 @@
  */
 package com.google.test.metric.cpp;
 
+import java.util.List;
 import java.util.Stack;
 
 class RootBuilder extends DefaultBuilder implements BuilderContext {
@@ -22,6 +23,10 @@ class RootBuilder extends DefaultBuilder implements BuilderContext {
   private final TranslationUnit root = new TranslationUnit();
   private final Stack<DefaultBuilder> builders = new Stack<DefaultBuilder>();
   private DefaultBuilder currentBuilder;
+
+  public RootBuilder() {
+    pushBuilder(new GlobalScopeBuilder(root));
+  }
 
   public TranslationUnit getNode() {
     return root;
@@ -36,20 +41,12 @@ class RootBuilder extends DefaultBuilder implements BuilderContext {
 
   public void popBuilder() {
     builders.pop();
-    if (builders.empty()) {
-      currentBuilder = null;
-    } else {
-      currentBuilder = builders.peek();
-    }
+    currentBuilder = builders.peek();
   }
 
   @Override
   public void beginClassDefinition(String type, String identifier) {
-    if (currentBuilder == null) {
-      pushBuilder(new ClassBuilder(root, identifier));
-    } else {
-      currentBuilder.beginClassDefinition(type, identifier);
-    }
+    currentBuilder.beginClassDefinition(type, identifier);
   }
 
   @Override
@@ -69,16 +66,57 @@ class RootBuilder extends DefaultBuilder implements BuilderContext {
 
   @Override
   public void enterNamespaceScope(String ns) {
-    if (currentBuilder == null) {
-      pushBuilder(new NamespaceBuilder(root, ns));
-    } else {
-      currentBuilder.enterNamespaceScope(ns);
-    }
+    currentBuilder.enterNamespaceScope(ns);
   }
 
   @Override
   public void exitNamespaceScope() {
     currentBuilder.exitNamespaceScope();
+  }
+
+  @Override
+  public void beginFunctionDefinition() {
+    currentBuilder.beginFunctionDefinition();
+  }
+
+  @Override
+  public void functionDirectDeclarator(String identifier) {
+    currentBuilder.functionDirectDeclarator(identifier);
+  }
+
+  @Override
+  public void beginCompoundStatement() {
+    currentBuilder.beginCompoundStatement();
+  }
+
+  @Override
+  public void endCompoundStatement() {
+    currentBuilder.endCompoundStatement();
+  }
+
+  @Override
+  public void endFunctionDefinition() {
+    currentBuilder.endFunctionDefinition();
+  }
+
+  @Override
+  public void beginFunctionDeclaration() {
+    currentBuilder.beginFunctionDeclaration();
+  }
+
+  @Override
+  public void endFunctionDeclaration() {
+    currentBuilder.endFunctionDeclaration();
+  }
+
+  @Override
+  public void directDeclarator(String id) {
+    currentBuilder.directDeclarator(id);
+  }
+
+  @Override
+  public void simpleTypeSpecifier(List<String> sts) {
+    currentBuilder.simpleTypeSpecifier(sts);
   }
 
   @Override

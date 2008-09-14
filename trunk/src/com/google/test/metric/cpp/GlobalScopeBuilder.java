@@ -15,42 +15,33 @@
  */
 package com.google.test.metric.cpp;
 
-import com.google.test.metric.cpp.dom.ClassDeclaration;
 import com.google.test.metric.cpp.dom.Node;
 
-class ClassBuilder extends DefaultBuilder {
-  private final Node node;
+class GlobalScopeBuilder extends DefaultBuilder {
 
-  public ClassBuilder(Node parent, String identifier) {
-    node = new ClassDeclaration(identifier);
-    parent.addChild(node);
+  private final Node parent;
+
+  GlobalScopeBuilder(Node parent) {
+    this.parent = parent;
   }
 
   @Override
   public void beginClassDefinition(String type, String identifier) {
-    pushBuilder(new ClassBuilder(node, identifier));
+    pushBuilder(new ClassBuilder(parent, identifier));
   }
 
   @Override
-  public void endClassDefinition() {
-    finished();
+  public void enterNamespaceScope(String ns) {
+    pushBuilder(new NamespaceBuilder(parent, ns));
   }
 
   @Override
   public void beginFunctionDefinition() {
-    pushBuilder(new FunctionDefinitionBuilder(node));
+    pushBuilder(new FunctionDefinitionBuilder(parent));
   }
 
   @Override
   public void beginFunctionDeclaration() {
-    pushBuilder(new FunctionDeclarationBuilder(node));
-  }
-
-  @Override
-  public void beginMemberDeclaration() {
-  }
-
-  @Override
-  public void endMemberDeclaration() {
+    pushBuilder(new FunctionDeclarationBuilder(parent));
   }
 }
