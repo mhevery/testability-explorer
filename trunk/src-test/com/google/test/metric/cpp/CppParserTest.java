@@ -21,6 +21,7 @@ import java.io.Reader;
 import junit.framework.TestCase;
 
 import com.google.test.metric.cpp.dom.ClassDeclaration;
+import com.google.test.metric.cpp.dom.Namespace;
 
 public class CppParserTest extends TestCase {
 
@@ -52,6 +53,36 @@ public class CppParserTest extends TestCase {
     ClassDeclaration classA = unit.getChild(0);
     assertEquals("A", classA.getName());
     ClassDeclaration classB = classA.getChild(0);
+    assertEquals("B", classB.getName());
+  }
+
+  public void testEmptyNamespace() throws Exception {
+    TranslationUnit unit = parse("namespace A{}");
+    Namespace namespaceA = unit.getChild(0);
+    assertEquals("A", namespaceA.getName());
+  }
+
+  public void testTwoNamespaces() throws Exception {
+    TranslationUnit unit = parse("namespace A{} namespace B{}");
+    Namespace namespaceA = unit.getChild(0);
+    assertEquals("A", namespaceA.getName());
+    Namespace namespaceB = unit.getChild(1);
+    assertEquals("B", namespaceB.getName());
+  }
+
+  public void testNestedNamespace() throws Exception {
+    TranslationUnit unit = parse("namespace A{ namespace B{} }");
+    Namespace namespaceA = unit.getChild(0);
+    assertEquals("A", namespaceA.getName());
+    Namespace namespaceB = namespaceA.getChild(0);
+    assertEquals("B", namespaceB.getName());
+  }
+
+  public void testClassInNamespace() throws Exception {
+    TranslationUnit unit = parse("namespace A{ class B{}; }");
+    Namespace namespaceA = unit.getChild(0);
+    assertEquals("A", namespaceA.getName());
+    ClassDeclaration classB = namespaceA.getChild(0);
     assertEquals("B", classB.getName());
   }
 
