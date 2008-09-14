@@ -15,42 +15,40 @@
  */
 package com.google.test.metric.cpp;
 
-import com.google.test.metric.cpp.dom.ClassDeclaration;
+import java.util.List;
+
+import com.google.test.metric.cpp.dom.FunctionDefinition;
 import com.google.test.metric.cpp.dom.Node;
 
-class ClassBuilder extends DefaultBuilder {
-  private final Node node;
+class FunctionDefinitionBuilder extends DefaultBuilder {
 
-  public ClassBuilder(Node parent, String identifier) {
-    node = new ClassDeclaration(identifier);
+  private final Node parent;
+  private Node node;
+
+  public FunctionDefinitionBuilder(Node parent) {
+    this.parent = parent;
+  }
+
+  @Override
+  public void functionDirectDeclarator(String name) {
+    node = new FunctionDefinition(name);
     parent.addChild(node);
   }
 
   @Override
-  public void beginClassDefinition(String type, String identifier) {
-    pushBuilder(new ClassBuilder(node, identifier));
-  }
-
-  @Override
-  public void endClassDefinition() {
+  public void endFunctionDefinition() {
     finished();
   }
 
   @Override
-  public void beginFunctionDefinition() {
-    pushBuilder(new FunctionDefinitionBuilder(node));
+  public void simpleTypeSpecifier(List<String> sts) {
   }
 
   @Override
-  public void beginFunctionDeclaration() {
-    pushBuilder(new FunctionDeclarationBuilder(node));
+  public void beginCompoundStatement() {
   }
 
   @Override
-  public void beginMemberDeclaration() {
-  }
-
-  @Override
-  public void endMemberDeclaration() {
+  public void endCompoundStatement() {
   }
 }

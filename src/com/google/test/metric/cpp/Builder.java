@@ -94,7 +94,7 @@ public interface Builder {
    *
    * @param sts The simple type specifiers,
    */
-  void simpleTypeSpecifier(List sts);
+  void simpleTypeSpecifier(List<String> sts);
 
   /**
    * Reports the declarator, of the entity being declared.

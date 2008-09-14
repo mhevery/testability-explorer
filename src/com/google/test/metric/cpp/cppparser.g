@@ -518,7 +518,10 @@ external_declaration
     ("inline")? s = scope_override conversion_function_decl_or_def
    |
     // Function declaration
-    (declaration_specifiers function_declarator SEMICOLON)=> declaration
+    (declaration_specifiers function_declarator SEMICOLON)=>
+    {b.beginFunctionDeclaration();}
+    declaration
+    {b.endFunctionDeclaration();}
   |
     // Function definition
     (declaration_specifiers function_declarator LCURLY)=>

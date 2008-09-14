@@ -21,6 +21,8 @@ import java.io.Reader;
 import junit.framework.TestCase;
 
 import com.google.test.metric.cpp.dom.ClassDeclaration;
+import com.google.test.metric.cpp.dom.FunctionDeclaration;
+import com.google.test.metric.cpp.dom.FunctionDefinition;
 import com.google.test.metric.cpp.dom.Namespace;
 
 public class CppParserTest extends TestCase {
@@ -84,6 +86,50 @@ public class CppParserTest extends TestCase {
     assertEquals("A", namespaceA.getName());
     ClassDeclaration classB = namespaceA.getChild(0);
     assertEquals("B", classB.getName());
+  }
+
+  public void testGlobalFunctionDeclaration() throws Exception {
+    TranslationUnit unit = parse("void foo();");
+    FunctionDeclaration functionFoo = unit.getChild(0);
+    assertEquals("foo", functionFoo.getName());
+  }
+
+  public void testFunctionDeclarationInNamespace() throws Exception {
+    TranslationUnit unit = parse("namespace A { void foo(); };");
+    Namespace namespaceA = unit.getChild(0);
+    assertEquals("A", namespaceA.getName());
+    FunctionDeclaration functionFoo = namespaceA.getChild(0);
+    assertEquals("foo", functionFoo.getName());
+  }
+
+  public void testMemberFunctionDeclaration() throws Exception {
+    TranslationUnit unit = parse("class A { void foo(); };");
+    ClassDeclaration classA = unit.getChild(0);
+    assertEquals("A", classA.getName());
+    FunctionDeclaration functionFoo = classA.getChild(0);
+    assertEquals("foo", functionFoo.getName());
+  }
+
+  public void testEmptyGlobalFunction() throws Exception {
+    TranslationUnit unit = parse("void foo() {}");
+    FunctionDefinition functionFoo = unit.getChild(0);
+    assertEquals("foo", functionFoo.getName());
+  }
+
+  public void testEmptyFunctionInNamespace() throws Exception {
+    TranslationUnit unit = parse("namespace A { void foo() {} }");
+    Namespace namespaceA = unit.getChild(0);
+    assertEquals("A", namespaceA.getName());
+    FunctionDefinition functionFoo = namespaceA.getChild(0);
+    assertEquals("foo", functionFoo.getName());
+  }
+
+  public void testEmptyMemberFunction() throws Exception {
+    TranslationUnit unit = parse("class A { void foo() {} };");
+    ClassDeclaration classA = unit.getChild(0);
+    assertEquals("A", classA.getName());
+    FunctionDefinition functionFoo = classA.getChild(0);
+    assertEquals("foo", functionFoo.getName());
   }
 
   public void testClassLoadCppVariables() throws Exception {
