@@ -68,6 +68,20 @@ class RootBuilder extends DefaultBuilder implements BuilderContext {
   }
 
   @Override
+  public void enterNamespaceScope(String ns) {
+    if (currentBuilder == null) {
+      pushBuilder(new NamespaceBuilder(root, ns));
+    } else {
+      currentBuilder.enterNamespaceScope(ns);
+    }
+  }
+
+  @Override
+  public void exitNamespaceScope() {
+    currentBuilder.exitNamespaceScope();
+  }
+
+  @Override
   public void beginTranslationUnit() {
   }
 
