@@ -46,9 +46,6 @@ class FunctionDefinitionBuilder extends DefaultBuilder {
 
   @Override
   public void beginCompoundStatement() {
-  }
-
-  @Override
-  public void endCompoundStatement() {
+    pushBuilder(new StatementBuilder(node));
   }
 }
