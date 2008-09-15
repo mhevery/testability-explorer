@@ -166,7 +166,11 @@ class DefaultBuilder implements Builder {
     throw new UnsupportedOperationException();
   }
 
-  public void endIfElseStatement() {
+  public void endIfStatement() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void endElseStatement() {
     throw new UnsupportedOperationException();
   }
 

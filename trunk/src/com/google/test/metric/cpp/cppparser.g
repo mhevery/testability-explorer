@@ -1424,10 +1424,12 @@ selection_statement
   :
     {b.beginIfStatement();}
     "if" LPAREN expression RPAREN statement
+    {b.endIfStatement();}
     (options {warnWhenFollowAmbig = false;}:
      {b.beginElseStatement();}
-     "else" statement)?
-    {b.endIfElseStatement();}
+     "else" statement
+     {b.endElseStatement();}
+    )?
   |
     "switch" LPAREN  expression RPAREN statement
   ;

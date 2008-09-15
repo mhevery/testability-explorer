@@ -120,6 +120,56 @@ class RootBuilder extends DefaultBuilder implements BuilderContext {
   }
 
   @Override
+  public void beginForStatement() {
+    currentBuilder.beginForStatement();
+  }
+
+  @Override
+  public void endForStatement() {
+    currentBuilder.endForStatement();
+  }
+
+  @Override
+  public void beginWhileStatement() {
+    currentBuilder.beginWhileStatement();
+  }
+
+  @Override
+  public void endWhileStatement() {
+    currentBuilder.endWhileStatement();
+  }
+
+  @Override
+  public void beginDoStatement() {
+    currentBuilder.beginDoStatement();
+  }
+
+  @Override
+  public void endDoStatement() {
+    currentBuilder.endDoStatement();
+  }
+
+  @Override
+  public void beginIfStatement() {
+    currentBuilder.beginIfStatement();
+  }
+
+  @Override
+  public void endIfStatement() {
+    currentBuilder.endIfStatement();
+  }
+
+  @Override
+  public void beginElseStatement() {
+    currentBuilder.beginElseStatement();
+  }
+
+  @Override
+  public void endElseStatement() {
+    currentBuilder.endElseStatement();
+  }
+
+  @Override
   public void beginTranslationUnit() {
   }
 

@@ -21,8 +21,11 @@ import java.io.Reader;
 import junit.framework.TestCase;
 
 import com.google.test.metric.cpp.dom.ClassDeclaration;
+import com.google.test.metric.cpp.dom.ElseStatement;
 import com.google.test.metric.cpp.dom.FunctionDeclaration;
 import com.google.test.metric.cpp.dom.FunctionDefinition;
+import com.google.test.metric.cpp.dom.IfStatement;
+import com.google.test.metric.cpp.dom.LoopStatement;
 import com.google.test.metric.cpp.dom.Namespace;
 
 public class CppParserTest extends TestCase {
@@ -130,6 +133,108 @@ public class CppParserTest extends TestCase {
     assertEquals("A", classA.getName());
     FunctionDefinition functionFoo = classA.getChild(0);
     assertEquals("foo", functionFoo.getName());
+  }
+
+  public void testForStatement() throws Exception {
+    TranslationUnit unit = parse("void foo() { for(;;); }");
+    FunctionDefinition functionFoo = unit.getChild(0);
+    assertEquals("foo", functionFoo.getName());
+    LoopStatement forStatement = functionFoo.getChild(0);
+    assertNotNull(forStatement);
+  }
+
+  public void testWhileStatement() throws Exception {
+    TranslationUnit unit = parse("void foo() { while(true); }");
+    FunctionDefinition functionFoo = unit.getChild(0);
+    assertEquals("foo", functionFoo.getName());
+    LoopStatement whileStatement = functionFoo.getChild(0);
+    assertNotNull(whileStatement);
+  }
+
+  public void testDoStatement() throws Exception {
+    TranslationUnit unit = parse("void foo() { do {} while(true); }");
+    FunctionDefinition functionFoo = unit.getChild(0);
+    assertEquals("foo", functionFoo.getName());
+    LoopStatement doStatement = functionFoo.getChild(0);
+    assertNotNull(doStatement);
+  }
+
+  public void testWhileInForStatement() throws Exception {
+    TranslationUnit unit = parse("void foo() { for(;;) while(true); }");
+    FunctionDefinition functionFoo = unit.getChild(0);
+    assertEquals("foo", functionFoo.getName());
+    LoopStatement forStatement = functionFoo.getChild(0);
+    assertNotNull(forStatement);
+    LoopStatement whileStatement = forStatement.getChild(0);
+    assertNotNull(whileStatement);
+  }
+
+  public void testForInDoStatement() throws Exception {
+    TranslationUnit unit = parse("void foo() { do for(;;); while(true); }");
+    FunctionDefinition functionFoo = unit.getChild(0);
+    assertEquals("foo", functionFoo.getName());
+    LoopStatement doStatement = functionFoo.getChild(0);
+    assertNotNull(doStatement);
+    LoopStatement forStatement = doStatement.getChild(0);
+    assertNotNull(forStatement);
+  }
+
+  public void testForInCompoundDoStatement() throws Exception {
+    TranslationUnit unit = parse("void foo() { do { for(;;); } while(true); }");
+    FunctionDefinition functionFoo = unit.getChild(0);
+    assertEquals("foo", functionFoo.getName());
+    LoopStatement doStatement = functionFoo.getChild(0);
+    assertNotNull(doStatement);
+    LoopStatement forStatement = doStatement.getChild(0);
+    assertNotNull(forStatement);
+  }
+
+  public void testForInSeveralCompoundStatements() throws Exception {
+    TranslationUnit unit = parse("void foo() { {{{ for(;;); }}} }");
+    FunctionDefinition functionFoo = unit.getChild(0);
+    assertEquals("foo", functionFoo.getName());
+    LoopStatement forStatement = functionFoo.getChild(0);
+    assertNotNull(forStatement);
+  }
+
+  public void testIfStatement() throws Exception {
+    TranslationUnit unit = parse("void foo() { if (true); }");
+    FunctionDefinition functionFoo = unit.getChild(0);
+    assertEquals("foo", functionFoo.getName());
+    IfStatement ifStatement = functionFoo.getChild(0);
+    assertNotNull(ifStatement);
+  }
+
+  public void testIfElseStatement() throws Exception {
+    TranslationUnit unit = parse("void foo() { if (true); else; }");
+    FunctionDefinition functionFoo = unit.getChild(0);
+    assertEquals("foo", functionFoo.getName());
+    IfStatement ifStatement = functionFoo.getChild(0);
+    assertNotNull(ifStatement);
+    ElseStatement elseStatement = functionFoo.getChild(1);
+    assertNotNull(elseStatement);
+  }
+
+  public void testCompoundIfElseStatement() throws Exception {
+    TranslationUnit unit = parse("void foo() { if (true) {} else {} }");
+    FunctionDefinition functionFoo = unit.getChild(0);
+    assertEquals("foo", functionFoo.getName());
+    IfStatement ifStatement = functionFoo.getChild(0);
+    assertNotNull(ifStatement);
+    ElseStatement elseStatement = functionFoo.getChild(1);
+    assertNotNull(elseStatement);
+  }
+
+  public void testIfElseAndLoopStatements() throws Exception {
+    TranslationUnit unit = parse("void foo() { if (true) { for(;;); } else { while(true); } }");
+    FunctionDefinition functionFoo = unit.getChild(0);
+    assertEquals("foo", functionFoo.getName());
+    IfStatement ifStatement = functionFoo.getChild(0);
+    LoopStatement forStatement = ifStatement.getChild(0);
+    assertNotNull(forStatement);
+    ElseStatement elseStatement = functionFoo.getChild(1);
+    LoopStatement whileStatement = elseStatement.getChild(0);
+    assertNotNull(whileStatement);
   }
 
   public void testClassLoadCppVariables() throws Exception {

@@ -255,8 +255,9 @@ public interface Builder {
   void dtorDeclarator(String identifier);
 
   void beginIfStatement();
+  void endIfStatement();
   void beginElseStatement();
-  void endIfElseStatement();
+  void endElseStatement();
 
   void gotoStatement();
   void continueStatement();
