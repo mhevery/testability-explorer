@@ -41,6 +41,18 @@ class FunctionDefinitionBuilder extends DefaultBuilder {
   }
 
   @Override
+  public void beginParameterDeclaration() {
+  }
+
+  @Override
+  public void endParameterDeclaration() {
+  }
+
+  @Override
+  public void directDeclarator(String id) {
+  }
+
+  @Override
   public void simpleTypeSpecifier(List<String> sts) {
   }
 

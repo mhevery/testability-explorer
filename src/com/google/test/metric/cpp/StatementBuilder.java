@@ -15,10 +15,17 @@
  */
 package com.google.test.metric.cpp;
 
+import java.util.List;
+
+import com.google.test.metric.cpp.dom.BreakStatement;
+import com.google.test.metric.cpp.dom.CaseStatement;
+import com.google.test.metric.cpp.dom.DefaultStatement;
 import com.google.test.metric.cpp.dom.ElseStatement;
 import com.google.test.metric.cpp.dom.IfStatement;
 import com.google.test.metric.cpp.dom.LoopStatement;
 import com.google.test.metric.cpp.dom.Node;
+import com.google.test.metric.cpp.dom.ReturnStatement;
+import com.google.test.metric.cpp.dom.SwitchStatement;
 
 public class StatementBuilder extends DefaultBuilder {
   private final Node parent;
@@ -95,5 +102,73 @@ public class StatementBuilder extends DefaultBuilder {
   @Override
   public void endElseStatement() {
     finished();
+  }
+
+  @Override
+  public void beginCaseStatement() {
+    Node node = new CaseStatement();
+    parent.addChild(node);
+    pushBuilder(new StatementBuilder(node));
+  }
+
+  @Override
+  public void endCaseStatement() {
+    finished();
+  }
+
+  @Override
+  public void beginSwitchStatement() {
+    Node node = new SwitchStatement();
+    parent.addChild(node);
+    pushBuilder(new StatementBuilder(node));
+  }
+
+  @Override
+  public void endSwitchStatement() {
+    finished();
+  }
+
+  @Override
+  public void beginDefaultStatement() {
+    Node node = new DefaultStatement();
+    parent.addChild(node);
+    pushBuilder(new StatementBuilder(node));
+  }
+
+  @Override
+  public void endDefaultStatement() {
+    finished();
+  }
+
+  @Override
+  public void returnStatement() {
+    Node node = new ReturnStatement();
+    parent.addChild(node);
+    pushBuilder(new StatementBuilder(node));
+    finished();
+  }
+
+  @Override
+  public void breakStatement() {
+    Node node = new BreakStatement();
+    parent.addChild(node);
+    pushBuilder(new StatementBuilder(node));
+    finished();
+  }
+
+  @Override
+  public void simpleTypeSpecifier(List<String> sts) {
+  }
+
+  @Override
+  public void directDeclarator(String id) {
+  }
+
+  @Override
+  public void beginInitializer() {
+  }
+
+  @Override
+  public void endInitializer() {
   }
 }

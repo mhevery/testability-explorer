@@ -1402,12 +1402,16 @@ labeled_statement
   ;
 
 case_statement
-  : "case"
+  : {b.beginCaseStatement();}
+    "case"
     constant_expression COLON statement
+    {b.endCaseStatement();}
   ;
 
 default_statement
-  : "default" COLON statement
+  : {b.beginDefaultStatement();} 
+    "default" COLON statement
+    {b.endDefaultStatement();}
   ;
 
 compound_statement
@@ -1431,7 +1435,9 @@ selection_statement
      {b.endElseStatement();}
     )?
   |
+    {b.beginSwitchStatement();}
     "switch" LPAREN  expression RPAREN statement
+    {b.endSwitchStatement();}
   ;
 
 iteration_statement

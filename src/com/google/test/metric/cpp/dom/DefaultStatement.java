@@ -13,9 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.test.metric.cpp;
+package com.google.test.metric.cpp.dom;
 
-import com.google.test.metric.cpp.dom.Node;
-
-public class TranslationUnit extends Node {
+public class DefaultStatement extends Node {
 }
