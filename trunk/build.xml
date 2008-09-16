@@ -12,11 +12,9 @@
 	</target>
 
 	<target name="compile" depends="generate-cpp-grammar">
-		<javac srcdir="src" destdir="target/bin" debug="true" target="1.5">
-			<classpath refid="compile.classpath" />
-			<exclude name="com/google/ant/**" />
-		</javac>
-		<javac srcdir="src-gen" destdir="target/bin" debug="true" target="1.5">
+		<javac destdir="target/bin" debug="true" target="1.5">
+			<src path="src" />
+			<src path="src-gen" />
 			<classpath refid="compile.classpath" />
 			<exclude name="com/google/ant/**" />
 		</javac>

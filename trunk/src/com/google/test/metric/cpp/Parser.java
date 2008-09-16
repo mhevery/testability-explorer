@@ -13,14 +13,21 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.test.metric.cpp.dom;
+package com.google.test.metric.cpp;
 
-public class IfStatement extends Node {
+import java.io.CharArrayReader;
+import java.io.Reader;
 
-  @Override
-  public void accept(Visitor visitor) {
-    visitor.beginVisit(this);
-    visitChildren(visitor);
-    visitor.endVisit(this);
+import com.google.test.metric.cpp.dom.TranslationUnit;
+
+public class Parser {
+
+  public TranslationUnit parse(String source) throws Exception {
+    RootBuilder builder = new RootBuilder();
+    Reader reader = new CharArrayReader(source.toCharArray());
+    InternalLexer lexer = new InternalLexer(reader);
+    InternalParser parser = new InternalParser(lexer);
+    parser.translation_unit(builder);
+    return builder.getNode();
   }
 }

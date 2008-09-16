@@ -103,7 +103,7 @@ import java.util.List;
 import java.util.ArrayList;
 }
 
-class CPPParser extends Parser;
+class InternalParser extends Parser;
 
 options
   {
@@ -1949,7 +1949,7 @@ optor_simple_tokclass
 
 // Zuo 19/11/01 from next line, the Lexer is derived from stdCParser.g
 
-class CPPLexer extends Lexer;
+class InternalLexer extends Lexer;
 
 options
   {

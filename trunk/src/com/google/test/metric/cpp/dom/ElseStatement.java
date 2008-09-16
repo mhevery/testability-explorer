@@ -16,4 +16,11 @@
 package com.google.test.metric.cpp.dom;
 
 public class ElseStatement extends Node {
+
+  @Override
+  public void accept(Visitor visitor) {
+    visitor.beginVisit(this);
+    visitChildren(visitor);
+    visitor.endVisit(this);
+  }
 }

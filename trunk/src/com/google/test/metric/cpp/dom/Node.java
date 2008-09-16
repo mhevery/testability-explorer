@@ -32,4 +32,13 @@ public class Node {
   public void addChild(Node child) {
     children.add(child);
   }
+
+  public void accept(Visitor visitor) {
+  }
+
+  protected void visitChildren(Visitor visitor) {
+    for (Node child : children) {
+      child.accept(visitor);
+    }
+  }
 }

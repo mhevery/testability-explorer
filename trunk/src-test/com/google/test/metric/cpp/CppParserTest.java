@@ -15,9 +15,6 @@
  */
 package com.google.test.metric.cpp;
 
-import java.io.CharArrayReader;
-import java.io.Reader;
-
 import junit.framework.TestCase;
 
 import com.google.test.metric.cpp.dom.BreakStatement;
@@ -37,12 +34,7 @@ import com.google.test.metric.cpp.dom.TranslationUnit;
 public class CppParserTest extends TestCase {
 
   private TranslationUnit parse(String source) throws Exception {
-    RootBuilder builder = new RootBuilder();
-    Reader reader = new CharArrayReader(source.toCharArray());
-    CPPLexer lexer = new CPPLexer(reader);
-    CPPParser parser = new CPPParser(lexer);
-    parser.translation_unit(builder);
-    return builder.getNode();
+    return new Parser().parse(source);
   }
 
   public void testEmptyClass() throws Exception {
