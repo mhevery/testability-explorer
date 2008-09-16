@@ -273,6 +273,13 @@ public interface Builder {
   void beginForStatement();
   void endForStatement();
 
+  void beginSwitchStatement();
+  void endSwitchStatement();
+  void beginCaseStatement();
+  void endCaseStatement();
+  void beginDefaultStatement();
+  void endDefaultStatement();
+
   /**
    * Get the new model elements which have been created. We only keep track of
    * major elements which are of classifier granularity (things which might be a

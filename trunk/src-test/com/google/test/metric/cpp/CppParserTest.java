@@ -20,13 +20,19 @@ import java.io.Reader;
 
 import junit.framework.TestCase;
 
+import com.google.test.metric.cpp.dom.BreakStatement;
+import com.google.test.metric.cpp.dom.CaseStatement;
 import com.google.test.metric.cpp.dom.ClassDeclaration;
+import com.google.test.metric.cpp.dom.DefaultStatement;
 import com.google.test.metric.cpp.dom.ElseStatement;
 import com.google.test.metric.cpp.dom.FunctionDeclaration;
 import com.google.test.metric.cpp.dom.FunctionDefinition;
 import com.google.test.metric.cpp.dom.IfStatement;
 import com.google.test.metric.cpp.dom.LoopStatement;
 import com.google.test.metric.cpp.dom.Namespace;
+import com.google.test.metric.cpp.dom.ReturnStatement;
+import com.google.test.metric.cpp.dom.SwitchStatement;
+import com.google.test.metric.cpp.dom.TranslationUnit;
 
 public class CppParserTest extends TestCase {
 
@@ -235,6 +241,44 @@ public class CppParserTest extends TestCase {
     ElseStatement elseStatement = functionFoo.getChild(1);
     LoopStatement whileStatement = elseStatement.getChild(0);
     assertNotNull(whileStatement);
+  }
+
+  public void testSwitchStatement() throws Exception {
+    TranslationUnit unit = parse("void foo() { switch (a) { case 1: break; } }");
+    FunctionDefinition functionFoo = unit.getChild(0);
+    assertEquals("foo", functionFoo.getName());
+    SwitchStatement switchStatement = functionFoo.getChild(0);
+    CaseStatement caseStatement = switchStatement.getChild(0);
+    assertNotNull(caseStatement);
+  }
+
+  public void testSwitchStatementWithDefault() throws Exception {
+    TranslationUnit unit = parse("void foo() { switch (a) { case 1: break; default: break; } }");
+    FunctionDefinition functionFoo = unit.getChild(0);
+    assertEquals("foo", functionFoo.getName());
+    SwitchStatement switchStatement = functionFoo.getChild(0);
+    CaseStatement caseStatement = switchStatement.getChild(0);
+    BreakStatement breakStatement = caseStatement.getChild(0);
+    assertNotNull(breakStatement);
+    DefaultStatement defaultStatement = switchStatement.getChild(1);
+    breakStatement = defaultStatement.getChild(0);
+    assertNotNull(breakStatement);
+  }
+
+  public void testSimpleFunction() throws Exception {
+    TranslationUnit unit = parse("int foo() { int a = 0; a = a + 1; return a; }");
+    FunctionDefinition functionFoo = unit.getChild(0);
+    assertEquals("foo", functionFoo.getName());
+    ReturnStatement returnStatement = functionFoo.getChild(0);
+    assertNotNull(returnStatement);
+  }
+
+  public void testFunctionWithParameters() throws Exception {
+    TranslationUnit unit = parse("int foo(int a, int b) { return a + b; }");
+    FunctionDefinition functionFoo = unit.getChild(0);
+    assertEquals("foo", functionFoo.getName());
+    ReturnStatement returnStatement = functionFoo.getChild(0);
+    assertNotNull(returnStatement);
   }
 
   public void testClassLoadCppVariables() throws Exception {

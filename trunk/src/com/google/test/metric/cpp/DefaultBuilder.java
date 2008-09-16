@@ -249,4 +249,28 @@ class DefaultBuilder implements Builder {
   public void typeQualifier(String typeQualifier) {
     throw new UnsupportedOperationException();
   }
+
+  public void beginCaseStatement() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void beginSwitchStatement() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void endCaseStatement() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void endSwitchStatement() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void beginDefaultStatement() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void endDefaultStatement() {
+    throw new UnsupportedOperationException();
+  }
 }

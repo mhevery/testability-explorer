@@ -18,6 +18,8 @@ package com.google.test.metric.cpp;
 import java.util.List;
 import java.util.Stack;
 
+import com.google.test.metric.cpp.dom.TranslationUnit;
+
 class RootBuilder extends DefaultBuilder implements BuilderContext {
 
   private final TranslationUnit root = new TranslationUnit();
@@ -167,6 +169,66 @@ class RootBuilder extends DefaultBuilder implements BuilderContext {
   @Override
   public void endElseStatement() {
     currentBuilder.endElseStatement();
+  }
+
+  @Override
+  public void beginCaseStatement() {
+    currentBuilder.beginCaseStatement();
+  }
+
+  @Override
+  public void beginSwitchStatement() {
+    currentBuilder.beginSwitchStatement();
+  }
+
+  @Override
+  public void endCaseStatement() {
+    currentBuilder.endCaseStatement();
+  }
+
+  @Override
+  public void endSwitchStatement() {
+    currentBuilder.endSwitchStatement();
+  }
+
+  @Override
+  public void beginDefaultStatement() {
+    currentBuilder.beginDefaultStatement();
+  }
+
+  @Override
+  public void endDefaultStatement() {
+    currentBuilder.endDefaultStatement();
+  }
+
+  @Override
+  public void beginInitializer() {
+    currentBuilder.beginInitializer();
+  }
+
+  @Override
+  public void endInitializer() {
+    currentBuilder.endInitializer();
+  }
+
+  @Override
+  public void returnStatement() {
+    currentBuilder.returnStatement();
+  }
+
+  @Override
+  public void beginParameterDeclaration() {
+    currentBuilder.beginParameterDeclaration();
+  }
+
+  @Override
+  public void endParameterDeclaration() {
+    currentBuilder.endParameterDeclaration();
+  }
+
+  @Override
+  public void breakStatement() {
+    currentBuilder.breakStatement();
   }
 
   @Override
