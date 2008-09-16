@@ -5,7 +5,7 @@ import java.util.BitSet;
 /**
  * This class provides support for the grammar indexing of parsed tokens.
  */
-public class CPPvariables {
+class CPPvariables {
     /**
      * Marks an invalid construct.
      */

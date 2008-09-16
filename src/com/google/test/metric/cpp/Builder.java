@@ -17,7 +17,7 @@ import java.util.List;
  * Originally, this class was called Modeler and was used in ArgoUML
  * modeling tool. Original author: Luis Sergio Oliveira
  */
-public interface Builder {
+interface Builder {
 
   /**
    * Signals the begin of the translation unit.

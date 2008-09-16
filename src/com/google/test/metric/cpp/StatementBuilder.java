@@ -27,7 +27,7 @@ import com.google.test.metric.cpp.dom.Node;
 import com.google.test.metric.cpp.dom.ReturnStatement;
 import com.google.test.metric.cpp.dom.SwitchStatement;
 
-public class StatementBuilder extends DefaultBuilder {
+class StatementBuilder extends DefaultBuilder {
   private final Node parent;
 
   public StatementBuilder(Node parent) {

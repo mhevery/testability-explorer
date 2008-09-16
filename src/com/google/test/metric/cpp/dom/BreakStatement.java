@@ -16,4 +16,9 @@
 package com.google.test.metric.cpp.dom;
 
 public class BreakStatement extends Node {
+
+  @Override
+  public void accept(Visitor visitor) {
+    visitor.visit(this);
+  }
 }
