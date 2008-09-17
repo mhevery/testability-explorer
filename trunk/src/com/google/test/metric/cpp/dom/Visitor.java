@@ -15,7 +15,7 @@
  */
 package com.google.test.metric.cpp.dom;
 
-public class Visitor {
+public abstract class Visitor {
 
   public void beginVisit(FunctionDefinition functionDefinition) {
   }
@@ -66,5 +66,11 @@ public class Visitor {
   }
 
   public void endVisit(ReturnStatement returnStatement) {
+  }
+
+  public void beginVisit(TernaryOperation ternaryOperation) {
+  }
+
+  public void endVisit(TernaryOperation ternaryOperation) {
   }
 }

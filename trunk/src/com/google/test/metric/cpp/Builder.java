@@ -262,7 +262,6 @@ interface Builder {
   void gotoStatement();
   void continueStatement();
   void breakStatement();
-  void returnStatement();
 
   void beginWhileStatement();
   void endWhileStatement();
@@ -288,4 +287,10 @@ interface Builder {
    * @return the collection
    */
   Collection getNewElements();
+
+  void startTernaryOperator();
+  void endTernaryOperator();
+
+  void startReturnStatement();
+  void endReturnStatement();
 }

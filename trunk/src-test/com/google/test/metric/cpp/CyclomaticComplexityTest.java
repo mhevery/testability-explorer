@@ -22,6 +22,13 @@ import com.google.test.metric.cpp.dom.TranslationUnit;
 
 public class CyclomaticComplexityTest extends TestCase {
 
+  private CyclomaticComplexityAnalyzer analyzer;
+
+  @Override
+  protected void setUp() throws Exception {
+    analyzer = new CyclomaticComplexityAnalyzer();
+  }
+
   private TranslationUnit parse(String source) throws Exception {
     return new Parser().parse(source);
   }
@@ -32,7 +39,6 @@ public class CyclomaticComplexityTest extends TestCase {
         "}"
     );
     FunctionDefinition functionFoo = unit.getChild(0);
-    CyclomaticComplexityAnalyzer analyzer = new CyclomaticComplexityAnalyzer();
     functionFoo.accept(analyzer);
     assertEquals(1, analyzer.getScore());
   }
@@ -45,7 +51,6 @@ public class CyclomaticComplexityTest extends TestCase {
         "}                             "
     );
     FunctionDefinition functionFoo = unit.getChild(0);
-    CyclomaticComplexityAnalyzer analyzer = new CyclomaticComplexityAnalyzer();
     functionFoo.accept(analyzer);
     assertEquals(1, analyzer.getScore());
   }
@@ -62,7 +67,6 @@ public class CyclomaticComplexityTest extends TestCase {
         "}                             "
     );
     FunctionDefinition functionFoo = unit.getChild(0);
-    CyclomaticComplexityAnalyzer analyzer = new CyclomaticComplexityAnalyzer();
     functionFoo.accept(analyzer);
     assertEquals(2, analyzer.getScore());
   }
@@ -77,7 +81,6 @@ public class CyclomaticComplexityTest extends TestCase {
         "}                             "
     );
     FunctionDefinition functionFoo = unit.getChild(0);
-    CyclomaticComplexityAnalyzer analyzer = new CyclomaticComplexityAnalyzer();
     functionFoo.accept(analyzer);
     assertEquals(2, analyzer.getScore());
   }
@@ -93,7 +96,6 @@ public class CyclomaticComplexityTest extends TestCase {
         "}                             "
     );
     FunctionDefinition functionFoo = unit.getChild(0);
-    CyclomaticComplexityAnalyzer analyzer = new CyclomaticComplexityAnalyzer();
     functionFoo.accept(analyzer);
     assertEquals(2, analyzer.getScore());
   }
@@ -113,7 +115,6 @@ public class CyclomaticComplexityTest extends TestCase {
         "}                             "
     );
     FunctionDefinition functionFoo = unit.getChild(0);
-    CyclomaticComplexityAnalyzer analyzer = new CyclomaticComplexityAnalyzer();
     functionFoo.accept(analyzer);
     assertEquals(3, analyzer.getScore());
   }
@@ -132,7 +133,6 @@ public class CyclomaticComplexityTest extends TestCase {
         "}                             "
     );
     FunctionDefinition functionFoo = unit.getChild(0);
-    CyclomaticComplexityAnalyzer analyzer = new CyclomaticComplexityAnalyzer();
     functionFoo.accept(analyzer);
     assertEquals(2, analyzer.getScore());
   }
@@ -148,8 +148,29 @@ public class CyclomaticComplexityTest extends TestCase {
         "}                             "
     );
     FunctionDefinition functionFoo = unit.getChild(0);
-    CyclomaticComplexityAnalyzer analyzer = new CyclomaticComplexityAnalyzer();
     functionFoo.accept(analyzer);
     assertEquals(2, analyzer.getScore());
+  }
+
+  public void testTernaryOperator() throws Exception {
+    TranslationUnit unit = parse(
+        "int foo(int a, int b) {       " +
+        "  return a > 0 ? b : 1;       " +
+        "}                             "
+    );
+    FunctionDefinition functionFoo = unit.getChild(0);
+    functionFoo.accept(analyzer);
+    assertEquals(2, analyzer.getScore());
+  }
+
+  public void testNestedTernaryOperator() throws Exception {
+    TranslationUnit unit = parse(
+        "int foo(int a, int b) {                  " +
+        "  return a > 0 ? (b < 0 ? -1 : 0) : 1;   " +
+        "}                                        "
+    );
+    FunctionDefinition functionFoo = unit.getChild(0);
+    functionFoo.accept(analyzer);
+    assertEquals(3, analyzer.getScore());
   }
 }

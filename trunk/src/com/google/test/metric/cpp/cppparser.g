@@ -1471,7 +1471,8 @@ jump_statement
   | "break" SEMICOLON
     {b.breakStatement();}
     // DW 16/05/03 May be problem here if return is followed by a cast expression
-  | "return"
+  | {b.startReturnStatement();}
+    "return"
     ( options{warnWhenFollowAmbig = false;}:
       (LPAREN {(qualifiedItemIsOneOf(CPPvariables.QI_TYPE,0) )}? ID RPAREN)=>
       LPAREN ID RPAREN (expression)?  // This is an unsatisfactory fix for problem in xstring re "return (allocator);"
@@ -1479,7 +1480,7 @@ jump_statement
       //{printf("%d CPP_parser.g jump_statement Return fix used\n",LT(1)->getLine());}
     | expression
     )?  SEMICOLON
-    {b.returnStatement();}
+    {b.endReturnStatement();}
   )
   ;
 
@@ -1556,7 +1557,11 @@ remainder_expression
 conditional_expression
   :
     logical_or_expression
-    (QUESTIONMARK expression COLON conditional_expression)?
+    (
+      {b.startTernaryOperator();}
+      QUESTIONMARK expression COLON conditional_expression
+      {b.endTernaryOperator();}
+    )?
   ;
 
 constant_expression
