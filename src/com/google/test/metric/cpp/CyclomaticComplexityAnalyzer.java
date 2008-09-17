@@ -19,6 +19,7 @@ import com.google.test.metric.cpp.dom.CaseStatement;
 import com.google.test.metric.cpp.dom.FunctionDefinition;
 import com.google.test.metric.cpp.dom.IfStatement;
 import com.google.test.metric.cpp.dom.LoopStatement;
+import com.google.test.metric.cpp.dom.TernaryOperation;
 import com.google.test.metric.cpp.dom.Visitor;
 
 public class CyclomaticComplexityAnalyzer extends Visitor {
@@ -45,6 +46,11 @@ public class CyclomaticComplexityAnalyzer extends Visitor {
 
   @Override
   public void beginVisit(LoopStatement loopStatement) {
+    ++score;
+  }
+
+  @Override
+  public void beginVisit(TernaryOperation ternaryOperation) {
     ++score;
   }
 }

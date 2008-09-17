@@ -234,10 +234,6 @@ class DefaultBuilder implements Builder {
     throw new UnsupportedOperationException();
   }
 
-  public void returnStatement() {
-    throw new UnsupportedOperationException();
-  }
-
   public void simpleTypeSpecifier(List<String> sts) {
     throw new UnsupportedOperationException();
   }
@@ -271,6 +267,22 @@ class DefaultBuilder implements Builder {
   }
 
   public void endDefaultStatement() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void endTernaryOperator() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void startTernaryOperator() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void endReturnStatement() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void startReturnStatement() {
     throw new UnsupportedOperationException();
   }
 }

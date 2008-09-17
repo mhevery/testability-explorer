@@ -212,11 +212,6 @@ class RootBuilder extends DefaultBuilder implements BuilderContext {
   }
 
   @Override
-  public void returnStatement() {
-    currentBuilder.returnStatement();
-  }
-
-  @Override
   public void beginParameterDeclaration() {
     currentBuilder.beginParameterDeclaration();
   }
@@ -229,6 +224,26 @@ class RootBuilder extends DefaultBuilder implements BuilderContext {
   @Override
   public void breakStatement() {
     currentBuilder.breakStatement();
+  }
+
+  @Override
+  public void endReturnStatement() {
+    currentBuilder.endReturnStatement();
+  }
+
+  @Override
+  public void startReturnStatement() {
+    currentBuilder.startReturnStatement();
+  }
+
+  @Override
+  public void endTernaryOperator() {
+    currentBuilder.endTernaryOperator();
+  }
+
+  @Override
+  public void startTernaryOperator() {
+    currentBuilder.startTernaryOperator();
   }
 
   @Override
