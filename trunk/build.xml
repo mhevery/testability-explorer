@@ -32,8 +32,8 @@
 		<emma>
 			<instr instrpathref="bin.path" destdir="target/bin-emma" metadatafile="target/emma/metadata.emma" merge="true">
 				<filter excludes="com.google.test.metric.example.*" />
-				<filter excludes="com.google.test.metric.cpp.CPPLexer" />
-				<filter excludes="com.google.test.metric.cpp.CPPParser" />
+				<filter excludes="com.google.test.metric.cpp.InternalLexer" />
+				<filter excludes="com.google.test.metric.cpp.InternalParser" />
 			</instr>
 		</emma>
 	</target>
