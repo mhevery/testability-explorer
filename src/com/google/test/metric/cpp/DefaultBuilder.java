@@ -118,7 +118,7 @@ class DefaultBuilder implements Builder {
     throw new UnsupportedOperationException();
   }
 
-  public void declarationSpecifiers(List declSpecs) {
+  public void declarationSpecifiers(List<String> declSpecs) {
     throw new UnsupportedOperationException();
   }
 
