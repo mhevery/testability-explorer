@@ -11,7 +11,7 @@ The purpose of the TE is to show/teach developers how to write a more testable c
   * We aim to make sure that any green(blue) build is releasable build. Therefore never check in anything which makes the build pass but actually breaks the product.
   * All of the code is fully tested with with at least 80% test coverage. Preferably test-driven.
   * Most of our tests are of unit-test kind. (ie small tests focusing on a class or two at a time.)
-  * Before you commit (or if you don't have commit rights) please have others do review on [http://codereview.appspot.com/] and cc/email [testability-explorer@googlegroups.com]
+  * Before you commit (or if you don't have commit rights) please have others do review on [http://codereview.appspot.com/] and cc/email [mailto:testability-explorer@googlegroups.com]
 
 == Contribution ==
 We are always eager to have people contribute new features to the project. So your feedback and work are more than welcome. We are here to help you with any questions and guidance so please ask. But we have few rules:
