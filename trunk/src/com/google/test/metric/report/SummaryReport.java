@@ -22,10 +22,11 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import com.google.test.metric.ClassCost;
+import com.google.test.metric.WeightedAverage;
 
 public abstract class SummaryReport implements Report {
 
-  private static final double WEIGHT = 0.3;
+  protected final WeightedAverage weightedAverage = new WeightedAverage();
   protected SortedSet<ClassCost> worstOffenders;
   protected final List<Integer> costs = new ArrayList<Integer>();
   protected final int maxExcellentCost;
@@ -35,8 +36,6 @@ public abstract class SummaryReport implements Report {
   protected int goodCount = 0;
   protected int needsWorkCount = 0;
   protected int worstCost = 1;
-  protected double overallSum = 0;
-  protected double overallSqr = 0;
 
   public SummaryReport(int maxExcellentCost, int maxAcceptableCost, int worstOffenderCount) {
     this.worstOffenders = new TreeSet<ClassCost>(new ClassCost.CostComparator());
@@ -65,9 +64,8 @@ public abstract class SummaryReport implements Report {
     if (worstOffenders.size() > worstOffenderCount) {
       worstOffenders.remove(worstOffenders.last());
     }
-    overallSqr += Math.pow(cost, WEIGHT + 1);
-    overallSum += Math.pow(cost, WEIGHT);
     worstCost = Math.max(worstCost, cost);
+    weightedAverage.addValue(cost);
   }
 
   public int getClassCount() {
@@ -75,7 +73,7 @@ public abstract class SummaryReport implements Report {
   }
 
   public int getOverall() {
-    return (int) (overallSqr / overallSum);
+    return (int) weightedAverage.getAverage();
   }
 
 }
