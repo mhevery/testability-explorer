@@ -86,7 +86,7 @@ interface Builder {
    *
    * @param declSpecs The declaration specifiers for the current declaration.
    */
-  void declarationSpecifiers(List declSpecs);
+  void declarationSpecifiers(List<String> declSpecs);
 
   /**
    * Reports the type simple type specifiers (buit-in, like int, char, unsigned
