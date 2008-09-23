@@ -31,9 +31,9 @@ public class WeightedAverage {
     this.weight = weight;
   }
 
-  public void addValue(int cost) {
-    overallSqr += Math.pow(cost, weight + 1);
-    overallSum += Math.pow(cost, weight);
+  public void addValue(long value) {
+    overallSqr += Math.pow(value, weight + 1);
+    overallSum += Math.pow(value, weight);
   }
 
   public double getAverage() {

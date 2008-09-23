@@ -17,17 +17,17 @@ package com.google.test.metric.report;
 
 import static com.google.test.metric.report.Constants.NEW_LINE;
 
-import com.google.test.metric.ClassCost;
-import com.google.test.metric.CostModel;
-import com.google.test.metric.LineNumberCost;
-import com.google.test.metric.MethodCost;
-
-import junit.framework.TestCase;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import junit.framework.TestCase;
+
+import com.google.test.metric.ClassCost;
+import com.google.test.metric.CostModel;
+import com.google.test.metric.LineNumberCost;
+import com.google.test.metric.MethodCost;
 
 public class DetailHtmlReportTest extends TestCase {
 
@@ -121,7 +121,7 @@ public class DetailHtmlReportTest extends TestCase {
     assertTrue(text, text.contains("<div class=\"Class\""));
     assertTrue(text, text.contains("<span class='expand'>[+]</span>"));
     assertTrue(text, text.contains("classFoo"));
-    assertTrue(text, text.contains("[&nbsp;" + 544 + "&nbsp;]"));
+    assertTrue(text, text.contains("[&nbsp;" + 475 + "&nbsp;]"));
     assertTrue(text, text.contains("MARKER:methodX"));
     assertTrue(text, text.contains("MARKER:methodY"));
     assertTrue(text, text.endsWith("</div>" + NEW_LINE));
