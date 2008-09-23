@@ -15,6 +15,8 @@
  */
 package com.google.test.metric;
 
+import static java.util.Arrays.asList;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,9 +34,6 @@ public class ClassCostTest extends TestCase {
   ClassCost classCost0;
   ClassCost classCost1;
   ClassCost classCost2;
-  private List<MethodCost> methodCosts0;
-  private List<MethodCost> methodCosts1;
-  private List<MethodCost> methodCosts2;
 
   @Override
   protected void setUp() throws Exception {
@@ -45,59 +44,50 @@ public class ClassCostTest extends TestCase {
     methodCost1.link(context);
     methodCost2.link(context);
 
-    methodCosts0 = new ArrayList<MethodCost>();
-    methodCosts0.add(methodCost0);
-
-    methodCosts1 = new ArrayList<MethodCost>();
-    methodCosts1.add(methodCost0);
-    methodCosts1.add(methodCost1);
-
-    methodCosts2 = new ArrayList<MethodCost>();
-    methodCosts2.add(methodCost0);
-    methodCosts2.add(methodCost1);
-    methodCosts2.add(methodCost2);
-
-    classCost0 = new ClassCost("FAKE_classInfo0", methodCosts0);
-    classCost1 = new ClassCost("FAKE_classInfo1", methodCosts1);
-    classCost2 = new ClassCost("FAKE_classInfo2", methodCosts2);
+    classCost0 = new ClassCost("FAKE_classInfo0", asList(methodCost0));
+    classCost1 = new ClassCost("FAKE_classInfo1", asList(methodCost1));
+    classCost2 = new ClassCost("FAKE_classInfo2", asList(methodCost2));
   }
 
   public void testSumsUpTotalClassCostCorrectly() throws Exception {
     assertEquals(0, classCost0.getTotalComplexityCost());
     assertEquals(1, classCost1.getTotalComplexityCost());
-    assertEquals(3, classCost2.getTotalComplexityCost());
+    assertEquals(2, classCost2.getTotalComplexityCost());
   }
 
   public void testClassCostSortsByDescendingCost() throws Exception {
-    List<ClassCost> classCosts = new ArrayList<ClassCost>();
     CostModel costModel = new CostModel();
     classCost0.link(costModel);
     classCost1.link(costModel);
     classCost2.link(costModel);
+
+    List<ClassCost> classCosts = new ArrayList<ClassCost>();
     classCosts.add(classCost1);
     classCosts.add(classCost0);
     classCosts.add(classCost2);
+
     Collections.sort(classCosts, new ClassCost.CostComparator());
+System.out.println(classCosts);
     assertEquals(classCost2, classCosts.get(0));
     assertEquals(classCost1, classCosts.get(1));
     assertEquals(classCost0, classCosts.get(2));
   }
 
   public void testGetPackageName() throws Exception {
-    ClassCost classCost0 = new ClassCost("com.a.b.c.Dee", methodCosts0);
+    ClassCost classCost0 = new ClassCost("com.a.b.c.Dee", asList(methodCost0));
 
     assertEquals("com.a.b.c", classCost0.getPackageName());
 
-    classCost0 = new ClassCost("Dee", methodCosts0);
+    classCost0 = new ClassCost("Dee", asList(methodCost0));
 
     assertEquals("", classCost0.getPackageName());
   }
 
   public void testPackageComparator() throws Exception {
-    ClassCost classCost0 = new ClassCost("com.a.b.c.Dab", methodCosts0);
-    ClassCost classCost1 = new ClassCost("com.a.b.c.Dac", methodCosts1);
-    ClassCost classCost2 = new ClassCost("com.a.b.c.Daa", methodCosts0);
-    ClassCost classCost3 = new ClassCost("com.a.b.c.Dxx", methodCosts2);
+    ClassCost classCost0 = new ClassCost("com.a.b.c.Dab", asList(methodCost0));
+    ClassCost classCost1 = new ClassCost("com.a.b.c.Dac", asList(methodCost1));
+    ClassCost classCost2 = new ClassCost("com.a.b.c.Daa", asList(methodCost0));
+    ClassCost classCost3 = new ClassCost("com.a.b.c.Dxx", asList(methodCost2));
 
     SortedSet<ClassCost> ss = new TreeSet<ClassCost>(new ClassCost.PackageComparator());
 

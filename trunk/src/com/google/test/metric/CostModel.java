@@ -36,11 +36,11 @@ public class CostModel {
   }
 
   public long computeClass(List<MethodCost> methods) {
-    long worst = 0;
+    WeightedAverage average = new WeightedAverage(1.5); // Favor expensive methods heavily
     for (MethodCost methodCost : methods) {
-      worst = Math.max(worst, methodCost.getOverallCost());
+      average.addValue(methodCost.getOverallCost());
     }
-    return worst;
+    return (long) average.getAverage();
   }
 
 }
