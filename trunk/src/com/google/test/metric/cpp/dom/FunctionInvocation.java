@@ -15,32 +15,20 @@
  */
 package com.google.test.metric.cpp.dom;
 
+public class FunctionInvocation extends Node {
 
-/*
- * Base class for all C++ AST nodes.
- */
-public class Node {
-  private final NodeList children = new NodeList();
+  private final String name;
+  private final NodeList parameters = new NodeList();
 
-  public NodeList getChildren() {
-    return children;
+  public FunctionInvocation(String name) {
+    this.name = name;
   }
 
-  @SuppressWarnings("unchecked")
-  public <T> T getChild(int index) {
-    return (T) children.get(index);
+  public String getName() {
+    return name;
   }
 
-  public void addChild(Node child) {
-    children.add(child);
-  }
-
-  public void accept(Visitor visitor) {
-  }
-
-  protected void visitChildren(Visitor visitor) {
-    for (Node child : children) {
-      child.accept(visitor);
-    }
+  public NodeList getParameters() {
+    return parameters;
   }
 }

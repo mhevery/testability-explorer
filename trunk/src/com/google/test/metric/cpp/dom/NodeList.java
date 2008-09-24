@@ -15,32 +15,28 @@
  */
 package com.google.test.metric.cpp.dom;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-/*
- * Base class for all C++ AST nodes.
- */
-public class Node {
-  private final NodeList children = new NodeList();
+public class NodeList implements Iterable<Node> {
 
-  public NodeList getChildren() {
-    return children;
+  private final List<Node> nodes = new ArrayList<Node>();
+
+  public void add(Node node) {
+    nodes.add(node);
   }
 
   @SuppressWarnings("unchecked")
-  public <T> T getChild(int index) {
-    return (T) children.get(index);
+  public <T> T get(int index) {
+    return (T) nodes.get(index);
   }
 
-  public void addChild(Node child) {
-    children.add(child);
+  public Iterator<Node> iterator() {
+    return nodes.iterator();
   }
 
-  public void accept(Visitor visitor) {
-  }
-
-  protected void visitChildren(Visitor visitor) {
-    for (Node child : children) {
-      child.accept(visitor);
-    }
+  public int size() {
+    return nodes.size();
   }
 }

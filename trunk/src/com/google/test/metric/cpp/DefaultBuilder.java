@@ -274,7 +274,7 @@ class DefaultBuilder implements Builder {
     throw new UnsupportedOperationException();
   }
 
-  public void startTernaryOperator() {
+  public void beginTernaryOperator() {
     throw new UnsupportedOperationException();
   }
 
@@ -282,7 +282,51 @@ class DefaultBuilder implements Builder {
     throw new UnsupportedOperationException();
   }
 
-  public void startReturnStatement() {
+  public void beginReturnStatement() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void beginPostfixExpression() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void beginPrimaryExpression() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void endPostfixExpression() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void endPrimaryExpression() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void idExpression(String text) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void beginParameterList() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void endParameterList() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void endAssignmentExpression() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void beginAssignmentExpression() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void beginMemberAccess() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void endMemberAccess() {
     throw new UnsupportedOperationException();
   }
 }

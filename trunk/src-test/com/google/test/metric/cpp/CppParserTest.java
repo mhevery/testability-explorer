@@ -24,9 +24,11 @@ import com.google.test.metric.cpp.dom.DefaultStatement;
 import com.google.test.metric.cpp.dom.ElseStatement;
 import com.google.test.metric.cpp.dom.FunctionDeclaration;
 import com.google.test.metric.cpp.dom.FunctionDefinition;
+import com.google.test.metric.cpp.dom.FunctionInvocation;
 import com.google.test.metric.cpp.dom.IfStatement;
 import com.google.test.metric.cpp.dom.LoopStatement;
 import com.google.test.metric.cpp.dom.Namespace;
+import com.google.test.metric.cpp.dom.NodeList;
 import com.google.test.metric.cpp.dom.ReturnStatement;
 import com.google.test.metric.cpp.dom.SwitchStatement;
 import com.google.test.metric.cpp.dom.TernaryOperation;
@@ -275,6 +277,42 @@ public class CppParserTest extends TestCase {
     TernaryOperation ternaryOperation = functionFoo.getChild(0);
     TernaryOperation nestedTernaryOperation = ternaryOperation.getChild(0);
     assertNotNull(nestedTernaryOperation);
+  }
+
+  public void testFunctionCall() throws Exception {
+    TranslationUnit unit = parse("void foo(int) {} void bar(int) { foo(5); }");
+    FunctionDefinition functionBar = unit.getChild(1);
+    FunctionInvocation callFoo = functionBar.getChild(0);
+    assertEquals("foo", callFoo.getName());
+  }
+
+  public void testNestedFunctionCall() throws Exception {
+    TranslationUnit unit = parse(
+        "int foo(int a) { return a; }             " +
+        "int bar(int b) { return foo(foo(b)); }   ");
+    FunctionDefinition functionBar = unit.getChild(1);
+    assertEquals("bar", functionBar.getName());
+    ReturnStatement returnStatement = functionBar.getChild(0);
+    FunctionInvocation callFoo = returnStatement.getChild(0);
+    assertEquals("foo", callFoo.getName());
+    NodeList parameters = callFoo.getParameters();
+    FunctionInvocation callFooAgain = parameters.get(0);
+    assertEquals("foo", callFooAgain.getName());
+    assertEquals(0, callFooAgain.getChildren().size());
+  }
+
+  public void testSequentialFunctionCalls() throws Exception {
+    TranslationUnit unit = parse(
+        "class A { public: void foo() {} };     " +
+        "A bar() { A a; return a; }             " +
+        "void main() { bar().foo(); }           ");
+    FunctionDefinition functionMain = unit.getChild(2);
+    assertEquals("main", functionMain.getName());
+    FunctionInvocation callBar = functionMain.getChild(0);
+    assertEquals("bar", callBar.getName());
+    FunctionInvocation callFoo = callBar.getChild(0);
+    assertEquals("foo", callFoo.getName());
+    assertEquals(0, callFoo.getChildren().size());
   }
 
   public void testClassLoadCppVariables() throws Exception {

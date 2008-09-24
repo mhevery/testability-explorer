@@ -26,7 +26,6 @@ import com.google.test.metric.cpp.dom.LoopStatement;
 import com.google.test.metric.cpp.dom.Node;
 import com.google.test.metric.cpp.dom.ReturnStatement;
 import com.google.test.metric.cpp.dom.SwitchStatement;
-import com.google.test.metric.cpp.dom.TernaryOperation;
 
 class StatementBuilder extends DefaultBuilder {
   private final Node parent;
@@ -142,7 +141,7 @@ class StatementBuilder extends DefaultBuilder {
   }
 
   @Override
-  public void startReturnStatement() {
+  public void beginReturnStatement() {
     Node node = new ReturnStatement();
     parent.addChild(node);
     pushBuilder(new StatementBuilder(node));
@@ -162,15 +161,8 @@ class StatementBuilder extends DefaultBuilder {
   }
 
   @Override
-  public void startTernaryOperator() {
-    Node node = new TernaryOperation();
-    parent.addChild(node);
-    pushBuilder(new StatementBuilder(node));
-  }
-
-  @Override
-  public void endTernaryOperator() {
-    finished();
+  public void beginPostfixExpression() {
+    pushBuilder(new ExpressionBuilder(parent));
   }
 
   @Override
@@ -182,10 +174,7 @@ class StatementBuilder extends DefaultBuilder {
   }
 
   @Override
-  public void beginInitializer() {
-  }
-
-  @Override
-  public void endInitializer() {
+  public void beginAssignmentExpression() {
+    pushBuilder(new ExpressionBuilder(parent));
   }
 }

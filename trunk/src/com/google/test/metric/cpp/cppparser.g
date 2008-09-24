@@ -1471,7 +1471,7 @@ jump_statement
   | "break" SEMICOLON
     {b.breakStatement();}
     // DW 16/05/03 May be problem here if return is followed by a cast expression
-  | {b.startReturnStatement();}
+  | {b.beginReturnStatement();}
     "return"
     ( options{warnWhenFollowAmbig = false;}:
       (LPAREN {(qualifiedItemIsOneOf(CPPvariables.QI_TYPE,0) )}? ID RPAREN)=>
@@ -1528,9 +1528,14 @@ expression
   : assignment_expression (COMMA assignment_expression)*
   ;
 
+expression_list
+  : assignment_expression (COMMA assignment_expression)*
+  ;
+
 /* right-to-left for assignment op */
 assignment_expression
-  : conditional_expression
+  : {b.beginAssignmentExpression();}
+    conditional_expression
     ( (ASSIGNEQUAL
       |TIMESEQUAL|DIVIDEEQUAL|MINUSEQUAL|PLUSEQUAL
       |MODEQUAL
@@ -1542,6 +1547,7 @@ assignment_expression
       )
       remainder_expression
     )?
+    {b.endAssignmentExpression();}
   ;
 
 remainder_expression
@@ -1558,7 +1564,7 @@ conditional_expression
   :
     logical_or_expression
     (
-      {b.startTernaryOperator();}
+      {b.beginTernaryOperator();}
       QUESTIONMARK expression COLON conditional_expression
       {b.endTernaryOperator();}
     )?
@@ -1712,6 +1718,7 @@ unary_expression
   ;
 
 postfix_expression
+  {String function_name="";}
   :
   (
     options {warnWhenFollowAmbig = false;}:
@@ -1724,15 +1731,27 @@ postfix_expression
     (simple_type_specifier LPAREN)=>
      simple_type_specifier LPAREN (expression_list)? RPAREN
   |
+    {b.beginPostfixExpression();}
     primary_expression
     (options {warnWhenFollowAmbig = false;}:
-          LSQUARE expression RSQUARE
-    | LPAREN (expression_list)? RPAREN
-    | DOT id_expression
-    | POINTERTO id_expression
+      LSQUARE expression RSQUARE
+    | LPAREN
+        {b.beginParameterList();}
+        (expression_list)?
+        {b.endParameterList();}
+      RPAREN
+    | DOT
+        {b.beginMemberAccess();}
+        id_expression
+        {b.endMemberAccess();}
+    | POINTERTO
+        {b.beginMemberAccess();}
+        id_expression
+        {b.endMemberAccess();}
     | PLUSPLUS
     | MINUSMINUS
     )*
+    {b.endPostfixExpression();}
   |
     ("dynamic_cast"|"static_cast"|"reinterpret_cast"|"const_cast")  // Note const_cast in elsewhere
     LESSTHAN type_specifier (ptr_operator)? GREATERTHAN
@@ -1741,17 +1760,22 @@ postfix_expression
   ;
 
 primary_expression
-  : id_expression
+  :
+  {b.beginPrimaryExpression();}
+  id_expression
   | constant
   | "this"
   | LPAREN expression RPAREN
+  {b.endPrimaryExpression();}
   ;
 
 id_expression
   {String s="";}
   :
     s = scope_override
-    ( ID
+    (
+      t:ID
+      {b.idExpression(t.getText());}
     | OPERATOR optor
     | TILDE (STAR)? ID  // DW 29/07/03 STAR included to allow for *_S = ~*_S; seen in vector
     )
@@ -1874,10 +1898,6 @@ direct_new_declarator
 
 delete_expression
   : "delete" (LSQUARE RSQUARE)? cast_expression
-  ;
-
-expression_list
-  : assignment_expression (COMMA assignment_expression)*
   ;
 
 constant
