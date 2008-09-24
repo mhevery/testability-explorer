@@ -288,9 +288,26 @@ interface Builder {
    */
   Collection getNewElements();
 
-  void startTernaryOperator();
+  void beginTernaryOperator();
   void endTernaryOperator();
 
-  void startReturnStatement();
+  void beginReturnStatement();
   void endReturnStatement();
+
+  void idExpression(String text);
+
+  void beginPostfixExpression();
+  void endPostfixExpression();
+
+  void beginPrimaryExpression();
+  void endPrimaryExpression();
+
+  void beginParameterList();
+  void endParameterList();
+
+  void beginAssignmentExpression();
+  void endAssignmentExpression();
+
+  void beginMemberAccess();
+  void endMemberAccess();
 }

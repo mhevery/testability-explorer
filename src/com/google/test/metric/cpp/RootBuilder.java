@@ -203,12 +203,10 @@ class RootBuilder extends DefaultBuilder implements BuilderContext {
 
   @Override
   public void beginInitializer() {
-    currentBuilder.beginInitializer();
   }
 
   @Override
   public void endInitializer() {
-    currentBuilder.endInitializer();
   }
 
   @Override
@@ -232,8 +230,8 @@ class RootBuilder extends DefaultBuilder implements BuilderContext {
   }
 
   @Override
-  public void startReturnStatement() {
-    currentBuilder.startReturnStatement();
+  public void beginReturnStatement() {
+    currentBuilder.beginReturnStatement();
   }
 
   @Override
@@ -242,8 +240,67 @@ class RootBuilder extends DefaultBuilder implements BuilderContext {
   }
 
   @Override
-  public void startTernaryOperator() {
-    currentBuilder.startTernaryOperator();
+  public void beginTernaryOperator() {
+    currentBuilder.beginTernaryOperator();
+  }
+
+  @Override
+  public void beginPostfixExpression() {
+    currentBuilder.beginPostfixExpression();
+  }
+
+  @Override
+  public void beginPrimaryExpression() {
+    currentBuilder.beginPrimaryExpression();
+  }
+
+  @Override
+  public void endPostfixExpression() {
+    currentBuilder.endPostfixExpression();
+  }
+
+  @Override
+  public void endPrimaryExpression() {
+    currentBuilder.endPrimaryExpression();
+  }
+
+  @Override
+  public void idExpression(String text) {
+    currentBuilder.idExpression(text);
+  }
+
+  @Override
+  public void beginParameterList() {
+    currentBuilder.beginParameterList();
+  }
+
+  @Override
+  public void endParameterList() {
+    currentBuilder.endParameterList();
+  }
+
+  @Override
+  public void beginAssignmentExpression() {
+    currentBuilder.beginAssignmentExpression();
+  }
+
+  @Override
+  public void endAssignmentExpression() {
+    currentBuilder.endAssignmentExpression();
+  }
+
+  @Override
+  public void beginMemberAccess() {
+    currentBuilder.beginMemberAccess();
+  }
+
+  @Override
+  public void endMemberAccess() {
+    currentBuilder.endMemberAccess();
+  }
+
+  @Override
+  public void accessSpecifier(String accessSpec) {
   }
 
   @Override
@@ -253,5 +310,4 @@ class RootBuilder extends DefaultBuilder implements BuilderContext {
   @Override
   public void endTranslationUnit() {
   }
-
 }

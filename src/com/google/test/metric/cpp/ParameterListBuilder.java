@@ -13,34 +13,25 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.test.metric.cpp.dom;
+package com.google.test.metric.cpp;
 
+import com.google.test.metric.cpp.dom.NodeList;
 
-/*
- * Base class for all C++ AST nodes.
- */
-public class Node {
-  private final NodeList children = new NodeList();
+public class ParameterListBuilder extends DefaultBuilder {
 
-  public NodeList getChildren() {
-    return children;
+  private final NodeList parameters;
+
+  public ParameterListBuilder(NodeList parameters) {
+    this.parameters = parameters;
   }
 
-  @SuppressWarnings("unchecked")
-  public <T> T getChild(int index) {
-    return (T) children.get(index);
+  @Override
+  public void endParameterList() {
+    finished();
   }
 
-  public void addChild(Node child) {
-    children.add(child);
-  }
-
-  public void accept(Visitor visitor) {
-  }
-
-  protected void visitChildren(Visitor visitor) {
-    for (Node child : children) {
-      child.accept(visitor);
-    }
+  @Override
+  public void beginAssignmentExpression() {
+    pushBuilder(new ExpressionBuilder(parameters));
   }
 }
