@@ -1,6 +1,5 @@
 package com.google.test.metric.cpp;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -278,15 +277,6 @@ interface Builder {
   void endCaseStatement();
   void beginDefaultStatement();
   void endDefaultStatement();
-
-  /**
-   * Get the new model elements which have been created. We only keep track of
-   * major elements which are of classifier granularity (things which might be a
-   * separate figure in diagram).
-   *
-   * @return the collection
-   */
-  Collection getNewElements();
 
   void beginTernaryOperator();
   void endTernaryOperator();

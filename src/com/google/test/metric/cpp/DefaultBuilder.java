@@ -15,7 +15,6 @@
  */
 package com.google.test.metric.cpp;
 
-import java.util.Collection;
 import java.util.List;
 
 class DefaultBuilder implements Builder {
@@ -207,10 +206,6 @@ class DefaultBuilder implements Builder {
   }
 
   public void functionDirectDeclarator(String identifier) {
-    throw new UnsupportedOperationException();
-  }
-
-  public Collection getNewElements() {
     throw new UnsupportedOperationException();
   }
 
