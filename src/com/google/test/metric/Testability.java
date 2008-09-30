@@ -15,26 +15,27 @@
  */
 package com.google.test.metric;
 
-import java.io.File;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
-import org.kohsuke.args4j.Argument;
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.Option;
-
 import com.google.classpath.ClasspathRootFactory;
 import com.google.classpath.ClasspathRootGroup;
 import com.google.classpath.ColonDelimitedStringParser;
 import com.google.test.metric.report.DetailHtmlReport;
 import com.google.test.metric.report.DrillDownReport;
 import com.google.test.metric.report.HtmlReport;
+import com.google.test.metric.report.PropertiesReport;
 import com.google.test.metric.report.Report;
 import com.google.test.metric.report.SourceLinker;
 import com.google.test.metric.report.TextReport;
+
+import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
+
+import java.io.File;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public class Testability {
 
@@ -185,6 +186,8 @@ public class Testability {
           worstOffenderCount, detailHtmlReport, groupingComparator);
     } else if (printer.equals("detail")) {
       report = new DrillDownReport(out, entryList, printDepth, minCost);
+    } else if (printer.equals("props")) {
+      report = new PropertiesReport(out, maxExcellentCost, maxAcceptableCost, worstOffenderCount);
     } else {
       throw new CmdLineException("Don't understand '-print' option '"
           + printer + "'");
