@@ -1,11 +1,11 @@
 package com.google.classpath;
 
+import junit.framework.TestCase;
+
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import junit.framework.TestCase;
 
 public class JarClasspathRootTest extends TestCase {
   /**
@@ -16,6 +16,7 @@ public class JarClasspathRootTest extends TestCase {
   public static final String JUNIT_JAR = DirectoryClasspathRootTest.CLASSES_FOR_TEST + "/lib/junit.jar";
   public static final String ASM_JAR = DirectoryClasspathRootTest.CLASSES_FOR_TEST + "/lib/asm-3.0.jar";
   public static final String JARJAR_JAR = DirectoryClasspathRootTest.CLASSES_FOR_TEST + "/lib/jarjar.jar";
+  public static final String NOT_A_JAR = DirectoryClasspathRootTest.CLASSES_FOR_TEST + "/lib/corrupt.jar";
 
   public void testCreateNewJarClasspathRootTest() throws Exception {
     File jar = new File(ASM_JAR);
@@ -42,4 +43,15 @@ public class JarClasspathRootTest extends TestCase {
     assertNotNull(isTest);
   }
 
+  public void testBadJarFileAndMessage() throws Exception {
+    File jar = new File(NOT_A_JAR);
+    assertTrue(jar.isFile());
+    try {
+      @SuppressWarnings("unused")
+      ClasspathRoot root = ClasspathRootFactory.makeClasspathRoot(jar, "");
+      fail();
+    } catch (RuntimeException e) {
+      assertTrue(e.getMessage().contains(NOT_A_JAR));
+    }
+  }
 }
