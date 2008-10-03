@@ -68,9 +68,9 @@ public class JarClasspathRoot extends ClasspathRoot {
     try {
       return new JarFile(url.toURI().getPath());
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Error opening " + url.toExternalForm(), e);
     } catch (URISyntaxException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Invalid URL " + url.toExternalForm(), e);
     }
   }
 
