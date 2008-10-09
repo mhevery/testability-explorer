@@ -35,14 +35,14 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   private final  MethodCost methodCost2 = new MethodCost("c.g.t.A.method2()V", 0, 2);
   private final  MethodCost methodCost3 = new MethodCost("c.g.t.A.method3()V", 0, 3);
   private final ByteArrayOutputStream out = new ByteArrayOutputStream();
-  private final CostModel context = new CostModel();
+  private final CostModel costModel = new CostModel();
 
   public void testSimpleCost() throws Exception {
     DrillDownReport printer =
       new DrillDownReport(new PrintStream(out), null, MAX_VALUE, 0);
     MethodCost costOnlyMethod1 = new MethodCost("c.g.t.A.method1()V", 0, 1);
     costOnlyMethod1.addGlobalCost(0, null);
-    costOnlyMethod1.link(context);
+    costOnlyMethod1.link(costModel);
     printer.print("", costOnlyMethod1, Integer.MAX_VALUE);
     assertStringEquals("c.g.t.A.method1()V [1, 1 / 1, 1]\n", out.toString());
   }
@@ -51,7 +51,7 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
     DrillDownReport printer =
       new DrillDownReport(new PrintStream(out), null, MAX_VALUE, 0);
     methodCost2.addMethodCost(81, new MethodCost("c.g.t.A.method1()V", 0, 1));
-    methodCost2.link(context);
+    methodCost2.link(costModel);
     printer.print("", methodCost2, MAX_VALUE);
     assertStringEquals("c.g.t.A.method2()V [2, 0 / 3, 0]\n" +
         "  line 81: c.g.t.A.method1()V [1, 0 / 1, 0]\n", out.toString());
@@ -62,7 +62,7 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
       new DrillDownReport(new PrintStream(out), null, MAX_VALUE, 0);
     methodCost2.addMethodCost(8, methodCost1);
     methodCost3.addMethodCost(2, methodCost2);
-    methodCost3.link(context);
+    methodCost3.link(costModel);
     printer.print("", methodCost3, MAX_VALUE);
     assertStringEquals("c.g.t.A.method3()V [3, 0 / 6, 0]\n" +
         "  line 2: c.g.t.A.method2()V [2, 0 / 3, 0]\n" +
@@ -74,7 +74,7 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
       new DrillDownReport(new PrintStream(out), null, MAX_VALUE, 2);
     methodCost1.addMethodCost(8, methodCost0);
     methodCost1.addMethodCost(13, methodCost3);
-    methodCost1.link(context);
+    methodCost1.link(costModel);
     printer.print("", methodCost1, MAX_VALUE);
     assertStringEquals("c.g.t.A.method1()V [1, 0 / 4, 0]\n" +
     		"  line 13: c.g.t.A.method3()V [3, 0 / 3, 0]\n", out.toString());
@@ -85,7 +85,7 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
       new DrillDownReport(new PrintStream(out), null, MAX_VALUE, 0);
     methodCost3.addMethodCost(2, methodCost2);
     methodCost2.addMethodCost(2, methodCost1);
-    methodCost3.link(context);
+    methodCost3.link(costModel);
     printer.print("", methodCost3, 2);
     assertStringEquals("c.g.t.A.method3()V [3, 0 / 6, 0]\n"
       + "  line 2: c.g.t.A.method2()V [2, 0 / 3, 0]\n", out.toString());
@@ -95,7 +95,7 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
     DrillDownReport printer =
       new DrillDownReport(new PrintStream(out), null, MAX_VALUE, 4);
     methodCost2.addMethodCost(81, new MethodCost("c.g.t.A.method1()V", 0, 1));
-    methodCost2.link(context);
+    methodCost2.link(costModel);
     printer.print("", methodCost2, MAX_VALUE);
     assertStringEquals("", out.toString());
   }
@@ -104,7 +104,7 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
     DrillDownReport printer =
       new DrillDownReport(new PrintStream(out), null, MAX_VALUE, 2);
     methodCost2.addMethodCost(81, new MethodCost("c.g.t.A.method1()V", 0, 1));
-    methodCost2.link(context);
+    methodCost2.link(costModel);
     printer.print("", methodCost2, Integer.MAX_VALUE);
     assertStringEquals("c.g.t.A.method2()V [2, 0 / 3, 0]\n", out.toString());
   }
@@ -114,7 +114,7 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
       new DrillDownReport(new PrintStream(out), null, MAX_VALUE, 0);
     methodCost3.addMethodCost(1, methodCost2);
     methodCost2.addMethodCost(2, methodCost2);
-    methodCost3.link(context);
+    methodCost3.link(costModel);
     printer.print("", methodCost3, 10);
     assertStringEquals("c.g.t.A.method3()V [3, 0 / 5, 0]\n"
       + "  line 1: c.g.t.A.method2()V [2, 0 / 2, 0]\n", out.toString());
@@ -123,7 +123,7 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   public void testAddOneClassCostThenPrintIt() throws Exception {
     DrillDownReport printer =
       new DrillDownReport(new PrintStream(out), null, MAX_VALUE, 0);
-    ClassCost classCost0 = new ClassCost("FAKE_classInfo0", new ArrayList<MethodCost>());
+    ClassCost classCost0 = new ClassCost("FAKE_classInfo0", new ArrayList<MethodCost>(), costModel);
     printer.addClassCost(classCost0);
     printer.printFooter();
     assertStringEquals("\nTestability cost for FAKE_classInfo0 [ cost = 0 ] [ 0 TCC, 0 TGC ]\n",
@@ -133,9 +133,9 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   public void testAddSeveralClassCostsAndPrintThem() throws Exception {
     DrillDownReport printer =
       new DrillDownReport(new PrintStream(out), null, MAX_VALUE, 0);
-    ClassCost classCost0 = new ClassCost("FAKE_classInfo0", new ArrayList<MethodCost>());
-    ClassCost classCost1 = new ClassCost("FAKE_classInfo1", new ArrayList<MethodCost>());
-    ClassCost classCost2 = new ClassCost("FAKE_classInfo2", new ArrayList<MethodCost>());
+    ClassCost classCost0 = new ClassCost("FAKE_classInfo0", new ArrayList<MethodCost>(), costModel);
+    ClassCost classCost1 = new ClassCost("FAKE_classInfo1", new ArrayList<MethodCost>(), costModel);
+    ClassCost classCost2 = new ClassCost("FAKE_classInfo2", new ArrayList<MethodCost>(), costModel);
     printer.addClassCost(classCost0);
     printer.addClassCost(classCost1);
     printer.addClassCost(classCost2);
@@ -150,16 +150,15 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
       throws Exception {
     DrillDownReport printer =
       new DrillDownReport(new PrintStream(out), null, MAX_VALUE, 0);
+    methodCost1.link(costModel);
+    methodCost2.link(costModel);
     List<MethodCost> methodCosts1 = new ArrayList<MethodCost>();
     methodCosts1.add(methodCost1);
     List<MethodCost> methodCosts2 = new ArrayList<MethodCost>();
     methodCosts2.add(methodCost2);
-    ClassCost classCost0 = new ClassCost("FAKE_classInfo0", new ArrayList<MethodCost>());
-    ClassCost classCost1 = new ClassCost("FAKE_classInfo1", methodCosts1);
-    ClassCost classCost2 = new ClassCost("FAKE_classInfo2", methodCosts2);
-    classCost0.link(context);
-    classCost1.link(context);
-    classCost2.link(context);
+    ClassCost classCost0 = new ClassCost("FAKE_classInfo0", new ArrayList<MethodCost>(), costModel);
+    ClassCost classCost1 = new ClassCost("FAKE_classInfo1", methodCosts1, costModel);
+    ClassCost classCost2 = new ClassCost("FAKE_classInfo2", methodCosts2, costModel);
     printer.addClassCost(classCost0);
     printer.addClassCost(classCost1);
     printer.addClassCost(classCost2);

@@ -17,7 +17,6 @@ package com.google.test.metric;
 
 
 import static java.util.Collections.EMPTY_LIST;
-
 import junit.framework.TestCase;
 
 public class TestabilityContextTest extends TestCase {
@@ -37,7 +36,7 @@ public class TestabilityContextTest extends TestCase {
   @SuppressWarnings("unchecked")
   ClassInfo classInfo = new ClassInfo("c.g.t.A", false, null, EMPTY_LIST);
   MethodInfo method =
-      new MethodInfo(classInfo, "method", 0, "()V", null, null, null, null, 1, null);
+      new MethodInfo(classInfo, "method", 0, "()V", null, null, null, null, 1, null, false);
 
   public void testIsInjectable() throws Exception {
     Variable var = new Variable("", Type.fromJava("X"), false, false);

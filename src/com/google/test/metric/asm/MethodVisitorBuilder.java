@@ -76,14 +76,16 @@ public class MethodVisitorBuilder implements MethodVisitor {
   private int startingLineNumber;
   private final List<ParameterInfo> parameters = new ArrayList<ParameterInfo>();
   private final List<LocalVariableInfo> localVariables = new ArrayList<LocalVariableInfo>();
+  private final boolean isFinal;
 
   public MethodVisitorBuilder(ClassRepository repository, ClassInfo classInfo,
       String name, String desc, String signature, String[] exceptions,
-      boolean isStatic, Visibility visibility) {
+      boolean isStatic, boolean isFinal, Visibility visibility) {
     this.repository = repository;
     this.classInfo = classInfo;
     this.name = name;
     this.desc = desc;
+    this.isFinal = isFinal;
     this.visibility = visibility;
     int slot = 0;
     if (!isStatic) {
@@ -260,7 +262,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
     try {
       MethodInfo methodInfo = new MethodInfo(classInfo, name, startingLineNumber,
           desc, methodThis, parameters, localVariables, visibility,
-          cyclomaticComplexity, block.getOperations());
+          cyclomaticComplexity, block.getOperations(), isFinal);
       classInfo.addMethod(methodInfo);
     } catch (IllegalStateException e) {
       throw new IllegalStateException("Error in " + classInfo + "." + name

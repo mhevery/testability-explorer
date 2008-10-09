@@ -34,12 +34,13 @@ public class MethodInfo {
   private final Visibility visibility;
   private final List<Operation> operations;
   private final int startingLineNumber;
+  private final boolean isFinal;
 
   public MethodInfo(ClassInfo classInfo, String methodName,
       int startingLineNumber, String desc, Variable methodThis,
       List<ParameterInfo> parameters, List<LocalVariableInfo> localVariables,
       Visibility visibility, long cylomaticComplexity,
-      List<Operation> operations) {
+      List<Operation> operations, boolean isFinal) {
     this.classInfo = classInfo;
     this.name = methodName;
     this.startingLineNumber = startingLineNumber;
@@ -50,6 +51,7 @@ public class MethodInfo {
     this.cyclomaticComplexity = cylomaticComplexity;
     this.visibility = visibility;
     this.operations = operations;
+    this.isFinal = isFinal;
   }
 
   public String getNameDesc() {
@@ -111,8 +113,6 @@ public class MethodInfo {
         // Object becomes L/java/lang/Object; in internal nomenclature
         String internalClassName = params.substring(i + 1, params.indexOf(';',
             i));
-//        String className = internalClassName.substring(
-//            internalClassName.lastIndexOf('/') + 1);
         String className = internalClassName.replace('/', '.');
         paramStr.append(sep + className + arrayRefs);
         i = params.indexOf(';', i);
@@ -170,7 +170,7 @@ public class MethodInfo {
   }
 
   public boolean canOverride() {
-    return !isConstructor() && (!isStatic())
+    return !isConstructor() && !isStatic() && !isFinal
         && getVisibility() != Visibility.PRIVATE;
   }
 

@@ -15,6 +15,7 @@
  */
 package com.google.test.metric;
 
+import static java.lang.Math.pow;
 import junit.framework.TestCase;
 
 public class WeightedAverageTest extends TestCase {
@@ -26,4 +27,12 @@ public class WeightedAverageTest extends TestCase {
     assertEquals((1.0 + 3.0 * 3.0) / 4.0, avg.getAverage());
   }
 
+  public void testWeightedAverageAsUsedInCostModel() throws Exception {
+    double weight = CostModel.WEIGHT_TO_EMPHASIZE_EXPENSIVE_METHODS;
+    WeightedAverage avg = new WeightedAverage(weight);
+    avg.addValue(1);
+    avg.addValue(3);
+    double expected = (pow(1, weight + 1) + pow(3, weight + 1)) / (pow(1, weight) + pow(3, weight));
+    assertEquals(expected, avg.getAverage());
+  }
 }

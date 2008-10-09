@@ -32,14 +32,15 @@ public class ClassCost {
       return c1.getClassName().compareTo(c2.getClassName());
     }
   }
-  
+
   private final List<MethodCost> methods;
   private final String className;
-  private long overallCost;
+  private final long overallCost;
 
-  public ClassCost(String className, List<MethodCost> methods) {
+  public ClassCost(String className, List<MethodCost> methods, CostModel costModel) {
     this.className = className;
     this.methods = methods;
+    this.overallCost = costModel.computeClass(methods);
   }
 
   public MethodCost getMethodCost(String methodName) {
@@ -104,13 +105,6 @@ public class ClassCost {
       }
     }
     return cost;
-  }
-
-  public void link(CostModel costModel) {
-    for (MethodCost methodCost : methods) {
-      methodCost.link(costModel);
-    }
-    overallCost = costModel.computeClass(methods);
   }
 
   public long getOverallCost() {

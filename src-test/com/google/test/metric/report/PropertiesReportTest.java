@@ -19,24 +19,26 @@ import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.MethodCost;
 
-import junit.framework.TestCase;
-
-import org.apache.tools.ant.filters.StringInputStream;
-
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.Properties;
+
+import junit.framework.TestCase;
+
+import org.apache.tools.ant.filters.StringInputStream;
 
 public class PropertiesReportTest extends TestCase {
 
   ByteArrayOutputStream out = new ByteArrayOutputStream();
   PropertiesReport report = new PropertiesReport(out, 0, 0, 0);
+  CostModel costModel = new CostModel(1, 1);
+
   private static final String CLASS_NAME = "com.google.foo.Bar";
   public void testReport() throws Exception {
 
-    final ClassCost classCost = new ClassCost(CLASS_NAME,
-        Arrays.asList(new MethodCost("doThing", 3, 4)));
-    classCost.link(new CostModel(1.0, 1.0));
+    MethodCost methodCost = new MethodCost("doThing", 3, 4);
+    methodCost.link(new CostModel(1.0, 1.0));
+    final ClassCost classCost = new ClassCost(CLASS_NAME, Arrays.asList(methodCost), costModel);
     report.addClassCost(classCost);
     report.printFooter();
 

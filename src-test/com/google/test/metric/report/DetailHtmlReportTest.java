@@ -33,6 +33,7 @@ public class DetailHtmlReportTest extends TestCase {
 
   ByteArrayOutputStream out = new ByteArrayOutputStream();
   PrintStream stream = new PrintStream(out, true);
+  CostModel costModel = new CostModel(1, 1);
 
   String emptyLineTemplate = "";
   String emptyClassTemplate = "";
@@ -41,8 +42,9 @@ public class DetailHtmlReportTest extends TestCase {
   String classTemplate = "http://code.google.com/p/testability-explorer/source/browse/trunk/src/{path}";
 
   public void testWriteLineCost() throws Exception {
-    LineNumberCost lineCost = new LineNumberCost(123,
-        createMethodCallWithOverallCost("a.methodName()V", 64));
+    MethodCost methodCost = createLinkedMethodCallWithOverallCost("a.methodName()V", 64);
+    LineNumberCost lineCost = new LineNumberCost(123, methodCost);
+    methodCost.link(costModel);
 
     DetailHtmlReport report = new DetailHtmlReport(stream, new SourceLinker(
         emptyLineTemplate, emptyClassTemplate), 10, 10);
@@ -57,8 +59,9 @@ public class DetailHtmlReportTest extends TestCase {
   }
 
   public void testLinkedLineCost() throws Exception {
-    LineNumberCost lineCost = new LineNumberCost(123,
-        createMethodCallWithOverallCost("a.methodName()V", 64));
+    MethodCost methodCost = createLinkedMethodCallWithOverallCost("a.methodName()V", 64);
+    LineNumberCost lineCost = new LineNumberCost(123, methodCost);
+    methodCost.link(costModel);
 
     DetailHtmlReport report = new DetailHtmlReport(stream, new SourceLinker(
         lineTemplate, classTemplate), 10, 10);
@@ -67,14 +70,6 @@ public class DetailHtmlReportTest extends TestCase {
 
     assertTrue(text,
         text.contains("<a href=\"http://code.google.com/p/testability-explorer/source/browse/trunk/src/com/google/ant/TaskModel.java#123"));
-  }
-
-  private MethodCost createMethodCallWithOverallCost(String methodName,
-      int overallCost) {
-    MethodCost cost = new MethodCost(methodName, -1, overallCost);
-    cost.link(new CostModel(1, 1));
-    assertEquals(overallCost, cost.getOverallCost());
-    return cost;
   }
 
   public void testWriteMethodCost() throws Exception {
@@ -86,11 +81,11 @@ public class DetailHtmlReportTest extends TestCase {
       }
     };
 
-    MethodCost method = createMethodCallWithOverallCost("a.methodX()V",
-        567 + 789);
-    method.addMethodCost(123, createMethodCallWithOverallCost("cost1", 567));
-    method.addMethodCost(543, createMethodCallWithOverallCost("cost2", 789));
-    report.write(method, "");
+    MethodCost methodCost = createUnlinkedMethodCallWithOverallCost("a.methodX()V", 0);
+    methodCost.addMethodCost(123, createLinkedMethodCallWithOverallCost("cost1", 567));
+    methodCost.addMethodCost(543, createLinkedMethodCallWithOverallCost("cost2", 789));
+    methodCost.link(costModel);
+    report.write(methodCost, "");
     String text = out.toString();
     assertTrue(text, text.contains("<div class=\"Method\""));
     assertTrue(text, text.contains("<span class='expand'>[+]</span>"));
@@ -111,10 +106,9 @@ public class DetailHtmlReportTest extends TestCase {
     };
 
     List<MethodCost> methods = new ArrayList<MethodCost>();
-    methods.add(createMethodCallWithOverallCost("methodX", 233));
-    methods.add(createMethodCallWithOverallCost("methodY", 544));
-    ClassCost classCost = new ClassCost("classFoo", methods);
-    classCost.link(new CostModel(1, 1));
+    methods.add(createLinkedMethodCallWithOverallCost("methodX", 233));
+    methods.add(createLinkedMethodCallWithOverallCost("methodY", 544));
+    ClassCost classCost = new ClassCost("classFoo", methods, costModel);
     report.write(classCost);
     String text = out.toString();
 
@@ -132,8 +126,7 @@ public class DetailHtmlReportTest extends TestCase {
        lineTemplate , classTemplate), 10, 10) ;
 
     List<MethodCost> methods = new ArrayList<MethodCost>();
-    ClassCost classCost = new ClassCost("com.google.ant.TaskModel", methods);
-    classCost.link(new CostModel(1, 1));
+    ClassCost classCost = new ClassCost("com.google.ant.TaskModel", methods, costModel);
     report.write(classCost);
     String text = out.toString();
 
@@ -142,4 +135,18 @@ public class DetailHtmlReportTest extends TestCase {
         text.contains("(<a href=\"http://code.google.com/p/testability-explorer/source/browse/trunk/src/com/google/ant/TaskModel.java\">source</a>)"));
 
   }
+
+  private MethodCost createUnlinkedMethodCallWithOverallCost(String methodName,
+      int overallCost) {
+    MethodCost cost = new MethodCost(methodName, -1, overallCost);
+    return cost;
+  }
+
+  private MethodCost createLinkedMethodCallWithOverallCost(String methodName,
+      int overallCost) {
+    MethodCost cost = createUnlinkedMethodCallWithOverallCost(methodName, overallCost);
+    cost.link(costModel);
+    return cost;
+  }
+
 }

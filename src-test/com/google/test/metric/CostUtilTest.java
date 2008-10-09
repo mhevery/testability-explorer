@@ -15,45 +15,134 @@
  */
 package com.google.test.metric;
 
+import com.google.test.metric.testing.MetricComputerBuilder;
+import com.google.test.metric.testing.MetricComputerJavaDecorator;
+
 import junit.framework.TestCase;
 
 public class CostUtilTest extends TestCase {
 
-  public void testVerifyCosts() throws Exception {
-    assertEquals(3, cost("staticCost3()Z"));
-    assertEquals(3, cost("instanceCost3()Z"));
-    assertEquals(4, cost("staticCost4()Z"));
-    assertEquals(4, cost("instanceCost4()Z"));
-  }
+  private MetricComputerJavaDecorator decoratedComputer;
+  private final ClassRepository repo = new JavaClassRepository();
 
-  public void testInstanceCost2() {
-    assertEquals(2, cost("instanceCost2()Z"));
-  }
-
-  public void testStatcCost2() {
-    assertEquals(2, cost("staticCost2()Z"));
-  }
-
-  public void testInstanceCost1() {
-    assertEquals(1, cost("instanceCost1()Z"));
-  }
-
-  public void testStaticCost1() {
-    assertEquals(1, cost("staticCost1()Z"));
+  @Override
+  protected void setUp() throws Exception {
+    MetricComputer toDecorate = new MetricComputerBuilder().withClassRepository(repo).build();
+    decoratedComputer = new MetricComputerJavaDecorator(toDecorate, repo);
   }
 
   public void testInstanceCost0() {
-    assertEquals(0, cost("instanceCost0()Z"));
+    assertEquals(0, cyclomaticCost("instanceCost0()Z"));
+    assertEquals(0, globalCost("instanceCost0()Z"));
+    assertEquals(0, totalComplexityCost("instanceCost0()Z"));
+    assertEquals(1, totalGlobalCost("instanceCost0()Z"));
+    assertEquals(10, overallCost("instanceCost0()Z"));
   }
 
   public void testStaticCost0() {
-    assertEquals(0, cost("staticCost0()Z"));
+    assertEquals(0, cyclomaticCost("staticCost0()Z"));
+    assertEquals(0, globalCost("staticCost0()Z"));
+    assertEquals(0, totalComplexityCost("staticCost0()Z"));
+    assertEquals(1, totalGlobalCost("staticCost0()Z"));
+    assertEquals(10, overallCost("staticCost0()Z"));
   }
 
-  private long cost(String method) {
-    MetricComputer computer = new MetricComputer(new JavaClassRepository(), null,
-        new RegExpWhiteList(), new CostModel());
-    MethodCost cost = computer.compute(CostUtil.class.getName(), method);
-    return cost.getTotalComplexityCost();
+  public void testInstanceCost1() {
+    assertEquals(1, cyclomaticCost("instanceCost1()Z"));
+    assertEquals(0, globalCost("instanceCost1()Z"));
+    assertEquals(1, totalComplexityCost("instanceCost1()Z"));
+    assertEquals(1, totalGlobalCost("instanceCost1()Z"));
+    assertEquals(11, overallCost("instanceCost1()Z"));
+  }
+
+  public void testStaticCost1() {
+    assertEquals(1, cyclomaticCost("staticCost1()Z"));
+    assertEquals(0, globalCost("staticCost1()Z"));
+    assertEquals(1, totalComplexityCost("staticCost1()Z"));
+    assertEquals(1, totalGlobalCost("staticCost1()Z"));
+    assertEquals(11, overallCost("staticCost1()Z"));
+  }
+
+  public void testInstanceCost2() {
+    assertEquals(2, cyclomaticCost("instanceCost2()Z"));
+    assertEquals(0, globalCost("instanceCost2()Z"));
+    assertEquals(2, totalComplexityCost("instanceCost2()Z"));
+    assertEquals(1, totalGlobalCost("instanceCost2()Z"));
+    assertEquals(12, overallCost("instanceCost2()Z"));
+  }
+
+  public void testStatcCost2() {
+    assertEquals(2, cyclomaticCost("staticCost2()Z"));
+    assertEquals(0, globalCost("staticCost2()Z"));
+    assertEquals(2, totalComplexityCost("staticCost2()Z"));
+    assertEquals(1, totalGlobalCost("staticCost2()Z"));
+    assertEquals(12, overallCost("staticCost2()Z"));
+  }
+
+  public void testInstanceCost3() {
+    assertEquals(3, cyclomaticCost("instanceCost3()Z"));
+    assertEquals(0, globalCost("instanceCost3()Z"));
+    assertEquals(3, totalComplexityCost("instanceCost3()Z"));
+    assertEquals(1, totalGlobalCost("instanceCost3()Z"));
+    assertEquals(13, overallCost("instanceCost3()Z"));
+  }
+
+  public void testStaticCost3() {
+    assertEquals(3, cyclomaticCost("staticCost3()Z"));
+    assertEquals(0, globalCost("staticCost3()Z"));
+    assertEquals(3, totalComplexityCost("staticCost3()Z"));
+    assertEquals(1, totalGlobalCost("staticCost3()Z"));
+    assertEquals(13, overallCost("staticCost3()Z"));
+  }
+
+  public void testInstanceCost4() {
+    assertEquals(4, cyclomaticCost("instanceCost4()Z"));
+    assertEquals(0, globalCost("instanceCost4()Z"));
+    assertEquals(4, totalComplexityCost("instanceCost4()Z"));
+    assertEquals(1, totalGlobalCost("instanceCost4()Z"));
+    assertEquals(14, overallCost("instanceCost4()Z"));
+  }
+
+  public void testStaticCost4() {
+    assertEquals(4, cyclomaticCost("staticCost4()Z"));
+    assertEquals(0, globalCost("staticCost4()Z"));
+    assertEquals(4, totalComplexityCost("staticCost4()Z"));
+    assertEquals(1, totalGlobalCost("staticCost4()Z"));
+    assertEquals(14, overallCost("staticCost4()Z"));
+  }
+
+  public void testCostUtilClassCost() throws Exception {
+    ClassCost classCost = decoratedComputer.compute(CostUtil.class);
+    assertEquals(4, classCost.getHighestMethodComplexityCost());
+    assertEquals(1, classCost.getHighestMethodGlobalCost());
+    assertEquals(20, classCost.getTotalComplexityCost());
+    assertEquals(12, classCost.getTotalGlobalCost());
+    // TODO(jwolter): Does this make sense? We have an overall cost lower than either total cost.
+    assertEquals(11, classCost.getOverallCost());
+  }
+
+  private long totalComplexityCost(String method) {
+    return methodCostFor(method).getTotalComplexityCost();
+  }
+
+  private long cyclomaticCost(String method) {
+    return methodCostFor(method).getCyclomaticCost();
+  }
+
+  private long globalCost(String method) {
+    return methodCostFor(method).getGlobalCost();
+  }
+
+  private long totalGlobalCost(String method) {
+    return methodCostFor(method).getTotalGlobalCost();
+  }
+
+  private long overallCost(String method) {
+    return methodCostFor(method).getOverallCost();
+  }
+
+  private MethodCost methodCostFor(String method) {
+    MethodCost cost = decoratedComputer.compute(CostUtil.class, method);
+    return cost;
   }
 }
