@@ -15,10 +15,10 @@
  */
 package com.google.test.metric.method;
 
+import junit.framework.TestCase;
+
 import com.google.test.metric.CostModel;
 import com.google.test.metric.MethodCost;
-
-import junit.framework.TestCase;
 
 public class MethodCostTest extends TestCase {
 
@@ -26,8 +26,8 @@ public class MethodCostTest extends TestCase {
     MethodCost cost = new MethodCost("a", 0, 1);
     cost.addGlobalCost(0, null);
     cost.addMethodCost(0, new MethodCost("b", 0, 3));
-    CostModel context = new CostModel(2, 10);
-    cost.link(context);
+    CostModel costModel = new CostModel(2, 10);
+    cost.link(costModel);
 
     assertEquals((long) 2 * (3 + 1) + 10 * 1, cost.getOverallCost());
   }

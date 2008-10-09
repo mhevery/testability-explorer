@@ -16,8 +16,9 @@
 package com.google.test.metric;
 
 
-public class CyclomaticComplexityTest extends ClassRepositoryTestCase {
+public class CyclomaticComplexityTest extends AutoFieldClearTestCase {
 
+  private final ClassRepository repo = new JavaClassRepository();
   private ClassInfo classInfo;
 
   @Override

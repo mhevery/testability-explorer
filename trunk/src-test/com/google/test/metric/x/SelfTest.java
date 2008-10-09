@@ -17,59 +17,55 @@ package com.google.test.metric.x;
 
 import org.objectweb.asm.ClassReader;
 
+import com.google.test.metric.AutoFieldClearTestCase;
 import com.google.test.metric.ClassCost;
-import com.google.test.metric.ClassRepositoryTestCase;
-import com.google.test.metric.CostModel;
+import com.google.test.metric.ClassRepository;
 import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MetricComputer;
-import com.google.test.metric.RegExpWhiteList;
 import com.google.test.metric.example.Primeness;
 import com.google.test.metric.example.SumOfPrimes1;
 import com.google.test.metric.example.SumOfPrimes2;
+import com.google.test.metric.testing.MetricComputerBuilder;
+import com.google.test.metric.testing.MetricComputerJavaDecorator;
 
-public class SelfTest extends ClassRepositoryTestCase {
+public class SelfTest extends AutoFieldClearTestCase {
 
-  private MetricComputer computer;
+  private final ClassRepository repo = new JavaClassRepository();
+  private MetricComputerJavaDecorator decoratedComputer;
 
   @Override
   protected void setUp() throws Exception {
-    super.setUp();
-    computer = new MetricComputer(repo, null, new RegExpWhiteList(), new CostModel());
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
-    computer = null;
+    MetricComputer toDecorate = new MetricComputerBuilder().withClassRepository(repo).build();
+    decoratedComputer = new MetricComputerJavaDecorator(toDecorate, repo);
   }
 
   public void testMethodCost() throws Exception {
-    System.out.println(computer.compute(MethodCost.class.getName()));
+    System.out.println(decoratedComputer.compute(MethodCost.class.getName()));
   }
 
   public void testClassCost() throws Exception {
-    System.out.println(computer.compute(ClassCost.class.getName()));
+    System.out.println(decoratedComputer.compute(ClassCost.class.getName()));
   }
 
   public void testClassRepository() throws Exception {
-    System.out.println(computer.compute(JavaClassRepository.class.getName()));
+    System.out.println(decoratedComputer.compute(JavaClassRepository.class.getName()));
   }
 
   public void testClassReader() throws Exception {
-    System.out.println(computer.compute(ClassReader.class.getName()));
+    System.out.println(decoratedComputer.compute(ClassReader.class.getName()));
   }
 
   public void testPrimeness() throws Exception {
-    System.out.println(computer.compute(Primeness.class.getName()));
+    System.out.println(decoratedComputer.compute(Primeness.class.getName()));
   }
 
   public void testSumOfPrimes() throws Exception {
-    System.out.println(computer.compute(SumOfPrimes1.class.getName()));
+    System.out.println(decoratedComputer.compute(SumOfPrimes1.class.getName()));
   }
 
   public void testSumOfPrimes2() throws Exception {
-    System.out.println(computer.compute(SumOfPrimes2.class.getName()));
+    System.out.println(decoratedComputer.compute(SumOfPrimes2.class.getName()));
   }
 
 

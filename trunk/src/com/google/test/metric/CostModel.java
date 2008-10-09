@@ -19,11 +19,18 @@ import java.util.List;
 
 public class CostModel {
 
+  /**
+   * Increase the weight we give on expensive methods. The ClassCost weighted
+   * average will be skewed towards expensive-to-test methods' costs within the class.
+   */
+  public static final double WEIGHT_TO_EMPHASIZE_EXPENSIVE_METHODS = 1.5;
+  private static final int DEFAULT_CYCLOMATIC_MULTIPLIER = 1;
+  private static final int DEFAULT_GLOBAL_MULTIPLIER = 10;
   private final double cyclomaticMultiplier;
   private final double globalMultiplier;
 
   public CostModel() {
-    this(1, 10);
+    this(DEFAULT_CYCLOMATIC_MULTIPLIER, DEFAULT_GLOBAL_MULTIPLIER);
   }
 
   public CostModel(double cyclomaticMultiplier, double globalMultiplier) {
@@ -36,7 +43,7 @@ public class CostModel {
   }
 
   public long computeClass(List<MethodCost> methods) {
-    WeightedAverage average = new WeightedAverage(1.5); // Favor expensive methods heavily
+    WeightedAverage average = new WeightedAverage(WEIGHT_TO_EMPHASIZE_EXPENSIVE_METHODS);
     for (MethodCost methodCost : methods) {
       average.addValue(methodCost.getOverallCost());
     }

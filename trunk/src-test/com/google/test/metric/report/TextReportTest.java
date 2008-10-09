@@ -17,6 +17,10 @@
 package com.google.test.metric.report;
 
 
+import com.google.test.metric.ClassCost;
+import com.google.test.metric.CostModel;
+import com.google.test.metric.MethodCost;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -24,14 +28,11 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import com.google.test.metric.ClassCost;
-import com.google.test.metric.CostModel;
-import com.google.test.metric.MethodCost;
-
 public class TextReportTest extends TestCase {
 
   ByteArrayOutputStream out = new ByteArrayOutputStream();
   TextReport report = new TextReport(new PrintStream(out), 50, 100, 0);
+  CostModel costModel = new CostModel(1, 1);
 
   private void assertOutput(String... expected) {
     StringBuilder buf = new StringBuilder();
@@ -44,9 +45,10 @@ public class TextReportTest extends TestCase {
 
   private ClassCost classCost(String name, int cost) {
     List<MethodCost> methods = new ArrayList<MethodCost>();
-    methods.add(new MethodCost("method_" + cost, 1, cost));
-    ClassCost classCost = new ClassCost(name, methods);
-    classCost.link(new CostModel(1, 1));
+    MethodCost methodCost = new MethodCost("method_" + cost, 1, cost);
+    methodCost.link(new CostModel(1, 1));
+    methods.add(methodCost);
+    ClassCost classCost = new ClassCost(name, methods, costModel);
     return classCost;
   }
 

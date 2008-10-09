@@ -26,7 +26,7 @@ public class MethodVisitorBuilderTest extends TestCase {
   public void testSwap() throws Exception {
     ClassInfo classInfo = new ClassInfo("TestClass", false, null, null);
     MethodVisitorBuilder builder = new MethodVisitorBuilder(null , classInfo , "test",
-        "()V", null, null, true, Visibility.PUBLIC);
+        "()V", null, null, true, false, Visibility.PUBLIC);
     builder.visitInsn(Opcodes.ICONST_0);
     builder.visitInsn(Opcodes.ICONST_0);
     builder.visitInsn(Opcodes.SWAP);
@@ -36,7 +36,7 @@ public class MethodVisitorBuilderTest extends TestCase {
   public void testNoop() throws Exception {
     ClassInfo classInfo = new ClassInfo("TestClass", false, null, null);
     MethodVisitorBuilder builder = new MethodVisitorBuilder(null , classInfo , "test",
-        "()V", null, null, true, Visibility.PUBLIC);
+        "()V", null, null, true, false, Visibility.PUBLIC);
     builder.visitInsn(Opcodes.NOP);
     builder.visitEnd();
   }

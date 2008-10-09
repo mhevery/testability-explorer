@@ -16,7 +16,6 @@
 
 package com.google.test.metric;
 
-
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -24,7 +23,9 @@ import java.util.List;
 
 import com.google.classpath.ClasspathRootFactory;
 
-public class ClassInfoTest extends ClassRepositoryTestCase {
+public class ClassInfoTest extends AutoFieldClearTestCase {
+
+  private final ClassRepository repo = new JavaClassRepository();
 
   public void testNonExistingClass() throws Exception {
     try {

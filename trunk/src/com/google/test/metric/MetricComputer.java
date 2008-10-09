@@ -37,17 +37,41 @@ public class MetricComputer {
     this.costModel = costModel;
   }
 
-  /* used for testing */
-  public MethodCost compute(String clazz, String methodName) {
-    ClassInfo classInfo = classRepository.getClass(clazz);
-    MethodInfo method = classInfo.getMethod(methodName);
-    return compute(method);
+  /**
+   * Computing the ClassCost for a ClassInfo involves tallying up all the MethodCosts contained
+   * in the class. Then an overall cost is calculated, based on the {@code CostModel} the metric
+   * computer is using.
+   *
+   * @param clazz to compute the metric for.
+   * @return classCost
+   */
+  public ClassCost compute(ClassInfo clazz) {
+    List<MethodCost> methods = new ArrayList<MethodCost>();
+    for (MethodInfo method : clazz.getMethods()) {
+      methods.add(compute(method));
+    }
+    ClassCost classCost = new ClassCost(clazz.getName(), methods, costModel);
+    return classCost;
   }
 
+  /**
+   * Computing the MethodCost for a MethodInfo involves tallying up:
+   * <ul><li>The cost in any static initialization blocks of the class which holds the method.</li>
+   * <li>The cost of constructing the object.</li>
+   * <li>Recognizing injectability through setter methods. This in most cases improves the score
+   * unless you have lots of code in your setter.</li>
+   * <li>The field costs</li>
+   * <li>Lastly the costs are added up for all of the lines in this method. This includes the
+   * transitive non-mockable/interceptable closure of all the costs of the methods that are called.</li>
+   * <li></li></ul>
+   *
+   * @param method to compute the cost for.
+   * @return MethodCost for this method, including the accumulated costs the methods it calls. This
+   * MethodCost is guaranteed to have already been linked (sealed for adding additional costs).
+   */
   public MethodCost compute(MethodInfo method) {
-    TestabilityContext context = new TestabilityContext(classRepository, err,
-        whitelist, costModel);
-    addStaticCost(method, context);
+    TestabilityContext context = new TestabilityContext(classRepository, err, whitelist, costModel);
+    addStaticInitializationCost(method, context);
     addConstructorCost(method, context);
     addSetterInjection(method, context);
     addFieldCost(method, context);
@@ -56,6 +80,10 @@ public class MetricComputer {
     return context.getLinkedMethodCost(method);
   }
 
+
+
+  /** Goes through all methods and adds an implicit cost for those beginning with "set" (assuming
+   * to test the {@code baseMethod}'s class, you need to be able to call the setters for initialization.  */
   private void addSetterInjection(MethodInfo baseMethod, TestabilityContext context) {
     for (MethodInfo method : baseMethod.getClassInfo().getMethods()) {
       if (method.getName().startsWith("set")) {
@@ -66,9 +94,12 @@ public class MetricComputer {
     }
   }
 
+  /** Adds an implicit cost to all non-static methods for calling the constructor. (Because to test
+   * any instance method, you must be able to instantiate the class.) Also marks parameters
+   * injectable for the constructor with the most non-primitive parameters. */
   private void addConstructorCost(MethodInfo method, TestabilityContext context) {
     if (!method.isStatic() && !method.isConstructor()) {
-      MethodInfo constructor = getPrefferedConstructor(method.getClassInfo());
+      MethodInfo constructor = getConstructorWithMostNonPrimitiveParameters(method.getClassInfo());
       if (constructor != null) {
         context.implicitCost(method, constructor);
         context.setInjectable(constructor);
@@ -77,6 +108,7 @@ public class MetricComputer {
     }
   }
 
+  /** Doesn't really add the field costs (there are none), but marks non-private fields as injectable. */
   private void addFieldCost(MethodInfo method,
       TestabilityContext context) {
     for (FieldInfo field : method.getClassInfo().getFields()) {
@@ -86,7 +118,8 @@ public class MetricComputer {
     }
   }
 
-  private void addStaticCost(MethodInfo baseMethod, TestabilityContext context) {
+   /** Includes the cost of all static initialization blocks, as well as static field assignments. */
+  private void addStaticInitializationCost(MethodInfo baseMethod, TestabilityContext context) {
     if (baseMethod.isStaticConstructor()) {
       return;
     }
@@ -98,7 +131,15 @@ public class MetricComputer {
     }
   }
 
-  MethodInfo getPrefferedConstructor(ClassInfo classInfo) {
+  /** When you have multiple constructors you need to know which one to use for marking
+   * fields as injectables. The heuristic is that the constructor with most arguments
+   * will probably be the constructor best suited for testing as it will give you highest
+   * control over your field injection.
+   */
+  MethodInfo getConstructorWithMostNonPrimitiveParameters(ClassInfo classInfo) {
+    // TODO(jwolter): It would seem more accurate a approximation of multiple constructors
+    // if we would calculate the cost for all of them, and then add in only the highest,
+    // or an average of them.
     Collection<MethodInfo> methods = classInfo.getMethods();
     MethodInfo constructor = null;
     int currentArgsCount = -1;
@@ -124,20 +165,4 @@ public class MetricComputer {
     }
     return count;
   }
-
-  /* used for testing   */
-  public ClassCost compute(String clazz) {
-    return compute(classRepository.getClass(clazz));
-  }
-
-  public ClassCost compute(ClassInfo clazz) {
-    List<MethodCost> methods = new ArrayList<MethodCost>();
-    for (MethodInfo method : clazz.getMethods()) {
-      methods.add(compute(method));
-    }
-    ClassCost classCost = new ClassCost(clazz.getName(), methods);
-    classCost.link(costModel);
-    return classCost;
-  }
-
 }

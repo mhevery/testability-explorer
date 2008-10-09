@@ -1,12 +1,12 @@
 /*
  * Copyright 2007 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -15,15 +15,15 @@
  */
 package com.google.test.metric.asm;
 
-import com.google.test.metric.ClassInfo;
-import com.google.test.metric.ClassRepository;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.test.metric.ClassInfo;
+import com.google.test.metric.ClassRepository;
 
 public class ClassInfoBuilderVisitor extends NoopClassVisitor {
 
@@ -53,8 +53,9 @@ public class ClassInfoBuilderVisitor extends NoopClassVisitor {
   public MethodVisitor visitMethod(int access, String name, String desc,
       String signature, String[] exceptions) {
     boolean isStatic = (access & Opcodes.ACC_STATIC) == Opcodes.ACC_STATIC;
+    boolean isFinal = (access & Opcodes.ACC_FINAL) == Opcodes.ACC_FINAL;
     return new MethodVisitorBuilder(repository, classInfo, name, desc, signature,
-        exceptions, isStatic, Visibility.valueOf(access));
+        exceptions, isStatic, isFinal, Visibility.valueOf(access));
   }
 
   @Override

@@ -52,6 +52,12 @@ public class MethodCost {
     }
   }
 
+  private void assertNotLinked() {
+    if (linked) {
+      throw new IllegalStateException("Can not call after linked.");
+    }
+  }
+
   public void link(CostModel costModel) {
     if (!linked) {
       linked = true;
@@ -71,6 +77,7 @@ public class MethodCost {
   }
 
   public long getGlobalCost() {
+    assertLinked();
     return globalStateCosts.size();
   }
 
@@ -83,10 +90,12 @@ public class MethodCost {
   }
 
   public void addMethodCost(int lineNumber, MethodCost to) {
+    assertNotLinked();
     operationCosts.add(new LineNumberCost(lineNumber, to));
   }
 
   public void addGlobalCost(int lineNumber, Variable variable) {
+    assertNotLinked();
     globalStateCosts.add(new GlobalStateCost(lineNumber, variable));
   }
 
@@ -101,6 +110,7 @@ public class MethodCost {
   }
 
   public long getCyclomaticCost() {
+    assertLinked();
     return cyclomaticCost;
   }
 
@@ -109,6 +119,7 @@ public class MethodCost {
   }
 
   public long getOverallCost() {
+    assertLinked();
     return overallCost;
   }
 

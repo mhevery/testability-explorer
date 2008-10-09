@@ -74,6 +74,7 @@ public class MethodInvokation extends Operation {
       MethodInfo toMethod = context.getMethod(clazzName, name + signature);
       if (context.methodAlreadyVisited(toMethod)) {
         // Method already counted, skip (to prevent recursion)
+        return;
       } else if (toMethod.canOverride() && context.isInjectable(methodThis)) {
         // Method can be overridden / injectable
         if (returnValue != null) {
