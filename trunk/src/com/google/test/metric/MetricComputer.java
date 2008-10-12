@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.test.metric.LineNumberCost.CostSourceType;
 import com.google.test.metric.asm.Visibility;
 
 public class MetricComputer {
@@ -87,7 +88,7 @@ public class MetricComputer {
   private void addSetterInjection(MethodInfo baseMethod, TestabilityContext context) {
     for (MethodInfo method : baseMethod.getClassInfo().getMethods()) {
       if (method.getName().startsWith("set")) {
-        context.implicitCost(baseMethod, method);
+        context.implicitCost(baseMethod, method, CostSourceType.IMPLICIT_SETTER);
         context.setInjectable(method);
         method.computeMetric(context);
       }
@@ -101,7 +102,7 @@ public class MetricComputer {
     if (!method.isStatic() && !method.isConstructor()) {
       MethodInfo constructor = getConstructorWithMostNonPrimitiveParameters(method.getClassInfo());
       if (constructor != null) {
-        context.implicitCost(method, constructor);
+        context.implicitCost(method, constructor, CostSourceType.IMPLICIT_CONSTRUCTOR);
         context.setInjectable(constructor);
         constructor.computeMetric(context);
       }
@@ -125,7 +126,7 @@ public class MetricComputer {
     }
     for (MethodInfo method : baseMethod.getClassInfo().getMethods()) {
       if (method.getName().startsWith("<clinit>")) {
-        context.implicitCost(baseMethod, method);
+        context.implicitCost(baseMethod, method, CostSourceType.IMPLICIT_STATIC_INIT);
         method.computeMetric(context);
       }
     }

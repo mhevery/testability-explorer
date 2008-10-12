@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.test.metric.LineNumberCost.CostSourceType;
+
 public class TestabilityContext {
 
   private final Set<Variable> injectables = new HashSet<Variable>();
@@ -72,7 +74,7 @@ public class TestabilityContext {
     MethodCost from = getMethodCost(fromMethod);
     MethodCost to = getMethodCost(toMethod);
     if (from != to) {
-      from.addMethodCost(fromLineNumber, to);
+      from.addMethodCost(fromLineNumber, to, CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
       toMethod.computeMetric(this);
     }
   }
@@ -120,10 +122,12 @@ public class TestabilityContext {
    *
    * @param from the method that we are adding the implicit cost upon.
    * @param to the method that is getting called by {@code from} and contributes cost transitively.
+   * @param costSourceType the type of implicit cost to record, for giving the user information
+   * about why they have the costs they have.
    */
-  public void implicitCost(MethodInfo from, MethodInfo to) {
+  public void implicitCost(MethodInfo from, MethodInfo to, CostSourceType costSourceType) {
     int line = to.getStartingLineNumber();
-    getMethodCost(from).addMethodCost(line, getMethodCost(to));
+    getMethodCost(from).addMethodCost(line, getMethodCost(to), costSourceType);
   }
 
   @Override

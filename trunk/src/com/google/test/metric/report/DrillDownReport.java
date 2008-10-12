@@ -102,7 +102,8 @@ public class DrillDownReport implements Report {
       out.print("line ");
       out.print(line.getLineNumber());
       out.print(": ");
-      out.println(method);
+      out.print(method);
+      out.println(" " + line.getCostSourceType());
       for (LineNumberCost child : method.getOperationCosts()) {
         print("  " + prefix, child, maxDepth - 1, alreadSeen);
       }

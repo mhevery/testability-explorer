@@ -228,10 +228,13 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
     }
   }
 
-  public void testIgnoreConstructorsIfAllConstructorsArePrivate()
-      throws Exception {
+  public void testIgnoreConstructorsIfAllConstructorsArePrivate() throws Exception {
     assertEquals(2L, decoratedComputer.compute(Singleton.class, "doWork()V")
         .getTotalComplexityCost());
+    ClassInfo classInfo = repo.getClass(Singleton.class.getName());
+    MethodInfo constructor = decoratedComputer.getDecoratedComputer()
+        .getConstructorWithMostNonPrimitiveParameters(classInfo);
+    assertNull("Constructor should not be found when private",  constructor);
   }
 
   static class StaticInit {

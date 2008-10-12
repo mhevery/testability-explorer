@@ -17,14 +17,14 @@ package com.google.test.metric.report;
 
 import static java.lang.Math.min;
 
-import com.google.test.metric.ClassCost;
-import com.google.test.metric.LineNumberCost;
-import com.google.test.metric.MethodCost;
-
 import java.io.PrintStream;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import com.google.test.metric.ClassCost;
+import com.google.test.metric.LineNumberCost;
+import com.google.test.metric.MethodCost;
 
 public class DetailHtmlReport {
 
@@ -64,9 +64,10 @@ public class DetailHtmlReport {
   }
 
   public void write(LineNumberCost lineNumberCost, String classFilePath) {
+    String costSourceType = lineNumberCost.getCostSourceType().toString();
     String text = "<div class=\"Line\">" +
     		"<span class=\"lineNumber\">line&nbsp;{lineNumber}:</span>" +
-    		"{methodName} [&nbsp;{cost}&nbsp;]" +
+    		"{methodName} [&nbsp;{cost}&nbsp;] (source: " + costSourceType + ")" +
     		"</div>";
     text = text.replace("{lineNumber}", "" + lineNumberCost.getLineNumber());
     text = text.replace("{methodName}", "" +
