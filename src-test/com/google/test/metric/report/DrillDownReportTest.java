@@ -27,6 +27,7 @@ import com.google.test.metric.AutoFieldClearTestCase;
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.MethodCost;
+import com.google.test.metric.LineNumberCost.CostSourceType;
 
 public class DrillDownReportTest extends AutoFieldClearTestCase {
 
@@ -50,51 +51,57 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   public void test2DeepPrintAll() throws Exception {
     DrillDownReport printer =
       new DrillDownReport(new PrintStream(out), null, MAX_VALUE, 0);
-    methodCost2.addMethodCost(81, new MethodCost("c.g.t.A.method1()V", 0, 1));
+    methodCost2.addMethodCost(
+        81, new MethodCost("c.g.t.A.method1()V", 0, 1), CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
     methodCost2.link(costModel);
     printer.print("", methodCost2, MAX_VALUE);
     assertStringEquals("c.g.t.A.method2()V [2, 0 / 3, 0]\n" +
-        "  line 81: c.g.t.A.method1()V [1, 0 / 1, 0]\n", out.toString());
+        "  line 81: c.g.t.A.method1()V [1, 0 / 1, 0] " + CostSourceType.NON_OVERRIDABLE_METHOD_CALL +
+        "\n", out.toString());
   }
 
   public void test3DeepPrintAll() throws Exception {
     DrillDownReport printer =
       new DrillDownReport(new PrintStream(out), null, MAX_VALUE, 0);
-    methodCost2.addMethodCost(8, methodCost1);
-    methodCost3.addMethodCost(2, methodCost2);
+    methodCost2.addMethodCost(8, methodCost1, CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
+    methodCost3.addMethodCost(2, methodCost2, CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
     methodCost3.link(costModel);
     printer.print("", methodCost3, MAX_VALUE);
     assertStringEquals("c.g.t.A.method3()V [3, 0 / 6, 0]\n" +
-        "  line 2: c.g.t.A.method2()V [2, 0 / 3, 0]\n" +
-        "    line 8: c.g.t.A.method1()V [1, 0 / 1, 0]\n", out.toString());
+        "  line 2: c.g.t.A.method2()V [2, 0 / 3, 0] " + CostSourceType.NON_OVERRIDABLE_METHOD_CALL + "\n" +
+        "    line 8: c.g.t.A.method1()V [1, 0 / 1, 0] " + CostSourceType.NON_OVERRIDABLE_METHOD_CALL + "\n",
+        out.toString());
   }
 
   public void test2DeepSupress0Cost() throws Exception {
     DrillDownReport printer =
       new DrillDownReport(new PrintStream(out), null, MAX_VALUE, 2);
-    methodCost1.addMethodCost(8, methodCost0);
-    methodCost1.addMethodCost(13, methodCost3);
+    methodCost1.addMethodCost(8, methodCost0, CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
+    methodCost1.addMethodCost(13, methodCost3, CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
     methodCost1.link(costModel);
     printer.print("", methodCost1, MAX_VALUE);
     assertStringEquals("c.g.t.A.method1()V [1, 0 / 4, 0]\n" +
-    		"  line 13: c.g.t.A.method3()V [3, 0 / 3, 0]\n", out.toString());
+    		"  line 13: c.g.t.A.method3()V [3, 0 / 3, 0] " + CostSourceType.NON_OVERRIDABLE_METHOD_CALL + "\n",
+    		out.toString());
   }
 
   public void test3DeepPrint2Deep() throws Exception {
     DrillDownReport printer =
       new DrillDownReport(new PrintStream(out), null, MAX_VALUE, 0);
-    methodCost3.addMethodCost(2, methodCost2);
-    methodCost2.addMethodCost(2, methodCost1);
+    methodCost3.addMethodCost(2, methodCost2, CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
+    methodCost2.addMethodCost(2, methodCost1, CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
     methodCost3.link(costModel);
     printer.print("", methodCost3, 2);
-    assertStringEquals("c.g.t.A.method3()V [3, 0 / 6, 0]\n"
-      + "  line 2: c.g.t.A.method2()V [2, 0 / 3, 0]\n", out.toString());
+    assertStringEquals("c.g.t.A.method3()V [3, 0 / 6, 0]\n" +
+      "  line 2: c.g.t.A.method2()V [2, 0 / 3, 0] " + CostSourceType.NON_OVERRIDABLE_METHOD_CALL + "\n",
+      out.toString());
   }
 
   public void testSupressAllWhenMinCostIs4() throws Exception {
     DrillDownReport printer =
       new DrillDownReport(new PrintStream(out), null, MAX_VALUE, 4);
-    methodCost2.addMethodCost(81, new MethodCost("c.g.t.A.method1()V", 0, 1));
+    methodCost2.addMethodCost(
+        81, new MethodCost("c.g.t.A.method1()V", 0, 1), CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
     methodCost2.link(costModel);
     printer.print("", methodCost2, MAX_VALUE);
     assertStringEquals("", out.toString());
@@ -103,7 +110,8 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   public void testSupressPartialWhenMinCostIs2() throws Exception {
     DrillDownReport printer =
       new DrillDownReport(new PrintStream(out), null, MAX_VALUE, 2);
-    methodCost2.addMethodCost(81, new MethodCost("c.g.t.A.method1()V", 0, 1));
+    methodCost2.addMethodCost(
+        81, new MethodCost("c.g.t.A.method1()V", 0, 1), CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
     methodCost2.link(costModel);
     printer.print("", methodCost2, Integer.MAX_VALUE);
     assertStringEquals("c.g.t.A.method2()V [2, 0 / 3, 0]\n", out.toString());
@@ -112,12 +120,13 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   public void testSecondLevelRecursive() throws Exception {
     DrillDownReport printer =
       new DrillDownReport(new PrintStream(out), null, MAX_VALUE, 0);
-    methodCost3.addMethodCost(1, methodCost2);
-    methodCost2.addMethodCost(2, methodCost2);
+    methodCost3.addMethodCost(1, methodCost2, CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
+    methodCost2.addMethodCost(2, methodCost2, CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
     methodCost3.link(costModel);
     printer.print("", methodCost3, 10);
-    assertStringEquals("c.g.t.A.method3()V [3, 0 / 5, 0]\n"
-      + "  line 1: c.g.t.A.method2()V [2, 0 / 2, 0]\n", out.toString());
+    assertStringEquals("c.g.t.A.method3()V [3, 0 / 5, 0]\n" +
+      "  line 1: c.g.t.A.method2()V [2, 0 / 2, 0] " + CostSourceType.NON_OVERRIDABLE_METHOD_CALL + "\n",
+      out.toString());
   }
 
   public void testAddOneClassCostThenPrintIt() throws Exception {

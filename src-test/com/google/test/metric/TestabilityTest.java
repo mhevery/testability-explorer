@@ -171,17 +171,17 @@ public class TestabilityTest extends AutoFieldClearTestCase {
   }
 
   public void testReadInnerClassCost() throws Exception {
-    testability.entryList.add("com.google.test.metric.example.Glo");
+    testability.entryList.add("com.google.test.metric.example.FinalGlo");
     testability.printDepth = 10;
     testability.execute();
     List<String> classes = testability.classpath
         .getClassNamesToEnter(testability.entryList);
-    String global = "com.google.test.metric.example.GlobalExample";
+    String global = "com.google.test.metric.example.FinalGlobalExample";
     assertTrue(classes.contains(global));
     assertTrue(classes.contains(global + "Test"));
-    assertTrue(classes.contains(global + "$Globals"));
+    assertTrue(classes.contains(global + "$FinalGlobal"));
     assertTrue(classes.contains(global + "$Gadget"));
-    assertEquals(4, classes.size());
+    assertEquals("Expected size 4, but contents were: " + classes, 4, classes.size());
   }
 
   public void testOneEntryWhitelist() throws Exception {

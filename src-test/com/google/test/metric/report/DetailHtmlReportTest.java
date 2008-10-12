@@ -28,6 +28,7 @@ import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.LineNumberCost;
 import com.google.test.metric.MethodCost;
+import com.google.test.metric.LineNumberCost.CostSourceType;
 
 public class DetailHtmlReportTest extends TestCase {
 
@@ -43,7 +44,7 @@ public class DetailHtmlReportTest extends TestCase {
 
   public void testWriteLineCost() throws Exception {
     MethodCost methodCost = createLinkedMethodCallWithOverallCost("a.methodName()V", 64);
-    LineNumberCost lineCost = new LineNumberCost(123, methodCost);
+    LineNumberCost lineCost = new LineNumberCost(123, methodCost, CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
     methodCost.link(costModel);
 
     DetailHtmlReport report = new DetailHtmlReport(stream, new SourceLinker(
@@ -60,7 +61,7 @@ public class DetailHtmlReportTest extends TestCase {
 
   public void testLinkedLineCost() throws Exception {
     MethodCost methodCost = createLinkedMethodCallWithOverallCost("a.methodName()V", 64);
-    LineNumberCost lineCost = new LineNumberCost(123, methodCost);
+    LineNumberCost lineCost = new LineNumberCost(123, methodCost, CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
     methodCost.link(costModel);
 
     DetailHtmlReport report = new DetailHtmlReport(stream, new SourceLinker(
@@ -82,8 +83,10 @@ public class DetailHtmlReportTest extends TestCase {
     };
 
     MethodCost methodCost = createUnlinkedMethodCallWithOverallCost("a.methodX()V", 0);
-    methodCost.addMethodCost(123, createLinkedMethodCallWithOverallCost("cost1", 567));
-    methodCost.addMethodCost(543, createLinkedMethodCallWithOverallCost("cost2", 789));
+    methodCost.addMethodCost(123, createLinkedMethodCallWithOverallCost("cost1", 567),
+        CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
+    methodCost.addMethodCost(543, createLinkedMethodCallWithOverallCost("cost2", 789),
+        CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
     methodCost.link(costModel);
     report.write(methodCost, "");
     String text = out.toString();
