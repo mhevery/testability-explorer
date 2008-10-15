@@ -85,12 +85,10 @@ public class MetricComputer {
   /** Goes through all methods and adds an implicit cost for those beginning with "set" (assuming
    * to test the {@code baseMethod}'s class, you need to be able to call the setters for initialization.  */
   private void addSetterInjection(MethodInfo baseMethod, TestabilityContext context) {
-    for (MethodInfo method : baseMethod.getClassInfo().getMethods()) {
-      if (method.isSetter()) {
-        context.implicitCost(baseMethod, method, CostSourceType.IMPLICIT_SETTER);
-        context.setInjectable(method);
-        method.computeMetric(context);
-      }
+    for (MethodInfo setter : baseMethod.getSiblingSetters()) {
+      context.implicitCost(baseMethod, setter, CostSourceType.IMPLICIT_SETTER);
+      context.setInjectable(setter);
+      setter.computeMetric(context);
     }
   }
 

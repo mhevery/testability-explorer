@@ -19,9 +19,14 @@ package com.google.test.metric;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.classpath.ClasspathRootFactory;
+import com.google.test.metric.asm.Visibility;
+import com.google.test.metric.method.op.turing.Operation;
 
 public class ClassInfoTest extends AutoFieldClearTestCase {
 
@@ -248,6 +253,27 @@ public class ClassInfoTest extends AutoFieldClearTestCase {
       fail();
     } catch (ClassNotFoundException e) {
     }
+  }
+
+  public void testGetSettersShouldReturnItemsInAlphabeticalOrderAndIncludeSuperClasses() throws Exception {
+    List<ClassInfo> emptyInterfaces = Collections.emptyList();
+    ClassInfo superClass = new ClassInfo("super", false, null, emptyInterfaces);
+    List<ParameterInfo> params = Collections.emptyList();
+    List<LocalVariableInfo> locals = Collections.emptyList();
+    List<Operation> operations = Collections.emptyList();
+    superClass.addMethod(new MethodInfo(superClass, "setB", -1, "()V", null, params, locals,Visibility.PUBLIC, 0, operations, false));
+    superClass.addMethod(new MethodInfo(superClass, "setA", -1, "()V", null, params, locals,Visibility.PRIVATE, 0, operations, false));
+    superClass.addMethod(new MethodInfo(superClass, "X", -1, "()V", null, params, locals,Visibility.PUBLIC, 0, operations, false));
+    ClassInfo clazz = new ClassInfo("super", false, superClass, emptyInterfaces);
+    clazz.addMethod(new MethodInfo(clazz, "setD", -1, "()V", null, params, locals,Visibility.PUBLIC, 0, operations, false));
+    clazz.addMethod(new MethodInfo(clazz, "setC", -1, "()V", null, params, locals,Visibility.PUBLIC, 0, operations, false));
+
+    Collection<MethodInfo> setters = clazz.getSetters();
+    assertEquals(3, setters.size());
+    Iterator<MethodInfo> iterator = setters.iterator();
+    assertEquals("setB", iterator.next().getName());
+    assertEquals("setC", iterator.next().getName());
+    assertEquals("setD", iterator.next().getName());
   }
 
 }

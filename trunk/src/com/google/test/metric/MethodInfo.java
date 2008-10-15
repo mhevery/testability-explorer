@@ -17,14 +17,15 @@ package com.google.test.metric;
 
 import static java.util.Collections.unmodifiableList;
 
+import java.util.Collection;
+import java.util.List;
+
 import com.google.test.metric.asm.Visibility;
 import com.google.test.metric.method.op.turing.Operation;
 
-import java.util.List;
+public class MethodInfo implements Comparable<MethodInfo> {
 
-public class MethodInfo {
-
-  private final ClassInfo classInfo;
+  final ClassInfo classInfo;
   private final String name;
   private final Variable methodThis;
   private final List<ParameterInfo> parameters;
@@ -211,7 +212,21 @@ public class MethodInfo {
   }
 
   public boolean isSetter() {
-    return getName().startsWith("set");
+    return visibility != Visibility.PRIVATE && getName().startsWith("set");
+  }
+
+  /**
+   * @return Returns all methods in the same class which are setters
+   */
+  public Collection<MethodInfo> getSiblingSetters() {
+    return classInfo.getSetters();
+  }
+
+  public int compareTo(MethodInfo o) {
+    if (o == null) {
+      return -1;
+    }
+    return getName().compareTo(o.getName());
   }
 
 }
