@@ -15,7 +15,6 @@
  */
 package com.google.test.metric.method.op.turing;
 
-import com.google.test.metric.MethodInfo;
 import com.google.test.metric.TestabilityVisitor;
 
 public abstract class Operation {
@@ -30,6 +29,6 @@ public abstract class Operation {
     return lineNumber;
   }
 
-  public abstract void computeMetric(TestabilityVisitor visitor, MethodInfo currentMethod);
+  public abstract void visit(TestabilityVisitor visitor);
 
 }

@@ -15,7 +15,6 @@
  */
 package com.google.test.metric.method.op.turing;
 
-import com.google.test.metric.MethodInfo;
 import com.google.test.metric.TestabilityVisitor;
 import com.google.test.metric.Variable;
 
@@ -44,7 +43,7 @@ public class LocalAssignment extends Operation {
   }
 
   @Override
-  public void computeMetric(TestabilityVisitor visitor, MethodInfo currentMethod) {
-    visitor.localAssignment(currentMethod, getLineNumber(), variable, value);
+  public void visit(TestabilityVisitor visitor) {
+    visitor.localAssignment(getLineNumber(), variable, value);
   }
 }

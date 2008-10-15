@@ -30,18 +30,18 @@ public class MethodInvokation extends Operation {
   private final String signature;
   private final Variable methodThis;
   private final List<Variable> parameters;
-  private final Variable returnValue;
+  private final Variable returnVariable;
 
   public MethodInvokation(int lineNumber, String clazz, String name,
       String signature, Variable methodThis, List<Variable> parameters,
-      Variable returnValue) {
+      Variable returnVariable) {
     super(lineNumber);
     this.clazzName = clazz;
     this.name = name;
     this.signature = signature;
     this.methodThis = methodThis;
     this.parameters = parameters;
-    this.returnValue = returnValue;
+    this.returnVariable = returnVariable;
   }
 
   public List<Variable> getParameters() {
@@ -66,7 +66,7 @@ public class MethodInvokation extends Operation {
   }
 
   @Override
-  public void computeMetric(TestabilityVisitor visitor, MethodInfo currentMethod) {
+  public void visit(TestabilityVisitor visitor) {
     if (visitor.isClassWhiteListed(clazzName)) {
       return;
     }
@@ -77,29 +77,28 @@ public class MethodInvokation extends Operation {
         return;
       } else if (toMethod.canOverride() && visitor.isInjectable(methodThis)) {
         // Method can be overridden / injectable
-        if (returnValue != null) {
-          visitor.setInjectable(returnValue);
-          visitor.setReturnValue(returnValue);
+        if (returnVariable != null) {
+          visitor.setInjectable(returnVariable);
+          visitor.setReturnValue(returnVariable);
         }
       } else {
         // Method can not be intercepted we have to add the cost
         // recursively
         if (toMethod.isInstance()) {
-          visitor.localAssignment(toMethod, getLineNumber(), toMethod
+          visitor.parameterAssignment(toMethod, getLineNumber(), toMethod
               .getMethodThis(), methodThis);
         }
-        int i = 0;
         if (parameters.size() != toMethod.getParameters().size()) {
           throw new IllegalStateException(
               "Argument count does not match method parameter count.");
         }
+        int i = 0;
         for (Variable var : parameters) {
-          visitor.localAssignment(toMethod, getLineNumber(), toMethod
+          visitor.parameterAssignment(toMethod, getLineNumber(), toMethod
               .getParameters().get(i++), var);
         }
-        visitor.recordMethodCall(currentMethod, getLineNumber(), toMethod);
-        visitor.localAssignment(toMethod, getLineNumber(), returnValue,
-            visitor.getReturnValue());
+        visitor.recordMethodCall(getLineNumber(), toMethod);
+        visitor.returnAssignment(toMethod, getLineNumber(), returnVariable);
       }
     } catch (ClassNotFoundException e) {
       visitor.reportError("WARNING: class not found: " + clazzName);
