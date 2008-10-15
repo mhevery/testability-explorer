@@ -15,7 +15,6 @@
  */
 package com.google.test.metric.method.op.turing;
 
-import com.google.test.metric.MethodInfo;
 import com.google.test.metric.TestabilityVisitor;
 import com.google.test.metric.Variable;
 
@@ -34,8 +33,8 @@ public class ArrayAssignment extends Operation {
   }
 
   @Override
-  public void computeMetric(TestabilityVisitor visistor, MethodInfo currentMethod) {
-    visistor.arrayAssignment(array, index, value, currentMethod, getLineNumber());
+  public void visit(TestabilityVisitor visistor) {
+    visistor.arrayAssignment(array, index, value, getLineNumber());
   }
 
   @Override

@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import com.google.test.metric.LineNumberCost.CostSourceType;
 import com.google.test.metric.method.op.turing.Operation;
@@ -31,6 +32,7 @@ public class TestabilityVisitor {
 
   private final Set<Variable> injectables = new HashSet<Variable>();
   private final Set<Variable> statics = new HashSet<Variable>();
+  private final Stack<MethodCost> callStack = new Stack<MethodCost>();
   private final ClassRepository classRepository;
   private final Map<MethodInfo, MethodCost> methodCosts = new HashMap<MethodInfo, MethodCost>();
   private final PrintStream err;
@@ -38,8 +40,6 @@ public class TestabilityVisitor {
   private final CostModel costModel;
   private Variable returnValue;
 
-  // TODO(jwolter): As all "Context" objects we need to remove this one and break it into smaller,
-  // single-responsibility objects.
   public TestabilityVisitor(ClassRepository classRepository, PrintStream err,
     WhiteList whitelist, CostModel costModel) {
     this.classRepository = classRepository;
@@ -56,6 +56,13 @@ public class TestabilityVisitor {
     return methodCosts.containsKey(method);
   }
 
+  private MethodCost getCurrentMethodCost(){
+    if (callStack.isEmpty()) {
+      throw new IllegalStateException();
+    }
+    return callStack.peek();
+  }
+
   /**
    * Records that there is a call to {@code toMethod} from within {@code fromMethod}, on the
    * {@code fromLineNumber}. Recurses into {@code toMethod} and records all of the
@@ -70,9 +77,9 @@ public class TestabilityVisitor {
   // Does it belong to live on a MethodInfoBuilder? (I think so) or on the MethodInfo itself?
   // Or maybe TestabilityContext should be pruned off of the extra baggage, and renamed to
   // MethodCostBuilder? CostAccumulator?
-  public void recordMethodCall(MethodInfo fromMethod, int fromLineNumber,
+  public void recordMethodCall(int fromLineNumber,
       MethodInfo toMethod) {
-    MethodCost from = getMethodCost(fromMethod);
+    MethodCost from = getCurrentMethodCost();
     MethodCost to = getMethodCost(toMethod);
     if (from != to) {
       from.addMethodCost(fromLineNumber, to, CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
@@ -80,12 +87,14 @@ public class TestabilityVisitor {
     }
   }
 
+
   /**
    * Looks up the MethodCost and returns the cached one, or a new one is created for
    * this method. Then link() is called. Note: this returns the linked method cost only
    * because some tests require linking (and don't go through the usual route of
    * ClassCost#link().
    */
+  //TODO: Move this out of here to tests
   public MethodCost getLinkedMethodCost(MethodInfo method) {
     MethodCost cost = getMethodCost(method);
     cost.link(costModel);
@@ -95,7 +104,8 @@ public class TestabilityVisitor {
   MethodCost getMethodCost(MethodInfo method) {
     MethodCost methodCost = methodCosts.get(method);
     if (methodCost == null) {
-      methodCost = new MethodCost(method.getFullName(), method.getStartingLineNumber(), method.getTestCost());
+      methodCost = new MethodCost(method.getFullName(), method
+          .getStartingLineNumber(), method.getTestCost());
       methodCosts.put(method, methodCost);
     }
     return methodCost;
@@ -166,20 +176,35 @@ public class TestabilityVisitor {
     setInjectable(method.getParameters());
   }
 
-  public void localAssignment(MethodInfo inMethod, int lineNumber,
+  public void localAssignment(int lineNumber,
       Variable destination, Variable source) {
+    variableAssignment(getCurrentMethodCost(), lineNumber, destination, source);
+  }
+
+  public void parameterAssignment(MethodInfo inMethod, int lineNumber,
+      Variable destination, Variable source) {
+    variableAssignment(getMethodCost(inMethod), lineNumber, destination, source);
+  }
+
+  public void returnAssignment(MethodInfo inMethod, int lineNumber,
+      Variable destination) {
+    variableAssignment(getMethodCost(inMethod), lineNumber, destination, returnValue);
+  }
+
+  private void variableAssignment(MethodCost inMethod, int lineNumber,
+        Variable destination, Variable source) {
     if (isInjectable(source)) {
       setInjectable(destination);
     }
     if (destination.isGlobal() || isGlobal(source)) {
       setGlobal(destination);
       if (source instanceof LocalField && !source.isFinal()) {
-        getMethodCost(inMethod).addGlobalCost(lineNumber, source);
+        inMethod.addGlobalCost(lineNumber, source);
       }
     }
   }
 
-  public boolean isGlobal(Variable var) {
+  boolean isGlobal(Variable var) {
     if (var instanceof LocalField) {
       LocalField field = (LocalField) var;
       return isGlobal(field.getInstance()) || isGlobal(field.getField());
@@ -198,11 +223,12 @@ public class TestabilityVisitor {
    * a good practice -- removing magic values from code).
    */
   public void fieldAssignment(Variable fieldInstance, FieldInfo field,
-      Variable value, MethodInfo inMethod, int lineNumber) {
-    localAssignment(inMethod, lineNumber, field, value);
+      Variable value, int lineNumber) {
+    MethodCost inMethod = getCurrentMethodCost();
+    variableAssignment(inMethod, lineNumber, field, value);
     if (fieldInstance == null || statics.contains(fieldInstance)) {
       if (!field.isFinal()) {
-        getMethodCost(inMethod).addGlobalCost(lineNumber, fieldInstance);
+        inMethod.addGlobalCost(lineNumber, fieldInstance);
       }
       statics.add(field);
     }
@@ -211,9 +237,9 @@ public class TestabilityVisitor {
   /** If and only if the array is a static, then add it as a Global State Cost for the
    * {@code inMethod}. */
   public void arrayAssignment(Variable array, Variable index, Variable value,
-      MethodInfo inMethod, int lineNumber) {
+      int lineNumber) {
     if (statics.contains(array)) {
-      getMethodCost(inMethod).addGlobalCost(lineNumber, array);
+      getCurrentMethodCost().addGlobalCost(lineNumber, array);
     }
   }
 
@@ -250,15 +276,11 @@ public class TestabilityVisitor {
     this.returnValue = value;
   }
 
-  // TODO(jwolter): This class is too tightly coupled to the MethodInvokation class, can we pull off
-  // this method and put it somewhere else?
-  public Variable getReturnValue() {
-    return returnValue;
-  }
-
   public void applyMethodOperations(MethodInfo methodInfo) {
+    callStack.push(getMethodCost(methodInfo));
     for (Operation operation : methodInfo.getOperations()) {
-      operation.computeMetric(this, methodInfo);
+      operation.visit(this);
     }
+    callStack.pop();
   }
 }
