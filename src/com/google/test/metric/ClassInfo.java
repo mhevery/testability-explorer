@@ -17,14 +17,15 @@ package com.google.test.metric;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class ClassInfo {
 
-  private final Map<String, MethodInfo> methods = new HashMap<String, MethodInfo>();
-  private final Map<String, FieldInfo> fields = new HashMap<String, FieldInfo>();
+  private final Map<String, MethodInfo> methods = new TreeMap<String, MethodInfo>();
+  private final Map<String, FieldInfo> fields = new TreeMap<String, FieldInfo>();
   private final String name;
   private final boolean isInterface;
   private final ClassInfo superClass;
@@ -102,5 +103,18 @@ public class ClassInfo {
 
   public List<ClassInfo> getInterfaces() {
     return interfaces;
+  }
+
+  public Collection<MethodInfo> getSetters() {
+    Collection<MethodInfo> setters = new TreeSet<MethodInfo>();
+    if (superClass != null) {
+      setters.addAll(superClass.getSetters());
+    }
+    for (MethodInfo method : methods.values()) {
+      if (method.isSetter()) {
+        setters.add(method);
+      }
+    }
+    return setters;
   }
 }
