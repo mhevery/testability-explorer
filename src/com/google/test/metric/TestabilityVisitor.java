@@ -27,7 +27,7 @@ import java.util.Set;
 import com.google.test.metric.LineNumberCost.CostSourceType;
 import com.google.test.metric.method.op.turing.Operation;
 
-public class TestabilityContext {
+public class TestabilityVisitor {
 
   private final Set<Variable> injectables = new HashSet<Variable>();
   private final Set<Variable> statics = new HashSet<Variable>();
@@ -40,7 +40,7 @@ public class TestabilityContext {
 
   // TODO(jwolter): As all "Context" objects we need to remove this one and break it into smaller,
   // single-responsibility objects.
-  public TestabilityContext(ClassRepository classRepository, PrintStream err,
+  public TestabilityVisitor(ClassRepository classRepository, PrintStream err,
     WhiteList whitelist, CostModel costModel) {
     this.classRepository = classRepository;
     this.err = err;
@@ -236,12 +236,6 @@ public class TestabilityContext {
   // we would like to have within it. It makes this object double as a service locator.
   public void reportError(String errorMessage) {
     err.println(errorMessage);
-  }
-
-  //TODO(jwolter): This should be removed from this class, because it is only acting as a
-  // service locator, cluttering its responsibilities.
-  public WhiteList getWhitelist() {
-    return whitelist;
   }
 
   // TODO(jwolter): This should be removed from this class, because it is only acting as a

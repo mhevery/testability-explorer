@@ -16,7 +16,7 @@
 package com.google.test.metric.method.op.turing;
 
 import com.google.test.metric.MethodInfo;
-import com.google.test.metric.TestabilityContext;
+import com.google.test.metric.TestabilityVisitor;
 import com.google.test.metric.Variable;
 
 public class ReturnOperation extends Operation {
@@ -29,8 +29,8 @@ public class ReturnOperation extends Operation {
   }
 
   @Override
-  public void computeMetric(TestabilityContext context, MethodInfo currentMethod) {
-    context.setReturnValue(value);
+  public void computeMetric(TestabilityVisitor visitor, MethodInfo currentMethod) {
+    visitor.setReturnValue(value);
   }
 
   @Override

@@ -68,7 +68,7 @@ public class MetricComputer {
    * MethodCost is guaranteed to have already been linked (sealed for adding additional costs).
    */
   public MethodCost compute(MethodInfo method) {
-    TestabilityContext context = new TestabilityContext(classRepository, err, whitelist, costModel);
+    TestabilityVisitor context = new TestabilityVisitor(classRepository, err, whitelist, costModel);
     addStaticInitializationCost(method, context);
     addConstructorCost(method, context);
     addSetterInjection(method, context);
@@ -82,7 +82,7 @@ public class MetricComputer {
 
   /** Goes through all methods and adds an implicit cost for those beginning with "set" (assuming
    * to test the {@code baseMethod}'s class, you need to be able to call the setters for initialization.  */
-  private void addSetterInjection(MethodInfo baseMethod, TestabilityContext context) {
+  private void addSetterInjection(MethodInfo baseMethod, TestabilityVisitor context) {
     for (MethodInfo setter : baseMethod.getSiblingSetters()) {
       context.applyImplicitCost(baseMethod, setter, CostSourceType.IMPLICIT_SETTER);
       context.setInjectable(setter);
@@ -93,7 +93,7 @@ public class MetricComputer {
   /** Adds an implicit cost to all non-static methods for calling the constructor. (Because to test
    * any instance method, you must be able to instantiate the class.) Also marks parameters
    * injectable for the constructor with the most non-primitive parameters. */
-  private void addConstructorCost(MethodInfo method, TestabilityContext context) {
+  private void addConstructorCost(MethodInfo method, TestabilityVisitor context) {
     if (!method.isStatic() && !method.isConstructor()) {
       MethodInfo constructor = method.getClassInfo().getConstructorWithMostNonPrimitiveParameters();
       if (constructor != null) {
@@ -106,7 +106,7 @@ public class MetricComputer {
 
   /** Doesn't really add the field costs (there are none), but marks non-private fields as injectable. */
   private void addFieldCost(MethodInfo method,
-      TestabilityContext context) {
+      TestabilityVisitor context) {
     for (FieldInfo field : method.getClassInfo().getFields()) {
       if (!field.isPrivate()) {
         context.setInjectable(field);
@@ -115,7 +115,7 @@ public class MetricComputer {
   }
 
    /** Includes the cost of all static initialization blocks, as well as static field assignments. */
-  private void addStaticInitializationCost(MethodInfo baseMethod, TestabilityContext context) {
+  private void addStaticInitializationCost(MethodInfo baseMethod, TestabilityVisitor context) {
     if (baseMethod.isStaticConstructor()) {
       return;
     }

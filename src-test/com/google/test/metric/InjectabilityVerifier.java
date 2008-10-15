@@ -21,7 +21,7 @@ public class InjectabilityVerifier {
 
   private String errors = "";
 
-  public void assertInjectable(ClassInfo classInfo, TestabilityContext context) {
+  public void assertInjectable(ClassInfo classInfo, TestabilityVisitor context) {
     for (Variable field : classInfo.getFields()) {
       verify(field, context);
     }
@@ -36,7 +36,7 @@ public class InjectabilityVerifier {
     Assert.assertTrue(errors, errors.length() == 0);
   }
 
-  public void verify(Variable variable, TestabilityContext context) {
+  public void verify(Variable variable, TestabilityVisitor context) {
     if (variable.getName().equals("this")) {
     } else if (variable.getName().endsWith("_I")) {
       if (!context.isInjectable(variable)) {

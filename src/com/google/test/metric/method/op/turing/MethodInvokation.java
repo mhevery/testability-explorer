@@ -15,13 +15,13 @@
  */
 package com.google.test.metric.method.op.turing;
 
+import java.util.List;
+
 import com.google.test.metric.ClassNotFoundException;
 import com.google.test.metric.MethodInfo;
 import com.google.test.metric.MethodNotFoundException;
-import com.google.test.metric.TestabilityContext;
+import com.google.test.metric.TestabilityVisitor;
 import com.google.test.metric.Variable;
-
-import java.util.List;
 
 public class MethodInvokation extends Operation {
 
@@ -66,26 +66,26 @@ public class MethodInvokation extends Operation {
   }
 
   @Override
-  public void computeMetric(TestabilityContext context, MethodInfo currentMethod) {
-    if (context.isClassWhiteListed(clazzName)) {
+  public void computeMetric(TestabilityVisitor visitor, MethodInfo currentMethod) {
+    if (visitor.isClassWhiteListed(clazzName)) {
       return;
     }
     try {
-      MethodInfo toMethod = context.getMethod(clazzName, name + signature);
-      if (context.methodAlreadyVisited(toMethod)) {
+      MethodInfo toMethod = visitor.getMethod(clazzName, name + signature);
+      if (visitor.methodAlreadyVisited(toMethod)) {
         // Method already counted, skip (to prevent recursion)
         return;
-      } else if (toMethod.canOverride() && context.isInjectable(methodThis)) {
+      } else if (toMethod.canOverride() && visitor.isInjectable(methodThis)) {
         // Method can be overridden / injectable
         if (returnValue != null) {
-          context.setInjectable(returnValue);
-          context.setReturnValue(returnValue);
+          visitor.setInjectable(returnValue);
+          visitor.setReturnValue(returnValue);
         }
       } else {
         // Method can not be intercepted we have to add the cost
         // recursively
         if (toMethod.isInstance()) {
-          context.localAssignment(toMethod, getLineNumber(), toMethod
+          visitor.localAssignment(toMethod, getLineNumber(), toMethod
               .getMethodThis(), methodThis);
         }
         int i = 0;
@@ -94,17 +94,17 @@ public class MethodInvokation extends Operation {
               "Argument count does not match method parameter count.");
         }
         for (Variable var : parameters) {
-          context.localAssignment(toMethod, getLineNumber(), toMethod
+          visitor.localAssignment(toMethod, getLineNumber(), toMethod
               .getParameters().get(i++), var);
         }
-        context.recordMethodCall(currentMethod, getLineNumber(), toMethod);
-        context.localAssignment(toMethod, getLineNumber(), returnValue,
-            context.getReturnValue());
+        visitor.recordMethodCall(currentMethod, getLineNumber(), toMethod);
+        visitor.localAssignment(toMethod, getLineNumber(), returnValue,
+            visitor.getReturnValue());
       }
     } catch (ClassNotFoundException e) {
-      context.reportError("WARNING: class not found: " + clazzName);
+      visitor.reportError("WARNING: class not found: " + clazzName);
     } catch (MethodNotFoundException e) {
-      context.reportError("WARNING: method not found: " + e.getMethodName()
+      visitor.reportError("WARNING: method not found: " + e.getMethodName()
           + " in " + e.getClassInfo().getName());
     }
   }
