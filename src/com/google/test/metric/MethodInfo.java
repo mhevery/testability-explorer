@@ -151,7 +151,8 @@ public class MethodInfo implements Comparable<MethodInfo> {
   }
 
   public boolean isConstructor() {
-    return name.equals("<init>");
+    return visibility != Visibility.PRIVATE
+        && name.startsWith("<init>");
   }
 
   public Visibility getVisibility() {
@@ -220,7 +221,17 @@ public class MethodInfo implements Comparable<MethodInfo> {
     if (o == null) {
       return -1;
     }
-    return getName().compareTo(o.getName());
+    return getFullName().compareTo(o.getFullName());
+  }
+
+  public int getNonPrimitiveArgCount() {
+    int count = 0;
+    for (ParameterInfo parameter : getParameters()) {
+      if (parameter.getType().isObject()) {
+        count++;
+      }
+    }
+    return count;
   }
 
 }

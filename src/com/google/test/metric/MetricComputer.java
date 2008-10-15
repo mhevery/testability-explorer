@@ -17,11 +17,9 @@ package com.google.test.metric;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import com.google.test.metric.LineNumberCost.CostSourceType;
-import com.google.test.metric.asm.Visibility;
 
 public class MetricComputer {
 
@@ -97,7 +95,7 @@ public class MetricComputer {
    * injectable for the constructor with the most non-primitive parameters. */
   private void addConstructorCost(MethodInfo method, TestabilityContext context) {
     if (!method.isStatic() && !method.isConstructor()) {
-      MethodInfo constructor = getConstructorWithMostNonPrimitiveParameters(method.getClassInfo());
+      MethodInfo constructor = method.getClassInfo().getConstructorWithMostNonPrimitiveParameters();
       if (constructor != null) {
         context.applyImplicitCost(method, constructor, CostSourceType.IMPLICIT_CONSTRUCTOR);
         context.setInjectable(constructor);
@@ -129,38 +127,4 @@ public class MetricComputer {
     }
   }
 
-  /** When you have multiple constructors you need to know which one to use for marking
-   * fields as injectables. The heuristic is that the constructor with most arguments
-   * will probably be the constructor best suited for testing as it will give you highest
-   * control over your field injection.
-   */
-  MethodInfo getConstructorWithMostNonPrimitiveParameters(ClassInfo classInfo) {
-    // TODO(jwolter): It would seem more accurate a approximation of multiple constructors
-    // if we would calculate the cost for all of them, and then add in only the highest,
-    // or an average of them.
-    Collection<MethodInfo> methods = classInfo.getMethods();
-    MethodInfo constructor = null;
-    int currentArgsCount = -1;
-    for (MethodInfo methodInfo : methods) {
-      if (methodInfo.getVisibility() != Visibility.PRIVATE
-          && methodInfo.getName().startsWith("<init>")) {
-        int count = countNonPrimitiveArgs(methodInfo.getParameters());
-        if (currentArgsCount < count) {
-          constructor = methodInfo;
-          currentArgsCount = count;
-        }
-      }
-    }
-    return constructor;
-  }
-
-  private int countNonPrimitiveArgs(List<ParameterInfo> parameters) {
-    int count = 0;
-    for (ParameterInfo parameter : parameters) {
-      if (parameter.getType().isObject()) {
-        count++;
-      }
-    }
-    return count;
-  }
 }

@@ -212,8 +212,7 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
 
   public void testChooseConstructorWithMostNonPrimitiveParameters() throws Exception {
     ClassInfo classInfo = repo.getClass(ChoseConstructor.class.getName());
-    MetricComputer computer = decoratedComputer.getDecoratedComputer();
-    MethodInfo constructor = computer.getConstructorWithMostNonPrimitiveParameters(classInfo);
+    MethodInfo constructor = classInfo.getConstructorWithMostNonPrimitiveParameters();
     assertEquals("<init>(Ljava/lang/Object;Ljava/lang/Object;)V", constructor
         .getNameDesc());
   }
@@ -232,8 +231,8 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
     assertEquals(2L, decoratedComputer.compute(Singleton.class, "doWork()V")
         .getTotalComplexityCost());
     ClassInfo classInfo = repo.getClass(Singleton.class.getName());
-    MethodInfo constructor = decoratedComputer.getDecoratedComputer()
-        .getConstructorWithMostNonPrimitiveParameters(classInfo);
+    MethodInfo constructor = classInfo
+        .getConstructorWithMostNonPrimitiveParameters();
     assertNull("Constructor should not be found when private",  constructor);
   }
 
