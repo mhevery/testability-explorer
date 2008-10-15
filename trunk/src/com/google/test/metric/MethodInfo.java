@@ -210,4 +210,8 @@ public class MethodInfo {
     return name.equals("<clinit>");
   }
 
+  public boolean isSetter() {
+    return getName().startsWith("set");
+  }
+
 }
