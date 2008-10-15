@@ -86,7 +86,7 @@ public class MetricComputer {
    * to test the {@code baseMethod}'s class, you need to be able to call the setters for initialization.  */
   private void addSetterInjection(MethodInfo baseMethod, TestabilityContext context) {
     for (MethodInfo method : baseMethod.getClassInfo().getMethods()) {
-      if (method.getName().startsWith("set")) {
+      if (method.isSetter()) {
         context.implicitCost(baseMethod, method, CostSourceType.IMPLICIT_SETTER);
         context.setInjectable(method);
         method.computeMetric(context);
