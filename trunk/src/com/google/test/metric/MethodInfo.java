@@ -201,12 +201,6 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return getNonRecursiveCyclomaticComplexity() - 1;
   }
 
-  public void computeMetric(TestabilityContext context) {
-    for (Operation operation : getOperations()) {
-      operation.computeMetric(context, this);
-    }
-  }
-
   public boolean isStaticConstructor() {
     return name.equals("<clinit>");
   }

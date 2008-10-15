@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.test.metric.LineNumberCost.CostSourceType;
+import com.google.test.metric.method.op.turing.Operation;
 
 public class TestabilityContext {
 
@@ -75,7 +76,7 @@ public class TestabilityContext {
     MethodCost to = getMethodCost(toMethod);
     if (from != to) {
       from.addMethodCost(fromLineNumber, to, CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
-      toMethod.computeMetric(this);
+      applyMethodOperations(toMethod);
     }
   }
 
@@ -125,7 +126,7 @@ public class TestabilityContext {
    * @param costSourceType the type of implicit cost to record, for giving the user information
    * about why they have the costs they have.
    */
-  public void implicitCost(MethodInfo from, MethodInfo to, CostSourceType costSourceType) {
+  public void applyImplicitCost(MethodInfo from, MethodInfo to, CostSourceType costSourceType) {
     int line = to.getStartingLineNumber();
     getMethodCost(from).addMethodCost(line, getMethodCost(to), costSourceType);
   }
@@ -259,5 +260,11 @@ public class TestabilityContext {
   // this method and put it somewhere else?
   public Variable getReturnValue() {
     return returnValue;
+  }
+
+  public void applyMethodOperations(MethodInfo methodInfo) {
+    for (Operation operation : methodInfo.getOperations()) {
+      operation.computeMetric(this, methodInfo);
+    }
   }
 }

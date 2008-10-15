@@ -76,7 +76,7 @@ public class MetricComputer {
     addSetterInjection(method, context);
     addFieldCost(method, context);
     context.setInjectable(method);
-    method.computeMetric(context);
+    context.applyMethodOperations(method);
     return context.getLinkedMethodCost(method);
   }
 
@@ -86,9 +86,9 @@ public class MetricComputer {
    * to test the {@code baseMethod}'s class, you need to be able to call the setters for initialization.  */
   private void addSetterInjection(MethodInfo baseMethod, TestabilityContext context) {
     for (MethodInfo setter : baseMethod.getSiblingSetters()) {
-      context.implicitCost(baseMethod, setter, CostSourceType.IMPLICIT_SETTER);
+      context.applyImplicitCost(baseMethod, setter, CostSourceType.IMPLICIT_SETTER);
       context.setInjectable(setter);
-      setter.computeMetric(context);
+      context.applyMethodOperations(setter);
     }
   }
 
@@ -99,9 +99,9 @@ public class MetricComputer {
     if (!method.isStatic() && !method.isConstructor()) {
       MethodInfo constructor = getConstructorWithMostNonPrimitiveParameters(method.getClassInfo());
       if (constructor != null) {
-        context.implicitCost(method, constructor, CostSourceType.IMPLICIT_CONSTRUCTOR);
+        context.applyImplicitCost(method, constructor, CostSourceType.IMPLICIT_CONSTRUCTOR);
         context.setInjectable(constructor);
-        constructor.computeMetric(context);
+        context.applyMethodOperations(constructor);
       }
     }
   }
@@ -123,8 +123,8 @@ public class MetricComputer {
     }
     for (MethodInfo method : baseMethod.getClassInfo().getMethods()) {
       if (method.getName().startsWith("<clinit>")) {
-        context.implicitCost(baseMethod, method, CostSourceType.IMPLICIT_STATIC_INIT);
-        method.computeMetric(context);
+        context.applyImplicitCost(baseMethod, method, CostSourceType.IMPLICIT_STATIC_INIT);
+        context.applyMethodOperations(method);
       }
     }
   }
