@@ -41,31 +41,31 @@ public class SelfTest extends AutoFieldClearTestCase {
   }
 
   public void testMethodCost() throws Exception {
-    System.out.println(decoratedComputer.compute(MethodCost.class.getName()));
+    decoratedComputer.compute(MethodCost.class.getName());
   }
 
   public void testClassCost() throws Exception {
-    System.out.println(decoratedComputer.compute(ClassCost.class.getName()));
+    decoratedComputer.compute(ClassCost.class.getName());
   }
 
   public void testClassRepository() throws Exception {
-    System.out.println(decoratedComputer.compute(JavaClassRepository.class.getName()));
+    decoratedComputer.compute(JavaClassRepository.class.getName());
   }
 
   public void testClassReader() throws Exception {
-    System.out.println(decoratedComputer.compute(ClassReader.class.getName()));
+    decoratedComputer.compute(ClassReader.class.getName());
   }
 
   public void testPrimeness() throws Exception {
-    System.out.println(decoratedComputer.compute(Primeness.class.getName()));
+    decoratedComputer.compute(Primeness.class.getName());
   }
 
   public void testSumOfPrimes() throws Exception {
-    System.out.println(decoratedComputer.compute(SumOfPrimes1.class.getName()));
+    decoratedComputer.compute(SumOfPrimes1.class.getName());
   }
 
   public void testSumOfPrimes2() throws Exception {
-    System.out.println(decoratedComputer.compute(SumOfPrimes2.class.getName()));
+    decoratedComputer.compute(SumOfPrimes2.class.getName());
   }
 
 
