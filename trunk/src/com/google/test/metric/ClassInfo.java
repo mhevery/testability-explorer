@@ -117,4 +117,36 @@ public class ClassInfo {
     }
     return setters;
   }
+
+  /** When you have multiple constructors you need to know which one to use for marking
+   * fields as injectables. The heuristic is that the constructor with most arguments
+   * will probably be the constructor best suited for testing as it will give you highest
+   * control over your field injection.
+   */
+  public MethodInfo getConstructorWithMostNonPrimitiveParameters() {
+    // TODO(jwolter): It would seem more accurate a approximation of multiple constructors
+    // if we would calculate the cost for all of them, and then add in only the highest,
+    // or an average of them.
+    MethodInfo constructor = null;
+    int currentArgsCount = -1;
+    for (MethodInfo methodInfo : getConstructors()) {
+      int count = methodInfo.getNonPrimitiveArgCount();
+      if (currentArgsCount < count) {
+        constructor = methodInfo;
+        currentArgsCount = count;
+      }
+    }
+    return constructor;
+  }
+
+  public Collection<MethodInfo> getConstructors() {
+    TreeSet<MethodInfo> constructors = new TreeSet<MethodInfo>();
+    for (MethodInfo methodInfo : getMethods()) {
+      if (methodInfo.isConstructor()) {
+        constructors.add(methodInfo);
+      }
+    }
+    return constructors;
+  }
+
 }
