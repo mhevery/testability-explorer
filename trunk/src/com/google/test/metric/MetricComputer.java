@@ -51,8 +51,7 @@ public class MetricComputer {
     for (MethodInfo method : clazz.getMethods()) {
       methods.add(compute(method));
     }
-    ClassCost classCost = new ClassCost(clazz.getName(), methods, costModel);
-    return classCost;
+    return new ClassCost(clazz.getName(), methods, costModel);
   }
 
   /**
