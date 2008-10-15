@@ -17,7 +17,7 @@ package com.google.test.metric.method.op.turing;
 
 import com.google.test.metric.FieldInfo;
 import com.google.test.metric.MethodInfo;
-import com.google.test.metric.TestabilityContext;
+import com.google.test.metric.TestabilityVisitor;
 import com.google.test.metric.Variable;
 
 public class FieldAssignment extends Operation {
@@ -35,8 +35,8 @@ public class FieldAssignment extends Operation {
   }
 
   @Override
-  public void computeMetric(TestabilityContext context, MethodInfo currentMethod) {
-    context.fieldAssignment(fieldInstance, field, value, currentMethod,
+  public void computeMetric(TestabilityVisitor visitor, MethodInfo currentMethod) {
+    visitor.fieldAssignment(fieldInstance, field, value, currentMethod,
         getLineNumber());
   }
 
