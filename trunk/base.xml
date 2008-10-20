@@ -1,13 +1,13 @@
 <project name="base">
 
-	<taskdef name="svn" classname="org.tigris.subversion.svnant.SvnTask">
+	<typedef resource="com/googlecode/svntask/svntask.xml">
 		<classpath>
 			<fileset dir="lib/svn">
-				<include name="*.jar" />
-				<exclude name="*-src.jar" />
+				<include name="svnkit.jar" />
+				<include name="svntask.jar" />
 			</fileset>
 		</classpath>
-	</taskdef>
+	</typedef>
 
 	<taskdef name="antlr" classname="org.apache.tools.ant.taskdefs.optional.ANTLR">
 		<classpath>
@@ -42,7 +42,7 @@
 
 	<target name="revision">
 		<svn>
-			<status path="." revisionProperty="revision" />
+			<info path="." revisionProperty="revision" />
 		</svn>
 	</target>
 
