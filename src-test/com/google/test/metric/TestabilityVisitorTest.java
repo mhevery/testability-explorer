@@ -106,4 +106,27 @@ public class TestabilityVisitorTest extends TestCase {
     assertEquals(0, visitor.getLinkedMethodCost(method).getTotalGlobalCost());
   }
 
+  private static class LoDExample {
+
+    String conforming;
+    String violator;
+
+    public void assign(String in) {
+      conforming = in;
+      violator = in.toLowerCase();
+    }
+  }
+
+  public void testLoDExample() throws Exception {
+    JavaClassRepository repo = new JavaClassRepository();
+    TestabilityVisitor visitor = new TestabilityVisitor(repo,null, new RegExpWhiteList(), new CostModel());
+    ClassInfo clazz = repo.getClass(LoDExample.class.getName());
+    MethodInfo methodInfo = clazz.getMethod("assign(Ljava/lang/String;)V");
+    visitor.applyMethodOperations(methodInfo);
+    Variable comforming = clazz.getField("conforming");
+    Variable violator = clazz.getField("violator");
+    assertEquals(0, visitor.getLoDCount(comforming));
+    assertEquals(1, visitor.getLoDCount(violator));
+  }
+
 }

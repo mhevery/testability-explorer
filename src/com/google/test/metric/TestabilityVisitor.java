@@ -30,6 +30,7 @@ import com.google.test.metric.method.op.turing.Operation;
 
 public class TestabilityVisitor {
 
+  private final Map<Variable, Integer> lodCount = new HashMap<Variable, Integer>();
   private final Set<Variable> injectables = new HashSet<Variable>();
   private final Set<Variable> statics = new HashSet<Variable>();
   private final Stack<MethodCost> callStack = new Stack<MethodCost>();
@@ -188,6 +189,7 @@ public class TestabilityVisitor {
 
   public void returnAssignment(MethodInfo inMethod, int lineNumber,
       Variable destination) {
+    checkAndSetLoDCount(destination, 1);
     variableAssignment(getMethodCost(inMethod), lineNumber, destination, returnValue);
   }
 
@@ -202,6 +204,7 @@ public class TestabilityVisitor {
         inMethod.addGlobalCost(lineNumber, source);
       }
     }
+    checkAndSetLoDCount(destination, getLoDCount(source));
   }
 
   boolean isGlobal(Variable var) {
@@ -276,6 +279,14 @@ public class TestabilityVisitor {
     this.returnValue = value;
   }
 
+  public void checkAndSetLoDCount(Variable value, int newCount) {
+
+    int count = lodCount.containsKey(value) ? lodCount.get(value) : 0;
+    if (count < newCount) {
+      lodCount.put(value, newCount);
+    }
+  }
+
   public void applyMethodOperations(MethodInfo methodInfo) {
     callStack.push(getMethodCost(methodInfo));
     for (Operation operation : methodInfo.getOperations()) {
@@ -283,4 +294,13 @@ public class TestabilityVisitor {
     }
     callStack.pop();
   }
+
+  public int getLoDCount(Variable variable) {
+    int count = 0;
+    if (lodCount.containsKey(variable)) {
+      count = lodCount.get(variable);
+    }
+    return count;
+  }
 }
+
