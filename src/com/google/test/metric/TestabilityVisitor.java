@@ -277,9 +277,14 @@ public class TestabilityVisitor {
   // TODO(jwolter): This class is too tightly coupled to the MethodInvokation class, can we pull off
   // this method and put it somewhere else?
   public void setReturnValue(Variable value) {
-    this.returnValue = value;
+    if (isWorse(value, returnValue)) {
+      returnValue = value;
+    }
   }
 
+  private boolean isWorse(Variable var1, Variable var2) {
+    return isGlobal(var1) && !isGlobal(var2);
+  }
 
   public void checkAndSetLoDCount(Variable value, int newCount) {
 
@@ -290,6 +295,7 @@ public class TestabilityVisitor {
   }
 
   public void applyMethodOperations(MethodInfo methodInfo) {
+    returnValue = null;
     callStack.push(getMethodCost(methodInfo));
     for (Operation operation : methodInfo.getOperations()) {
       operation.visit(this);

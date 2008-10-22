@@ -518,4 +518,32 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
     assertEquals(0, cost.getTotalComplexityCost());
   }
 
+  public static class NonDeterministicCostUtil {
+
+    public static int global;
+    public int notGlobal;
+    public int value;
+
+    private int trinary(boolean bool) {
+        try {
+          return !bool ? notGlobal : global;
+        } catch (Exception e) {
+          return 1;
+        }
+    }
+
+    public void test() {
+      value = trinary(false);
+    }
+
+
+   }
+
+  public void testWhenLeftAndRightSideOfTrinaryReturnDifferentCostUseHigherOne()
+      throws Exception {
+    MethodCost cost = decoratedComputer.compute(NonDeterministicCostUtil.class,
+        "test()V");
+    assertEquals(1, cost.getTotalGlobalCost());
+  }
+
 }
