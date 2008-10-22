@@ -15,15 +15,17 @@
  */
 package com.google.test.metric;
 
+
 public class Variable {
 
   protected final Type type;
   private final boolean isFinal;
   private final boolean isGlobal;
   private String name;
+  private int hashCode;
 
   public Variable(String name, Type type, boolean isFinal, boolean isGlobal) {
-    this.name = name;
+    setName(name);
     this.type = type;
     this.isFinal = isFinal;
     this.isGlobal = isGlobal;
@@ -44,6 +46,20 @@ public class Variable {
 
   public void setName(String name) {
     this.name = name;
+    this.hashCode  = computeHashCode();
+  }
+
+  public int computeHashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
+    result = prime * result + ((type == null) ? 0 : type.hashCode());
+    return result;
+  }
+
+  @Override
+  public int hashCode() {
+    return hashCode;
   }
 
   public boolean isGlobal() {
