@@ -30,6 +30,7 @@ import com.google.test.metric.method.op.turing.Operation;
 
 public class TestabilityVisitor {
 
+
   private final Map<Variable, Integer> lodCount = new HashMap<Variable, Integer>();
   private final Set<Variable> injectables = new HashSet<Variable>();
   private final Set<Variable> statics = new HashSet<Variable>();
@@ -279,6 +280,7 @@ public class TestabilityVisitor {
     this.returnValue = value;
   }
 
+
   public void checkAndSetLoDCount(Variable value, int newCount) {
 
     int count = lodCount.containsKey(value) ? lodCount.get(value) : 0;
@@ -297,6 +299,12 @@ public class TestabilityVisitor {
 
   public int getLoDCount(Variable variable) {
     int count = 0;
+
+    if (variable instanceof LocalField) {
+      LocalField field = (LocalField) variable;
+      variable = field.getField();
+    }
+
     if (lodCount.containsKey(variable)) {
       count = lodCount.get(variable);
     }

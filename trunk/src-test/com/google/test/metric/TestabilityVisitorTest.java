@@ -38,6 +38,15 @@ public class TestabilityVisitorTest extends TestCase {
   MethodInfo method =
       new MethodInfo(classInfo, "method", 0, "()V", null, null, null, null, 1, null, false);
 
+  private final JavaClassRepository repo = new JavaClassRepository();
+
+  private TestabilityVisitor loDVisitor;
+
+  @Override
+  public void setUp() throws Exception {
+    loDVisitor = new TestabilityVisitor(repo,null, new RegExpWhiteList(), new CostModel());
+  }
+
   public void testIsInjectable() throws Exception {
     Variable var = new Variable("", Type.fromJava("X"), false, false);
     assertFalse(visitor.isInjectable(var));
@@ -110,23 +119,32 @@ public class TestabilityVisitorTest extends TestCase {
 
     String conforming;
     String violator;
+    String transitiveViolator;
 
     public void assign(String in) {
       conforming = in;
       violator = in.toLowerCase();
+      transitiveViolator = violator;
     }
   }
 
   public void testLoDExample() throws Exception {
-    JavaClassRepository repo = new JavaClassRepository();
-    TestabilityVisitor visitor = new TestabilityVisitor(repo,null, new RegExpWhiteList(), new CostModel());
     ClassInfo clazz = repo.getClass(LoDExample.class.getName());
     MethodInfo methodInfo = clazz.getMethod("assign(Ljava/lang/String;)V");
-    visitor.applyMethodOperations(methodInfo);
+    loDVisitor.applyMethodOperations(methodInfo);
     Variable comforming = clazz.getField("conforming");
     Variable violator = clazz.getField("violator");
-    assertEquals(0, visitor.getLoDCount(comforming));
-    assertEquals(1, visitor.getLoDCount(violator));
+    assertEquals(0, loDVisitor.getLoDCount(comforming));
+    assertEquals(1, loDVisitor.getLoDCount(violator));
+  }
+
+  public void testLodTransitive() throws Exception {
+    ClassInfo clazz = repo.getClass(LoDExample.class.getName());
+    MethodInfo methodInfo = clazz.getMethod("assign(Ljava/lang/String;)V");
+    loDVisitor.applyMethodOperations(methodInfo);
+    Variable transitiveViolator = clazz.getField("transitiveViolator");
+    assertEquals(1, loDVisitor.getLoDCount(transitiveViolator));
   }
 
 }
+
