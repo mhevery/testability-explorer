@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import com.google.test.metric.LineNumberCost.CostSourceType;
+import com.google.test.metric.CostViolation.Reason;
 import com.google.test.metric.method.op.turing.Operation;
 
 public class TestabilityVisitor {
@@ -84,7 +84,7 @@ public class TestabilityVisitor {
     MethodCost from = getCurrentMethodCost();
     MethodCost to = getMethodCost(toMethod);
     if (from != to) {
-      from.addMethodCost(fromLineNumber, to, CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
+      from.addMethodCost(fromLineNumber, to, Reason.NON_OVERRIDABLE_METHOD_CALL);
       applyMethodOperations(toMethod);
     }
   }
@@ -138,9 +138,11 @@ public class TestabilityVisitor {
    * @param costSourceType the type of implicit cost to record, for giving the user information
    * about why they have the costs they have.
    */
-  public void applyImplicitCost(MethodInfo from, MethodInfo to, CostSourceType costSourceType) {
+  public void applyImplicitCost(MethodInfo from, MethodInfo to, Reason costSourceType) {
     int line = to.getStartingLineNumber();
-    getMethodCost(from).addMethodCost(line, getMethodCost(to), costSourceType);
+    MethodCost methodCost = getMethodCost(from);
+    MethodCost toMethodCost = getMethodCost(to);
+    methodCost.addMethodCost(line, toMethodCost, costSourceType);
   }
 
   @Override

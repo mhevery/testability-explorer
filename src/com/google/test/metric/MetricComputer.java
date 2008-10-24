@@ -19,7 +19,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.test.metric.LineNumberCost.CostSourceType;
+import com.google.test.metric.CostViolation.Reason;
 
 public class MetricComputer {
 
@@ -84,7 +84,7 @@ public class MetricComputer {
    * to test the {@code baseMethod}'s class, you need to be able to call the setters for initialization.  */
   private void addSetterInjection(MethodInfo baseMethod, TestabilityVisitor context) {
     for (MethodInfo setter : baseMethod.getSiblingSetters()) {
-      context.applyImplicitCost(baseMethod, setter, CostSourceType.IMPLICIT_SETTER);
+      context.applyImplicitCost(baseMethod, setter, Reason.IMPLICIT_SETTER);
       context.setInjectable(setter);
       context.applyMethodOperations(setter);
     }
@@ -97,7 +97,7 @@ public class MetricComputer {
     if (!method.isStatic() && !method.isConstructor()) {
       MethodInfo constructor = method.getClassInfo().getConstructorWithMostNonPrimitiveParameters();
       if (constructor != null) {
-        context.applyImplicitCost(method, constructor, CostSourceType.IMPLICIT_CONSTRUCTOR);
+        context.applyImplicitCost(method, constructor, Reason.IMPLICIT_CONSTRUCTOR);
         context.setInjectable(constructor);
         context.applyMethodOperations(constructor);
       }
@@ -121,7 +121,7 @@ public class MetricComputer {
     }
     for (MethodInfo method : baseMethod.getClassInfo().getMethods()) {
       if (method.getName().startsWith("<clinit>")) {
-        context.applyImplicitCost(baseMethod, method, CostSourceType.IMPLICIT_STATIC_INIT);
+        context.applyImplicitCost(baseMethod, method, Reason.IMPLICIT_STATIC_INIT);
         context.applyMethodOperations(method);
       }
     }

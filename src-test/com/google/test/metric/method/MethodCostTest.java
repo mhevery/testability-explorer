@@ -19,14 +19,14 @@ import junit.framework.TestCase;
 
 import com.google.test.metric.CostModel;
 import com.google.test.metric.MethodCost;
-import com.google.test.metric.LineNumberCost.CostSourceType;
+import com.google.test.metric.CostViolation.Reason;
 
 public class MethodCostTest extends TestCase {
 
   public void testComputeOverallCost() throws Exception {
     MethodCost cost = new MethodCost("a", 0, 1);
     cost.addGlobalCost(0, null);
-    cost.addMethodCost(0, new MethodCost("b", 0, 3), CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
+    cost.addMethodCost(0, new MethodCost("b", 0, 3), Reason.NON_OVERRIDABLE_METHOD_CALL);
     CostModel costModel = new CostModel(2, 10);
     cost.link(costModel);
 

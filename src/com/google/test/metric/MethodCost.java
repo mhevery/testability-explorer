@@ -18,19 +18,16 @@ package com.google.test.metric;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.test.metric.LineNumberCost.CostSourceType;
+import com.google.test.metric.CostViolation.Reason;
 
 public class MethodCost {
 
   private final String methodName;
-  private final long cyclomaticCost;
   private final int lineNumber;
-  private final List<LineNumberCost> operationCosts = new ArrayList<LineNumberCost>();
-  private final List<GlobalStateCost> globalStateCosts = new ArrayList<GlobalStateCost>();
-  private long totalGlobalCost;
-  private long totalComplexityCost;
-  private long overallCost;
-  private boolean linked = false;
+  private final List<CostViolation> costSources = new ArrayList<CostViolation>();
+  private final Cost directCost;
+  private final Cost totalCost = Cost.none();
+  private boolean isLinked = false;
 
   /**
    * @param methodName
@@ -44,87 +41,55 @@ public class MethodCost {
   public MethodCost(String methodName, int lineNumber, long cyclomaticCost) {
     this.methodName = methodName;
     this.lineNumber = lineNumber;
-    this.cyclomaticCost = cyclomaticCost;
-  }
-
-  public long getTotalComplexityCost() {
-    assertLinked();
-    return totalComplexityCost;
-  }
-
-  public long getTotalGlobalCost() {
-    assertLinked();
-    return totalGlobalCost;
+    this.directCost = new Cost((int) cyclomaticCost, 0, null);
   }
 
   private void assertLinked() {
-    if (!linked) {
+    if (!isLinked) {
       throw new IllegalStateException("Need to link first.");
     }
   }
 
   private void assertNotLinked() {
-    if (linked) {
+    if (isLinked) {
       throw new IllegalStateException("Can not call after linked.");
     }
   }
 
-  public void link(CostModel costModel) {
-    if (!linked) {
-      linked = true;
-      long totalGlobalCost = getGlobalCost();
-      long totalComplexityCost = getCyclomaticCost();
-      for (LineNumberCost operationCost : operationCosts) {
-        MethodCost childCost = operationCost.getMethodCost();
-        childCost.link(costModel);
-        // TODO(Jwolter): have a Cost object that represents the type of cost
-        // rather than just a number.
-        totalGlobalCost += childCost.getTotalGlobalCost();
-        totalComplexityCost += childCost.getTotalComplexityCost();
+  public Cost link(CostModel costModel) {
+    if (!isLinked) {
+      isLinked = true;
+      Cost dependantCost = Cost.none();
+      for (CostViolation costSource : costSources) {
+        costSource.link(directCost, dependantCost, costModel);
       }
-      this.totalComplexityCost = totalComplexityCost;
-      this.totalGlobalCost = totalGlobalCost;
-      overallCost = costModel.computeMethod(getTotalComplexityCost(),
-          getTotalGlobalCost());
+      dependantCost.add(directCost);
+      totalCost.add(dependantCost);
+      totalCost.link(costModel);
     }
+    return getTotalCost();
   }
 
-  public long getGlobalCost() {
+  public Cost getTotalCost() {
     assertLinked();
-    return globalStateCosts.size();
-  }
-
-  public List<LineNumberCost> getOperationCosts() {
-    return operationCosts;
+    return totalCost;
   }
 
   public String getMethodName() {
     return methodName;
   }
 
-  public void addMethodCost(int lineNumber, MethodCost to,
-      CostSourceType costSourceType) {
+  private void addCostSource(CostViolation costSource) {
     assertNotLinked();
-    operationCosts.add(new LineNumberCost(lineNumber, to, costSourceType));
+    costSources.add(costSource);
+  }
+
+  public void addMethodCost(int line, MethodCost method, Reason costSourceType) {
+    addCostSource(new MethodInvokationCost(line, method, costSourceType));
   }
 
   public void addGlobalCost(int lineNumber, Variable variable) {
-    assertNotLinked();
-    globalStateCosts.add(new GlobalStateCost(lineNumber, variable));
-  }
-
-  // TODO(jwolter): enable reporting of *why* each class has the cost that it
-  // has.
-  // How do you want this to be different from the DetailHtmlReport? Well, first
-  // look at it
-  // and see how it works. In practice, real lifelike scenarios.
-  public String getSourcesOfCost() {
-    StringBuilder sb = new StringBuilder();
-    sb.append(
-        "Complexity Cost of " + this.methodName + " itself "
-            + this.cyclomaticCost + "\n").append("Operation Costs:\n");
-
-    return sb.toString();
+    addCostSource(new GlobalCost(lineNumber));
   }
 
   @Override
@@ -133,26 +98,23 @@ public class MethodCost {
   }
 
   public String toCostsString() {
-    if (linked) {
-      return " [" + getCyclomaticCost() + ", " + getGlobalCost() + " / "
-          + getTotalComplexityCost() + ", " + getTotalGlobalCost() + "]";
-    } else {
-      return " [ unlinked ]";
-    }
-  }
-
-  public long getCyclomaticCost() {
-    assertLinked();
-    return cyclomaticCost;
+    return " [" + directCost + " / " + totalCost + "]";
   }
 
   public int getMethodLineNumber() {
     return lineNumber;
   }
 
-  public long getOverallCost() {
-    assertLinked();
-    return overallCost;
+  public List<CostViolation> getCostSources() {
+    return costSources;
+  }
+
+  public Cost getCost() {
+    return directCost;
+  }
+
+  public int getOverallCost() {
+    return getTotalCost().getOvarall();
   }
 
 }

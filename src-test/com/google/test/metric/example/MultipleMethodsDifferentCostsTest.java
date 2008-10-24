@@ -57,77 +57,77 @@ public class MultipleMethodsDifferentCostsTest extends AutoFieldClearTestCase {
 
   public void testOverridableTcc0Cost() throws Exception {
     MethodCost methodCost = cost("methodOverridableTcc4()V");
-    assertEquals(4, methodCost.getCyclomaticCost());
-    assertEquals(0, methodCost.getGlobalCost());
-    assertEquals(0, methodCost.getTotalGlobalCost());
-    assertEquals(4, methodCost.getTotalComplexityCost());
+    assertEquals(4, methodCost.getCost().getCyclomaticComplexityCost());
+    assertEquals(0, methodCost.getCost().getGlobalCost());
+    assertEquals(0, methodCost.getTotalCost().getGlobalCost());
+    assertEquals(4, methodCost.getTotalCost().getCyclomaticComplexityCost());
     assertEquals(4, methodCost.getOverallCost());
 
     methodCost = cost("methodTcc0BecauseOverridableMethodCalls()V");
-    assertEquals(0, methodCost.getCyclomaticCost());
-    assertEquals(0, methodCost.getGlobalCost());
-    assertEquals(0, methodCost.getTotalGlobalCost());
-    assertEquals(0, methodCost.getTotalComplexityCost());
+    assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
+    assertEquals(0, methodCost.getCost().getGlobalCost());
+    assertEquals(0, methodCost.getTotalCost().getGlobalCost());
+    assertEquals(0, methodCost.getTotalCost().getCyclomaticComplexityCost());
     assertEquals(0, methodCost.getOverallCost());
   }
 
   public void testStaticTcc4Cost() throws Exception {
     MethodCost methodCost = cost("methodStaticTcc4()V");
-    assertEquals(4, methodCost.getCyclomaticCost());
-    assertEquals(0, methodCost.getGlobalCost());
-    assertEquals(0, methodCost.getTotalGlobalCost());
-    assertEquals(4, methodCost.getTotalComplexityCost());
+    assertEquals(4, methodCost.getCost().getCyclomaticComplexityCost());
+    assertEquals(0, methodCost.getCost().getGlobalCost());
+    assertEquals(0, methodCost.getTotalCost().getGlobalCost());
+    assertEquals(4, methodCost.getTotalCost().getCyclomaticComplexityCost());
     assertEquals(4, methodCost.getOverallCost());
 
     methodCost = cost("methodTcc4BecauseStaticMethodCalls()V");
-    assertEquals(0, methodCost.getCyclomaticCost());
-    assertEquals(0, methodCost.getGlobalCost());
-    assertEquals(0, methodCost.getTotalGlobalCost());
+    assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
+    assertEquals(0, methodCost.getCost().getGlobalCost());
+    assertEquals(0, methodCost.getTotalCost().getGlobalCost());
     // TCC 4 because it doesn't double count for the same offense within one method
-    assertEquals(4, methodCost.getTotalComplexityCost());
+    assertEquals(4, methodCost.getTotalCost().getCyclomaticComplexityCost());
     assertEquals(4, methodCost.getOverallCost());
   }
 
   public void testPrivateTcc4Cost() throws Exception {
     MethodCost methodCost = cost("methodPrivateTcc4()V");
-    assertEquals(4, methodCost.getCyclomaticCost());
-    assertEquals(0, methodCost.getGlobalCost());
-    assertEquals(0, methodCost.getTotalGlobalCost());
-    assertEquals(4, methodCost.getTotalComplexityCost());
+    assertEquals(4, methodCost.getCost().getCyclomaticComplexityCost());
+    assertEquals(0, methodCost.getCost().getGlobalCost());
+    assertEquals(0, methodCost.getTotalCost().getGlobalCost());
+    assertEquals(4, methodCost.getTotalCost().getCyclomaticComplexityCost());
     assertEquals(4, methodCost.getOverallCost());
 
     methodCost = cost("methodTcc4BecausePrivateMethodCalls()V");
-    assertEquals(0, methodCost.getCyclomaticCost());
-    assertEquals(0, methodCost.getGlobalCost());
-    assertEquals(0, methodCost.getTotalGlobalCost());
+    assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
+    assertEquals(0, methodCost.getCost().getGlobalCost());
+    assertEquals(0, methodCost.getTotalCost().getGlobalCost());
     // TCC 4 because it doesn't double count for the same offense within one method
-    assertEquals(4, methodCost.getTotalComplexityCost());
+    assertEquals(4, methodCost.getTotalCost().getCyclomaticComplexityCost());
     assertEquals(4, methodCost.getOverallCost());
   }
 
   public void testFinalTcc4Cost() throws Exception {
     MethodCost methodCost = cost("methodFinalTcc4()V");
-    assertEquals(4, methodCost.getCyclomaticCost());
-    assertEquals(0, methodCost.getGlobalCost());
-    assertEquals(0, methodCost.getTotalGlobalCost());
-    assertEquals(4, methodCost.getTotalComplexityCost());
+    assertEquals(4, methodCost.getCost().getCyclomaticComplexityCost());
+    assertEquals(0, methodCost.getCost().getGlobalCost());
+    assertEquals(0, methodCost.getTotalCost().getGlobalCost());
+    assertEquals(4, methodCost.getTotalCost().getCyclomaticComplexityCost());
     assertEquals(4, methodCost.getOverallCost());
 
     methodCost = cost("methodTcc4BecauseFinalMethodCalls()V");
-    assertEquals(0, methodCost.getCyclomaticCost());
-    assertEquals(0, methodCost.getGlobalCost());
-    assertEquals(0, methodCost.getTotalGlobalCost());
+    assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
+    assertEquals(0, methodCost.getCost().getGlobalCost());
+    assertEquals(0, methodCost.getTotalCost().getGlobalCost());
     // TCC 4 because it doesn't double count for the same offense within one method
-    assertEquals(4, methodCost.getTotalComplexityCost());
+    assertEquals(4, methodCost.getTotalCost().getCyclomaticComplexityCost());
     assertEquals(4, methodCost.getOverallCost());
   }
 
   public void testMultipleDifferentNonOverridibleMethodsTcc12Cost() throws Exception {
     MethodCost methodCost = cost("methodTcc12BecauseMultipleDifferentNonOverridableMethodCalls()V");
-    assertEquals(0, methodCost.getCyclomaticCost());
-    assertEquals(0, methodCost.getGlobalCost());
-    assertEquals(0, methodCost.getTotalGlobalCost());
-    assertEquals(12, methodCost.getTotalComplexityCost());
+    assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
+    assertEquals(0, methodCost.getCost().getGlobalCost());
+    assertEquals(0, methodCost.getTotalCost().getGlobalCost());
+    assertEquals(12, methodCost.getTotalCost().getCyclomaticComplexityCost());
     assertEquals(12, methodCost.getOverallCost());
   }
 
