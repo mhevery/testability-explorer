@@ -25,4 +25,8 @@ public class Obj {
     return null;
   }
 
+  public static Obj getStaticValueA() {
+    return null;
+  }
+
 }
