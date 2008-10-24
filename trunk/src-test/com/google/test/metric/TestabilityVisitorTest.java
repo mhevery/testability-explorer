@@ -187,5 +187,19 @@ public class TestabilityVisitorTest extends TestCase {
     assertTrue(visitor.isInjectable(clazz.getField("injectable2")));
   }
 
+  private static class LoDStaticCall {
+    Obj plus1;
+    public void execute() {
+      plus1 = Obj.getStaticValueA();
+    }
+  }
+
+  public void testLoDStaticCall() throws Exception {
+    ClassInfo clazz = repo.getClass(LoDStaticCall.class.getName());
+    MethodInfo methodInfo = clazz.getMethod("execute()V");
+    visitor.applyMethodOperations(methodInfo);
+    assertEquals(1, visitor.getLoDCount(clazz.getField("plus1")));
+  }
+
 }
 
