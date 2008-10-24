@@ -82,7 +82,6 @@ public class DirectoryClasspathRootTest extends TestCase {
   public void testWeirdBehaviorWithSpacesInFilenames() throws Exception {
     File file = new File("one and two");
     assertEquals("one and two", file.getName());
-    System.out.println(file.toURI());
   }
 
 }
