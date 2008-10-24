@@ -33,10 +33,13 @@ public class MethodCost {
   private boolean linked = false;
 
   /**
-   * @param methodName name of the method, such as {@code void myMethod()}.
-   * @param lineNumber line number
-   * @param cyclomaticCost complexity cost for this method, alone. Later the costs of
-   * the other methods that this method calls will be added.
+   * @param methodName
+   *          name of the method, such as {@code void myMethod()}.
+   * @param lineNumber
+   *          line number
+   * @param cyclomaticCost
+   *          complexity cost for this method, alone. Later the costs of the
+   *          other methods that this method calls will be added.
    */
   public MethodCost(String methodName, int lineNumber, long cyclomaticCost) {
     this.methodName = methodName;
@@ -74,7 +77,8 @@ public class MethodCost {
       for (LineNumberCost operationCost : operationCosts) {
         MethodCost childCost = operationCost.getMethodCost();
         childCost.link(costModel);
-        // TODO(Jwolter): have a Cost object that represents the type of cost rather than just a number.
+        // TODO(Jwolter): have a Cost object that represents the type of cost
+        // rather than just a number.
         totalGlobalCost += childCost.getTotalGlobalCost();
         totalComplexityCost += childCost.getTotalComplexityCost();
       }
@@ -98,7 +102,8 @@ public class MethodCost {
     return methodName;
   }
 
-  public void addMethodCost(int lineNumber, MethodCost to, CostSourceType costSourceType) {
+  public void addMethodCost(int lineNumber, MethodCost to,
+      CostSourceType costSourceType) {
     assertNotLinked();
     operationCosts.add(new LineNumberCost(lineNumber, to, costSourceType));
   }
@@ -108,13 +113,16 @@ public class MethodCost {
     globalStateCosts.add(new GlobalStateCost(lineNumber, variable));
   }
 
-  // TODO(jwolter): enable reporting of *why* each class has the cost that it has.
-  // How do you want this to be different from the DetailHtmlReport? Well, first look at it
+  // TODO(jwolter): enable reporting of *why* each class has the cost that it
+  // has.
+  // How do you want this to be different from the DetailHtmlReport? Well, first
+  // look at it
   // and see how it works. In practice, real lifelike scenarios.
   public String getSourcesOfCost() {
     StringBuilder sb = new StringBuilder();
-    sb.append("Complexity Cost of " + this.methodName + " itself " + this.cyclomaticCost + "\n")
-      .append("Operation Costs:\n");
+    sb.append(
+        "Complexity Cost of " + this.methodName + " itself "
+            + this.cyclomaticCost + "\n").append("Operation Costs:\n");
 
     return sb.toString();
   }
@@ -125,8 +133,12 @@ public class MethodCost {
   }
 
   public String toCostsString() {
-    return " [" + getCyclomaticCost() + ", " + getGlobalCost() + " / "
-        + getTotalComplexityCost() + ", " + getTotalGlobalCost() + "]";
+    if (linked) {
+      return " [" + getCyclomaticCost() + ", " + getGlobalCost() + " / "
+          + getTotalComplexityCost() + ", " + getTotalGlobalCost() + "]";
+    } else {
+      return " [ unlinked ]";
+    }
   }
 
   public long getCyclomaticCost() {

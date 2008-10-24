@@ -190,7 +190,6 @@ public class TestabilityVisitor {
 
   public void returnAssignment(MethodInfo inMethod, int lineNumber,
       Variable destination) {
-    checkAndSetLoDCount(destination, 1);
     variableAssignment(getMethodCost(inMethod), lineNumber, destination, returnValue);
   }
 
@@ -205,7 +204,7 @@ public class TestabilityVisitor {
         inMethod.addGlobalCost(lineNumber, source);
       }
     }
-    checkAndSetLoDCount(destination, getLoDCount(source));
+    setLoDCount(destination, getLoDCount(source));
   }
 
   boolean isGlobal(Variable var) {
@@ -286,8 +285,7 @@ public class TestabilityVisitor {
     return isGlobal(var1) && !isGlobal(var2);
   }
 
-  public void checkAndSetLoDCount(Variable value, int newCount) {
-
+  public void setLoDCount(Variable value, int newCount) {
     int count = lodCount.containsKey(value) ? lodCount.get(value) : 0;
     if (count < newCount) {
       lodCount.put(value, newCount);
@@ -304,13 +302,12 @@ public class TestabilityVisitor {
   }
 
   public int getLoDCount(Variable variable) {
-    int count = 0;
-
     if (variable instanceof LocalField) {
       LocalField field = (LocalField) variable;
       variable = field.getField();
     }
 
+    int count = 0;
     if (lodCount.containsKey(variable)) {
       count = lodCount.get(variable);
     }

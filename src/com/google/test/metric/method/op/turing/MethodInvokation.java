@@ -74,6 +74,10 @@ public class MethodInvokation extends Operation {
       MethodInfo toMethod = visitor.getMethod(clazzName, name + signature);
       if (visitor.methodAlreadyVisited(toMethod)) {
         // Method already counted, skip (to prevent recursion)
+        if (returnVariable != null) {
+          int thisCount = visitor.getLoDCount(methodThis);
+          visitor.setLoDCount(returnVariable, thisCount + 1);
+        }
         return;
       } else if (toMethod.canOverride() && visitor.isInjectable(methodThis)) {
         // Method can be overridden / injectable
@@ -98,6 +102,8 @@ public class MethodInvokation extends Operation {
               .getParameters().get(i++), var);
         }
         visitor.recordMethodCall(getLineNumber(), toMethod);
+        int thisCount = visitor.getLoDCount(methodThis);
+        visitor.setLoDCount(returnVariable, thisCount + 1);
         visitor.returnAssignment(toMethod, getLineNumber(), returnVariable);
       }
     } catch (ClassNotFoundException e) {
