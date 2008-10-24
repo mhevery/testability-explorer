@@ -17,16 +17,11 @@ package com.google.test.metric;
 
 import static com.google.classpath.DirectoryClasspathRootTest.CLASSES_EXTERNAL_DEPS_AND_SUPERCLASSES;
 import static com.google.classpath.DirectoryClasspathRootTest.CLASSES_EXTERNAL_DEPS_NO_SUPERCLASSES;
-import static com.google.classpath.DirectoryClasspathRootTest.CLASS_NO_EXTERNAL_DEPS;
-import static com.google.classpath.JarClasspathRootTest.ASM_JAR;
-import static com.google.classpath.JarClasspathRootTest.JUNIT_JAR;
 
-import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import org.kohsuke.args4j.CmdLineException;
 
@@ -74,15 +69,6 @@ public class TestabilityTest extends AutoFieldClearTestCase {
     assertTrue(err.toString().length() > 0);
   }
 
-  public void testJarFileParseSetupAndComputeGroupMetric() throws Exception {
-    testability.cp =  JUNIT_JAR;
-    testability.execute();
-    assertTrue(out.toString(), out.toString().length() > 1000);
-    assertEquals(1, testability.entryList.size());
-    assertEquals("", testability.entryList.get(0));
-    assertTrue(testability.cp.endsWith(JUNIT_JAR));
-  }
-
   public void testClassesNotInClasspath() throws Exception {
     testability.cp = CLASSES_EXTERNAL_DEPS_AND_SUPERCLASSES;
     testability.execute();
@@ -102,44 +88,6 @@ public class TestabilityTest extends AutoFieldClearTestCase {
     testability.execute();
     assertTrue(out.toString(), out.toString().length() > 0);
     assertTrue(err.toString(), err.toString().length() > 0);
-  }
-
-  public void testJarFileAndJunitSwinguiProgressBarEntryPattern()
-      throws Exception {
-    testability.cp = JUNIT_JAR;
-    testability.entryList.add("junit.swingui.ProgressBar");
-    testability.execute();
-    assertTrue(out.toString().length() > 0);
-    assertTrue(err.toString().length() == 0);
-  }
-
-  public void testJarFileAndJunitRunnerEntryPatternAndMaxDepthZero() throws CmdLineException {
-    testability.cp = JUNIT_JAR;
-    testability.printDepth = 0;
-    testability.entryList.add("junit.runner");
-    testability.execute();
-    assertTrue(out.toString().length() > 0);
-
-    Pattern noLinesPattern = Pattern.compile("^(\\s)*line", Pattern.MULTILINE);
-    assertFalse("Should not have any line matchings for printing depth of 0",
-        noLinesPattern.matcher(out.toString()).find());
-    assertEquals(0, err.toString().length());
-  }
-
-  public void testJarsAndDirectoryWildcardEntryPattern() throws Exception {
-    testability.cp = ASM_JAR + File.pathSeparator + JUNIT_JAR + File.pathSeparator + CLASS_NO_EXTERNAL_DEPS;
-    testability.printDepth = 0;
-    testability.execute();
-    assertTrue(out.toString().length() > 0);
-    assertEquals(0, err.toString().length());
-  }
-
-  public void testJarsAndDirectoryOfClassesAndFilter() throws Exception {
-    testability.cp = JUNIT_JAR + File.pathSeparator + CLASS_NO_EXTERNAL_DEPS;
-    testability.entryList.add("junit.swingui.ProgressBar");
-    testability.execute();
-    assertTrue(out.toString(), out.toString().length() > 0);
-    assertEquals(err.toString(), 0, err.toString().length());
   }
 
   /*
@@ -168,33 +116,6 @@ public class TestabilityTest extends AutoFieldClearTestCase {
     assertTrue(out.toString().length() > 0);
     assertTrue(err.toString().length() > 0);
     assertTrue(err.toString().startsWith("WARNING: can not analyze class "));
-  }
-
-  public void testReadInnerClassCost() throws Exception {
-    testability.entryList.add("com.google.test.metric.example.FinalGlo");
-    testability.printDepth = 10;
-    testability.execute();
-    List<String> classes = testability.classpath
-        .getClassNamesToEnter(testability.entryList);
-    String global = "com.google.test.metric.example.FinalGlobalExample";
-    assertTrue(classes.contains(global));
-    assertTrue(classes.contains(global + "Test"));
-    assertTrue(classes.contains(global + "$FinalGlobal"));
-    assertTrue(classes.contains(global + "$Gadget"));
-    assertEquals("Expected size 4, but contents were: " + classes, 4, classes.size());
-  }
-
-  public void testOneEntryWhitelist() throws Exception {
-    testability.cp = JUNIT_JAR;
-    testability.entryList.add("junit.runner");
-    testability.execute();
-    String baselineOutput = out.toString();
-    out.clear();
-    testability.wl = "junit.runner.";
-    testability.execute();
-    String throttledOutput = out.toString();
-    assertTrue(throttledOutput.length() < baselineOutput.length());
-    assertFalse(baselineOutput.equals(throttledOutput));
   }
 
   public static class WatchedOutputStream extends OutputStream {

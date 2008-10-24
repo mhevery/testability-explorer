@@ -117,20 +117,20 @@ public class TestabilityVisitorTest extends TestCase {
 
   private static class LoDExample {
 
-    String conforming;
-    String violator;
-    String transitiveViolator;
+    Object conforming;
+    Object violator;
+    Object transitiveViolator;
 
-    public void assign(String in) {
+    public void assign(Object in) {
       conforming = in;
-      violator = in.toLowerCase();
+      violator = in.getClass();
       transitiveViolator = violator;
     }
   }
 
   public void testLoDExample() throws Exception {
     ClassInfo clazz = repo.getClass(LoDExample.class.getName());
-    MethodInfo methodInfo = clazz.getMethod("assign(Ljava/lang/String;)V");
+    MethodInfo methodInfo = clazz.getMethod("assign(Ljava/lang/Object;)V");
     loDVisitor.applyMethodOperations(methodInfo);
     Variable comforming = clazz.getField("conforming");
     Variable violator = clazz.getField("violator");
@@ -140,7 +140,7 @@ public class TestabilityVisitorTest extends TestCase {
 
   public void testLodTransitive() throws Exception {
     ClassInfo clazz = repo.getClass(LoDExample.class.getName());
-    MethodInfo methodInfo = clazz.getMethod("assign(Ljava/lang/String;)V");
+    MethodInfo methodInfo = clazz.getMethod("assign(Ljava/lang/Object;)V");
     loDVisitor.applyMethodOperations(methodInfo);
     Variable transitiveViolator = clazz.getField("transitiveViolator");
     assertEquals(1, loDVisitor.getLoDCount(transitiveViolator));

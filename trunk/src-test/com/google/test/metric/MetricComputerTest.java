@@ -15,8 +15,6 @@
  */
 package com.google.test.metric;
 
-import static com.google.classpath.ClasspathRootFactory.makeClasspathRootGroup;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.List;
@@ -28,7 +26,7 @@ import com.google.test.metric.testing.MetricComputerJavaDecorator;
 public class MetricComputerTest extends AutoFieldClearTestCase {
 
   private MetricComputerJavaDecorator decoratedComputer;
-  private ClassRepository repo = new JavaClassRepository();
+  private final ClassRepository repo = new JavaClassRepository();
 
   @Override
   protected void setUp() throws Exception {
@@ -188,12 +186,6 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
     MethodCost cost = decoratedComputer.compute(TreeInjection.class,
         "footnoteTcc0()Ljava/lang/String;");
     assertEquals(0l, cost.getTotalComplexityCost());
-  }
-
-  public void testTreeVeryExpensive() throws Exception {
-    MethodCost cost = decoratedComputer.compute(TreeInjection.class,
-        "veryExpensive()Ljava/lang/String;");
-    assertTrue("100<"+cost.getTotalComplexityCost(), 100l < cost.getTotalComplexityCost());
   }
 
   static class ChoseConstructor {
@@ -447,19 +439,6 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
 
     MethodCost cost = decoratedComputer.compute(WhiteListTest.class, "testMethod()V");
     assertEquals(0L, cost.getTotalGlobalCost());
-  }
-
-  public void testThatOnWindowsWeCanParseTheFonts() throws Exception {
-    repo = new JavaClassRepository(makeClasspathRootGroup("classes-for-test/jre1.6_TrueTypeBug"));
-    WhiteList whitelist = new RegExpWhiteList();
-    MetricComputer computer = new MetricComputer(repo, null, whitelist, new CostModel());
-    ClassInfo clazz = repo.getClass("sun.font.TrueTypeFont");
-    MethodInfo method = clazz.getMethod("getTableBuffer(I)Ljava/nio/ByteBuffer;");
-    try {
-      computer.compute(method);
-    } catch (Throwable e) {
-      fail(e.getMessage());
-    }
   }
 
   static class DoubleCountClassConst {
