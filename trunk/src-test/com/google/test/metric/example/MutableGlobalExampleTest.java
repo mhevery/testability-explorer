@@ -46,13 +46,13 @@ public class MutableGlobalExampleTest extends AutoFieldClearTestCase {
   public void testAccessingMutableStaticItselfDirectlyDoesntCountAgainstYou() throws Exception {
     MethodCost methodCost = decoratedComputer.compute(MutableGlobalExample.class,
         "getInstance()Lcom/google/test/metric/example/MutableGlobalExample$Gadget;");
-    assertEquals(0, methodCost.getCyclomaticCost());
+    assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
 
     // Noteworthy: code which exposes global state to others does not have the cost itself.
     // TODO(jwolter): is this correct?
-    assertEquals(0, methodCost.getGlobalCost());
-    assertEquals(0, methodCost.getTotalComplexityCost());
-    assertEquals(0, methodCost.getTotalGlobalCost());
+    assertEquals(0, methodCost.getCost().getGlobalCost());
+    assertEquals(0, methodCost.getTotalCost().getCyclomaticComplexityCost());
+    assertEquals(0, methodCost.getTotalCost().getGlobalCost());
     assertEquals(0, methodCost.getOverallCost());
   }
 
@@ -60,31 +60,31 @@ public class MutableGlobalExampleTest extends AutoFieldClearTestCase {
     // This method goes into mutable global state (cost +1) and reads a final value (cost +0)
     MethodCost methodCost = decoratedComputer.compute(MutableGlobalExample.class,
         "getGlobalId()Ljava/lang/String;");
-    assertEquals(0, methodCost.getCyclomaticCost());
-    assertEquals(0, methodCost.getGlobalCost());
-    assertEquals(0, methodCost.getTotalComplexityCost());
+    assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
+    assertEquals(0, methodCost.getCost().getGlobalCost());
+    assertEquals(0, methodCost.getTotalCost().getCyclomaticComplexityCost());
     // Total Global Cost of 1, because of the {@code mutableInstance}.
-    assertEquals(1, methodCost.getTotalGlobalCost());
+    assertEquals(1, methodCost.getTotalCost().getGlobalCost());
     assertEquals(10, methodCost.getOverallCost());
   }
 
   public void testAccessingANonFinalFieldCountsAgainstYou() throws Exception {
     // This method goes into mutable global state (cost +1) and reads a mutable value (cost +1)
     MethodCost methodCost = decoratedComputer.compute(MutableGlobalExample.class, "getGlobalCount()I");
-    assertEquals(0, methodCost.getCyclomaticCost());
-    assertEquals(0, methodCost.getGlobalCost());
-    assertEquals(0, methodCost.getTotalComplexityCost());
-    assertEquals(2, methodCost.getTotalGlobalCost());
+    assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
+    assertEquals(0, methodCost.getCost().getGlobalCost());
+    assertEquals(0, methodCost.getTotalCost().getCyclomaticComplexityCost());
+    assertEquals(2, methodCost.getTotalCost().getGlobalCost());
     assertEquals(20, methodCost.getOverallCost());
   }
 
   public void testWritingANonFinalFieldCountsAgainstYou() throws Exception {
     // This method goes into mutable global state (cost +1) and changes a mutable value (cost +1)
     MethodCost methodCost = decoratedComputer.compute(MutableGlobalExample.class, "globalIncrement()I");
-    assertEquals(0, methodCost.getCyclomaticCost());
-    assertEquals(0, methodCost.getGlobalCost());
-    assertEquals(0, methodCost.getTotalComplexityCost());
-    assertEquals(2, methodCost.getTotalGlobalCost());
+    assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
+    assertEquals(0, methodCost.getCost().getGlobalCost());
+    assertEquals(0, methodCost.getTotalCost().getCyclomaticComplexityCost());
+    assertEquals(2, methodCost.getTotalCost().getGlobalCost());
     assertEquals(20, methodCost.getOverallCost());
   }
 

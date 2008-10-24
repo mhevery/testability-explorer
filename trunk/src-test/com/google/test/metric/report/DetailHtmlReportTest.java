@@ -26,9 +26,9 @@ import junit.framework.TestCase;
 
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
-import com.google.test.metric.LineNumberCost;
 import com.google.test.metric.MethodCost;
-import com.google.test.metric.LineNumberCost.CostSourceType;
+import com.google.test.metric.MethodInvokationCost;
+import com.google.test.metric.CostViolation.Reason;
 
 public class DetailHtmlReportTest extends TestCase {
 
@@ -44,7 +44,7 @@ public class DetailHtmlReportTest extends TestCase {
 
   public void testWriteLineCost() throws Exception {
     MethodCost methodCost = createLinkedMethodCallWithOverallCost("a.methodName()V", 64);
-    LineNumberCost lineCost = new LineNumberCost(123, methodCost, CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
+    MethodInvokationCost lineCost = new MethodInvokationCost(123, methodCost, Reason.NON_OVERRIDABLE_METHOD_CALL);
     methodCost.link(costModel);
 
     DetailHtmlReport report = new DetailHtmlReport(stream, new SourceLinker(
@@ -61,7 +61,7 @@ public class DetailHtmlReportTest extends TestCase {
 
   public void testLinkedLineCost() throws Exception {
     MethodCost methodCost = createLinkedMethodCallWithOverallCost("a.methodName()V", 64);
-    LineNumberCost lineCost = new LineNumberCost(123, methodCost, CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
+    MethodInvokationCost lineCost = new MethodInvokationCost(123, methodCost, Reason.NON_OVERRIDABLE_METHOD_CALL);
     methodCost.link(costModel);
 
     DetailHtmlReport report = new DetailHtmlReport(stream, new SourceLinker(
@@ -77,16 +77,14 @@ public class DetailHtmlReportTest extends TestCase {
     DetailHtmlReport report = new DetailHtmlReport(stream, new SourceLinker(
         emptyLineTemplate, emptyClassTemplate), 10, 10) {
       @Override
-      public void write(LineNumberCost lineNumberCost, String classFilePath) {
+      public void write(MethodInvokationCost lineNumberCost, String classFilePath) {
         write(" MARKER:" + lineNumberCost.getLineNumber());
       }
     };
 
     MethodCost methodCost = createUnlinkedMethodCallWithOverallCost("a.methodX()V", 0);
-    methodCost.addMethodCost(123, createLinkedMethodCallWithOverallCost("cost1", 567),
-        CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
-    methodCost.addMethodCost(543, createLinkedMethodCallWithOverallCost("cost2", 789),
-        CostSourceType.NON_OVERRIDABLE_METHOD_CALL);
+    methodCost.addMethodCost(123, createLinkedMethodCallWithOverallCost("cost1", 567), Reason.NON_OVERRIDABLE_METHOD_CALL);
+    methodCost.addMethodCost(543, createLinkedMethodCallWithOverallCost("cost2", 789), Reason.NON_OVERRIDABLE_METHOD_CALL);
     methodCost.link(costModel);
     report.write(methodCost, "");
     String text = out.toString();

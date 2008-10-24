@@ -74,7 +74,7 @@ public class ClassCost {
   public long getTotalComplexityCost() {
     long totalCost = 0;
     for (MethodCost methodCost : getMethods()) {
-      totalCost += methodCost.getTotalComplexityCost();
+      totalCost += methodCost.getTotalCost().getCyclomaticComplexityCost();
     }
     return totalCost;
   }
@@ -82,8 +82,8 @@ public class ClassCost {
   public long getHighestMethodComplexityCost() {
     long cost = 0;
     for (MethodCost methodCost : getMethods()) {
-      if (methodCost.getTotalComplexityCost() > cost) {
-        cost = methodCost.getTotalComplexityCost();
+      if (methodCost.getTotalCost().getCyclomaticComplexityCost() > cost) {
+        cost = methodCost.getTotalCost().getCyclomaticComplexityCost();
       }
     }
     return cost;
@@ -92,7 +92,7 @@ public class ClassCost {
   public long getTotalGlobalCost() {
     long totalCost = 0;
     for (MethodCost methodCost : getMethods()) {
-      totalCost += methodCost.getTotalGlobalCost();
+      totalCost += methodCost.getTotalCost().getGlobalCost();
     }
     return totalCost;
   }
@@ -100,8 +100,8 @@ public class ClassCost {
   public long getHighestMethodGlobalCost() {
     long cost = 0;
     for (MethodCost methodCost : getMethods()) {
-      if (methodCost.getTotalGlobalCost() > cost) {
-        cost = methodCost.getTotalGlobalCost();
+      if (methodCost.getTotalCost().getGlobalCost() > cost) {
+        cost = methodCost.getTotalCost().getGlobalCost();
       }
     }
     return cost;

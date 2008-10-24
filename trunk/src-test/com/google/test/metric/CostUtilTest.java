@@ -15,10 +15,10 @@
  */
 package com.google.test.metric;
 
+import junit.framework.TestCase;
+
 import com.google.test.metric.testing.MetricComputerBuilder;
 import com.google.test.metric.testing.MetricComputerJavaDecorator;
-
-import junit.framework.TestCase;
 
 public class CostUtilTest extends TestCase {
 
@@ -121,23 +121,23 @@ public class CostUtilTest extends TestCase {
     assertEquals(11, classCost.getOverallCost());
   }
 
-  private long totalComplexityCost(String method) {
-    return methodCostFor(method).getTotalComplexityCost();
+  private int totalComplexityCost(String method) {
+    return methodCostFor(method).getTotalCost().getCyclomaticComplexityCost();
   }
 
-  private long cyclomaticCost(String method) {
-    return methodCostFor(method).getCyclomaticCost();
+  private int cyclomaticCost(String method) {
+    return methodCostFor(method).getCost().getCyclomaticComplexityCost();
   }
 
-  private long globalCost(String method) {
-    return methodCostFor(method).getGlobalCost();
+  private int globalCost(String method) {
+    return methodCostFor(method).getCost().getGlobalCost();
   }
 
-  private long totalGlobalCost(String method) {
-    return methodCostFor(method).getTotalGlobalCost();
+  private int totalGlobalCost(String method) {
+    return methodCostFor(method).getTotalCost().getGlobalCost();
   }
 
-  private long overallCost(String method) {
+  private int overallCost(String method) {
     return methodCostFor(method).getOverallCost();
   }
 

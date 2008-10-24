@@ -23,26 +23,27 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.google.test.metric.ClassCost;
-import com.google.test.metric.LineNumberCost;
+import com.google.test.metric.CostViolation;
 import com.google.test.metric.MethodCost;
+import com.google.test.metric.MethodInvokationCost;
 
 public class DetailHtmlReport {
 
-  static class LineNumberCostComparator implements
-      Comparator<LineNumberCost> {
-    public int compare(LineNumberCost cost1, LineNumberCost cost2) {
-      long c1 = cost1.getMethodCost().getOverallCost();
-      long c2 = cost2.getMethodCost().getOverallCost();
-      return (int) (c2 - c1);
+  static class CostSourceComparator implements
+      Comparator<CostViolation> {
+    public int compare(CostViolation cost1, CostViolation cost2) {
+      int c1 = cost1.getCost().getOvarall();
+      int c2 = cost2.getCost().getOvarall();
+      return (c2 - c1);
     }
   }
 
   public static class MethodCostComparator implements
       Comparator<MethodCost> {
     public int compare(MethodCost cost1, MethodCost cost2) {
-      long c1 = cost1.getOverallCost();
-      long c2 = cost2.getOverallCost();
-      return (int) (c2 - c1);
+      int c1 = cost1.getOverallCost();
+      int c2 = cost2.getOverallCost();
+      return (c2 - c1);
     }
   }
 
@@ -63,18 +64,19 @@ public class DetailHtmlReport {
     out.println(text);
   }
 
-  public void write(LineNumberCost lineNumberCost, String classFilePath) {
-    String costSourceType = lineNumberCost.getCostSourceType().toString();
+  public void write(MethodInvokationCost methodInvocationCost, String classFilePath) {
+    String costSourceType = methodInvocationCost.getCostSourceType().toString();
+    MethodCost methodCost = methodInvocationCost.getMethodCost();
     String text = "<div class=\"Line\">" +
     		"<span class=\"lineNumber\">line&nbsp;{lineNumber}:</span>" +
     		"{methodName} [&nbsp;{cost}&nbsp;] (source: " + costSourceType + ")" +
     		"</div>";
-    text = text.replace("{lineNumber}", "" + lineNumberCost.getLineNumber());
+    text = text.replace("{lineNumber}", "" + methodInvocationCost.getLineNumber());
     text = text.replace("{methodName}", "" +
         linkGenerator.buildLineLink(classFilePath,
-            lineNumberCost.getLineNumber(),
-            lineNumberCost.getMethodCost().getMethodName()));
-    text = text.replace("{cost}", "" + lineNumberCost.getMethodCost().getOverallCost());
+            methodInvocationCost.getLineNumber(),
+            methodCost.getMethodName()));
+    text = text.replace("{cost}", "" + methodCost.getOverallCost());
     write(text);
   }
 
@@ -85,10 +87,12 @@ public class DetailHtmlReport {
     text = text.replace("{cost}", "" + method.getOverallCost());
     write(text);
 
-    List<LineNumberCost> lines = method.getOperationCosts();
-    Collections.sort(lines, new LineNumberCostComparator());
-    for (LineNumberCost line : lines.subList(0, min(maxLineCount, lines.size()))) {
-      write(line, classFilePath);
+    List<CostViolation> lines = method.getCostSources();
+    Collections.sort(lines, new CostSourceComparator());
+    for (CostViolation line : lines.subList(0, min(maxLineCount, lines.size()))) {
+      if (line instanceof MethodInvokationCost) {
+        write((MethodInvokationCost) line, classFilePath);
+      }
     }
     write("</div>");
   }

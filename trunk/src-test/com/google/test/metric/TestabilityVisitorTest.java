@@ -55,7 +55,7 @@ public class TestabilityVisitorTest extends TestCase {
     visitor.parameterAssignment(method, 1, dst, instance);
     assertFalse(visitor.isGlobal(dst));
     assertFalse(visitor.isInjectable(dst));
-    assertEquals(0, visitor.getLinkedMethodCost(method).getTotalGlobalCost());
+    assertEquals(0, visitor.getLinkedMethodCost(method).getTotalCost().getGlobalCost());
   }
 
   public void testInjectability() throws Exception {
@@ -63,14 +63,14 @@ public class TestabilityVisitorTest extends TestCase {
     visitor.parameterAssignment(method, 1, dst, instance);
     assertFalse(visitor.isGlobal(dst));
     assertTrue(visitor.isInjectable(dst));
-    assertEquals(0, visitor.getLinkedMethodCost(method).getTotalGlobalCost());
+    assertEquals(0, visitor.getLinkedMethodCost(method).getTotalCost().getGlobalCost());
   }
 
   public void testFieldReadNoop() throws Exception {
     visitor.parameterAssignment(method, 1, dst, localField);
     assertFalse(visitor.isGlobal(dst));
     assertFalse(visitor.isInjectable(dst));
-    assertEquals(0, visitor.getLinkedMethodCost(method).getTotalGlobalCost());
+    assertEquals(0, visitor.getLinkedMethodCost(method).getTotalCost().getGlobalCost());
   }
 
   public void testFieldReadInjectableInstance() throws Exception {
@@ -78,7 +78,7 @@ public class TestabilityVisitorTest extends TestCase {
     visitor.parameterAssignment(method, 1, dst, localField);
     assertFalse(visitor.isGlobal(dst));
     assertFalse(visitor.isInjectable(dst));
-    assertEquals(0, visitor.getLinkedMethodCost(method).getTotalGlobalCost());
+    assertEquals(0, visitor.getLinkedMethodCost(method).getTotalCost().getGlobalCost());
   }
 
   public void testFieldReadInjectableField() throws Exception {
@@ -86,7 +86,7 @@ public class TestabilityVisitorTest extends TestCase {
     visitor.parameterAssignment(method, 1, dst, localField);
     assertFalse(visitor.isGlobal(dst));
     assertTrue(visitor.isInjectable(dst));
-    assertEquals(0, visitor.getLinkedMethodCost(method).getTotalGlobalCost());
+    assertEquals(0, visitor.getLinkedMethodCost(method).getTotalCost().getGlobalCost());
   }
 
   public void testFieldReadGlobalInstance() throws Exception {
@@ -94,7 +94,7 @@ public class TestabilityVisitorTest extends TestCase {
     visitor.parameterAssignment(method, 1, dst, localField);
     assertTrue(visitor.isGlobal(dst));
     assertFalse(visitor.isInjectable(dst));
-    assertEquals(1, visitor.getLinkedMethodCost(method).getTotalGlobalCost());
+    assertEquals(1, visitor.getLinkedMethodCost(method).getTotalCost().getGlobalCost());
   }
 
   public void testFinalFieldReadGlobalInstance() throws Exception {
@@ -102,14 +102,14 @@ public class TestabilityVisitorTest extends TestCase {
     visitor.parameterAssignment(method, 1, dst, localFinalField);
     assertTrue(visitor.isGlobal(dst));
     assertFalse(visitor.isInjectable(dst));
-    assertEquals(0, visitor.getLinkedMethodCost(method).getTotalGlobalCost());
+    assertEquals(0, visitor.getLinkedMethodCost(method).getTotalCost().getGlobalCost());
   }
 
   public void testReadFinalStaticField() throws Exception {
     visitor.parameterAssignment(method, 1, dst, localStaticFinalField);
     assertTrue(visitor.isGlobal(dst));
     assertFalse(visitor.isInjectable(dst));
-    assertEquals(0, visitor.getLinkedMethodCost(method).getTotalGlobalCost());
+    assertEquals(0, visitor.getLinkedMethodCost(method).getTotalCost().getGlobalCost());
   }
 
   private static class LoDExample {

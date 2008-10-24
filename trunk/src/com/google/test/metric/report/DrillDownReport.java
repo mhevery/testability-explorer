@@ -25,23 +25,23 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import com.google.test.metric.ClassCost;
-import com.google.test.metric.LineNumberCost;
+import com.google.test.metric.CostViolation;
 import com.google.test.metric.MethodCost;
+import com.google.test.metric.MethodInvokationCost;
 
 public class DrillDownReport implements Report {
   public static final String NEW_LINE = getProperty("line.separator");
 
-  private static final String DIVIDER  = "-----------------------------------------\n";
+  private static final String DIVIDER = "-----------------------------------------\n";
   private final PrintStream out;
   private final List<String> entryList;
-  private final SortedSet<ClassCost> toPrint = new TreeSet<ClassCost>(new ClassCost.CostComparator());
+  private final SortedSet<ClassCost> toPrint = new TreeSet<ClassCost>(
+      new ClassCost.CostComparator());
   private final int maxDepth;
   private final int minCost;
-  private long cumulativeTCC = 0;
-  private long cumulativeTGC = 0;
 
-  public DrillDownReport(PrintStream out, List<String> entryList,
-      int maxDepth, int minCost) {
+  public DrillDownReport(PrintStream out, List<String> entryList, int maxDepth,
+      int minCost) {
     this.out = out;
     this.entryList = entryList;
     this.maxDepth = maxDepth;
@@ -72,11 +72,9 @@ public class DrillDownReport implements Report {
     if (shouldPrint(classCost, minCost)) {
       long tcc = classCost.getTotalComplexityCost();
       long tgc = classCost.getTotalGlobalCost();
-      cumulativeTCC += tcc;
-      cumulativeTGC += tgc;
       out.println(NEW_LINE + "Testability cost for " + classCost.getClassName()
-          + " [ cost = " + classCost.getOverallCost() + " ]"
-          + " [ " + tcc + " TCC, " + tgc + " TGC ]");
+          + " [ cost = " + classCost.getOverallCost() + " ]" + " [ " + tcc
+          + " TCC, " + tgc + " TGC ]");
       for (MethodCost cost : classCost.getMethods()) {
         print("  ", cost, maxDepth);
       }
@@ -88,15 +86,18 @@ public class DrillDownReport implements Report {
     if (shouldPrint(cost, maxDepth, alreadySeen)) {
       out.print(prefix);
       out.println(cost);
-      for (LineNumberCost child : cost.getOperationCosts()) {
+      for (CostViolation child : cost.getCostSources()) {
         print("  " + prefix, child, maxDepth - 1, alreadySeen);
       }
     }
   }
 
-  private void print(String prefix, LineNumberCost line, int maxDepth,
+  private void print(String prefix, CostViolation line, int maxDepth,
       Set<String> alreadSeen) {
-    MethodCost method = line.getMethodCost();
+    if (!(line instanceof MethodInvokationCost)) {
+      return;
+    }
+    MethodCost method = ((MethodInvokationCost)line).getMethodCost();
     if (shouldPrint(method, maxDepth, alreadSeen)) {
       out.print(prefix);
       out.print("line ");
@@ -104,7 +105,7 @@ public class DrillDownReport implements Report {
       out.print(": ");
       out.print(method);
       out.println(" " + line.getCostSourceType());
-      for (LineNumberCost child : method.getOperationCosts()) {
+      for (CostViolation child : method.getCostSources()) {
         print("  " + prefix, child, maxDepth - 1, alreadSeen);
       }
     }
@@ -115,13 +116,15 @@ public class DrillDownReport implements Report {
         || classCost.getHighestMethodGlobalCost() >= minCost;
   }
 
-  private boolean shouldPrint(MethodCost method, int maxDepth, Set<String> alreadySeen) {
+  private boolean shouldPrint(MethodCost method, int maxDepth,
+      Set<String> alreadySeen) {
     if (maxDepth <= 0 || alreadySeen.contains(method.getMethodName())) {
       return false;
     }
     alreadySeen.add(method.getMethodName());
-    long totalComplexityCost = method.getTotalComplexityCost();
-    long totalGlobalCost = method.getTotalGlobalCost();
+    long totalComplexityCost = method.getTotalCost()
+        .getCyclomaticComplexityCost();
+    long totalGlobalCost = method.getTotalCost().getGlobalCost();
     if (totalGlobalCost < minCost && totalComplexityCost < minCost) {
       return false;
     }

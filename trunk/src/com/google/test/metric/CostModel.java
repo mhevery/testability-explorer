@@ -38,14 +38,14 @@ public class CostModel {
     this.globalMultiplier = globalMultiplier;
   }
 
-  public long computeMethod(long cyclomaticCost, long globalCost) {
-    return (long)(cyclomaticMultiplier * cyclomaticCost + globalMultiplier * globalCost);
+  public int computeMethod(Cost cost) {
+    return (int)(cyclomaticMultiplier * cost.getCyclomaticComplexityCost() + globalMultiplier * cost.getGlobalCost());
   }
 
   public long computeClass(List<MethodCost> methods) {
     WeightedAverage average = new WeightedAverage(WEIGHT_TO_EMPHASIZE_EXPENSIVE_METHODS);
     for (MethodCost methodCost : methods) {
-      average.addValue(methodCost.getOverallCost());
+      average.addValue(computeMethod(methodCost.getTotalCost()));
     }
     return (long) average.getAverage();
   }
