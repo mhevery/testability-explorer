@@ -41,7 +41,7 @@ public class MethodCost {
   public MethodCost(String methodName, int lineNumber, long cyclomaticCost) {
     this.methodName = methodName;
     this.lineNumber = lineNumber;
-    this.directCost = new Cost((int) cyclomaticCost, 0, null);
+    this.directCost = Cost.cyclomatic((int) cyclomaticCost);
   }
 
   private void assertLinked() {
@@ -63,7 +63,7 @@ public class MethodCost {
       for (CostViolation costSource : costSources) {
         costSource.link(directCost, dependantCost, costModel);
       }
-      dependantCost.add(directCost);
+      dependantCost.addDependant(directCost);
       totalCost.add(dependantCost);
       totalCost.link(costModel);
     }
@@ -79,7 +79,7 @@ public class MethodCost {
     return methodName;
   }
 
-  private void addCostSource(CostViolation costSource) {
+  public void addCostSource(CostViolation costSource) {
     assertNotLinked();
     costSources.add(costSource);
   }
@@ -89,7 +89,7 @@ public class MethodCost {
   }
 
   public void addGlobalCost(int lineNumber, Variable variable) {
-    addCostSource(new GlobalCost(lineNumber));
+    addCostSource(new GlobalCost(lineNumber, variable));
   }
 
   @Override

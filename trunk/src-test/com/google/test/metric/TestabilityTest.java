@@ -15,9 +15,6 @@
  */
 package com.google.test.metric;
 
-import static com.google.classpath.DirectoryClasspathRootTest.CLASSES_EXTERNAL_DEPS_AND_SUPERCLASSES;
-import static com.google.classpath.DirectoryClasspathRootTest.CLASSES_EXTERNAL_DEPS_NO_SUPERCLASSES;
-
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -26,6 +23,34 @@ import java.util.List;
 import org.kohsuke.args4j.CmdLineException;
 
 public class TestabilityTest extends AutoFieldClearTestCase {
+  /**
+   * Directories to be used for testing that contains class files, for testing.
+   * These are included in subversion so that any checkout will have a consistent
+   * environment for testing.
+   */
+  public static final String CLASSES_FOR_TEST = "classes-for-test";
+
+  /**
+   * Directory root that contains one class with no external
+   * dependencies.
+   */
+  public static final String CLASS_NO_EXTERNAL_DEPS = CLASSES_FOR_TEST +
+    "/root1";
+
+  /**
+   * Directory root containing classes that extend from, and reference, external
+   * classes outside of this directory.
+   */
+  public static final String CLASSES_EXTERNAL_DEPS_AND_SUPERCLASSES =
+    CLASSES_FOR_TEST + "/root2";
+
+  /**
+   * Directory root containing classes extending from Object that reference
+   * external classes outside of this directory.
+   */
+  public static final String CLASSES_EXTERNAL_DEPS_NO_SUPERCLASSES =
+    CLASSES_FOR_TEST + "/root3";
+
   private WatchedOutputStream out;
   private WatchedOutputStream err;
   private Testability testability;
@@ -99,9 +124,9 @@ public class TestabilityTest extends AutoFieldClearTestCase {
     testability.cp = CLASSES_EXTERNAL_DEPS_NO_SUPERCLASSES;
     testability.printDepth = 1;
     testability.execute();
-    assertTrue(out.toString().length() > 0);
-    assertTrue(err.toString().length() > 0);
-    assertTrue(err.toString().startsWith("WARNING: class not found: "));
+    assertTrue(out.toString(), out.toString().length() > 0);
+    assertTrue(err.toString(), err.toString().length() > 0);
+    assertTrue(err.toString(), err.toString().startsWith("WARNING: class not found: "));
   }
 
   /*

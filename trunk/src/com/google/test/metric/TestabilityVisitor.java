@@ -15,8 +15,6 @@
  */
 package com.google.test.metric;
 
-
-
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,7 +28,6 @@ import com.google.test.metric.method.op.turing.Operation;
 
 public class TestabilityVisitor {
 
-
   private final Map<Variable, Integer> lodCount = new HashMap<Variable, Integer>();
   private final Set<Variable> injectables = new HashSet<Variable>();
   private final Set<Variable> statics = new HashSet<Variable>();
@@ -43,7 +40,7 @@ public class TestabilityVisitor {
   private Variable returnValue;
 
   public TestabilityVisitor(ClassRepository classRepository, PrintStream err,
-    WhiteList whitelist, CostModel costModel) {
+      WhiteList whitelist, CostModel costModel) {
     this.classRepository = classRepository;
     this.err = err;
     this.costModel = costModel;
@@ -58,7 +55,7 @@ public class TestabilityVisitor {
     return methodCosts.containsKey(method);
   }
 
-  private MethodCost getCurrentMethodCost(){
+  private MethodCost getCurrentMethodCost() {
     if (callStack.isEmpty()) {
       throw new IllegalStateException();
     }
@@ -66,37 +63,41 @@ public class TestabilityVisitor {
   }
 
   /**
-   * Records that there is a call to {@code toMethod} from within {@code fromMethod}, on the
-   * {@code fromLineNumber}. Recurses into {@code toMethod} and records all of the
-   * operations there, computing for all the methods in the transitive closure (avoiding
-   * whitelisted method invocations).
+   * Records that there is a call to {@code toMethod} from within {@code
+   * fromMethod}, on the {@code fromLineNumber}. Recurses into {@code toMethod}
+   * and records all of the operations there, computing for all the methods in
+   * the transitive closure (avoiding whitelisted method invocations).
    *
-   * @param fromMethod the method making the call of {@code toMethod}
-   * @param fromLineNumber source code line number in the {@code fromMethod}
-   * @param toMethod method that is getting called from within {@code fromMethod}
+   * @param fromMethod
+   *          the method making the call of {@code toMethod}
+   * @param fromLineNumber
+   *          source code line number in the {@code fromMethod}
+   * @param toMethod
+   *          method that is getting called from within {@code fromMethod}
    */
-  // TODO(jwolter): I don't think this needs to be on TestabilityContext, can we break it off?
-  // Does it belong to live on a MethodInfoBuilder? (I think so) or on the MethodInfo itself?
-  // Or maybe TestabilityContext should be pruned off of the extra baggage, and renamed to
+  // TODO(jwolter): I don't think this needs to be on TestabilityContext, can we
+  // break it off?
+  // Does it belong to live on a MethodInfoBuilder? (I think so) or on the
+  // MethodInfo itself?
+  // Or maybe TestabilityContext should be pruned off of the extra baggage, and
+  // renamed to
   // MethodCostBuilder? CostAccumulator?
-  public void recordMethodCall(int fromLineNumber,
-      MethodInfo toMethod) {
+  public void recordMethodCall(int fromLineNumber, MethodInfo toMethod) {
     MethodCost from = getCurrentMethodCost();
     MethodCost to = getMethodCost(toMethod);
     if (from != to) {
-      from.addMethodCost(fromLineNumber, to, Reason.NON_OVERRIDABLE_METHOD_CALL);
+      from
+          .addMethodCost(fromLineNumber, to, Reason.NON_OVERRIDABLE_METHOD_CALL);
       applyMethodOperations(toMethod);
     }
   }
 
-
   /**
-   * Looks up the MethodCost and returns the cached one, or a new one is created for
-   * this method. Then link() is called. Note: this returns the linked method cost only
-   * because some tests require linking (and don't go through the usual route of
-   * ClassCost#link().
+   * Looks up the MethodCost and returns the cached one, or a new one is created
+   * for this method. Then link() is called. Note: this returns the linked
+   * method cost only because some tests require linking (and don't go through
+   * the usual route of ClassCost#link().
    */
-  //TODO: Move this out of here to tests
   public MethodCost getLinkedMethodCost(MethodInfo method) {
     MethodCost cost = getMethodCost(method);
     cost.link(costModel);
@@ -114,31 +115,40 @@ public class TestabilityVisitor {
   }
 
   /**
-   * Implicit costs are added to the {@code from} method's costs when
-   * it is assumed that the costs must be incurred in order for the {@code from}
+   * Implicit costs are added to the {@code from} method's costs when it is
+   * assumed that the costs must be incurred in order for the {@code from}
    * method to execute. Example:
+   *
    * <pre>
    * void fromMethod() {
    *   this.someObject.toMethod();
    * }
    * </pre>
-   * <p>We would add the implicit cost of the toMethod() to the fromMethod().
+   * <p>
+   * We would add the implicit cost of the toMethod() to the fromMethod().
    * Implicit Costs consist of:
    * <ul>
-   * <li>Cost of construction for the someObject field referenced in fromMethod()</li>
-   * <li>Static initialization blocks in someObject</ul>
-   * <li>The cost of calling all the methods starting with "set" on someObject.</ul>
-   * <li>Note that the same implicit costs apply for the class that has the fromMethod.
-   * (Meaning a method will always have the implicit costs of the containing class and
-   * super-classes at a minimum).</li>
+   * <li>Cost of construction for the someObject field referenced in
+   * fromMethod()</li>
+   * <li>Static initialization blocks in someObject
    * </ul>
+   * <li>The cost of calling all the methods starting with "set" on
+   * someObject.</ul>
+   * <li>Note that the same implicit costs apply for the class that has the
+   * fromMethod. (Meaning a method will always have the implicit costs of the
+   * containing class and super-classes at a minimum).</li> </ul>
    *
-   * @param from the method that we are adding the implicit cost upon.
-   * @param to the method that is getting called by {@code from} and contributes cost transitively.
-   * @param costSourceType the type of implicit cost to record, for giving the user information
-   * about why they have the costs they have.
+   * @param from
+   *          the method that we are adding the implicit cost upon.
+   * @param to
+   *          the method that is getting called by {@code from} and contributes
+   *          cost transitively.
+   * @param costSourceType
+   *          the type of implicit cost to record, for giving the user
+   *          information about why they have the costs they have.
    */
-  public void applyImplicitCost(MethodInfo from, MethodInfo to, Reason costSourceType) {
+  public void applyImplicitCost(MethodInfo from, MethodInfo to,
+      Reason costSourceType) {
     int line = to.getStartingLineNumber();
     MethodCost methodCost = getMethodCost(from);
     MethodCost toMethodCost = getMethodCost(to);
@@ -180,8 +190,8 @@ public class TestabilityVisitor {
     setInjectable(method.getParameters());
   }
 
-  public void localAssignment(int lineNumber,
-      Variable destination, Variable source) {
+  public void localAssignment(int lineNumber, Variable destination,
+      Variable source) {
     variableAssignment(getCurrentMethodCost(), lineNumber, destination, source);
   }
 
@@ -192,11 +202,12 @@ public class TestabilityVisitor {
 
   public void returnAssignment(MethodInfo inMethod, int lineNumber,
       Variable destination) {
-    variableAssignment(getMethodCost(inMethod), lineNumber, destination, returnValue);
+    variableAssignment(getMethodCost(inMethod), lineNumber, destination,
+        returnValue);
   }
 
   private void variableAssignment(MethodCost inMethod, int lineNumber,
-        Variable destination, Variable source) {
+      Variable destination, Variable source) {
     if (isInjectable(source)) {
       setInjectable(destination);
     }
@@ -218,14 +229,16 @@ public class TestabilityVisitor {
   }
 
   /**
-   * The method propagates the global property of a field onto any field it is assigned to.
-   * The globality is propagated because global state is transitive (static cling) So any
-   * modification on class which is transitively global should also be penalized.
+   * The method propagates the global property of a field onto any field it is
+   * assigned to. The globality is propagated because global state is transitive
+   * (static cling) So any modification on class which is transitively global
+   * should also be penalized.
    *
-   * <p>Note: <em>final</em> static fields are not added, because they are assumed to be
-   * constants, thus this will miss some actual global state. (The justification
-   * is that if costs were included for constants it would penalize people for
-   * a good practice -- removing magic values from code).
+   * <p>
+   * Note: <em>final</em> static fields are not added, because they are assumed
+   * to be constants, thus this will miss some actual global state. (The
+   * justification is that if costs were included for constants it would
+   * penalize people for a good practice -- removing magic values from code).
    */
   public void fieldAssignment(Variable fieldInstance, FieldInfo field,
       Variable value, int lineNumber) {
@@ -239,8 +252,10 @@ public class TestabilityVisitor {
     }
   }
 
-  /** If and only if the array is a static, then add it as a Global State Cost for the
-   * {@code inMethod}. */
+  /**
+   * If and only if the array is a static, then add it as a Global State Cost
+   * for the {@code inMethod}.
+   */
   public void arrayAssignment(Variable array, Variable index, Variable value,
       int lineNumber) {
     if (statics.contains(array)) {
@@ -254,7 +269,7 @@ public class TestabilityVisitor {
 
   public boolean isInjectable(Variable var) {
     if (var instanceof LocalField) {
-      return isInjectable(((LocalField)var).getField());
+      return isInjectable(((LocalField) var).getField());
     }
     return injectables.contains(var);
   }
@@ -263,19 +278,23 @@ public class TestabilityVisitor {
     injectables.add(var);
   }
 
-  // TODO(jwolter): This should not be on this object, it only clutters the single responsibility
-  // we would like to have within it. It makes this object double as a service locator.
+  // TODO(jwolter): This should not be on this object, it only clutters the
+  // single responsibility
+  // we would like to have within it. It makes this object double as a service
+  // locator.
   public void reportError(String errorMessage) {
     err.println(errorMessage);
   }
 
-  // TODO(jwolter): This should be removed from this class, because it is only acting as a
+  // TODO(jwolter): This should be removed from this class, because it is only
+  // acting as a
   // service locator, cluttering its responsibilities.
   public boolean isClassWhiteListed(String className) {
     return whitelist.isClassWhiteListed(className);
   }
 
-  // TODO(jwolter): This class is too tightly coupled to the MethodInvokation class, can we pull off
+  // TODO(jwolter): This class is too tightly coupled to the MethodInvokation
+  // class, can we pull off
   // this method and put it somewhere else?
   public void setReturnValue(Variable value) {
     if (isWorse(value, returnValue)) {
@@ -315,5 +334,13 @@ public class TestabilityVisitor {
     }
     return count;
   }
-}
 
+  public void recordLoDDispatch(int lineNumber, MethodInfo method,
+      Variable variable, int distance) {
+    setLoDCount(variable, distance);
+    if (distance > 1) {
+      getCurrentMethodCost().addCostSource(
+          new LoDViolation(lineNumber, method.getFullName(), distance));
+    }
+  }
+}

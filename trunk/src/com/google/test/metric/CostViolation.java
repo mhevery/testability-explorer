@@ -15,7 +15,6 @@
  */
 package com.google.test.metric;
 
-
 public abstract class CostViolation {
 
   /** This attempts to answer "What is the source of each line's cost?" */
@@ -50,7 +49,6 @@ public abstract class CostViolation {
   private final Reason reason;
   protected Cost cost;
 
-
   /**
    * @param lineNumber
    *          that the {@code methodCost} was called on for the class that
@@ -76,13 +74,16 @@ public abstract class CostViolation {
 
   @Override
   public String toString() {
-    return lineNumber + " " + reason;
+    return "Line " + lineNumber + ": " + getDescription() + " (" + reason + ")";
   }
 
-  public abstract void link(Cost directCost, Cost dependantCost, CostModel costModel);
+  public abstract void link(Cost directCost, Cost dependantCost,
+      CostModel costModel);
 
   public Cost getCost() {
     return cost;
   }
+
+  public abstract String getDescription();
 
 }

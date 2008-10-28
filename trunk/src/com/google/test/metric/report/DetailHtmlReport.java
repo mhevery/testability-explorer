@@ -25,12 +25,11 @@ import java.util.List;
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostViolation;
 import com.google.test.metric.MethodCost;
-import com.google.test.metric.MethodInvokationCost;
+import com.google.test.metric.CostViolation.Reason;
 
 public class DetailHtmlReport {
 
-  static class CostSourceComparator implements
-      Comparator<CostViolation> {
+  static class CostSourceComparator implements Comparator<CostViolation> {
     public int compare(CostViolation cost1, CostViolation cost2) {
       int c1 = cost1.getCost().getOvarall();
       int c2 = cost2.getCost().getOvarall();
@@ -38,8 +37,7 @@ public class DetailHtmlReport {
     }
   }
 
-  public static class MethodCostComparator implements
-      Comparator<MethodCost> {
+  public static class MethodCostComparator implements Comparator<MethodCost> {
     public int compare(MethodCost cost1, MethodCost cost2) {
       int c1 = cost1.getOverallCost();
       int c2 = cost2.getOverallCost();
@@ -64,19 +62,16 @@ public class DetailHtmlReport {
     out.println(text);
   }
 
-  public void write(MethodInvokationCost methodInvocationCost, String classFilePath) {
-    String costSourceType = methodInvocationCost.getCostSourceType().toString();
-    MethodCost methodCost = methodInvocationCost.getMethodCost();
-    String text = "<div class=\"Line\">" +
-    		"<span class=\"lineNumber\">line&nbsp;{lineNumber}:</span>" +
-    		"{methodName} [&nbsp;{cost}&nbsp;] (source: " + costSourceType + ")" +
-    		"</div>";
-    text = text.replace("{lineNumber}", "" + methodInvocationCost.getLineNumber());
-    text = text.replace("{methodName}", "" +
-        linkGenerator.buildLineLink(classFilePath,
-            methodInvocationCost.getLineNumber(),
-            methodCost.getMethodName()));
-    text = text.replace("{cost}", "" + methodCost.getOverallCost());
+  public void write(CostViolation cost, String classFilePath) {
+    Reason reason = cost.getCostSourceType();
+    String text = "<div class=\"Line\">"
+        + "<span class=\"lineNumber\">line&nbsp;{lineNumber}:</span>"
+        + "{methodName} [&nbsp;{cost}&nbsp;] (source: " + reason + ")"
+        + "</div>";
+    text = text.replace("{lineNumber}", "" + cost.getLineNumber());
+    text = text.replace("{methodName}", linkGenerator.buildLineLink(
+        classFilePath, cost.getLineNumber(), cost.getDescription()));
+    text = text.replace("{cost}", "" + cost.getCost());
     write(text);
   }
 
@@ -87,12 +82,10 @@ public class DetailHtmlReport {
     text = text.replace("{cost}", "" + method.getOverallCost());
     write(text);
 
-    List<CostViolation> lines = method.getCostSources();
-    Collections.sort(lines, new CostSourceComparator());
-    for (CostViolation line : lines.subList(0, min(maxLineCount, lines.size()))) {
-      if (line instanceof MethodInvokationCost) {
-        write((MethodInvokationCost) line, classFilePath);
-      }
+    List<CostViolation> violations = method.getCostSources();
+    Collections.sort(violations, new CostSourceComparator());
+    for (CostViolation violation : violations.subList(0, min(maxLineCount, violations.size()))) {
+      write(violation, classFilePath);
     }
     write("</div>");
   }
@@ -103,14 +96,16 @@ public class DetailHtmlReport {
    */
   public void write(ClassCost classCost) {
     String text = "<div class=\"Class\">" + "<span class='expand'>[+]</span>"
-      + "{className} {link} [&nbsp;{cost}&nbsp;]";
-    String classFilePath = linkGenerator.getOriginalFilePath(classCost.getClassName());
+        + "{className} {link} [&nbsp;{cost}&nbsp;]";
+    String classFilePath = linkGenerator.getOriginalFilePath(classCost
+        .getClassName());
     String link = linkGenerator.buildClassLink(classFilePath, "source");
     text = text.replace("{className}", classCost.getClassName());
     text = text.replace("{cost}", "" + classCost.getOverallCost());
     // Don't show the link if we don't have one
     if (!link.equals("source")) {
-      text = text.replace("{link}", "<span class=\"smaller\">(" + link + ")</span>");
+      text = text.replace("{link}", "<span class=\"smaller\">(" + link
+          + ")</span>");
     } else {
       text = text.replace("{link}", "");
     }
@@ -119,7 +114,8 @@ public class DetailHtmlReport {
     List<MethodCost> methods = classCost.getMethods();
     Collections.sort(methods, new MethodCostComparator());
 
-    for (MethodCost method : methods.subList(0, min(maxMethodCount, methods.size()))) {
+    for (MethodCost method : methods.subList(0, min(maxMethodCount, methods
+        .size()))) {
       write(method, classFilePath);
     }
     write("</div>");

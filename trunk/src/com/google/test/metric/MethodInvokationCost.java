@@ -36,4 +36,9 @@ public class MethodInvokationCost extends CostViolation {
   public MethodCost getMethodCost() {
     return methodCost;
   }
+
+  @Override
+  public String getDescription() {
+    return methodCost.getMethodName();
+  }
 }
