@@ -16,6 +16,7 @@
 
 package com.google.test.metric;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -24,7 +25,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import com.google.classpath.ClasspathRootFactory;
+import com.google.classpath.DirectoryClassPath;
 import com.google.test.metric.asm.Visibility;
 import com.google.test.metric.method.op.turing.Operation;
 
@@ -247,7 +248,7 @@ public class ClassInfoTest extends AutoFieldClearTestCase {
   }
 
   public void testReadInvalidByteCodeClassFile() throws Exception {
-    ClassRepository repo = new JavaClassRepository(ClasspathRootFactory.makeClasspathRootGroup("classes-for-test"));
+    ClassRepository repo = new JavaClassRepository(new DirectoryClassPath(new File("classes-for-test")));
     try {
       repo.getClass("invalidByteCode");
       fail();

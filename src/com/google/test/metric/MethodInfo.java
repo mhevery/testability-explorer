@@ -72,6 +72,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return name;
   }
 
+  //TODO: Refactor this!
   public String getFullName() {
     int paramsEnd = desc.indexOf(')');
     String returnValue = deconstructParameters(desc.substring(paramsEnd + 1)) + " ";

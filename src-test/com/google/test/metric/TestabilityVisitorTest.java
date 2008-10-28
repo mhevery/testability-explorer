@@ -17,6 +17,10 @@ package com.google.test.metric;
 
 
 import static java.util.Collections.EMPTY_LIST;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import junit.framework.TestCase;
 
 public class TestabilityVisitorTest extends TestCase {
@@ -164,6 +168,22 @@ public class TestabilityVisitorTest extends TestCase {
     MethodInfo methodInfo = clazz.getMethod(method("execute", Obj.class));
     visitor.applyMethodOperations(methodInfo);
     assertEquals(2, visitor.getLoDCount(clazz.getField("plus2")));
+    MethodCost methodCost = visitor.getLinkedMethodCost(methodInfo);
+    List<LoDViolation> costSources = filterLoD(methodCost.getCostSources());
+    assertEquals(1, costSources.size());
+    LoDViolation violation = costSources.get(0);
+    assertTrue(violation.getDescription().contains("getValueB()"));
+    assertTrue(violation.getDescription().contains("[distance=2]"));
+  }
+
+  private List<LoDViolation> filterLoD(List<CostViolation> violations) {
+    List<LoDViolation> lods = new ArrayList<LoDViolation>();
+    for (CostViolation violation : violations) {
+      if (violation instanceof LoDViolation) {
+        lods.add((LoDViolation) violation);
+      }
+    }
+    return lods;
   }
 
   private static class MultipleInjectability {

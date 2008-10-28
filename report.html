@@ -1,0 +1,682 @@
+<html>
+  <head>
+    <title>Testability Report</title>
+    <style type="text/css">
+    body {
+      font-family: Verdana;
+      padding: 16px 8px;
+    }
+
+    .Class {
+      font-family: monospace;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .Method {
+      padding-left: 20px;
+      font-size: 14px;
+      display: none;
+      cursor: pointer;
+    }
+    .Line {
+      padding-left: 20px;
+      font-size: 13px;
+      display: none;
+      cursor: text;
+    }
+    .lineNumber {
+      padding-right: 5px;
+    }
+    .expand {
+      font-family: monospace;
+      cursor: pointer;
+    }
+    #timestamp {
+      color: #666;
+      font-style: italic;
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      z-index: 100;
+    }
+
+    .overview_table {
+    }
+    .overview_table th {
+      font-weight: normal;
+      padding-bottom: 4px;
+    }
+    .overview_table td {
+      font-style: italic;
+    }
+    .overview_table .percent {
+      padding-left: 8px;
+      text-align: right;
+    }
+    .overview_table .value {
+      padding-left: 8px;
+      text-align: right;
+    }
+
+    .cost {
+      font-family: monospace;      
+      padding-left: 12px;
+      text-align: right;
+    }
+    .smaller {
+      font-size: 80%;
+    }
+    </style>
+    <script type="text/javascript">
+
+function toggle(element) {
+  var currentStyle = element.style.display;
+  element.style.display = 'block' == currentStyle ? 'none' : 'block';
+}
+
+function toggleExpandSign(element) {
+  if (element.firstChild.className == 'expand') {
+    var expand = element.firstChild;
+  } else if (element.className == 'expand') {
+    var expand = element;
+  } else {
+    return;
+  }
+  expand.innerHTML = expand.innerHTML == '[+]' ? '[-]' : '[+]';
+}
+     
+function clickHandler(event) {
+  var element = event.target;
+  toggleExpandSign(element);
+  if (element.className == 'expand') {
+    element = element.parentNode;
+  }
+  var children = element.childNodes;
+  for (var i=0; i < children.length; i++) {
+    var child = children[i];
+    if (child.nodeName == 'DIV') {
+      toggle(child);
+    }
+  }
+}
+    </script>
+  </head>
+  <body>
+    <h1>Testability Report</h1>
+    <div id="timestamp">
+      Report generated on: 2008-10-24 20:22:49
+    </div>
+
+WARNING: can not analyze class 'com.google.test.metric.cpp.InternalLexer' since class 'antlr/CharScanner' was not found.
+WARNING: can not analyze class 'com.google.test.metric.cpp.InternalParser' since class 'antlr/LLkParser' was not found.
+WARNING: class not found: com.google.test.metric.cpp.InternalLexer
+WARNING: class not found: com.google.test.metric.cpp.InternalParser
+WARNING: class not found: com.google.test.metric.cpp.InternalParser
+WARNING: class not found: com.google.test.metric.LoDViolation
+   <div style="margin-top: 32px;">
+    <div style="padding-bottom: 24px; font-weight: bold; font-size: 120%">Overall score: <span style="font-weight: normal">23<span class="smaller">(<a href="TODO">what is this?</a>)</span></span></div>
+    <div style="float: left;">
+      <img src='http://chart.apis.google.com/chart?chco=00AA00,FFFF00,D22222&chd=t:97,1,1&chl=Excellent|Good|Needs+Work&chs=400x100&cht=p3'/>
+    </div>
+    <div style="float: left;">
+      <img src='http://chart.apis.google.com/chart?chco=00FF00,FFFF00,FF0000,550000&chd=t:11&chs=200x100&cht=gom'/>
+    </div>
+    <div style="border: 1px solid #cc6; background: #ffd; padding: 8px; margin-left: 16px; float: left;">
+      <table class="overview_table">
+      <tr><th>Analyzed classes</td><th class="value">187</td><th class="percent">&nbsp;</td></tr>
+      <tr><td> - Excellent</td><td class="value">183</td><td class="percent"> 97.9%</td></tr>
+
+      <tr><td> - Good</td><td class="value">2</td><td class="percent">  1.1%</td></tr>
+      <tr><td> - Needs work</td><td class="value">2</td><td class="percent">  1.1%</td></tr>
+      </table>
+    </div>
+
+    <div style="clear:both; width: 0">&nbsp;</div>
+  </div>
+
+  <div style="margin-bottom: 32px; margin-left: 32px; margin-top: 16px;">
+    <img src='http://chart.apis.google.com/chart?chbh=11,0,0&chco=00AA00,FFFF00,D22222&chd=s:9HFDABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,AAAAAAAAABAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,AAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAABAAAAA&chdl=Excellent|Good|Needs+Work&chl=3|||24|||45|||66|||87|||108|||129|||150|||171|||192|||213|||234|||255|||276|||297|||318|||339||&chs=700x200&cht=bvs&chxl=0:|0|149&chxt=y'/>
+  </div>
+
+<h2 style="margin-bottom: 12px;">Least Testable Classes</h2>
+<div onclick='clickHandler(event)'>
+<div class="Class"><span class='expand'>[+]</span>com.google.test.metric.JavaClassRepository  [&nbsp;320&nbsp;]
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.ClassInfo getClass(java.lang.String) [&nbsp;323&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;47:</span>com.google.test.metric.ClassInfo parseClass(java.io.InputStream) [&nbsp;318, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;47:</span>java.io.InputStream inputStreamForClass(java.lang.String) [&nbsp;2, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;36:</span>com.google.test.metric.JavaClassRepository(com.google.classpath.ClasspathRootGroup) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.ClassInfo parseClass(java.io.InputStream) [&nbsp;318&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;73:</span>void accept(org.objectweb.asm.ClassVisitor, int) [&nbsp;302, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;71:</span>org.objectweb.asm.ClassReader(java.io.InputStream) [&nbsp;15, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;36:</span>com.google.test.metric.JavaClassRepository(com.google.classpath.ClasspathRootGroup) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;72:</span>com.google.test.metric.asm.ClassInfoBuilderVisitor(com.google.test.metric.ClassRepository) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;74:</span>com.google.test.metric.ClassInfo getClassInfo() [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>java.io.InputStream inputStreamForClass(java.lang.String) [&nbsp;2&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;36:</span>com.google.test.metric.JavaClassRepository(com.google.classpath.ClasspathRootGroup) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;64:</span>com.google.test.metric.ClassNotFoundException(java.lang.String) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.JavaClassRepository() [&nbsp;0&nbsp;]
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.JavaClassRepository(com.google.classpath.ClasspathRootGroup) [&nbsp;0&nbsp;]
+</div>
+<div class="Method"><span class='expand'>[+]</span>void addClass(com.google.test.metric.ClassInfo) [&nbsp;0&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;36:</span>com.google.test.metric.JavaClassRepository(com.google.classpath.ClasspathRootGroup) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+</div>
+<div class="Class"><span class='expand'>[+]</span>com.google.test.metric.Testability  [&nbsp;151&nbsp;]
+<div class="Method"><span class='expand'>[+]</span>void main(java.io.PrintStream, java.io.PrintStream, java.lang.String[]) [&nbsp;181&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;143:</span>void parseArgs(java.lang.String[]) [&nbsp;80, 1, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;144:</span>com.google.test.metric.report.Report execute() [&nbsp;88, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;141:</span>com.google.test.metric.Testability(java.io.PrintStream, java.io.PrintStream) [&nbsp;2, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void main(java.lang.String[]) [&nbsp;181&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;137:</span>void main(java.io.PrintStream, java.io.PrintStream, java.lang.String[]) [&nbsp;171, 1, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void parseArgs(java.lang.String[]) [&nbsp;92&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;149:</span>org.kohsuke.args4j.CmdLineParser(java.lang.Object) [&nbsp;32, 1, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;151:</span>void parseArgument(java.lang.String[]) [&nbsp;23, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;162:</span>void printUsage(java.io.OutputStream) [&nbsp;22, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;130:</span>com.google.test.metric.Testability(java.io.PrintStream, java.io.PrintStream) [&nbsp;2, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;160:</span>java.lang.String getMessage() [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;161:</span>void setUsageWidth(int) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.report.Report execute() [&nbsp;90&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;250:</span>com.google.test.metric.ClassCost compute(com.google.test.metric.ClassInfo) [&nbsp;55, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;240:</span>void postParse() [&nbsp;26, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;248:</span>boolean isClassWhiteListed(java.lang.String) [&nbsp;4, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;130:</span>com.google.test.metric.Testability(java.io.PrintStream, java.io.PrintStream) [&nbsp;2, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;245:</span>void printHeader()[distance=2] [&nbsp;0, 0, 1&nbsp;] (source: cost from breaking the Law of Demeter)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;258:</span>void printFooter()[distance=2] [&nbsp;0, 0, 1&nbsp;] (source: cost from breaking the Law of Demeter)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;248:</span>boolean isClassWhiteListed(java.lang.String)[distance=2] [&nbsp;0, 0, 1&nbsp;] (source: cost from breaking the Law of Demeter)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;251:</span>void addClassCost(com.google.test.metric.ClassCost)[distance=2] [&nbsp;0, 0, 1&nbsp;] (source: cost from breaking the Law of Demeter)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;255:</span>java.lang.String getClassName()[distance=2] [&nbsp;0, 0, 1&nbsp;] (source: cost from breaking the Law of Demeter)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;258:</span>void printFooter()[distance=2] [&nbsp;0, 0, 1&nbsp;] (source: cost from breaking the Law of Demeter)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void postParse() [&nbsp;28&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;173:</span>com.google.classpath.ClasspathRootGroup getClassPath() [&nbsp;15, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;175:</span>com.google.test.metric.report.Report getReportPrinter(java.util.Comparator) [&nbsp;6, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;130:</span>com.google.test.metric.Testability(java.io.PrintStream, java.io.PrintStream) [&nbsp;2, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;171:</span>com.google.test.metric.RegExpWhiteList getWhiteList() [&nbsp;2, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;169:</span>void ensureEntryListIsNotEmpty() [&nbsp;1, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;172:</span>java.util.List getTemplates() [&nbsp;1, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;174:</span>java.util.Comparator getGroupingComparator() [&nbsp;1, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.classpath.ClasspathRootGroup getClassPath() [&nbsp;18&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;214:</span>com.google.classpath.ClasspathRootGroup makeClasspathRootGroup(java.lang.String) [&nbsp;16, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;130:</span>com.google.test.metric.Testability(java.io.PrintStream, java.io.PrintStream) [&nbsp;2, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>java.util.List getTemplates() [&nbsp;14&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;218:</span>com.google.classpath.ColonDelimitedStringParser(java.lang.String) [&nbsp;1, 1, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;130:</span>com.google.test.metric.Testability(java.io.PrintStream, java.io.PrintStream) [&nbsp;2, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;218:</span>java.util.List getStrings() [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.report.Report getReportPrinter(java.util.Comparator) [&nbsp;8&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;130:</span>com.google.test.metric.Testability(java.io.PrintStream, java.io.PrintStream) [&nbsp;2, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;182:</span>com.google.test.metric.report.SourceLinker(java.lang.String, java.lang.String) [&nbsp;2, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;180:</span>com.google.test.metric.report.TextReport(java.io.PrintStream, int, int, int, java.util.Comparator) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;183:</span>com.google.test.metric.report.DetailHtmlReport(java.io.PrintStream, com.google.test.metric.report.SourceLinkGenerator, int, int) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;186:</span>com.google.test.metric.report.HtmlReport(java.io.PrintStream, int, int, int, com.google.test.metric.report.DetailHtmlReport, java.util.Comparator) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;188:</span>com.google.test.metric.report.DrillDownReport(java.io.PrintStream, java.util.List, int, int) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;190:</span>com.google.test.metric.report.PropertiesReport(java.io.OutputStream, int, int, int) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;192:</span>org.kohsuke.args4j.CmdLineException(java.lang.String) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.RegExpWhiteList getWhiteList() [&nbsp;4&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;130:</span>com.google.test.metric.Testability(java.io.PrintStream, java.io.PrintStream) [&nbsp;2, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;206:</span>com.google.classpath.ColonDelimitedStringParser(java.lang.String) [&nbsp;1, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;206:</span>java.util.List getStrings() [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void ensureEntryListIsNotEmpty() [&nbsp;3&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;130:</span>com.google.test.metric.Testability(java.io.PrintStream, java.io.PrintStream) [&nbsp;2, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+</div>
+<div class="Class"><span class='expand'>[+]</span>com.google.test.metric.report.ReportDiffer  [&nbsp;91&nbsp;]
+<div class="Method"><span class='expand'>[+]</span>void main(java.lang.String[]) [&nbsp;97&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;35:</span>void parseArgs(java.lang.String[]) [&nbsp;78, 1, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;36:</span>void doDiff() [&nbsp;9, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;34:</span>com.google.test.metric.report.ReportDiffer() [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void parseArgs(java.lang.String[]) [&nbsp;88&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;47:</span>org.kohsuke.args4j.CmdLineParser(java.lang.Object) [&nbsp;32, 1, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;49:</span>void parseArgument(java.lang.String[]) [&nbsp;23, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;53:</span>void printUsage(java.io.OutputStream) [&nbsp;22, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;25:</span>com.google.test.metric.report.ReportDiffer() [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;51:</span>java.lang.String getMessage() [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;52:</span>void setUsageWidth(int) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void doDiff() [&nbsp;9&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;42:</span>com.google.test.metric.report.Diff diff() [&nbsp;6, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;43:</span>void print(java.io.PrintStream) [&nbsp;3, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;43:</span>void print(java.io.PrintStream)[distance=2] [&nbsp;0, 0, 1&nbsp;] (source: cost from breaking the Law of Demeter)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;25:</span>com.google.test.metric.report.ReportDiffer() [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;41:</span>com.google.test.metric.report.PropertiesReportDiffer(java.io.InputStream, java.io.InputStream) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.report.ReportDiffer() [&nbsp;0&nbsp;]
+</div>
+</div>
+<div class="Class"><span class='expand'>[+]</span>com.google.test.metric.asm.MethodVisitorBuilder  [&nbsp;63&nbsp;]
+<div class="Method"><span class='expand'>[+]</span>void visitInsn(int) [&nbsp;150&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;81:</span>com.google.test.metric.asm.MethodVisitorBuilder(com.google.test.metric.ClassRepository, com.google.test.metric.ClassInfo, java.lang.String, java.lang.String, java.lang.String, java.lang.String[], boolean, boolean, com.google.test.metric.asm.Visibility) [&nbsp;43, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;730:</span>com.google.test.metric.asm.MethodVisitorBuilder$22(com.google.test.metric.asm.MethodVisitorBuilder) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;408:</span>com.google.test.metric.asm.MethodVisitorBuilder$14(com.google.test.metric.asm.MethodVisitorBuilder) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;421:</span>void loadConstant(int, com.google.test.metric.Type) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;437:</span>void recordArrayLoad(com.google.test.metric.Type) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;462:</span>void recordArrayStore(com.google.test.metric.Type) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;487:</span>com.google.test.metric.asm.MethodVisitorBuilder$15(com.google.test.metric.asm.MethodVisitorBuilder, int) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;496:</span>com.google.test.metric.asm.MethodVisitorBuilder$16(com.google.test.metric.asm.MethodVisitorBuilder, int) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;506:</span>com.google.test.metric.asm.MethodVisitorBuilder$17(com.google.test.metric.asm.MethodVisitorBuilder, int) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;513:</span>com.google.test.metric.asm.MethodVisitorBuilder$18(com.google.test.metric.asm.MethodVisitorBuilder) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void visitEnd() [&nbsp;95&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;81:</span>com.google.test.metric.asm.MethodVisitorBuilder(com.google.test.metric.ClassRepository, com.google.test.metric.ClassInfo, java.lang.String, java.lang.String, java.lang.String, java.lang.String[], boolean, boolean, com.google.test.metric.asm.Visibility) [&nbsp;43, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;265:</span>java.util.List getOperations() [&nbsp;32, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;261:</span>void decomposeIntoBlocks() [&nbsp;18, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;263:</span>com.google.test.metric.MethodInfo(com.google.test.metric.ClassInfo, java.lang.String, int, java.lang.String, com.google.test.metric.Variable, java.util.List, java.util.List, com.google.test.metric.asm.Visibility, long, java.util.List, boolean) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void visitTypeInsn(int, java.lang.String) [&nbsp;56&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;81:</span>com.google.test.metric.asm.MethodVisitorBuilder(com.google.test.metric.ClassRepository, com.google.test.metric.ClassInfo, java.lang.String, java.lang.String, java.lang.String, java.lang.String[], boolean, boolean, com.google.test.metric.asm.Visibility) [&nbsp;43, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;278:</span>com.google.test.metric.Type fromDesc(java.lang.String) [&nbsp;11, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;280:</span>com.google.test.metric.asm.MethodVisitorBuilder$8(com.google.test.metric.asm.MethodVisitorBuilder, int, com.google.test.metric.Type) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void visitLocalVariable(java.lang.String, java.lang.String, java.lang.String, org.objectweb.asm.Label, org.objectweb.asm.Label, int) [&nbsp;55&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;81:</span>com.google.test.metric.asm.MethodVisitorBuilder(com.google.test.metric.ClassRepository, com.google.test.metric.ClassInfo, java.lang.String, java.lang.String, java.lang.String, java.lang.String[], boolean, boolean, com.google.test.metric.asm.Visibility) [&nbsp;43, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;235:</span>com.google.test.metric.Type fromDesc(java.lang.String) [&nbsp;11, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void visitIntInsn(int, int) [&nbsp;54&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;81:</span>com.google.test.metric.asm.MethodVisitorBuilder(com.google.test.metric.ClassRepository, com.google.test.metric.ClassInfo, java.lang.String, java.lang.String, java.lang.String, java.lang.String[], boolean, boolean, com.google.test.metric.asm.Visibility) [&nbsp;43, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;848:</span>com.google.test.metric.Type toType(int) [&nbsp;8, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;851:</span>void loadConstant(int, com.google.test.metric.Type) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;848:</span>void newArray(int, com.google.test.metric.Type) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void visitVarInsn(int, int) [&nbsp;54&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;81:</span>com.google.test.metric.asm.MethodVisitorBuilder(com.google.test.metric.ClassRepository, com.google.test.metric.ClassInfo, java.lang.String, java.lang.String, java.lang.String, java.lang.String[], boolean, boolean, com.google.test.metric.asm.Visibility) [&nbsp;43, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;310:</span>void load(int, com.google.test.metric.Type) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;326:</span>void store(int, com.google.test.metric.Type) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;342:</span>com.google.test.metric.asm.MethodVisitorBuilder$9(com.google.test.metric.asm.MethodVisitorBuilder) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.Type toType(int) [&nbsp;51&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;81:</span>com.google.test.metric.asm.MethodVisitorBuilder(com.google.test.metric.ClassRepository, com.google.test.metric.ClassInfo, java.lang.String, java.lang.String, java.lang.String, java.lang.String[], boolean, boolean, com.google.test.metric.asm.Visibility) [&nbsp;43, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.Variable variable(int, com.google.test.metric.Type) [&nbsp;50&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;81:</span>com.google.test.metric.asm.MethodVisitorBuilder(com.google.test.metric.ClassRepository, com.google.test.metric.ClassInfo, java.lang.String, java.lang.String, java.lang.String, java.lang.String[], boolean, boolean, com.google.test.metric.asm.Visibility) [&nbsp;43, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;378:</span>boolean equals(java.lang.Object) [&nbsp;2, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;378:</span>boolean equals(java.lang.Object)[distance=2] [&nbsp;0, 0, 1&nbsp;] (source: cost from breaking the Law of Demeter)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;378:</span>boolean isPrimitive() [&nbsp;1, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;378:</span>boolean isPrimitive()[distance=2] [&nbsp;0, 0, 1&nbsp;] (source: cost from breaking the Law of Demeter)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;377:</span>com.google.test.metric.Type getType() [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void visitFieldInsn(int, java.lang.String, java.lang.String, java.lang.String) [&nbsp;47&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;81:</span>com.google.test.metric.asm.MethodVisitorBuilder(com.google.test.metric.ClassRepository, com.google.test.metric.ClassInfo, java.lang.String, java.lang.String, java.lang.String, java.lang.String[], boolean, boolean, com.google.test.metric.asm.Visibility) [&nbsp;43, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;797:</span>com.google.test.metric.asm.MethodVisitorBuilder$GetFieldRunnable(com.google.test.metric.asm.MethodVisitorBuilder, com.google.test.metric.ClassRepository, java.lang.String, java.lang.String, java.lang.String, boolean) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;791:</span>com.google.test.metric.asm.MethodVisitorBuilder$PutFieldRunnable(com.google.test.metric.asm.MethodVisitorBuilder, com.google.test.metric.ClassRepository, java.lang.String, java.lang.String, java.lang.String, boolean) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void visitJumpInsn(int, org.objectweb.asm.Label) [&nbsp;45&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;81:</span>com.google.test.metric.asm.MethodVisitorBuilder(com.google.test.metric.ClassRepository, com.google.test.metric.ClassInfo, java.lang.String, java.lang.String, java.lang.String, java.lang.String[], boolean, boolean, com.google.test.metric.asm.Visibility) [&nbsp;43, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;109:</span>com.google.test.metric.asm.MethodVisitorBuilder$1(com.google.test.metric.asm.MethodVisitorBuilder, org.objectweb.asm.Label) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;116:</span>com.google.test.metric.asm.MethodVisitorBuilder$2(com.google.test.metric.asm.MethodVisitorBuilder, org.objectweb.asm.Label) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;123:</span>com.google.test.metric.asm.MethodVisitorBuilder$3(com.google.test.metric.asm.MethodVisitorBuilder, int, org.objectweb.asm.Label) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+</div>
+<div class="Class"><span class='expand'>[+]</span>com.google.test.metric.asm.ClassInfoBuilderVisitor  [&nbsp;41&nbsp;]
+<div class="Method"><span class='expand'>[+]</span>org.objectweb.asm.MethodVisitor visitMethod(int, java.lang.String, java.lang.String, java.lang.String, java.lang.String[]) [&nbsp;48&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;57:</span>com.google.test.metric.asm.MethodVisitorBuilder(com.google.test.metric.ClassRepository, com.google.test.metric.ClassInfo, java.lang.String, java.lang.String, java.lang.String, java.lang.String[], boolean, boolean, com.google.test.metric.asm.Visibility) [&nbsp;43, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;58:</span>com.google.test.metric.asm.Visibility valueOf(int) [&nbsp;3, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;33:</span>com.google.test.metric.asm.ClassInfoBuilderVisitor(com.google.test.metric.ClassRepository) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>org.objectweb.asm.FieldVisitor visitField(int, java.lang.String, java.lang.String, java.lang.String, java.lang.Object) [&nbsp;22&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;64:</span>com.google.test.metric.asm.FieldVisitorBuilder(com.google.test.metric.ClassInfo, int, java.lang.String, java.lang.String, java.lang.String, java.lang.Object) [&nbsp;22, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;33:</span>com.google.test.metric.asm.ClassInfoBuilderVisitor(com.google.test.metric.ClassRepository) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void visit(int, int, java.lang.String, java.lang.String, java.lang.String, java.lang.String[]) [&nbsp;3&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;33:</span>com.google.test.metric.asm.ClassInfoBuilderVisitor(com.google.test.metric.ClassRepository) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;48:</span>com.google.test.metric.ClassInfo(java.lang.String, boolean, com.google.test.metric.ClassInfo, java.util.List) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.asm.ClassInfoBuilderVisitor(com.google.test.metric.ClassRepository) [&nbsp;0&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;33:</span>com.google.test.metric.asm.NoopClassVisitor() [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.ClassInfo getClassInfo() [&nbsp;0&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;33:</span>com.google.test.metric.asm.ClassInfoBuilderVisitor(com.google.test.metric.ClassRepository) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+</div>
+<div class="Class"><span class='expand'>[+]</span>com.google.test.metric.asm.SignatureParser  [&nbsp;27&nbsp;]
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.asm.SignatureParser parse(java.lang.String) [&nbsp;32&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;106:</span>void accept(org.objectweb.asm.signature.SignatureVisitor) [&nbsp;32, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;105:</span>com.google.test.metric.asm.SignatureParser() [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;106:</span>org.objectweb.asm.signature.SignatureReader(java.lang.String) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void visitBaseType(char) [&nbsp;12&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;74:</span>com.google.test.metric.Type fromDesc(java.lang.String) [&nbsp;12, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;26:</span>com.google.test.metric.asm.SignatureParser() [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void visitClassType(java.lang.String) [&nbsp;2&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;79:</span>com.google.test.metric.Type fromJava(java.lang.String) [&nbsp;2, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;26:</span>com.google.test.metric.asm.SignatureParser() [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.asm.SignatureParser() [&nbsp;0&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;26:</span>com.google.test.metric.asm.NoopSignatureVisitor() [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>java.util.List access$0(com.google.test.metric.asm.SignatureParser) [&nbsp;0&nbsp;]
+</div>
+<div class="Method"><span class='expand'>[+]</span>void access$1(com.google.test.metric.asm.SignatureParser, com.google.test.metric.Type) [&nbsp;0&nbsp;]
+</div>
+<div class="Method"><span class='expand'>[+]</span>java.util.List getParameters() [&nbsp;0&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;26:</span>com.google.test.metric.asm.SignatureParser() [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.Type getReturnType() [&nbsp;0&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;26:</span>com.google.test.metric.asm.SignatureParser() [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>org.objectweb.asm.signature.SignatureVisitor visitArrayType() [&nbsp;0&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;26:</span>com.google.test.metric.asm.SignatureParser() [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;65:</span>com.google.test.metric.asm.SignatureParser$1(com.google.test.metric.asm.SignatureParser) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;65:</span>com.google.test.metric.asm.SignatureParser$TypeVisitor(com.google.test.metric.asm.SignatureParser$Setter) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>org.objectweb.asm.signature.SignatureVisitor visitParameterType() [&nbsp;0&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;26:</span>com.google.test.metric.asm.SignatureParser() [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+</div>
+<div class="Class"><span class='expand'>[+]</span>com.google.test.metric.method.BlockDecomposer  [&nbsp;23&nbsp;]
+<div class="Method"><span class='expand'>[+]</span>java.util.List getOperations() [&nbsp;32&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;270:</span>java.util.List translate() [&nbsp;30, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;41:</span>com.google.test.metric.method.BlockDecomposer() [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;270:</span>com.google.test.metric.method.Stack2Turing(com.google.test.metric.method.Block) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void decomposeIntoBlocks() [&nbsp;18&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;193:</span>void copyToBlocks() [&nbsp;7, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;194:</span>void linkBlocks() [&nbsp;6, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;192:</span>void breakIntoBlocks() [&nbsp;3, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;41:</span>com.google.test.metric.method.BlockDecomposer() [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void copyToBlocks() [&nbsp;7&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;41:</span>com.google.test.metric.method.BlockDecomposer() [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;224:</span>org.objectweb.asm.Label access$1(com.google.test.metric.method.BlockDecomposer$Frame) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;229:</span>com.google.test.metric.method.Block(java.lang.String) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;231:</span>java.lang.String getId() [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;236:</span>com.google.test.metric.method.op.stack.StackOperation access$3(com.google.test.metric.method.BlockDecomposer$Frame) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;240:</span>void addOp(com.google.test.metric.method.op.stack.StackOperation) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;244:</span>com.google.test.metric.method.BlockDecomposer$Frame access$2(com.google.test.metric.method.BlockDecomposer$Frame) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void linkBlocks() [&nbsp;6&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;255:</span>void addNextBlock(com.google.test.metric.method.Block) [&nbsp;2, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;41:</span>com.google.test.metric.method.BlockDecomposer() [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;250:</span>com.google.test.metric.method.BlockDecomposer$Frame access$2(com.google.test.metric.method.BlockDecomposer$Frame) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void addOp(com.google.test.metric.method.op.stack.StackOperation) [&nbsp;5&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;120:</span>com.google.test.metric.method.BlockDecomposer$Frame(com.google.test.metric.method.BlockDecomposer$Frame, com.google.test.metric.method.op.stack.StackOperation, org.objectweb.asm.Label) [&nbsp;1, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;128:</span>void applyLastLabel() [&nbsp;1, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;41:</span>com.google.test.metric.method.BlockDecomposer() [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>java.lang.String toString() [&nbsp;4&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;41:</span>com.google.test.metric.method.BlockDecomposer() [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;292:</span>com.google.test.metric.method.BlockDecomposer$Frame access$2(com.google.test.metric.method.BlockDecomposer$Frame) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void breakIntoBlocks() [&nbsp;3&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;41:</span>com.google.test.metric.method.BlockDecomposer() [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;209:</span>org.objectweb.asm.Label access$1(com.google.test.metric.method.BlockDecomposer$Frame) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;212:</span>com.google.test.metric.method.BlockDecomposer$Frame access$2(com.google.test.metric.method.BlockDecomposer$Frame) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void jumpSubroutine(org.objectweb.asm.Label, int) [&nbsp;2&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;167:</span>void applyLastLabel() [&nbsp;1, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;41:</span>com.google.test.metric.method.BlockDecomposer() [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;163:</span>com.google.test.metric.method.Block(java.lang.String) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;165:</span>com.google.test.metric.method.op.stack.JSR(int, com.google.test.metric.method.Block) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void applyLastLabel() [&nbsp;1&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;41:</span>com.google.test.metric.method.BlockDecomposer() [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;134:</span>void access$0(com.google.test.metric.method.BlockDecomposer$Frame, org.objectweb.asm.Label) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void conditionalGoto(org.objectweb.asm.Label) [&nbsp;1&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;157:</span>void applyLastLabel() [&nbsp;1, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;41:</span>com.google.test.metric.method.BlockDecomposer() [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+</div>
+<div class="Class"><span class='expand'>[+]</span>com.google.test.metric.asm.FieldVisitorBuilder  [&nbsp;22&nbsp;]
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.asm.FieldVisitorBuilder(com.google.test.metric.ClassInfo, int, java.lang.String, java.lang.String, java.lang.String, java.lang.Object) [&nbsp;22&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;31:</span>com.google.test.metric.Type fromDesc(java.lang.String) [&nbsp;12, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;33:</span>com.google.test.metric.FieldInfo(com.google.test.metric.ClassInfo, java.lang.String, com.google.test.metric.Type, boolean, boolean, boolean) [&nbsp;4, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;29:</span>com.google.test.metric.asm.Visibility valueOf(int) [&nbsp;3, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;26:</span>com.google.test.metric.asm.NoopFieldVisitor() [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+</div>
+<div class="Class"><span class='expand'>[+]</span>com.google.test.metric.asm.MethodVisitorBuilder$GetFieldRunnable  [&nbsp;22&nbsp;]
+<div class="Method"><span class='expand'>[+]</span>void run() [&nbsp;22&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;969:</span>com.google.test.metric.Type fromDesc(java.lang.String) [&nbsp;12, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;971:</span>void addOp(com.google.test.metric.method.op.stack.StackOperation) [&nbsp;5, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;968:</span>com.google.test.metric.FieldInfo(com.google.test.metric.ClassInfo, java.lang.String, com.google.test.metric.Type, boolean, boolean, boolean) [&nbsp;4, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;971:</span>void addOp(com.google.test.metric.method.op.stack.StackOperation)[distance=2] [&nbsp;0, 0, 1&nbsp;] (source: cost from breaking the Law of Demeter)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;971:</span>void addOp(com.google.test.metric.method.op.stack.StackOperation)[distance=2] [&nbsp;0, 0, 1&nbsp;] (source: cost from breaking the Law of Demeter)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;960:</span>com.google.test.metric.asm.MethodVisitorBuilder$GetFieldRunnable(com.google.test.metric.asm.MethodVisitorBuilder, com.google.test.metric.ClassRepository, java.lang.String, java.lang.String, java.lang.String, boolean) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;971:</span>com.google.test.metric.method.BlockDecomposer access$0(com.google.test.metric.asm.MethodVisitorBuilder) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;971:</span>int access$1(com.google.test.metric.asm.MethodVisitorBuilder) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;971:</span>com.google.test.metric.method.op.stack.GetField(int, com.google.test.metric.FieldInfo) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.asm.MethodVisitorBuilder$GetFieldRunnable(com.google.test.metric.asm.MethodVisitorBuilder, com.google.test.metric.ClassRepository, java.lang.String, java.lang.String, java.lang.String, boolean) [&nbsp;0&nbsp;]
+</div>
+</div>
+<div class="Class"><span class='expand'>[+]</span>com.google.test.metric.asm.MethodVisitorBuilder$PutFieldRunnable  [&nbsp;22&nbsp;]
+<div class="Method"><span class='expand'>[+]</span>void run() [&nbsp;22&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;939:</span>com.google.test.metric.Type fromDesc(java.lang.String) [&nbsp;12, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;941:</span>void addOp(com.google.test.metric.method.op.stack.StackOperation) [&nbsp;5, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;938:</span>com.google.test.metric.FieldInfo(com.google.test.metric.ClassInfo, java.lang.String, com.google.test.metric.Type, boolean, boolean, boolean) [&nbsp;4, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;941:</span>void addOp(com.google.test.metric.method.op.stack.StackOperation)[distance=2] [&nbsp;0, 0, 1&nbsp;] (source: cost from breaking the Law of Demeter)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;941:</span>void addOp(com.google.test.metric.method.op.stack.StackOperation)[distance=2] [&nbsp;0, 0, 1&nbsp;] (source: cost from breaking the Law of Demeter)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;929:</span>com.google.test.metric.asm.MethodVisitorBuilder$PutFieldRunnable(com.google.test.metric.asm.MethodVisitorBuilder, com.google.test.metric.ClassRepository, java.lang.String, java.lang.String, java.lang.String, boolean) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;941:</span>com.google.test.metric.method.BlockDecomposer access$0(com.google.test.metric.asm.MethodVisitorBuilder) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;942:</span>int access$1(com.google.test.metric.asm.MethodVisitorBuilder) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;942:</span>com.google.test.metric.method.op.stack.PutField(int, com.google.test.metric.FieldInfo) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.asm.MethodVisitorBuilder$PutFieldRunnable(com.google.test.metric.asm.MethodVisitorBuilder, com.google.test.metric.ClassRepository, java.lang.String, java.lang.String, java.lang.String, boolean) [&nbsp;0&nbsp;]
+</div>
+</div>
+<div class="Class"><span class='expand'>[+]</span>com.google.test.metric.asm.MethodVisitorBuilder$13  [&nbsp;20&nbsp;]
+<div class="Method"><span class='expand'>[+]</span>void run() [&nbsp;20&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;399:</span>com.google.test.metric.Type fromClass(java.lang.Class) [&nbsp;11, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;399:</span>void addOp(com.google.test.metric.method.op.stack.StackOperation) [&nbsp;5, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;399:</span>com.google.test.metric.method.Constant(java.lang.Object, com.google.test.metric.Type) [&nbsp;4, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;399:</span>void addOp(com.google.test.metric.method.op.stack.StackOperation)[distance=2] [&nbsp;0, 0, 1&nbsp;] (source: cost from breaking the Law of Demeter)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;1:</span>com.google.test.metric.asm.MethodVisitorBuilder$13(com.google.test.metric.asm.MethodVisitorBuilder, java.lang.Object) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;399:</span>com.google.test.metric.method.BlockDecomposer access$0(com.google.test.metric.asm.MethodVisitorBuilder) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;399:</span>int access$1(com.google.test.metric.asm.MethodVisitorBuilder) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;399:</span>com.google.test.metric.method.op.stack.Load(int, com.google.test.metric.Variable) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.asm.MethodVisitorBuilder$13(com.google.test.metric.asm.MethodVisitorBuilder, java.lang.Object) [&nbsp;0&nbsp;]
+</div>
+</div>
+<div class="Class"><span class='expand'>[+]</span>com.google.test.metric.MetricComputer  [&nbsp;18&nbsp;]
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.MethodCost compute(com.google.test.metric.MethodInfo) [&nbsp;21&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;78:</span>com.google.test.metric.MethodCost getLinkedMethodCost(com.google.test.metric.MethodInfo) [&nbsp;7, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;72:</span>void addStaticInitializationCost(com.google.test.metric.MethodInfo, com.google.test.metric.TestabilityVisitor) [&nbsp;6, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;73:</span>void addConstructorCost(com.google.test.metric.MethodInfo, com.google.test.metric.TestabilityVisitor) [&nbsp;5, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;75:</span>void addFieldCost(com.google.test.metric.MethodInfo, com.google.test.metric.TestabilityVisitor) [&nbsp;2, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;74:</span>void addSetterInjection(com.google.test.metric.MethodInfo, com.google.test.metric.TestabilityVisitor) [&nbsp;1, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;31:</span>com.google.test.metric.MetricComputer(com.google.test.metric.ClassRepository, java.io.PrintStream, com.google.test.metric.WhiteList, com.google.test.metric.CostModel) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;71:</span>com.google.test.metric.TestabilityVisitor(com.google.test.metric.ClassRepository, java.io.PrintStream, com.google.test.metric.WhiteList, com.google.test.metric.CostModel) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void addConstructorCost(com.google.test.metric.MethodInfo, com.google.test.metric.TestabilityVisitor) [&nbsp;3&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;31:</span>com.google.test.metric.MetricComputer(com.google.test.metric.ClassRepository, java.io.PrintStream, com.google.test.metric.WhiteList, com.google.test.metric.CostModel) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void addStaticInitializationCost(com.google.test.metric.MethodInfo, com.google.test.metric.TestabilityVisitor) [&nbsp;3&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;31:</span>com.google.test.metric.MetricComputer(com.google.test.metric.ClassRepository, java.io.PrintStream, com.google.test.metric.WhiteList, com.google.test.metric.CostModel) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;123:</span>java.lang.String getName() [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void addFieldCost(com.google.test.metric.MethodInfo, com.google.test.metric.TestabilityVisitor) [&nbsp;2&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;31:</span>com.google.test.metric.MetricComputer(com.google.test.metric.ClassRepository, java.io.PrintStream, com.google.test.metric.WhiteList, com.google.test.metric.CostModel) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;111:</span>boolean isPrivate() [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void addSetterInjection(com.google.test.metric.MethodInfo, com.google.test.metric.TestabilityVisitor) [&nbsp;1&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;31:</span>com.google.test.metric.MetricComputer(com.google.test.metric.ClassRepository, java.io.PrintStream, com.google.test.metric.WhiteList, com.google.test.metric.CostModel) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.ClassCost compute(com.google.test.metric.ClassInfo) [&nbsp;1&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;31:</span>com.google.test.metric.MetricComputer(com.google.test.metric.ClassRepository, java.io.PrintStream, com.google.test.metric.WhiteList, com.google.test.metric.CostModel) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;52:</span>com.google.test.metric.ClassCost(java.lang.String, java.util.List, com.google.test.metric.CostModel) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.MetricComputer(com.google.test.metric.ClassRepository, java.io.PrintStream, com.google.test.metric.WhiteList, com.google.test.metric.CostModel) [&nbsp;0&nbsp;]
+</div>
+</div>
+<div class="Class"><span class='expand'>[+]</span>com.google.test.metric.example.MutableGlobalExample  [&nbsp;18&nbsp;]
+<div class="Method"><span class='expand'>[+]</span>int getGlobalCount() [&nbsp;20&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;77:</span>int getCount() [&nbsp;0, 2, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;24:</span>com.google.test.metric.example.MutableGlobalExample() [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>int globalIncrement() [&nbsp;20&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;81:</span>int increment() [&nbsp;0, 2, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;24:</span>com.google.test.metric.example.MutableGlobalExample() [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>java.lang.String getGlobalId() [&nbsp;10&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;73:</span>java.lang.String getId() [&nbsp;0, 1, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;24:</span>com.google.test.metric.example.MutableGlobalExample() [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.example.MutableGlobalExample() [&nbsp;0&nbsp;]
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.example.MutableGlobalExample$Gadget getInstance() [&nbsp;0&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;24:</span>com.google.test.metric.example.MutableGlobalExample() [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+</div>
+<div class="Class"><span class='expand'>[+]</span>com.google.test.metric.asm.MethodVisitorBuilder$3  [&nbsp;17&nbsp;]
+<div class="Method"><span class='expand'>[+]</span>void run() [&nbsp;21&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;127:</span>void if1(java.lang.String) [&nbsp;5, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;177:</span>void conditionalGoto(org.objectweb.asm.Label)[distance=2] [&nbsp;0, 0, 1&nbsp;] (source: cost from breaking the Law of Demeter)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;1:</span>com.google.test.metric.asm.MethodVisitorBuilder$3(com.google.test.metric.asm.MethodVisitorBuilder, int, org.objectweb.asm.Label) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;157:</span>void if2(java.lang.String) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;177:</span>void conditionalGoto(org.objectweb.asm.Label) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void if1(java.lang.String) [&nbsp;5&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;181:</span>void addOp(com.google.test.metric.method.op.stack.StackOperation) [&nbsp;5, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;181:</span>void addOp(com.google.test.metric.method.op.stack.StackOperation)[distance=2] [&nbsp;0, 0, 1&nbsp;] (source: cost from breaking the Law of Demeter)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;1:</span>com.google.test.metric.asm.MethodVisitorBuilder$3(com.google.test.metric.asm.MethodVisitorBuilder, int, org.objectweb.asm.Label) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;181:</span>com.google.test.metric.method.BlockDecomposer access$0(com.google.test.metric.asm.MethodVisitorBuilder) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;181:</span>int access$1(com.google.test.metric.asm.MethodVisitorBuilder) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;181:</span>com.google.test.metric.method.op.stack.Transform(int, java.lang.String, com.google.test.metric.Type, com.google.test.metric.Type, com.google.test.metric.Type) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void if2(java.lang.String) [&nbsp;5&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;185:</span>void addOp(com.google.test.metric.method.op.stack.StackOperation) [&nbsp;5, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;185:</span>void addOp(com.google.test.metric.method.op.stack.StackOperation)[distance=2] [&nbsp;0, 0, 1&nbsp;] (source: cost from breaking the Law of Demeter)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;1:</span>com.google.test.metric.asm.MethodVisitorBuilder$3(com.google.test.metric.asm.MethodVisitorBuilder, int, org.objectweb.asm.Label) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;185:</span>com.google.test.metric.method.BlockDecomposer access$0(com.google.test.metric.asm.MethodVisitorBuilder) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;185:</span>int access$1(com.google.test.metric.asm.MethodVisitorBuilder) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;185:</span>com.google.test.metric.method.op.stack.Transform(int, java.lang.String, com.google.test.metric.Type, com.google.test.metric.Type, com.google.test.metric.Type) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.asm.MethodVisitorBuilder$3(com.google.test.metric.asm.MethodVisitorBuilder, int, org.objectweb.asm.Label) [&nbsp;0&nbsp;]
+</div>
+</div>
+<div class="Class"><span class='expand'>[+]</span>com.google.test.metric.asm.MethodVisitorBuilder$32  [&nbsp;17&nbsp;]
+<div class="Method"><span class='expand'>[+]</span>void run() [&nbsp;17&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;899:</span>com.google.test.metric.Type fromDesc(java.lang.String) [&nbsp;12, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;899:</span>void addOp(com.google.test.metric.method.op.stack.StackOperation) [&nbsp;5, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;899:</span>void addOp(com.google.test.metric.method.op.stack.StackOperation)[distance=2] [&nbsp;0, 0, 1&nbsp;] (source: cost from breaking the Law of Demeter)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;1:</span>com.google.test.metric.asm.MethodVisitorBuilder$32(com.google.test.metric.asm.MethodVisitorBuilder, java.lang.String, int) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;899:</span>com.google.test.metric.method.BlockDecomposer access$0(com.google.test.metric.asm.MethodVisitorBuilder) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;899:</span>int access$1(com.google.test.metric.asm.MethodVisitorBuilder) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;900:</span>com.google.test.metric.method.op.stack.MultiANewArrayIns(int, com.google.test.metric.Type, int) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.asm.MethodVisitorBuilder$32(com.google.test.metric.asm.MethodVisitorBuilder, java.lang.String, int) [&nbsp;0&nbsp;]
+</div>
+</div>
+<div class="Class"><span class='expand'>[+]</span>com.google.test.metric.method.BlockDecomposer$1  [&nbsp;17&nbsp;]
+<div class="Method"><span class='expand'>[+]</span>void run() [&nbsp;17&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;175:</span>com.google.test.metric.Type fromClass(java.lang.Class) [&nbsp;11, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;176:</span>com.google.test.metric.method.Constant(java.lang.Object, com.google.test.metric.Type) [&nbsp;4, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;176:</span>void setExceptionHandler(int, com.google.test.metric.method.Constant) [&nbsp;1, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;1:</span>com.google.test.metric.method.BlockDecomposer$1(com.google.test.metric.method.BlockDecomposer, org.objectweb.asm.Label, java.lang.String) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;174:</span>java.util.Map access$0(com.google.test.metric.method.BlockDecomposer) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;177:</span>java.util.List access$1(com.google.test.metric.method.BlockDecomposer) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.method.BlockDecomposer$1(com.google.test.metric.method.BlockDecomposer, org.objectweb.asm.Label, java.lang.String) [&nbsp;0&nbsp;]
+</div>
+</div>
+<div class="Class"><span class='expand'>[+]</span>com.google.test.metric.asm.MethodVisitorBuilder$10  [&nbsp;16&nbsp;]
+<div class="Method"><span class='expand'>[+]</span>void run() [&nbsp;16&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;356:</span>com.google.test.metric.Variable access$4(com.google.test.metric.asm.MethodVisitorBuilder, int, com.google.test.metric.Type) [&nbsp;11, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;356:</span>void addOp(com.google.test.metric.method.op.stack.StackOperation) [&nbsp;5, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;356:</span>void addOp(com.google.test.metric.method.op.stack.StackOperation)[distance=2] [&nbsp;0, 0, 1&nbsp;] (source: cost from breaking the Law of Demeter)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;1:</span>com.google.test.metric.asm.MethodVisitorBuilder$10(com.google.test.metric.asm.MethodVisitorBuilder, int, com.google.test.metric.Type) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;356:</span>com.google.test.metric.method.BlockDecomposer access$0(com.google.test.metric.asm.MethodVisitorBuilder) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;356:</span>int access$1(com.google.test.metric.asm.MethodVisitorBuilder) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;356:</span>com.google.test.metric.method.op.stack.Store(int, com.google.test.metric.Variable) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.asm.MethodVisitorBuilder$10(com.google.test.metric.asm.MethodVisitorBuilder, int, com.google.test.metric.Type) [&nbsp;0&nbsp;]
+</div>
+</div>
+<div class="Class"><span class='expand'>[+]</span>com.google.test.metric.asm.MethodVisitorBuilder$11  [&nbsp;16&nbsp;]
+<div class="Method"><span class='expand'>[+]</span>void run() [&nbsp;16&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;364:</span>com.google.test.metric.Variable access$4(com.google.test.metric.asm.MethodVisitorBuilder, int, com.google.test.metric.Type) [&nbsp;11, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;364:</span>void addOp(com.google.test.metric.method.op.stack.StackOperation) [&nbsp;5, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;364:</span>void addOp(com.google.test.metric.method.op.stack.StackOperation)[distance=2] [&nbsp;0, 0, 1&nbsp;] (source: cost from breaking the Law of Demeter)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;1:</span>com.google.test.metric.asm.MethodVisitorBuilder$11(com.google.test.metric.asm.MethodVisitorBuilder, int, com.google.test.metric.Type) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;364:</span>com.google.test.metric.method.BlockDecomposer access$0(com.google.test.metric.asm.MethodVisitorBuilder) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;364:</span>int access$1(com.google.test.metric.asm.MethodVisitorBuilder) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;364:</span>com.google.test.metric.method.op.stack.Load(int, com.google.test.metric.Variable) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.asm.MethodVisitorBuilder$11(com.google.test.metric.asm.MethodVisitorBuilder, int, com.google.test.metric.Type) [&nbsp;0&nbsp;]
+</div>
+</div>
+<div class="Class"><span class='expand'>[+]</span>com.google.test.metric.asm.MethodVisitorBuilder$30  [&nbsp;16&nbsp;]
+<div class="Method"><span class='expand'>[+]</span>void run() [&nbsp;16&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;839:</span>com.google.test.metric.Variable access$4(com.google.test.metric.asm.MethodVisitorBuilder, int, com.google.test.metric.Type) [&nbsp;11, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;840:</span>void addOp(com.google.test.metric.method.op.stack.StackOperation) [&nbsp;5, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;840:</span>void addOp(com.google.test.metric.method.op.stack.StackOperation)[distance=2] [&nbsp;0, 0, 1&nbsp;] (source: cost from breaking the Law of Demeter)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;1:</span>com.google.test.metric.asm.MethodVisitorBuilder$30(com.google.test.metric.asm.MethodVisitorBuilder, int, int) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;840:</span>com.google.test.metric.method.BlockDecomposer access$0(com.google.test.metric.asm.MethodVisitorBuilder) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;840:</span>int access$1(com.google.test.metric.asm.MethodVisitorBuilder) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;840:</span>com.google.test.metric.method.op.stack.Increment(int, int, com.google.test.metric.Variable) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.asm.MethodVisitorBuilder$30(com.google.test.metric.asm.MethodVisitorBuilder, int, int) [&nbsp;0&nbsp;]
+</div>
+</div>
+<div class="Class"><span class='expand'>[+]</span>com.google.test.metric.report.HtmlReport  [&nbsp;15&nbsp;]
+<div class="Method"><span class='expand'>[+]</span>void printSummary() [&nbsp;20&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;79:</span>java.lang.String getHistogram() [&nbsp;15, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;80:</span>java.lang.String getOverallChart() [&nbsp;3, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;81:</span>java.lang.String getPieChart() [&nbsp;2, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;57:</span>com.google.test.metric.report.HtmlReport(java.io.PrintStream, int, int, int, com.google.test.metric.report.DetailHtmlReport, java.util.Comparator) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>java.lang.String getHistogram() [&nbsp;15&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;112:</span>void setValues(int[][]) [&nbsp;6, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;111:</span>java.lang.String[] getBinLabels(int) [&nbsp;2, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;108:</span>int[] getScaledBinRange(int, int, int) [&nbsp;1, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;111:</span>void setItemLabel(java.lang.String[]) [&nbsp;1, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;113:</span>void setYMark(int[]) [&nbsp;1, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;120:</span>java.lang.String getHtml() [&nbsp;1, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;57:</span>com.google.test.metric.report.HtmlReport(java.io.PrintStream, int, int, int, com.google.test.metric.report.DetailHtmlReport, java.util.Comparator) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;89:</span>com.google.test.metric.report.Histogram(int, int, int) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;101:</span>int getMaxBin() [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;104:</span>void setMaxBin(int) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>java.lang.String getOverallChart() [&nbsp;5&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;127:</span>void setUnscaledValues(int) [&nbsp;3, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;124:</span>com.google.test.metric.report.GoodnessChart(int[]) [&nbsp;1, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;129:</span>java.lang.String getHtml() [&nbsp;1, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;57:</span>com.google.test.metric.report.HtmlReport(java.io.PrintStream, int, int, int, com.google.test.metric.report.DetailHtmlReport, java.util.Comparator) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>java.lang.String getPieChart() [&nbsp;5&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;137:</span>void setValues(int[]) [&nbsp;3, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;135:</span>void setItemLabel(java.lang.String[]) [&nbsp;1, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;139:</span>java.lang.String getHtml() [&nbsp;1, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;57:</span>com.google.test.metric.report.HtmlReport(java.io.PrintStream, int, int, int, com.google.test.metric.report.DetailHtmlReport, java.util.Comparator) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;133:</span>com.google.test.metric.report.PieChartUrl() [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;134:</span>void setSize(int, int) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+<div class="Line"><span class="lineNumber">line&nbsp;136:</span>void setColors(java.lang.String[]) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void stream(java.io.OutputStream, java.io.InputStream) [&nbsp;2&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;57:</span>com.google.test.metric.report.HtmlReport(java.io.PrintStream, int, int, int, com.google.test.metric.report.DetailHtmlReport, java.util.Comparator) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void printWorstOffenders(int) [&nbsp;1&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;57:</span>com.google.test.metric.report.HtmlReport(java.io.PrintStream, int, int, int, com.google.test.metric.report.DetailHtmlReport, java.util.Comparator) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.report.HtmlReport(java.io.PrintStream, int, int, int, com.google.test.metric.report.DetailHtmlReport) [&nbsp;0&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;49:</span>com.google.test.metric.report.SummaryReport(int, int, int) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>com.google.test.metric.report.HtmlReport(java.io.PrintStream, int, int, int, com.google.test.metric.report.DetailHtmlReport, java.util.Comparator) [&nbsp;0&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;57:</span>com.google.test.metric.report.SummaryReport(int, int, int, java.util.Comparator) [&nbsp;0, 0, 0&nbsp;] (source: cost from calling non-overridable method)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>java.lang.String now() [&nbsp;0&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;57:</span>com.google.test.metric.report.HtmlReport(java.io.PrintStream, int, int, int, com.google.test.metric.report.DetailHtmlReport, java.util.Comparator) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+<div class="Method"><span class='expand'>[+]</span>void printFooter() [&nbsp;0&nbsp;]
+<div class="Line"><span class="lineNumber">line&nbsp;57:</span>com.google.test.metric.report.HtmlReport(java.io.PrintStream, int, int, int, com.google.test.metric.report.DetailHtmlReport, java.util.Comparator) [&nbsp;0, 0, 0&nbsp;] (source: implicit cost from construction)</div>
+</div>
+</div>
+</div>
+   <div style="text-align: center; margin-top: 32px;"><a href="http://testabilityexplorer.org">http://testabilityexplorer.org</a></div>
+  </body>
+</html>

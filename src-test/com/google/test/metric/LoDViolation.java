@@ -13,30 +13,31 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-// Copyright 2008 Google Inc. All Rights Reserved.
-
 package com.google.test.metric;
 
 
-public class GlobalCost extends CostViolation {
 
-  private final Variable variable;
+public class LoDViolation extends CostViolation {
 
-  public GlobalCost(int lineNumber, Variable variable) {
-    super(lineNumber, Reason.GLOBAL);
-    this.variable = variable;
-    cost = Cost.global(1);
+  private final String methodName;
+  private final int distance;
+
+  public LoDViolation(int lineNumber, String methodName, int distance) {
+    super(lineNumber, Reason.LAW_OF_DEMETER);
+    this.methodName = methodName;
+    this.distance = distance;
+    cost = Cost.lod(distance);
+  }
+
+  @Override
+  public String getDescription() {
+    return methodName + "[distance=" + distance + "]";
   }
 
   @Override
   public void link(Cost directCost, Cost dependantCost, CostModel costModel) {
     cost.link(costModel);
     directCost.add(cost);
-  }
-
-  @Override
-  public String getDescription() {
-    return variable.getName() + ":" + variable.getType();
   }
 
 }

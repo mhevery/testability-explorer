@@ -76,7 +76,7 @@ public class MethodInvokation extends Operation {
         // Method already counted, skip (to prevent recursion)
         if (returnVariable != null) {
           int thisCount = visitor.getLoDCount(methodThis);
-          visitor.setLoDCount(returnVariable, thisCount + 1);
+          visitor.recordLoDDispatch(getLineNumber(), toMethod, returnVariable, thisCount + 1);
         }
         return;
       } else if (toMethod.canOverride() && visitor.isInjectable(methodThis)) {
@@ -103,7 +103,7 @@ public class MethodInvokation extends Operation {
         }
         visitor.recordMethodCall(getLineNumber(), toMethod);
         int thisCount = visitor.getLoDCount(methodThis);
-        visitor.setLoDCount(returnVariable, thisCount + 1);
+        visitor.recordLoDDispatch(getLineNumber(), toMethod, returnVariable, thisCount + 1);
         visitor.returnAssignment(toMethod, getLineNumber(), returnVariable);
       }
     } catch (ClassNotFoundException e) {

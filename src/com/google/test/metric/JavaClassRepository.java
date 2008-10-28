@@ -22,18 +22,18 @@ import java.util.Map;
 
 import org.objectweb.asm.ClassReader;
 
-import com.google.classpath.ClasspathRootGroup;
+import com.google.classpath.ClassPath;
 import com.google.test.metric.asm.ClassInfoBuilderVisitor;
 
 public class JavaClassRepository implements ClassRepository {
 
   private final Map<String, ClassInfo> classes = new HashMap<String, ClassInfo>();
-  private ClasspathRootGroup classpathRoots;
+  private ClassPath classpathRoots;
 
   public JavaClassRepository() {
   }
 
-  public JavaClassRepository(ClasspathRootGroup classpathRoots) {
+  public JavaClassRepository(ClassPath classpathRoots) {
     this.classpathRoots = classpathRoots;
   }
 
@@ -57,6 +57,10 @@ public class JavaClassRepository implements ClassRepository {
     InputStream classBytes;
     if (classpathRoots != null) {
       classBytes = classpathRoots.getResourceAsStream(classResource);
+      if (classBytes == null) {
+        //Perhaps it is a JDK Class
+        classBytes = ClassLoader.getSystemResourceAsStream(classResource);
+      }
     } else {
       classBytes = ClassLoader.getSystemResourceAsStream(classResource);
     }

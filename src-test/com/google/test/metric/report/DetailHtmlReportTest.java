@@ -25,7 +25,9 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import com.google.test.metric.ClassCost;
+import com.google.test.metric.Cost;
 import com.google.test.metric.CostModel;
+import com.google.test.metric.CostViolation;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvokationCost;
 import com.google.test.metric.CostViolation.Reason;
@@ -43,13 +45,13 @@ public class DetailHtmlReportTest extends TestCase {
   String classTemplate = "http://code.google.com/p/testability-explorer/source/browse/trunk/src/{path}";
 
   public void testWriteLineCost() throws Exception {
-    MethodCost methodCost = createLinkedMethodCallWithOverallCost("a.methodName()V", 64);
-    MethodInvokationCost lineCost = new MethodInvokationCost(123, methodCost, Reason.NON_OVERRIDABLE_METHOD_CALL);
-    methodCost.link(costModel);
+    MethodCost methodCost = createMethodCallWithOverallCost("a.methodName()V", 64);
+    MethodInvokationCost cost = new MethodInvokationCost(123, methodCost, Reason.NON_OVERRIDABLE_METHOD_CALL);
+    cost.link(Cost.none(), Cost.none(), costModel);
 
     DetailHtmlReport report = new DetailHtmlReport(stream, new SourceLinker(
         emptyLineTemplate, emptyClassTemplate), 10, 10);
-    report.write(lineCost, "");
+    report.write(cost, "");
     String text = out.toString();
 
     assertTrue(text, text.contains("<div class=\"Line\""));
@@ -60,7 +62,7 @@ public class DetailHtmlReportTest extends TestCase {
   }
 
   public void testLinkedLineCost() throws Exception {
-    MethodCost methodCost = createLinkedMethodCallWithOverallCost("a.methodName()V", 64);
+    MethodCost methodCost = createMethodCallWithOverallCost("a.methodName()V", 64);
     MethodInvokationCost lineCost = new MethodInvokationCost(123, methodCost, Reason.NON_OVERRIDABLE_METHOD_CALL);
     methodCost.link(costModel);
 
@@ -77,14 +79,14 @@ public class DetailHtmlReportTest extends TestCase {
     DetailHtmlReport report = new DetailHtmlReport(stream, new SourceLinker(
         emptyLineTemplate, emptyClassTemplate), 10, 10) {
       @Override
-      public void write(MethodInvokationCost lineNumberCost, String classFilePath) {
-        write(" MARKER:" + lineNumberCost.getLineNumber());
+      public void write(CostViolation cost, String classFilePath) {
+        write(" MARKER:" + cost.getLineNumber());
       }
     };
 
-    MethodCost methodCost = createUnlinkedMethodCallWithOverallCost("a.methodX()V", 0);
-    methodCost.addMethodCost(123, createLinkedMethodCallWithOverallCost("cost1", 567), Reason.NON_OVERRIDABLE_METHOD_CALL);
-    methodCost.addMethodCost(543, createLinkedMethodCallWithOverallCost("cost2", 789), Reason.NON_OVERRIDABLE_METHOD_CALL);
+    MethodCost methodCost = createMethodCallWithOverallCost("a.methodX()V", 0);
+    methodCost.addMethodCost(123, createMethodCallWithOverallCost("cost1", 567), Reason.NON_OVERRIDABLE_METHOD_CALL);
+    methodCost.addMethodCost(543, createMethodCallWithOverallCost("cost2", 789), Reason.NON_OVERRIDABLE_METHOD_CALL);
     methodCost.link(costModel);
     report.write(methodCost, "");
     String text = out.toString();
@@ -107,8 +109,12 @@ public class DetailHtmlReportTest extends TestCase {
     };
 
     List<MethodCost> methods = new ArrayList<MethodCost>();
-    methods.add(createLinkedMethodCallWithOverallCost("methodX", 233));
-    methods.add(createLinkedMethodCallWithOverallCost("methodY", 544));
+    MethodCost m1 = createMethodCallWithOverallCost("methodX", 233);
+    MethodCost m2 = createMethodCallWithOverallCost("methodY", 544);
+    m1.link(costModel);
+    m2.link(costModel);
+    methods.add(m1);
+    methods.add(m2);
     ClassCost classCost = new ClassCost("classFoo", methods, costModel);
     report.write(classCost);
     String text = out.toString();
@@ -137,17 +143,9 @@ public class DetailHtmlReportTest extends TestCase {
 
   }
 
-  private MethodCost createUnlinkedMethodCallWithOverallCost(String methodName,
+  private MethodCost createMethodCallWithOverallCost(String methodName,
       int overallCost) {
-    MethodCost cost = new MethodCost(methodName, -1, overallCost);
-    return cost;
-  }
-
-  private MethodCost createLinkedMethodCallWithOverallCost(String methodName,
-      int overallCost) {
-    MethodCost cost = createUnlinkedMethodCallWithOverallCost(methodName, overallCost);
-    cost.link(costModel);
-    return cost;
+    return new MethodCost(methodName, -1, overallCost);
   }
 
 }
