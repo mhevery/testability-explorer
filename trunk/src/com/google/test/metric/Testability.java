@@ -39,6 +39,8 @@ import com.google.test.metric.report.PropertiesReport;
 import com.google.test.metric.report.Report;
 import com.google.test.metric.report.SourceLinker;
 import com.google.test.metric.report.TextReport;
+import com.google.test.metric.report.XMLReport;
+import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 public class Testability {
 
@@ -74,7 +76,8 @@ public class Testability {
 
   @Option(name = "-print", usage = "summary: (default) print package summary information.\n"
       + "html: print package summary information in html format.\n"
-      + "detail: print detail drill down information for each method call.")
+      + "detail: print detail drill down information for each method call.\n"
+      + "xml: print computer readable XML format.")
   String printer = "summary";
 
   @Option(name = "-templates", usage = "templates for generating urls to a file in your web source code"
@@ -176,6 +179,11 @@ public class Testability {
       report = new DrillDownReport(out, entryList, printDepth, minCost);
     } else if (printer.equals("props")) {
       report = new PropertiesReport(out, maxExcellentCost, maxAcceptableCost,
+          worstOffenderCount);
+    } else if (printer.equals("xml")) {
+      XMLSerializer xmlSerializer = new XMLSerializer();
+      xmlSerializer.setOutputByteStream(out);
+      report = new XMLReport(xmlSerializer, maxExcellentCost, maxAcceptableCost,
           worstOffenderCount);
     } else {
       throw new CmdLineException("Don't understand '-print' option '" + printer
