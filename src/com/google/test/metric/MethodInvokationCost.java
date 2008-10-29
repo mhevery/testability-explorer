@@ -17,6 +17,8 @@
 
 package com.google.test.metric;
 
+import java.util.Map;
+
 
 public class MethodInvokationCost extends CostViolation {
   private final MethodCost methodCost;
@@ -40,5 +42,12 @@ public class MethodInvokationCost extends CostViolation {
   @Override
   public String getDescription() {
     return methodCost.getMethodName();
+  }
+
+  @Override
+  public Map<String, Object> getAttributes() {
+    Map<String, Object> map = super.getAttributes();
+    map.put("method", methodCost.getMethodName());
+    return map;
   }
 }

@@ -15,6 +15,9 @@
  */
 package com.google.test.metric;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public abstract class CostViolation {
 
   /** This attempts to answer "What is the source of each line's cost?" */
@@ -85,5 +88,17 @@ public abstract class CostViolation {
   }
 
   public abstract String getDescription();
+
+  public Map<String, Object> getAttributes() {
+    Map<String, Object> atts = new HashMap<String, Object>();
+    atts.put("overall", cost.getOvarall());
+    atts.put("cyclomatic", cost.getCyclomaticComplexityCost());
+    atts.put("global", cost.getGlobalCost());
+    atts.put("lod", cost.getLoDSum());
+
+    atts.put("reason", reason);
+    atts.put("line", getLineNumber());
+  return atts;
+  }
 
 }
