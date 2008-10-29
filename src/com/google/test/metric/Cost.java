@@ -16,6 +16,8 @@
 package com.google.test.metric;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Cost {
 
@@ -146,6 +148,15 @@ public class Cost {
       return false;
     }
     return true;
+  }
+
+  Map<String, Object> getAttributes() {
+    Map<String, Object> atts = new HashMap<String, Object>();
+    atts.put("overall", getOvarall());
+    atts.put("cyclomatic", getCyclomaticComplexityCost());
+    atts.put("global", getGlobalCost());
+    atts.put("lod", getLoDSum());
+    return atts;
   }
 
   public static Cost create(int overall, int cyclomatic, int global, int lod) {

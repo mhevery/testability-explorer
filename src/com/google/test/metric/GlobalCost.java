@@ -18,7 +18,7 @@
 package com.google.test.metric;
 
 
-public class GlobalCost extends CostViolation {
+public class GlobalCost extends ViolationCost {
 
   private final Variable variable;
 

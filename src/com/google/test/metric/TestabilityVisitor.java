@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import com.google.test.metric.CostViolation.Reason;
+import com.google.test.metric.ViolationCost.Reason;
 import com.google.test.metric.method.op.turing.Operation;
 
 public class TestabilityVisitor {

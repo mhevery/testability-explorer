@@ -401,7 +401,7 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
   public void testCostPerLine() throws Exception {
     MethodCost cost = decoratedComputer.compute(CostPerLine.class, "main()V");
     assertEquals(3, cost.getTotalCost().getCyclomaticComplexityCost());
-    List<CostViolation> lineNumberCosts = cost.getCostSources();
+    List<ViolationCost> lineNumberCosts = cost.getViolationCosts();
     assertEquals(3, lineNumberCosts.size());
 
     MethodInvokationCost line0 = (MethodInvokationCost) lineNumberCosts.get(0);

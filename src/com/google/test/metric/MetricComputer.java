@@ -19,7 +19,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.test.metric.CostViolation.Reason;
+import com.google.test.metric.ViolationCost.Reason;
 
 public class MetricComputer {
 

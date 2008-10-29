@@ -15,7 +15,9 @@
  */
 package com.google.test.metric;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ClassCost {
 
@@ -109,6 +111,13 @@ public class ClassCost {
 
   public long getOverallCost() {
     return overallCost;
+  }
+
+  public Map<String, Object> getAttributes() {
+    HashMap<String, Object> map = new HashMap<String, Object>();
+    map.put("class", className);
+    map.put("cost", overallCost);
+    return map;
   }
 
 }

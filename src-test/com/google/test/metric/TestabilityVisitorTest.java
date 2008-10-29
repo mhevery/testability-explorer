@@ -169,16 +169,16 @@ public class TestabilityVisitorTest extends TestCase {
     visitor.applyMethodOperations(methodInfo);
     assertEquals(2, visitor.getLoDCount(clazz.getField("plus2")));
     MethodCost methodCost = visitor.getLinkedMethodCost(methodInfo);
-    List<LoDViolation> costSources = filterLoD(methodCost.getCostSources());
+    List<LoDViolation> costSources = filterLoD(methodCost.getViolationCosts());
     assertEquals(1, costSources.size());
     LoDViolation violation = costSources.get(0);
     assertTrue(violation.getDescription().contains("getValueB()"));
     assertTrue(violation.getDescription().contains("[distance=2]"));
   }
 
-  private List<LoDViolation> filterLoD(List<CostViolation> violations) {
+  private List<LoDViolation> filterLoD(List<ViolationCost> violations) {
     List<LoDViolation> lods = new ArrayList<LoDViolation>();
-    for (CostViolation violation : violations) {
+    for (ViolationCost violation : violations) {
       if (violation instanceof LoDViolation) {
         lods.add((LoDViolation) violation);
       }

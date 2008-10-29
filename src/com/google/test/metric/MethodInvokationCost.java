@@ -20,7 +20,7 @@ package com.google.test.metric;
 import java.util.Map;
 
 
-public class MethodInvokationCost extends CostViolation {
+public class MethodInvokationCost extends ViolationCost {
   private final MethodCost methodCost;
 
   public MethodInvokationCost(int lineNumber, MethodCost methodCost,
