@@ -148,4 +148,10 @@ public class Cost {
     return true;
   }
 
+  public static Cost create(int overall, int cyclomatic, int global, int lod) {
+    Cost cost = new Cost(cyclomatic, global, new int[]{lod});
+    cost.overall = overall;
+    return cost;
+  }
+
 }
