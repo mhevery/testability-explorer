@@ -17,7 +17,7 @@ package com.google.test.metric;
 
 
 
-public class LoDViolation extends CostViolation {
+public class LoDViolation extends ViolationCost {
 
   private final String methodName;
   private final int distance;

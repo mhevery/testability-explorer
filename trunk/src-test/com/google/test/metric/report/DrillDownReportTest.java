@@ -27,7 +27,7 @@ import com.google.test.metric.AutoFieldClearTestCase;
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.MethodCost;
-import com.google.test.metric.CostViolation.Reason;
+import com.google.test.metric.ViolationCost.Reason;
 
 public class DrillDownReportTest extends AutoFieldClearTestCase {
 

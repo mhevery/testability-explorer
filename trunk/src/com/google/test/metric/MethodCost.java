@@ -17,14 +17,15 @@ package com.google.test.metric;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import com.google.test.metric.CostViolation.Reason;
+import com.google.test.metric.ViolationCost.Reason;
 
 public class MethodCost {
 
   private final String methodName;
   private final int lineNumber;
-  private final List<CostViolation> costSources = new ArrayList<CostViolation>();
+  private final List<ViolationCost> costSources = new ArrayList<ViolationCost>();
   private final Cost directCost;
   private final Cost totalCost = Cost.none();
   private boolean isLinked = false;
@@ -60,7 +61,7 @@ public class MethodCost {
     if (!isLinked) {
       isLinked = true;
       Cost dependantCost = Cost.none();
-      for (CostViolation costSource : costSources) {
+      for (ViolationCost costSource : costSources) {
         costSource.link(directCost, dependantCost, costModel);
       }
       dependantCost.addDependant(directCost);
@@ -79,7 +80,7 @@ public class MethodCost {
     return methodName;
   }
 
-  public void addCostSource(CostViolation costSource) {
+  public void addCostSource(ViolationCost costSource) {
     assertNotLinked();
     costSources.add(costSource);
   }
@@ -105,7 +106,7 @@ public class MethodCost {
     return lineNumber;
   }
 
-  public List<CostViolation> getCostSources() {
+  public List<ViolationCost> getViolationCosts() {
     return costSources;
   }
 
@@ -115,6 +116,13 @@ public class MethodCost {
 
   public int getOverallCost() {
     return getTotalCost().getOvarall();
+  }
+
+  public Map<String, Object> getAttributes() {
+    Map<String, Object> map = totalCost.getAttributes();
+    map.put("line", lineNumber);
+    map.put("name", methodName);
+    return map;
   }
 
 }

@@ -23,14 +23,14 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.google.test.metric.ClassCost;
-import com.google.test.metric.CostViolation;
+import com.google.test.metric.ViolationCost;
 import com.google.test.metric.MethodCost;
-import com.google.test.metric.CostViolation.Reason;
+import com.google.test.metric.ViolationCost.Reason;
 
 public class DetailHtmlReport {
 
-  static class CostSourceComparator implements Comparator<CostViolation> {
-    public int compare(CostViolation cost1, CostViolation cost2) {
+  static class CostSourceComparator implements Comparator<ViolationCost> {
+    public int compare(ViolationCost cost1, ViolationCost cost2) {
       int c1 = cost1.getCost().getOvarall();
       int c2 = cost2.getCost().getOvarall();
       return (c2 - c1);
@@ -62,7 +62,7 @@ public class DetailHtmlReport {
     out.println(text);
   }
 
-  public void write(CostViolation cost, String classFilePath) {
+  public void write(ViolationCost cost, String classFilePath) {
     Reason reason = cost.getCostSourceType();
     String text = "<div class=\"Line\">"
         + "<span class=\"lineNumber\">line&nbsp;{lineNumber}:</span>"
@@ -82,9 +82,9 @@ public class DetailHtmlReport {
     text = text.replace("{cost}", "" + method.getOverallCost());
     write(text);
 
-    List<CostViolation> violations = method.getCostSources();
+    List<ViolationCost> violations = method.getViolationCosts();
     Collections.sort(violations, new CostSourceComparator());
-    for (CostViolation violation : violations.subList(0, min(maxLineCount, violations.size()))) {
+    for (ViolationCost violation : violations.subList(0, min(maxLineCount, violations.size()))) {
       write(violation, classFilePath);
     }
     write("</div>");

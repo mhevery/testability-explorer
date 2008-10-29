@@ -19,7 +19,7 @@ import junit.framework.TestCase;
 
 import com.google.test.metric.CostModel;
 import com.google.test.metric.MethodCost;
-import com.google.test.metric.CostViolation.Reason;
+import com.google.test.metric.ViolationCost.Reason;
 
 public class MethodCostTest extends TestCase {
 

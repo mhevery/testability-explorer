@@ -15,10 +15,9 @@
  */
 package com.google.test.metric;
 
-import java.util.HashMap;
 import java.util.Map;
 
-public abstract class CostViolation {
+public abstract class ViolationCost {
 
   /** This attempts to answer "What is the source of each line's cost?" */
   public static enum Reason {
@@ -62,7 +61,7 @@ public abstract class CostViolation {
    *          the type of cost, used to help guide people why they are getting
    *          charged for each different cost.
    */
-  public CostViolation(int lineNumber, Reason costSourceType) {
+  public ViolationCost(int lineNumber, Reason costSourceType) {
     this.lineNumber = lineNumber;
     this.reason = costSourceType;
   }
@@ -90,11 +89,7 @@ public abstract class CostViolation {
   public abstract String getDescription();
 
   public Map<String, Object> getAttributes() {
-    Map<String, Object> atts = new HashMap<String, Object>();
-    atts.put("overall", cost.getOvarall());
-    atts.put("cyclomatic", cost.getCyclomaticComplexityCost());
-    atts.put("global", cost.getGlobalCost());
-    atts.put("lod", cost.getLoDSum());
+    Map<String, Object> atts = cost.getAttributes();
 
     atts.put("reason", reason);
     atts.put("line", getLineNumber());

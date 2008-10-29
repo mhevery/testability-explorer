@@ -25,7 +25,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import com.google.test.metric.ClassCost;
-import com.google.test.metric.CostViolation;
+import com.google.test.metric.ViolationCost;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvokationCost;
 
@@ -86,13 +86,13 @@ public class DrillDownReport implements Report {
     if (shouldPrint(cost, maxDepth, alreadySeen)) {
       out.print(prefix);
       out.println(cost);
-      for (CostViolation child : cost.getCostSources()) {
+      for (ViolationCost child : cost.getViolationCosts()) {
         print("  " + prefix, child, maxDepth - 1, alreadySeen);
       }
     }
   }
 
-  private void print(String prefix, CostViolation line, int maxDepth,
+  private void print(String prefix, ViolationCost line, int maxDepth,
       Set<String> alreadSeen) {
     if (!(line instanceof MethodInvokationCost)) {
       return;
@@ -105,7 +105,7 @@ public class DrillDownReport implements Report {
       out.print(": ");
       out.print(method);
       out.println(" " + line.getCostSourceType());
-      for (CostViolation child : method.getCostSources()) {
+      for (ViolationCost child : method.getViolationCosts()) {
         print("  " + prefix, child, maxDepth - 1, alreadSeen);
       }
     }
