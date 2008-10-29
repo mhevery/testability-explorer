@@ -37,27 +37,29 @@ public class XMLReportTest extends TestCase {
   @Override
   protected void setUp() throws Exception {
     handler.setOutputCharStream(out);
+    handler.startDocument();
   }
 
   public void testPrintCost() throws Exception {
     XMLReport report = new XMLReport(handler, 0, 0, 0);
-    report.printHeader();
 
-    MethodCost methodCost = new MethodCost("methodName", 1, 2){
+    MethodCost methodCost = new MethodCost("methodName", 1, 2) {
       @Override
       public Cost link(CostModel costModel) {
         return cost;
       }
     };
-    CostViolation violation = new MethodInvokationCost(123, methodCost, Reason.IMPLICIT_STATIC_INIT);
+    CostViolation violation = new MethodInvokationCost(123, methodCost,
+        Reason.IMPLICIT_STATIC_INIT);
     violation.link(Cost.none(), Cost.none(), null);
     report.writeCost(violation);
-    assertEquals(
-        XML_HEADER
-            + "<cost cyclomatic=\"2\" global=\"3\" line=\"123\" " +
-            		"lod=\"4\" method=\"methodName\" overall=\"1\" " +
-            		"reason=\"implicit cost from static initialization\"/>",
-        out.toString());
+    assertXMLEquals("<cost cyclomatic=\"2\" global=\"3\" line=\"123\" "
+        + "lod=\"4\" method=\"methodName\" overall=\"1\" "
+        + "reason=\"implicit cost from static initialization\"/>");
+  }
+
+  private void assertXMLEquals(String expected) {
+    assertEquals(XML_HEADER + expected, out.toString());
   }
 
 }

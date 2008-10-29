@@ -39,11 +39,7 @@ public class XMLReport extends SummaryReport {
   }
 
   public void printHeader() {
-    try {
-      out.startDocument();
-    } catch (SAXException e) {
-      throw new RuntimeException(e);
-    }
+    throw new UnsupportedOperationException();
   }
 
   private void writeElement(String elementName, Map<String, Object> values)
