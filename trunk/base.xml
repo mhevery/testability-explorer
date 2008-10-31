@@ -48,7 +48,7 @@
 
 	<path id="compile.classpath">
 		<fileset dir="lib">
-			<include name="*.jar" />
+			<include name="**/*.jar" />
 			<exclude name="junit.jar" />
 		</fileset>
 	</path>
