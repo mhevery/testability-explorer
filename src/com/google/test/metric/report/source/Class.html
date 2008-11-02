@@ -1,72 +1,12 @@
 <html>
   <style type="text/css">
-    .source {
-	font-size: 12px;
-	border: thin solid #000000;
-	width: 100%;
-	}
-	
-	.ln {
-	background-color: #CCCCCC;
-	text-align: right;
-	padding-left: 3px;
-	padding-right: 3px;
-	width: 50;
-	border-right: thin solid #000000;
-	}
-
-	.head {
-	background-color: #CCCCCC;
-	padding-left: 3px;
-	padding-right: 3px;
-	width: 50;
-	font-weight:bold;
-	border-right: thin solid #000000;
-	border-bottom: thin solid #000000
-	}
-	
-	.code {
-	padding-right: 3px;	
-	padding-left: 3px;	
-	border-right: thin solid #000000;
-	}
-	
-	.score, .summary, .metric {
-	padding-right: 3px;	
-	padding-left: 3px;	
-	width: 100;
-	border-right: thin solid #000000;
-	}
-	
-	.summary {
-	font-weight:bold;
-	font-style:italic;
-	}
-
-	.metric {
-	font-weight:bold;
-	}
-
-}
-  .summary1 {	font-weight:bold;
-	font-style:italic;
-}
+<#include "te.css"/>
   </style>
   <title>Testability Explorer Report for class: ${classCost.className}</title>
-<#function code text>
-  <#return "<tt>" + text?html?replace(' ', '&nbsp;') +"</tt>">
-</#function>
-<#function color value>
-  <#if (value <= maxExcellentCost) >
-    <#return "style='background-color:#00FF00'">
-  <#elseif (value <= maxAcceptableCost)>
-    <#return "style='background-color:#FFFF00'">
-  <#else>
-    <#return "style='background-color:#FF0000'">
-  </#if>  
-</#function>
 <body>
-<h1>Class: <tt>${classCost.className}</tt></h1>
+<#import "Macro.ftl" as util>
+<#include "Header.html">
+<h2>Class: <tt>${classCost.className}</tt></h2>
 <table class="source" cellspacing="0" cellpadding="0">
   <tr>
     <td class="head" width="100">Metric:</td>
@@ -75,7 +15,7 @@
   </tr>
   <tr>
     <td class="metric">Class cost:</td>
-    <td class="score" ${color(overallCost)}>${overallCost}</td>
+    <td class="score" ${util.color(overallCost)}>${overallCost}</td>
     <td rowspan="2" align="center" class="score" style="border-right:none">${overallCostChart}</td>
     <td class="score" rowspan="7">${histogramChart}</td>
   </tr>
@@ -114,9 +54,9 @@
   </tr>
   <#list classCost.methods?sort_by(["totalCost", "overall"]) as method>
   <tr>
-    <td class="score" ${color(method.totalCost.overall)}><a href="#${method.methodLineNumber}"><tt>${method.methodName}</tt></a></td>
-    <td class="score" ${color(method.totalCost.overall)}>${method.totalCost}&nbsp;</td>
-    <td class="score" ${color(method.totalCost.overall)}>${method.cost}&nbsp;</td>
+    <td class="score" ${util.color(method.totalCost.overall)}><a href="#${method.methodLineNumber}"><tt>${method.methodName}</tt></a></td>
+    <td class="score" ${util.color(method.totalCost.overall)}>${method.totalCost}&nbsp;</td>
+    <td class="score" ${util.color(method.totalCost.overall)}>${method.cost}&nbsp;</td>
   </tr>
   </#list>
 </table>
@@ -131,18 +71,19 @@
     <#list line.methodCosts as method>
       <tr>
         <td class="ln"><a name="${line.lineNumber}"/>&nbsp;</td>
-        <td nowrap class="summary" ${color(method.totalCost.overall)}>${method.totalCost}&nbsp;</td>
-        <td nowrap class="summary" ${color(method.totalCost.overall)}>${code(method.methodName)}<br>
-          Total: ${method.totalCost}&nbsp;Direct: ${method.cost}&nbsp;
+        <td nowrap class="summary" ${util.color(method.totalCost.overall)}>${method.totalCost}&nbsp;</td>
+        <td nowrap class="summary" ${util.color(method.totalCost.overall)}>${util.code(method.methodName)}<br>
+          Total ${method.totalCost}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Direct ${method.cost}&nbsp;
         </td>
   </tr>
     </#list>
     <tr>
       <td class="ln"><a name="${line.lineNumber}"/>${line.lineNumber}</td>
       <td nowrap class="score">${line.score}&nbsp;</td>
-      <td nowrap class="code">${code(line.text)}&nbsp;</td>
+      <td nowrap class="code">${util.code(line.text)}&nbsp;</td>
     </tr>
   </#list>
 </table>
+<#include "Footer.html">
 </body>
 </html>
