@@ -116,7 +116,6 @@ public class HtmlReport extends SummaryReport {
         0);
     chart.setChartLabel("Excellent", "Good", "Needs Work");
     chart.setColors(GREEN, YELLOW, RED);
-    // out.print(chart.getHtml());
     return chart.getHtml();
   }
 
@@ -125,7 +124,6 @@ public class HtmlReport extends SummaryReport {
         maxAcceptableCost, 10 * maxAcceptableCost, 100 * maxAcceptableCost);
     chart.setSize(200, 100);
     chart.setUnscaledValues(getOverall());
-//    out.print(chart.getHtml());
     return chart.getHtml();
   }
 
@@ -135,7 +133,6 @@ public class HtmlReport extends SummaryReport {
     chart.setItemLabel("Excellent", "Good", "Needs Work");
     chart.setColors(GREEN, YELLOW, RED);
     chart.setValues(excellentCount, goodCount, needsWorkCount);
-    // out.print(chart.getHtml());
     return chart.getHtml();
   }
 

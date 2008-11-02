@@ -30,11 +30,12 @@ import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvokationCost;
 import com.google.test.metric.ViolationCost;
 import com.google.test.metric.ViolationCost.Reason;
+import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 public class XMLReportTest extends TestCase {
 
-  private static final String XML_HEADER = "<?xml version=\"1.0\"?>\n";
+  private static final String XML_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
   private final StringWriter out = new StringWriter();
   private final XMLSerializer handler = new XMLSerializer();
   private final Cost cost = Cost.create(1, 2, 3, 4);
@@ -44,11 +45,14 @@ public class XMLReportTest extends TestCase {
   protected void setUp() throws Exception {
     handler.setOutputCharStream(out);
     handler.startDocument();
+    OutputFormat format = new OutputFormat();
+    format.setIndenting(true);
+    handler.setOutputFormat(format);
   }
 
   private void assertXMLEquals(String expected) throws SAXException {
     handler.endDocument();
-    assertEquals(XML_HEADER + expected, out.toString());
+    assertEquals(XML_HEADER + expected, out.toString().trim());
   }
 
   private void write(String text) throws SAXException {
@@ -71,7 +75,7 @@ public class XMLReportTest extends TestCase {
     violation.link(Cost.none(), Cost.none(), null);
     report.writeCost(violation);
     assertXMLEquals("<cost cyclomatic=\"2\" global=\"3\" line=\"123\" "
-        + "lod=\"4\" method=\"methodName\" overall=\"1\" "
+        + "lod=\"0\" method=\"methodName\" overall=\"0\" "
         + "reason=\"implicit cost from static initialization\"/>");
   }
 
@@ -123,7 +127,7 @@ public class XMLReportTest extends TestCase {
     report.addClassCost(c1);
     report.addClassCost(c2);
     report.printFooter();
-    assertXMLEquals("<testability excelent=\"0\" good=\"0\" " +
+    assertXMLEquals("<testability excellent=\"0\" good=\"0\" " +
     		"needsWork=\"2\" overall=\"2\">C1;C2;</testability>");
   }
 

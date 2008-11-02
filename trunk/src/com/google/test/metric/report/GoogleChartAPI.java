@@ -26,6 +26,8 @@ public class GoogleChartAPI {
   public static final String GREEN = "00AA00";
   public static final String YELLOW = "FFFF00";
   public static final String RED = "D22222";
+  private int width = 100;
+  private int height = 100;
 
   public Map<String,String> getMap() {
     return keys;
@@ -81,6 +83,8 @@ public class GoogleChartAPI {
   }
 
   public void setSize(int width, int height) {
+    this.width = width;
+    this.height = height;
     keys.put("chs", width + "x" + height);
   }
 
@@ -132,7 +136,7 @@ public class GoogleChartAPI {
   }
 
   public String getHtml() {
-    return String.format("<img src='%s'/>", toString());
+    return String.format("<img src='%s' width='%d' height='%d'/>", toString(), width, height);
   }
 
 }

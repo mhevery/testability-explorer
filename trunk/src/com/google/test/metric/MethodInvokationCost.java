@@ -31,8 +31,8 @@ public class MethodInvokationCost extends ViolationCost {
 
   @Override
   public void link(Cost directCost, Cost dependantCost, CostModel costModel) {
-    cost = methodCost.link(costModel);
-    dependantCost.add(cost);
+    cost = methodCost.link(costModel).copyNoLOD();
+    dependantCost.addDependant(cost);
   }
 
   public MethodCost getMethodCost() {

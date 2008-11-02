@@ -36,6 +36,10 @@ public class MetricComputer {
     this.costModel = costModel;
   }
 
+  public ClassCost compute(String name) {
+    return compute(classRepository.getClass(name));
+  }
+
   /**
    * Computing the ClassCost for a ClassInfo involves tallying up all the MethodCosts contained
    * in the class. Then an overall cost is calculated, based on the {@code CostModel} the metric

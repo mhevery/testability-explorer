@@ -23,7 +23,7 @@ public class ClassCost {
 
   public static class CostComparator implements java.util.Comparator<ClassCost> {
     public int compare(ClassCost c1, ClassCost c2) {
-      int diff = (int) (c2.getOverallCost() - c1.getOverallCost());
+      int diff = (c2.getOverallCost() - c1.getOverallCost());
       return diff == 0 ? c1.className.compareTo(c2.className) : diff;
     }
   }
@@ -37,7 +37,7 @@ public class ClassCost {
 
   private final List<MethodCost> methods;
   private final String className;
-  private final long overallCost;
+  private final int overallCost;
 
   public ClassCost(String className, List<MethodCost> methods, CostModel costModel) {
     this.className = className;
@@ -73,6 +73,7 @@ public class ClassCost {
     return methods;
   }
 
+  // TODO: delete
   public long getTotalComplexityCost() {
     long totalCost = 0;
     for (MethodCost methodCost : getMethods()) {
@@ -81,6 +82,7 @@ public class ClassCost {
     return totalCost;
   }
 
+  // TODO: delete
   public long getHighestMethodComplexityCost() {
     long cost = 0;
     for (MethodCost methodCost : getMethods()) {
@@ -91,6 +93,7 @@ public class ClassCost {
     return cost;
   }
 
+  // TODO: delete
   public long getTotalGlobalCost() {
     long totalCost = 0;
     for (MethodCost methodCost : getMethods()) {
@@ -99,6 +102,7 @@ public class ClassCost {
     return totalCost;
   }
 
+  // TODO: delete
   public long getHighestMethodGlobalCost() {
     long cost = 0;
     for (MethodCost methodCost : getMethods()) {
@@ -109,7 +113,7 @@ public class ClassCost {
     return cost;
   }
 
-  public long getOverallCost() {
+  public int getOverallCost() {
     return overallCost;
   }
 

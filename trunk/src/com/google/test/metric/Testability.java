@@ -40,6 +40,7 @@ import com.google.test.metric.report.Report;
 import com.google.test.metric.report.SourceLinker;
 import com.google.test.metric.report.TextReport;
 import com.google.test.metric.report.XMLReport;
+import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 public class Testability {
@@ -93,12 +94,14 @@ public class Testability {
   @Option(name = "-maxLineCount", usage = "max number of lines in method to print in html summary")
   int maxLineCount = 10;
 
-  @Option(name = "cyclomatic", metaVar = "cyclomatic cost multiplier", usage = "When computing the overall cost of the method the "
+  @Option(name = "cyclomatic", metaVar = "cyclomatic cost multiplier",
+          usage = "When computing the overall cost of the method the "
       + "individual costs are added using weighted average. "
       + "This represents the weight of the cyclomatic cost.")
   double cyclomaticMultiplier = 1;
 
-  @Option(name = "global", metaVar = "global state cost multiplier", usage = "When computing the overall cost of the method the "
+  @Option(name = "global", metaVar = "global state cost multiplier",
+         usage = "When computing the overall cost of the method the "
       + "individual costs are added using weighted average. "
       + "This represents the weight of the global state cost.")
   double globalMultiplier = 10;
@@ -183,6 +186,9 @@ public class Testability {
     } else if (printer.equals("xml")) {
       XMLSerializer xmlSerializer = new XMLSerializer();
       xmlSerializer.setOutputByteStream(out);
+      OutputFormat format = new OutputFormat();
+      format.setIndenting(true);
+      xmlSerializer.setOutputFormat(format);
       report = new XMLReport(xmlSerializer, maxExcellentCost, maxAcceptableCost,
           worstOffenderCount);
     } else {
@@ -268,11 +274,12 @@ public class Testability {
       for (String packageName : classpath.listPackages(prefix)) {
         queue.add(prefix + "/" + packageName);
       }
+      if (classpath.isResource(prefix + ".class")) {
+        classes.add(prefix);
+      }
       for (String name : classpath.listResources(prefix)) {
         if (name.endsWith(".class")) {
           String clazzName = prefix + "/" + name.replace(".class", "");
-          clazzName = clazzName.replace("/", "/");
-          clazzName = clazzName.replace("/", "/");
           classes.add(clazzName);
         }
       }

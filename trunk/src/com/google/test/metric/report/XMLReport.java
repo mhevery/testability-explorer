@@ -45,7 +45,7 @@ public class XMLReport extends SummaryReport {
       out.startDocument();
       Map<String, Object> values = new HashMap<String, Object>();
       values.put("overall", getOverall());
-      values.put("excelent", excellentCount);
+      values.put("excellent", excellentCount);
       values.put("good", goodCount);
       values.put("needsWork", needsWorkCount);
       startElement("testability", values);
