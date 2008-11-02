@@ -27,9 +27,9 @@ import junit.framework.TestCase;
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.Cost;
 import com.google.test.metric.CostModel;
-import com.google.test.metric.ViolationCost;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvokationCost;
+import com.google.test.metric.ViolationCost;
 import com.google.test.metric.ViolationCost.Reason;
 
 public class DetailHtmlReportTest extends TestCase {
@@ -145,7 +145,11 @@ public class DetailHtmlReportTest extends TestCase {
 
   private MethodCost createMethodCallWithOverallCost(String methodName,
       int overallCost) {
-    return new MethodCost(methodName, -1, overallCost);
+    MethodCost methodCost = new MethodCost(methodName, -1);
+    for (int i = 0; i < overallCost; i++) {
+      methodCost.addCyclomaticCost(i);
+    }
+    return methodCost;
   }
 
 }

@@ -26,7 +26,7 @@ public class MethodCost {
   private final String methodName;
   private final int lineNumber;
   private final List<ViolationCost> costSources = new ArrayList<ViolationCost>();
-  private final Cost directCost;
+  private final Cost directCost = Cost.none();
   private final Cost totalCost = Cost.none();
   private boolean isLinked = false;
 
@@ -39,10 +39,9 @@ public class MethodCost {
    *          complexity cost for this method, alone. Later the costs of the
    *          other methods that this method calls will be added.
    */
-  public MethodCost(String methodName, int lineNumber, long cyclomaticCost) {
+  public MethodCost(String methodName, int lineNumber) {
     this.methodName = methodName;
     this.lineNumber = lineNumber;
-    this.directCost = Cost.cyclomatic((int) cyclomaticCost);
   }
 
   private void assertLinked() {
@@ -93,6 +92,11 @@ public class MethodCost {
   public void addGlobalCost(int lineNumber, Variable variable) {
     addCostSource(new GlobalCost(lineNumber, variable));
   }
+
+  public void addCyclomaticCost(int lineNumberWithComplexity) {
+    addCostSource(new CyclomaticCost(lineNumberWithComplexity));
+  }
+
 
   @Override
   public String toString() {

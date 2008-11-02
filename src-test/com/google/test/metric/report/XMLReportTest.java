@@ -64,12 +64,14 @@ public class XMLReportTest extends TestCase {
   public void testPrintCost() throws Exception {
     XMLReport report = new XMLReport(handler, 0, 0, 0);
 
-    MethodCost methodCost = new MethodCost("methodName", 1, 2) {
+    MethodCost methodCost = new MethodCost("methodName", 1) {
       @Override
       public Cost link(CostModel costModel) {
         return cost;
       }
     };
+    methodCost.addCyclomaticCost(0);
+    methodCost.addCyclomaticCost(0);
     ViolationCost violation = new MethodInvokationCost(123, methodCost,
         Reason.IMPLICIT_STATIC_INIT);
     violation.link(Cost.none(), Cost.none(), null);
@@ -87,13 +89,15 @@ public class XMLReportTest extends TestCase {
       }
 
     };
-    MethodCost methodCost = new MethodCost("methodName", 123, 2);
+    MethodCost methodCost = new MethodCost("methodName", 123);
     methodCost.addGlobalCost(123, null);
+    methodCost.addCyclomaticCost(234);
+    methodCost.addCyclomaticCost(345);
     methodCost.addGlobalCost(456, null);
     methodCost.link(costModel);
     report.writeCost(methodCost);
     assertXMLEquals("<method cyclomatic=\"2\" global=\"2\" line=\"123\" "
-        + "lod=\"0\" name=\"methodName\" overall=\"22\">L123,L456,</method>");
+        + "lod=\"0\" name=\"methodName\" overall=\"22\">L123,L234,L345,L456,</method>");
   }
 
   public void testPrintClassCost() throws Exception {
@@ -103,8 +107,11 @@ public class XMLReportTest extends TestCase {
         write(methodCost.getMethodName() + "()");
       }
     };
-    MethodCost m1 = new MethodCost("M1", -1, 2);
-    MethodCost m2 = new MethodCost("M2", -1, 1);
+    MethodCost m1 = new MethodCost("M1", -1);
+    m1.addCyclomaticCost(0);
+    m1.addCyclomaticCost(0);
+    MethodCost m2 = new MethodCost("M2", -1);
+    m2.addCyclomaticCost(0);
     m1.link(costModel);
     m2.link(costModel);
     ClassCost classCost = new ClassCost("className", asList(m1, m2), costModel);
@@ -120,7 +127,9 @@ public class XMLReportTest extends TestCase {
       }
     };
     report.printHeader();
-    MethodCost m1 = new MethodCost("M1", -1, 2);
+    MethodCost m1 = new MethodCost("M1", -1);
+    m1.addCyclomaticCost(0);
+    m1.addCyclomaticCost(0);
     m1.link(costModel);
     ClassCost c1 = new ClassCost("C1", asList(m1), costModel);
     ClassCost c2 = new ClassCost("C2", asList(m1), costModel);

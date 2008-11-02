@@ -28,9 +28,9 @@ import junit.framework.TestCase;
 public class ClassCostTest extends TestCase {
 
   private final CostModel costModel = new CostModel();
-  private final  MethodCost methodCost0 = new MethodCost("c.g.t.A.method0()V", 0, 0);
-  private final  MethodCost methodCost1 = new MethodCost("c.g.t.A.method1()V", 0, 1);
-  private final  MethodCost methodCost2 = new MethodCost("c.g.t.A.method2()V", 0, 2);
+  private final  MethodCost methodCost0 = new MethodCost("c.g.t.A.method0()V", 0);
+  private final  MethodCost methodCost1 = new MethodCost("c.g.t.A.method1()V", 0);
+  private final  MethodCost methodCost2 = new MethodCost("c.g.t.A.method2()V", 0);
 
   private ClassCost classCost0;
   private ClassCost classCost1;
@@ -39,6 +39,11 @@ public class ClassCostTest extends TestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
+
+    methodCost1.addCyclomaticCost(0);
+
+    methodCost2.addCyclomaticCost(0);
+    methodCost2.addCyclomaticCost(0);
 
     CostModel context = new CostModel();
     methodCost0.link(context);

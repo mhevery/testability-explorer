@@ -194,11 +194,17 @@ public class MethodVisitorBuilder implements MethodVisitor {
     recorder.add(new Runnable() {
       public void run() {
         if (type != null) {
-          cyclomaticComplexity.add(lineNumbers.get(handler));
+          cyclomaticComplexity.add(getLineNumberForLable(handler));
         }
         block.tryCatchBlock(start, end, handler, type);
       }
+
     });
+  }
+
+  private Integer getLineNumberForLable(final Label label) {
+    Integer line = lineNumbers.get(label);
+    return line == null ? -1 : line;
   }
 
   public void visitTableSwitchInsn(int min, int max, final Label dflt,
@@ -207,7 +213,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
       public void run() {
         for (Label label : labels) {
           if (label != dflt) {
-            cyclomaticComplexity.add(lineNumbers.get(label));
+            cyclomaticComplexity.add(getLineNumberForLable(label));
           }
         }
         block.addOp(new Pop(lineNumber, 1));
@@ -222,7 +228,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
       public void run() {
         for (Label label : labels) {
           if (label != null) {
-            cyclomaticComplexity.add(lineNumbers.get(label));
+            cyclomaticComplexity.add(getLineNumberForLable(label));
           }
         }
         block.addOp(new Pop(lineNumber, 1));

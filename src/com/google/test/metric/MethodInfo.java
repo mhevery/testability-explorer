@@ -64,12 +64,6 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return getFullName();
   }
 
-  @Deprecated
-  //TODO: remove me
-  public int getNonRecursiveCyclomaticComplexity() {
-    return linesOfComplexity.size() + 1;
-  }
-
   public String getName() {
     return name;
   }
@@ -193,16 +187,6 @@ public class MethodInfo implements Comparable<MethodInfo> {
    */
   public int getStartingLineNumber() {
     return startingLineNumber;
-  }
-
-  public long getTestCost() {
-    // Why -1? a method with a cyclomatic complexity of 1 can
-    // be split to n smaller methods. The one single method and
-    // N small ones are same cost, but the sum of cyclomatic is not
-    // the same unless we change the offset of the method and say that
-    // a simple method is 0 and hence splitting 0 to N 0 is still zero
-    // and we gain the equivalence.
-    return getNonRecursiveCyclomaticComplexity() - 1;
   }
 
   public boolean isStaticConstructor() {

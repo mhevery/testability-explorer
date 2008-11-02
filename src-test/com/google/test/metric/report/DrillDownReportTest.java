@@ -31,17 +31,30 @@ import com.google.test.metric.ViolationCost.Reason;
 
 public class DrillDownReportTest extends AutoFieldClearTestCase {
 
-  private final  MethodCost methodCost0 = new MethodCost("c.g.t.A.method0()V", 0, 0);
-  private final  MethodCost methodCost1 = new MethodCost("c.g.t.A.method1()V", 0, 1);
-  private final  MethodCost methodCost2 = new MethodCost("c.g.t.A.method2()V", 0, 2);
-  private final  MethodCost methodCost3 = new MethodCost("c.g.t.A.method3()V", 0, 3);
+  private final  MethodCost methodCost0 = new MethodCost("c.g.t.A.method0()V", 0);
+  private final  MethodCost methodCost1 = new MethodCost("c.g.t.A.method1()V", 0);
+  private final  MethodCost methodCost2 = new MethodCost("c.g.t.A.method2()V", 0);
+  private final  MethodCost methodCost3 = new MethodCost("c.g.t.A.method3()V", 0);
   private final ByteArrayOutputStream out = new ByteArrayOutputStream();
   private final CostModel costModel = new CostModel();
+
+  @Override
+  protected void setUp() throws Exception {
+    methodCost1.addCyclomaticCost(0);
+
+    methodCost2.addCyclomaticCost(0);
+    methodCost2.addCyclomaticCost(0);
+
+    methodCost3.addCyclomaticCost(0);
+    methodCost3.addCyclomaticCost(0);
+    methodCost3.addCyclomaticCost(0);
+}
 
   public void testSimpleCost() throws Exception {
     DrillDownReport printer =
       new DrillDownReport(new PrintStream(out), null, MAX_VALUE, 0);
-    MethodCost costOnlyMethod1 = new MethodCost("c.g.t.A.method1()V", 0, 1);
+    MethodCost costOnlyMethod1 = new MethodCost("c.g.t.A.method1()V", 0);
+    costOnlyMethod1.addCyclomaticCost(1);
     costOnlyMethod1.addGlobalCost(0, null);
     costOnlyMethod1.link(costModel);
     printer.print("", costOnlyMethod1, Integer.MAX_VALUE);
@@ -51,7 +64,7 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   public void test2DeepPrintAll() throws Exception {
     DrillDownReport printer =
       new DrillDownReport(new PrintStream(out), null, MAX_VALUE, 0);
-    methodCost2.addMethodCost(81, new MethodCost("c.g.t.A.method1()V", 0, 1), Reason.NON_OVERRIDABLE_METHOD_CALL);
+    methodCost2.addMethodCost(81, methodCost1, Reason.NON_OVERRIDABLE_METHOD_CALL);
     methodCost2.link(costModel);
     printer.print("", methodCost2, MAX_VALUE);
     assertStringEquals("c.g.t.A.method2()V [Cost: 3 [CC: 3] / Cost: 2 [CC: 2]]\n" +
@@ -99,7 +112,7 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   public void testSupressAllWhenMinCostIs4() throws Exception {
     DrillDownReport printer =
       new DrillDownReport(new PrintStream(out), null, MAX_VALUE, 4);
-    methodCost2.addMethodCost(81, new MethodCost("c.g.t.A.method1()V", 0, 1), Reason.NON_OVERRIDABLE_METHOD_CALL);
+    methodCost2.addMethodCost(81, methodCost1, Reason.NON_OVERRIDABLE_METHOD_CALL);
     methodCost2.link(costModel);
     printer.print("", methodCost2, MAX_VALUE);
     assertStringEquals("", out.toString());
@@ -108,7 +121,7 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   public void testSupressPartialWhenMinCostIs2() throws Exception {
     DrillDownReport printer =
       new DrillDownReport(new PrintStream(out), null, MAX_VALUE, 2);
-    methodCost2.addMethodCost(81, new MethodCost("c.g.t.A.method1()V", 0, 1), Reason.NON_OVERRIDABLE_METHOD_CALL);
+    methodCost2.addMethodCost(81, methodCost1, Reason.NON_OVERRIDABLE_METHOD_CALL);
     methodCost2.link(costModel);
     printer.print("", methodCost2, Integer.MAX_VALUE);
     assertStringEquals("c.g.t.A.method2()V [Cost: 3 [CC: 3] / Cost: 2 [CC: 2]]\n", out.toString());
