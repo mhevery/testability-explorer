@@ -31,8 +31,8 @@ public class DetailHtmlReport {
 
   static class CostSourceComparator implements Comparator<ViolationCost> {
     public int compare(ViolationCost cost1, ViolationCost cost2) {
-      int c1 = cost1.getCost().getOvarall();
-      int c2 = cost2.getCost().getOvarall();
+      int c1 = cost1.getCost().getOverall();
+      int c2 = cost2.getCost().getOverall();
       return (c2 - c1);
     }
   }

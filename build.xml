@@ -95,6 +95,8 @@
 			<zipfileset src="lib/asm-3.0.jar" />
 			<rule pattern="org.objectweb.asm.**" result="com.google.test.org.objectweb.asm.@1" />
 			<zipfileset src="lib/classpath-explorer-r7.jar" />
+			<zipfileset src="lib/freemarker/freemarker.jar" />
+			<rule pattern="freemarker.**" result="com.google.test.freemarker.@1" />
 		</jarjar>
 		<zip destfile="target/dist/${project-name}-${version}-r${revision}-src.jar">
 			<fileset dir="src">

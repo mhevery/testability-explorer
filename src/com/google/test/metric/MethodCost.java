@@ -64,9 +64,10 @@ public class MethodCost {
       for (ViolationCost costSource : costSources) {
         costSource.link(directCost, dependantCost, costModel);
       }
-      dependantCost.addDependant(directCost);
-      totalCost.add(dependantCost);
+      totalCost.addDependant(dependantCost);
+      totalCost.add(directCost);
       totalCost.link(costModel);
+      directCost.link(costModel);
     }
     return getTotalCost();
   }
@@ -85,8 +86,8 @@ public class MethodCost {
     costSources.add(costSource);
   }
 
-  public void addMethodCost(int line, MethodCost method, Reason costSourceType) {
-    addCostSource(new MethodInvokationCost(line, method, costSourceType));
+  public void addMethodCost(int line, MethodCost cost, Reason costSourceType) {
+    addCostSource(new MethodInvokationCost(line, cost, costSourceType));
   }
 
   public void addGlobalCost(int lineNumber, Variable variable) {
@@ -99,7 +100,7 @@ public class MethodCost {
   }
 
   public String toCostsString() {
-    return " [" + directCost + " / " + totalCost + "]";
+    return " [" + totalCost + " / " + directCost + "]";
   }
 
   public int getMethodLineNumber() {
@@ -114,8 +115,9 @@ public class MethodCost {
     return directCost;
   }
 
+  //TODO: inline
   public int getOverallCost() {
-    return getTotalCost().getOvarall();
+    return getTotalCost().getOverall();
   }
 
   public Map<String, Object> getAttributes() {

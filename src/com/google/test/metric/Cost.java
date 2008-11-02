@@ -25,6 +25,7 @@ public class Cost {
   private int globalCost;
   private int[] lodDistribution;
   private int overall;
+  private boolean isLinked = false;
 
   private Cost(int cyclomaticCost, int globalCost, int[] lodDistribution) {
     this.cyclomaticCost = cyclomaticCost;
@@ -55,6 +56,7 @@ public class Cost {
   }
 
   public void add(Cost cost) {
+    assertNotLinked();
     cyclomaticCost += cost.cyclomaticCost;
     globalCost += cost.globalCost;
     int[] other = cost.lodDistribution;
@@ -71,6 +73,7 @@ public class Cost {
   }
 
   public void addDependant(Cost cost) {
+    assertNotLinked();
     cyclomaticCost += cost.cyclomaticCost;
     globalCost += cost.globalCost;
   }
@@ -85,7 +88,33 @@ public class Cost {
 
   @Override
   public String toString() {
-    return cyclomaticCost + ", " + globalCost;
+    StringBuilder builder = new StringBuilder();
+    String sep = "";
+    if (isLinked) {
+      builder.append(sep);
+      builder.append("Cost: " + overall);
+      sep = " [";
+    }
+    if (cyclomaticCost > 0) {
+      builder.append(sep);
+      builder.append("CC: " + cyclomaticCost);
+      sep = ", ";
+    }
+    if (globalCost > 0) {
+      builder.append(sep);
+      builder.append("GC: " + globalCost);
+      sep = ", ";
+    }
+    int loDSum = getLoDSum();
+    if (loDSum > 0) {
+      builder.append(sep);
+      builder.append("LOD: " + loDSum);
+      sep = ", ";
+    }
+    if (overall > 0) {
+      builder.append("]");
+    }
+    return builder.toString();
   }
 
   public int getLoDSum() {
@@ -100,12 +129,25 @@ public class Cost {
     return new Cost(cyclomaticCost, globalCost, lodDistribution);
   }
 
-  public int getOvarall() {
+  public Cost copyNoLOD() {
+    return new Cost(cyclomaticCost, globalCost, new int[0]);
+  }
+
+
+  public int getOverall() {
     return overall;
   }
 
   public void link(CostModel costModel) {
+    assertNotLinked();
     overall = costModel.computeMethod(this);
+    isLinked = true;
+  }
+
+  private void assertNotLinked() {
+    if (isLinked) {
+      throw new IllegalStateException("Expecting unlinked cost.");
+    }
   }
 
   public int[] getLoDDistribution() {
@@ -152,7 +194,7 @@ public class Cost {
 
   Map<String, Object> getAttributes() {
     Map<String, Object> atts = new HashMap<String, Object>();
-    atts.put("overall", getOvarall());
+    atts.put("overall", getOverall());
     atts.put("cyclomatic", getCyclomaticComplexityCost());
     atts.put("global", getGlobalCost());
     atts.put("lod", getLoDSum());
@@ -160,7 +202,7 @@ public class Cost {
   }
 
   public static Cost create(int overall, int cyclomatic, int global, int lod) {
-    Cost cost = new Cost(cyclomatic, global, new int[]{lod});
+    Cost cost = new Cost(cyclomatic, global, new int[] { lod });
     cost.overall = overall;
     return cost;
   }

@@ -49,13 +49,13 @@ public class CostModel {
     return sum;
   }
 
-  public long computeClass(List<MethodCost> methods) {
+  public int computeClass(List<MethodCost> methods) {
     WeightedAverage average = new WeightedAverage(
         WEIGHT_TO_EMPHASIZE_EXPENSIVE_METHODS);
     for (MethodCost methodCost : methods) {
       average.addValue(computeMethod(methodCost.getTotalCost()));
     }
-    return (long) average.getAverage();
+    return (int) average.getAverage();
   }
 
 }

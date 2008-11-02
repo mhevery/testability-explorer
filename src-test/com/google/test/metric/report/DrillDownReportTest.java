@@ -45,7 +45,7 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
     costOnlyMethod1.addGlobalCost(0, null);
     costOnlyMethod1.link(costModel);
     printer.print("", costOnlyMethod1, Integer.MAX_VALUE);
-    assertStringEquals("c.g.t.A.method1()V [1, 1 / 1, 1]\n", out.toString());
+    assertStringEquals("c.g.t.A.method1()V [Cost: 11 [CC: 1, GC: 1] / Cost: 11 [CC: 1, GC: 1]]\n", out.toString());
   }
 
   public void test2DeepPrintAll() throws Exception {
@@ -54,8 +54,8 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
     methodCost2.addMethodCost(81, new MethodCost("c.g.t.A.method1()V", 0, 1), Reason.NON_OVERRIDABLE_METHOD_CALL);
     methodCost2.link(costModel);
     printer.print("", methodCost2, MAX_VALUE);
-    assertStringEquals("c.g.t.A.method2()V [2, 0 / 3, 0]\n" +
-        "  line 81: c.g.t.A.method1()V [1, 0 / 1, 0] " + Reason.NON_OVERRIDABLE_METHOD_CALL +
+    assertStringEquals("c.g.t.A.method2()V [Cost: 3 [CC: 3] / Cost: 2 [CC: 2]]\n" +
+        "  line 81: c.g.t.A.method1()V [Cost: 1 [CC: 1] / Cost: 1 [CC: 1]] " + Reason.NON_OVERRIDABLE_METHOD_CALL +
         "\n", out.toString());
   }
 
@@ -66,9 +66,9 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
     methodCost3.addMethodCost(2, methodCost2, Reason.NON_OVERRIDABLE_METHOD_CALL);
     methodCost3.link(costModel);
     printer.print("", methodCost3, MAX_VALUE);
-    assertStringEquals("c.g.t.A.method3()V [3, 0 / 6, 0]\n" +
-        "  line 2: c.g.t.A.method2()V [2, 0 / 3, 0] " + Reason.NON_OVERRIDABLE_METHOD_CALL + "\n" +
-        "    line 8: c.g.t.A.method1()V [1, 0 / 1, 0] " + Reason.NON_OVERRIDABLE_METHOD_CALL + "\n",
+    assertStringEquals("c.g.t.A.method3()V [Cost: 6 [CC: 6] / Cost: 3 [CC: 3]]\n" +
+        "  line 2: c.g.t.A.method2()V [Cost: 3 [CC: 3] / Cost: 2 [CC: 2]] " + Reason.NON_OVERRIDABLE_METHOD_CALL + "\n" +
+        "    line 8: c.g.t.A.method1()V [Cost: 1 [CC: 1] / Cost: 1 [CC: 1]] " + Reason.NON_OVERRIDABLE_METHOD_CALL + "\n",
         out.toString());
   }
 
@@ -79,8 +79,8 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
     methodCost1.addMethodCost(13, methodCost3, Reason.NON_OVERRIDABLE_METHOD_CALL);
     methodCost1.link(costModel);
     printer.print("", methodCost1, MAX_VALUE);
-    assertStringEquals("c.g.t.A.method1()V [1, 0 / 4, 0]\n" +
-    		"  line 13: c.g.t.A.method3()V [3, 0 / 3, 0] " + Reason.NON_OVERRIDABLE_METHOD_CALL + "\n",
+    assertStringEquals("c.g.t.A.method1()V [Cost: 4 [CC: 4] / Cost: 1 [CC: 1]]\n" +
+    		"  line 13: c.g.t.A.method3()V [Cost: 3 [CC: 3] / Cost: 3 [CC: 3]] " + Reason.NON_OVERRIDABLE_METHOD_CALL + "\n",
     		out.toString());
   }
 
@@ -91,8 +91,8 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
     methodCost2.addMethodCost(2, methodCost1, Reason.NON_OVERRIDABLE_METHOD_CALL);
     methodCost3.link(costModel);
     printer.print("", methodCost3, 2);
-    assertStringEquals("c.g.t.A.method3()V [3, 0 / 6, 0]\n" +
-      "  line 2: c.g.t.A.method2()V [2, 0 / 3, 0] " + Reason.NON_OVERRIDABLE_METHOD_CALL + "\n",
+    assertStringEquals("c.g.t.A.method3()V [Cost: 6 [CC: 6] / Cost: 3 [CC: 3]]\n" +
+      "  line 2: c.g.t.A.method2()V [Cost: 3 [CC: 3] / Cost: 2 [CC: 2]] " + Reason.NON_OVERRIDABLE_METHOD_CALL + "\n",
       out.toString());
   }
 
@@ -111,7 +111,7 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
     methodCost2.addMethodCost(81, new MethodCost("c.g.t.A.method1()V", 0, 1), Reason.NON_OVERRIDABLE_METHOD_CALL);
     methodCost2.link(costModel);
     printer.print("", methodCost2, Integer.MAX_VALUE);
-    assertStringEquals("c.g.t.A.method2()V [2, 0 / 3, 0]\n", out.toString());
+    assertStringEquals("c.g.t.A.method2()V [Cost: 3 [CC: 3] / Cost: 2 [CC: 2]]\n", out.toString());
   }
 
   public void testSecondLevelRecursive() throws Exception {
@@ -121,8 +121,8 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
     methodCost2.addMethodCost(2, methodCost2, Reason.NON_OVERRIDABLE_METHOD_CALL);
     methodCost3.link(costModel);
     printer.print("", methodCost3, 10);
-    assertStringEquals("c.g.t.A.method3()V [3, 0 / 5, 0]\n" +
-      "  line 1: c.g.t.A.method2()V [2, 0 / 2, 0] " + Reason.NON_OVERRIDABLE_METHOD_CALL + "\n",
+    assertStringEquals("c.g.t.A.method3()V [Cost: 5 [CC: 5] / Cost: 3 [CC: 3]]\n" +
+      "  line 1: c.g.t.A.method2()V [Cost: 2 [CC: 2] / Cost: 2 [CC: 2]] " + Reason.NON_OVERRIDABLE_METHOD_CALL + "\n",
       out.toString());
   }
 
@@ -170,9 +170,9 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
     printer.addClassCost(classCost2);
     printer.printFooter();
     assertStringEquals("\nTestability cost for FAKE_classInfo2 [ cost = 2 ] [ 2 TCC, 0 TGC ]\n" +
-    		"  c.g.t.A.method2()V [2, 0 / 2, 0]\n" +
+    		"  c.g.t.A.method2()V [Cost: 2 [CC: 2] / Cost: 2 [CC: 2]]\n" +
         "\nTestability cost for FAKE_classInfo1 [ cost = 1 ] [ 1 TCC, 0 TGC ]\n" +
-        "  c.g.t.A.method1()V [1, 0 / 1, 0]\n" +
+        "  c.g.t.A.method1()V [Cost: 1 [CC: 1] / Cost: 1 [CC: 1]]\n" +
         "\nTestability cost for FAKE_classInfo0 [ cost = 0 ] [ 0 TCC, 0 TGC ]\n",
         out.toString());
   }

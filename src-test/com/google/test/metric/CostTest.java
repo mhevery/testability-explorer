@@ -29,7 +29,7 @@ public class CostTest extends TestCase {
   public void testAddOfGreaterSize() throws Exception {
     Cost lod = Cost.lod(0);
     lod.add(Cost.lod(1));
-    assertEquals(Cost.lodDistribution(1,1), lod);
+    assertEquals(Cost.lodDistribution(1, 1), lod);
     assertEquals(2, lod.getLoDSum());
   }
 
@@ -43,7 +43,7 @@ public class CostTest extends TestCase {
   public void testAddOfSmallerSize() throws Exception {
     Cost lod = Cost.lod(1);
     lod.add(Cost.lod(0));
-    assertEquals(Cost.lodDistribution(1,1), lod);
+    assertEquals(Cost.lodDistribution(1, 1), lod);
     assertEquals(2, lod.getLoDSum());
   }
 
