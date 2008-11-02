@@ -262,12 +262,12 @@ public class ClassInfoTest extends AutoFieldClearTestCase {
     List<ParameterInfo> params = Collections.emptyList();
     List<LocalVariableInfo> locals = Collections.emptyList();
     List<Operation> operations = Collections.emptyList();
-    superClass.addMethod(new MethodInfo(superClass, "setB", -1, "()V", null, params, locals,Visibility.PUBLIC, 0, operations, false));
-    superClass.addMethod(new MethodInfo(superClass, "setA", -1, "()V", null, params, locals,Visibility.PRIVATE, 0, operations, false));
-    superClass.addMethod(new MethodInfo(superClass, "X", -1, "()V", null, params, locals,Visibility.PUBLIC, 0, operations, false));
+    superClass.addMethod(new MethodInfo(superClass, "setB", -1, "()V", null, params, locals,Visibility.PUBLIC, Collections.<Integer>emptyList(), operations, false));
+    superClass.addMethod(new MethodInfo(superClass, "setA", -1, "()V", null, params, locals,Visibility.PRIVATE, Collections.<Integer>emptyList(), operations, false));
+    superClass.addMethod(new MethodInfo(superClass, "X", -1, "()V", null, params, locals,Visibility.PUBLIC, Collections.<Integer>emptyList(), operations, false));
     ClassInfo clazz = new ClassInfo("super", false, superClass, emptyInterfaces);
-    clazz.addMethod(new MethodInfo(clazz, "setD", -1, "()V", null, params, locals,Visibility.PUBLIC, 0, operations, false));
-    clazz.addMethod(new MethodInfo(clazz, "setC", -1, "()V", null, params, locals,Visibility.PUBLIC, 0, operations, false));
+    clazz.addMethod(new MethodInfo(clazz, "setD", -1, "()V", null, params, locals,Visibility.PUBLIC, Collections.<Integer>emptyList(), operations, false));
+    clazz.addMethod(new MethodInfo(clazz, "setC", -1, "()V", null, params, locals,Visibility.PUBLIC, Collections.<Integer>emptyList(), operations, false));
 
     Collection<MethodInfo> setters = clazz.getSetters();
     assertEquals(3, setters.size());

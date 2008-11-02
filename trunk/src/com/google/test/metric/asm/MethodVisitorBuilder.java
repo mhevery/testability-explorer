@@ -70,9 +70,10 @@ public class MethodVisitorBuilder implements MethodVisitor {
   private final List<Runnable> recorder = new ArrayList<Runnable>();
   private final ClassRepository repository;
 
-  private long cyclomaticComplexity = 1;
+  private final List<Integer> cyclomaticComplexity = new ArrayList<Integer>();
   private Variable methodThis;
   private int lineNumber;
+  private final Map<Label, Integer> lineNumbers = new HashMap<Label, Integer>();
   private int startingLineNumber;
   private final List<ParameterInfo> parameters = new ArrayList<ParameterInfo>();
   private final List<LocalVariableInfo> localVariables = new ArrayList<LocalVariableInfo>();
@@ -119,9 +120,9 @@ public class MethodVisitorBuilder implements MethodVisitor {
         }
       });
     } else {
-      cyclomaticComplexity++;
       recorder.add(new Runnable() {
         public void run() {
+          cyclomaticComplexity.add(lineNumber);
           switch (opcode) {
             case Opcodes.IFEQ :
               if1("IFEQ");
@@ -190,11 +191,11 @@ public class MethodVisitorBuilder implements MethodVisitor {
 
   public void visitTryCatchBlock(final Label start, final Label end,
       final Label handler, final String type) {
-    if (type != null) {
-      cyclomaticComplexity++;
-    }
     recorder.add(new Runnable() {
       public void run() {
+        if (type != null) {
+          cyclomaticComplexity.add(lineNumbers.get(handler));
+        }
         block.tryCatchBlock(start, end, handler, type);
       }
     });
@@ -202,13 +203,13 @@ public class MethodVisitorBuilder implements MethodVisitor {
 
   public void visitTableSwitchInsn(int min, int max, final Label dflt,
       final Label[] labels) {
-    for (Label label : labels) {
-      if (label != dflt) {
-        cyclomaticComplexity++;
-      }
-    }
     recorder.add(new Runnable() {
       public void run() {
+        for (Label label : labels) {
+          if (label != dflt) {
+            cyclomaticComplexity.add(lineNumbers.get(label));
+          }
+        }
         block.addOp(new Pop(lineNumber, 1));
         block.tableSwitch(dflt, labels);
       }
@@ -217,13 +218,13 @@ public class MethodVisitorBuilder implements MethodVisitor {
 
   public void visitLookupSwitchInsn(final Label dflt, final int[] keys,
       final Label[] labels) {
-    for (Label label : labels) {
-      if (label != null) {
-        cyclomaticComplexity++;
-      }
-    }
     recorder.add(new Runnable() {
       public void run() {
+        for (Label label : labels) {
+          if (label != null) {
+            cyclomaticComplexity.add(lineNumbers.get(label));
+          }
+        }
         block.addOp(new Pop(lineNumber, 1));
         block.tableSwitch(dflt, labels);
       }
@@ -244,6 +245,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
   }
 
   public void visitLineNumber(final int line, final Label start) {
+    lineNumbers.put(start, line);
     recorder.add(new Runnable() { // $6
       public void run() {
         if (lineNumber == 0) {

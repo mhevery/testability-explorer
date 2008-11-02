@@ -15,34 +15,39 @@
  */
 package com.google.test.metric;
 
+import java.util.Arrays;
+import java.util.List;
+
 import junit.framework.TestCase;
 
 public class MethodInfoTest extends TestCase {
 
+  private final List<Integer> cost1 = Arrays.asList(0);
+
   public void testGetFullName() {
     MethodInfo method = new MethodInfo(new ClassInfo("com.foo.bar", false,
         null, null), "method", 0, "(Ljava/lang/String;)V", null, null, null,
-        null, 1, null, false);
+        null, cost1, null, false);
     assertEquals("void method(java.lang.String)", method.getFullName());
 
     method = new MethodInfo(new ClassInfo("f.a.b", false, null, null),
         "mymethod", 0, "(IDLjava/lang/Thread;)Ljava/lang/Object;", null, null,
-        null, null, 1, null, false);
+        null, null, cost1, null, false);
     assertEquals("java.lang.Object mymethod(int, double, java.lang.Thread)", method
         .getFullName());
 
     method = new MethodInfo(new ClassInfo("c.b.ui.UI$ViewHandler", false, null,
-        null), "<clinit>", 0, "()V", null, null, null, null, 1, null, false);
+        null), "<clinit>", 0, "()V", null, null, null, null, cost1, null, false);
     assertEquals("c.b.ui.UI$ViewHandler()", method.getFullName());
 
     method = new MethodInfo(new ClassInfo("c.b.ui.UI$ViewHandler", false, null,
-        null), "<init>", -1, "(I)V", null, null, null, null, 1, null, false);
+        null), "<init>", -1, "(I)V", null, null, null, null, cost1, null, false);
     assertEquals("c.b.ui.UI$ViewHandler(int)", method.getFullName());
   }
 
   public void testDeconstructParameters() {
     MethodInfo method = new MethodInfo(null, null, 0, null, null, null, null,
-        null, 1, null, false);
+        null, cost1, null, false);
 
     assertEquals("int", method.deconstructParameters("I"));
     assertEquals("double[][][]", method.deconstructParameters("[[[D"));

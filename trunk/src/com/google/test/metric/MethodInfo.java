@@ -31,7 +31,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
   private final List<ParameterInfo> parameters;
   private final List<LocalVariableInfo> localVariables;
   private final String desc;
-  private final long cyclomaticComplexity;
+  private final List<Integer> linesOfComplexity;
   private final Visibility visibility;
   private final List<Operation> operations;
   private final int startingLineNumber;
@@ -40,7 +40,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
   public MethodInfo(ClassInfo classInfo, String methodName,
       int startingLineNumber, String desc, Variable methodThis,
       List<ParameterInfo> parameters, List<LocalVariableInfo> localVariables,
-      Visibility visibility, long cylomaticComplexity,
+      Visibility visibility, List<Integer> linesOfComplexity,
       List<Operation> operations, boolean isFinal) {
     this.classInfo = classInfo;
     this.name = methodName;
@@ -49,7 +49,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
     this.methodThis = methodThis;
     this.parameters = parameters;
     this.localVariables = localVariables;
-    this.cyclomaticComplexity = cylomaticComplexity;
+    this.linesOfComplexity = linesOfComplexity;
     this.visibility = visibility;
     this.operations = operations;
     this.isFinal = isFinal;
@@ -64,8 +64,10 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return getFullName();
   }
 
-  public long getNonRecursiveCyclomaticComplexity() {
-    return cyclomaticComplexity;
+  @Deprecated
+  //TODO: remove me
+  public int getNonRecursiveCyclomaticComplexity() {
+    return linesOfComplexity.size() + 1;
   }
 
   public String getName() {
@@ -233,6 +235,10 @@ public class MethodInfo implements Comparable<MethodInfo> {
       }
     }
     return count;
+  }
+
+  public List<Integer> getLinesOfComplexity() {
+    return linesOfComplexity;
   }
 
 }

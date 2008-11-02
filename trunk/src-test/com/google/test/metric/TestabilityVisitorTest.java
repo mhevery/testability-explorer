@@ -19,12 +19,14 @@ package com.google.test.metric;
 import static java.util.Collections.EMPTY_LIST;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import junit.framework.TestCase;
 
 public class TestabilityVisitorTest extends TestCase {
 
+  final List<Integer> cost1 = Arrays.asList(0);
   Variable instance = new Variable("instance", null, false, false);
   Variable finalInstance = new Variable("instance", null, true, false);
   FieldInfo field = new FieldInfo(null, "field", null, false, false, false);
@@ -37,7 +39,7 @@ public class TestabilityVisitorTest extends TestCase {
   @SuppressWarnings("unchecked")
   ClassInfo classInfo = new ClassInfo("c.g.t.A", false, null, EMPTY_LIST);
   MethodInfo method =
-      new MethodInfo(classInfo, "method", 0, "()V", null, null, null, null, 1, null, false);
+      new MethodInfo(classInfo, "method", 0, "()V", null, null, null, null, cost1, null, false);
 
   private final JavaClassRepository repo = new JavaClassRepository();
 
