@@ -15,10 +15,6 @@
  */
 package com.google.test.metric.report;
 
-import com.google.test.metric.ClassCost;
-import com.google.test.metric.CostModel;
-import com.google.test.metric.MethodCost;
-
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.Properties;
@@ -26,6 +22,10 @@ import java.util.Properties;
 import junit.framework.TestCase;
 
 import org.apache.tools.ant.filters.StringInputStream;
+
+import com.google.test.metric.ClassCost;
+import com.google.test.metric.CostModel;
+import com.google.test.metric.MethodCost;
 
 public class PropertiesReportTest extends TestCase {
 
@@ -36,7 +36,8 @@ public class PropertiesReportTest extends TestCase {
   private static final String CLASS_NAME = "com.google.foo.Bar";
   public void testReport() throws Exception {
 
-    MethodCost methodCost = new MethodCost("doThing", 3, 4);
+    MethodCost methodCost = new MethodCost("doThing", 3);
+    methodCost.addCyclomaticCost(0);
     methodCost.link(new CostModel(1.0, 1.0));
     final ClassCost classCost = new ClassCost(CLASS_NAME, Arrays.asList(methodCost), costModel);
     report.addClassCost(classCost);
@@ -46,6 +47,6 @@ public class PropertiesReportTest extends TestCase {
     assertTrue(output.contains("Bar"));
     Properties props = new Properties();
     props.load(new StringInputStream(output));
-    assertEquals(4, Integer.parseInt(props.getProperty(CLASS_NAME)));
+    assertEquals(1, Integer.parseInt(props.getProperty(CLASS_NAME)));
   }
 }

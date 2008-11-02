@@ -17,16 +17,16 @@
 package com.google.test.metric.report;
 
 
-import com.google.test.metric.ClassCost;
-import com.google.test.metric.CostModel;
-import com.google.test.metric.MethodCost;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
+
+import com.google.test.metric.ClassCost;
+import com.google.test.metric.CostModel;
+import com.google.test.metric.MethodCost;
 
 public class TextReportTest extends TestCase {
 
@@ -45,7 +45,10 @@ public class TextReportTest extends TestCase {
 
   private ClassCost classCost(String name, int cost) {
     List<MethodCost> methods = new ArrayList<MethodCost>();
-    MethodCost methodCost = new MethodCost("method_" + cost, 1, cost);
+    MethodCost methodCost = new MethodCost("method_" + cost, 1);
+    for (int i = 0; i < cost; i++) {
+      methodCost.addCyclomaticCost(i);
+    }
     methodCost.link(new CostModel(1, 1));
     methods.add(methodCost);
     ClassCost classCost = new ClassCost(name, methods, costModel);

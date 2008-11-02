@@ -24,9 +24,14 @@ import com.google.test.metric.ViolationCost.Reason;
 public class MethodCostTest extends TestCase {
 
   public void testComputeOverallCost() throws Exception {
-    MethodCost cost = new MethodCost("a", 0, 1);
+    MethodCost cost = new MethodCost("a", 0);
+    cost.addCyclomaticCost(0);
     cost.addGlobalCost(0, null);
-    cost.addMethodCost(0, new MethodCost("b", 0, 3), Reason.NON_OVERRIDABLE_METHOD_CALL);
+    MethodCost cost3 = new MethodCost("b", 0);
+    cost3.addCyclomaticCost(0);
+    cost3.addCyclomaticCost(0);
+    cost3.addCyclomaticCost(0);
+    cost.addMethodCost(0, cost3, Reason.NON_OVERRIDABLE_METHOD_CALL);
     CostModel costModel = new CostModel(2, 10);
     cost.link(costModel);
 

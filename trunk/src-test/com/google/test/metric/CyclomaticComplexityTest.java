@@ -135,7 +135,7 @@ public class CyclomaticComplexityTest extends AutoFieldClearTestCase {
       int _Index = name.lastIndexOf('_');
       if (_Index > 0) {
         long expectedCC = Long.parseLong(name.substring(_Index + 1));
-        long actualCC = method.getNonRecursiveCyclomaticComplexity();
+        long actualCC = method.getLinesOfComplexity().size() + 1;
         if (expectedCC != actualCC) {
           errors += "\n" + method.getName()
               + " should have Cyclomatic Complexity of "

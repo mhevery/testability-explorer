@@ -107,8 +107,10 @@ public class TestabilityVisitor {
   MethodCost getMethodCost(MethodInfo method) {
     MethodCost methodCost = methodCosts.get(method);
     if (methodCost == null) {
-      methodCost = new MethodCost(method.getFullName(), method
-          .getStartingLineNumber(), method.getTestCost());
+      methodCost = new MethodCost(method.getFullName(), method.getStartingLineNumber());
+      for (Integer lineNumberWithComplexity : method.getLinesOfComplexity()) {
+        methodCost.addCyclomaticCost(lineNumberWithComplexity);
+      }
       methodCosts.put(method, methodCost);
     }
     return methodCost;
