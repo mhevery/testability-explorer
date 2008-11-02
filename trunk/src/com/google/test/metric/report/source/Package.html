@@ -52,7 +52,7 @@
 	font-style:italic;
 }
   </style>
-  <title>Testability Explorer Report for class: ${classCost.className}</title>
+  <title>Testability Explorer Report for package: ${packageName}</title>
 <#function code text>
   <#return "<tt>" + text?html?replace(' ', '&nbsp;') +"</tt>">
 </#function>
@@ -66,7 +66,7 @@
   </#if>  
 </#function>
 <body>
-<h1>Class: <tt>${classCost.className}</tt></h1>
+<h1>Package: <tt>${packageName}</tt></h1>
 <table class="source" cellspacing="0" cellpadding="0">
   <tr>
     <td class="head" width="100">Metric:</td>
@@ -74,7 +74,7 @@
     <td class="head" colspan="2" width="100%">Chart:</td>
   </tr>
   <tr>
-    <td class="metric">Class cost:</td>
+    <td class="metric">Package cost:</td>
     <td class="score" ${color(overallCost)}>${overallCost}</td>
     <td rowspan="2" align="center" class="score" style="border-right:none">${overallCostChart}</td>
     <td class="score" rowspan="7">${histogramChart}</td>
@@ -84,21 +84,21 @@
     <td class="score">&nbsp;</td>
   </tr>
   <tr>
-    <td class="metric">Method(s) count:</td>
-    <td class="score">${methodCosts?size}</td>
+    <td class="metric">Class(s) count:</td>
+    <td class="score">${packageCosts?size}</td>
     <td rowspan="5" align="center" class="score" style="border-right:none">${distributionChart}</td>
   </tr>
   <tr>
     <td class="metric">&nbsp;&nbsp;&nbsp;Excelent:</td>
-    <td class="score" style="background-color:#00FF00">${excellentCount} [${(excellentCount/(methodCosts?size))?string.percent}]</td>
+    <td class="score" style="background-color:#00FF00">${excellentCount} [${(excellentCount/(packageCosts?size))?string.percent}]</td>
   </tr>
   <tr>
     <td class="metric">&nbsp;&nbsp;&nbsp;Good:</td>
-    <td class="score" style="background-color:#FFFF00">${goodCount} [${(goodCount/(methodCosts?size))?string.percent}]</td>
+    <td class="score" style="background-color:#FFFF00">${goodCount} [${(goodCount/(packageCosts?size))?string.percent}]</td>
   </tr>
   <tr>
     <td class="metric">&nbsp;&nbsp;&nbsp;Needs work:</td>
-    <td class="score" style="background-color:#FF0000">${needsWorkCount} [${(needsWorkCount/(methodCosts?size))?string.percent}]</td>
+    <td class="score" style="background-color:#FF0000">${needsWorkCount} [${(needsWorkCount/(packageCosts?size))?string.percent}]</td>
   </tr>
   <tr>
     <td class="score">&nbsp;</td>
@@ -110,39 +110,14 @@
   <tr>
     <td class="head">Method</td>
     <td class="head">Total Cost</td>
-    <td class="head">Direct Cost</td>
   </tr>
-  <#list classCost.methods?sort_by(["totalCost", "overall"]) as method>
+  <#list classCosts?sort_by("overallCost") as class>
   <tr>
-    <td class="score" ${color(method.totalCost.overall)}><a href="#${method.methodLineNumber}"><tt>${method.methodName}</tt></a></td>
-    <td class="score" ${color(method.totalCost.overall)}>${method.totalCost}&nbsp;</td>
-    <td class="score" ${color(method.totalCost.overall)}>${method.cost}&nbsp;</td>
+    <td class="score" ${color(class.overallCost)}><a href="${class.className}.html"><tt>${class.className}</tt></a></td>
+    <td class="score" ${color(class.overallCost)}>${class.overallCost}&nbsp;</td>
   </tr>
   </#list>
 </table>
 <br>
-<table class="source" cellspacing="0" cellpadding="0">
-  <tr>
-    <td class="head">Line&nbsp;No:</td>
-    <td class="head">Cost</td>
-    <td class="head">Source Code</td>
-  </tr>
-  <#list source.lines as line>
-    <#list line.methodCosts as method>
-      <tr>
-        <td class="ln"><a name="${line.lineNumber}"/>&nbsp;</td>
-        <td nowrap class="summary" ${color(method.totalCost.overall)}>${method.totalCost}&nbsp;</td>
-        <td nowrap class="summary" ${color(method.totalCost.overall)}>${code(method.methodName)}<br>
-          Total: ${method.totalCost}&nbsp;Direct: ${method.cost}&nbsp;
-        </td>
-  </tr>
-    </#list>
-    <tr>
-      <td class="ln"><a name="${line.lineNumber}"/>${line.lineNumber}</td>
-      <td nowrap class="score">${line.score}&nbsp;</td>
-      <td nowrap class="code">${code(line.text)}&nbsp;</td>
-    </tr>
-  </#list>
-</table>
 </body>
 </html>

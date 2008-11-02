@@ -18,13 +18,17 @@ package com.google.test.metric.report;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.util.Arrays;
+import java.util.List;
 
 import junit.framework.TestCase;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.DirectoryClassPath;
 import com.google.test.metric.ClassCost;
+import com.google.test.metric.ClassInfo;
 import com.google.test.metric.ClassRepository;
+import com.google.test.metric.Cost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MetricComputer;
@@ -39,24 +43,50 @@ public class ClassSourceReportTest extends TestCase {
 
   private final ClassPath classPath = new DirectoryClassPath(new File("src"));
   private final String prefix = "com/google/test/metric/report/source/";
+  private final int maxExcellentCost = 50;
+  private final int maxAcceptableCost = 100;
+  GradeCategories grades = new GradeCategories(maxExcellentCost , maxAcceptableCost );
+  SourceReport report = new SourceReport(maxExcellentCost, maxAcceptableCost, 0,
+      new SourceLoader(classPath));
+  ClassRepository repo = new JavaClassRepository();
+  MetricComputer computer = new MetricComputer(repo, null, new RegExpWhiteList(
+      "!com.google"), new CostModel());
+  ClassCost classCost = computer.compute(repo.getClass(Testability.class
+      .getName()));
+  Configuration cfg = new Configuration();
 
-  public void testDumpSourceToHtmlFile() throws Exception {
-    SourceReport report = new SourceReport(50, 100, 0, new SourceLoader(classPath));
-    ClassRepository repo = new JavaClassRepository();
-    MetricComputer computer = new MetricComputer(repo, null, new RegExpWhiteList("!com.google"), new CostModel());
-    ClassCost classCost = computer.compute(repo.getClass(Testability.class.getName()));
-    ClassReport classReport = report.createClassReport(classCost);
-
-    Configuration cfg = new Configuration();
+  @Override
+  protected void setUp() throws Exception {
     cfg.setTemplateLoader(new ClassPathTemplateLoader(classPath, prefix));
     cfg.setObjectWrapper(new DefaultObjectWrapper());
-    cfg.setSharedVariable("maxExcelentCost", 50);
-    cfg.setSharedVariable("maxAcceptableCost", 100);
+    cfg.setSharedVariable("maxExcellentCost", maxExcellentCost);
+    cfg.setSharedVariable("maxAcceptableCost", maxAcceptableCost);
+  }
+
+  public void testDumpSourceToHtmlFile() throws Exception {
+    ClassReport classReport = report.createClassReport(classCost);
     Template template = cfg.getTemplate("Class.html");
     FileOutputStream os = new FileOutputStream("Class.html");
     OutputStreamWriter out = new OutputStreamWriter(os);
 
     template.process(classReport, out);
+    out.close();
+  }
+
+  public void testDumpPackageToHtmlFile() throws Exception {
+    List<ClassCost> classCosts = Arrays.asList(
+        computer.compute(Testability.class.getName()),
+        computer.compute(ClassCost.class.getName()),
+        computer.compute(ClassInfo.class.getName()),
+        computer.compute(Cost.class.getName())
+        );
+    PackageReport pacakgeReport = new PackageReport(Testability.class
+        .getPackage().getName(), classCosts, grades, new CostModel());
+    Template template = cfg.getTemplate("Package.html");
+    FileOutputStream os = new FileOutputStream("Package.html");
+    OutputStreamWriter out = new OutputStreamWriter(os);
+
+    template.process(pacakgeReport, out);
     out.close();
   }
 
