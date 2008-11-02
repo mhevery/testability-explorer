@@ -76,7 +76,7 @@ public class Source {
   }
 
   public Line getLine(int line) {
-    return lines.get(line - 1);
+    return lines.get(Math.max(0, line - 1));
   }
 
   public List<Line> getLines() {
