@@ -37,7 +37,7 @@ public class GradeCategories {
     this.maxAcceptableCost = maxAcceptableCost;
   }
 
-  public int getExcelentCount(List<Integer> costs) {
+  public int getExcellentCount(List<Integer> costs) {
     int count = 0;
     for (int cost : costs) {
       if (cost <= maxExcellentCost) {
@@ -78,7 +78,7 @@ public class GradeCategories {
     PieChartUrl chart = new PieChartUrl();
     chart.setItemLabel("Excellent", "Good", "Needs Work");
     chart.setColors(GREEN, YELLOW, RED);
-    int excellentCount = getExcelentCount(costs);
+    int excellentCount = getExcellentCount(costs);
     int goodCount = getGoodCount(costs);
     int needsWorkCount = getNeedsWorkCount(costs);
     chart.setValues(excellentCount, goodCount, needsWorkCount);
@@ -89,6 +89,7 @@ public class GradeCategories {
       List<Integer> costs) {
     int binCount = min(MAX_HISTOGRAM_BINS, 10 * (int) log(costs.size()) + 1);
     int binWidth = (int) ceil((double) findMax(costs) / binCount);
+    Histogram overallHistogram = new Histogram(0, binWidth, binCount);
     Histogram excellentHistogram = new Histogram(0, binWidth, binCount);
     Histogram goodHistogram = new Histogram(0, binWidth, binCount);
     Histogram needsWorkHistogram = new Histogram(0, binWidth, binCount);
@@ -100,20 +101,22 @@ public class GradeCategories {
       } else {
         needsWorkHistogram.value(overallCost);
       }
+      overallHistogram.value(overallCost);
     }
-    int maxBin = excellentHistogram.getMaxBin();
-    maxBin = max(maxBin, goodHistogram.getMaxBin());
-    maxBin = max(maxBin, needsWorkHistogram.getMaxBin());
+    int maxBin = overallHistogram.getMaxBin();
     excellentHistogram.setMaxBin(maxBin);
     goodHistogram.setMaxBin(maxBin);
     needsWorkHistogram.setMaxBin(maxBin);
-    HistogramChartUrl chart = new HistogramChartUrl();
+
+
     int[] excellent = excellentHistogram.getScaledBinRange(0, MAX_VALUE, 61);
     int[] good = goodHistogram.getScaledBinRange(0, MAX_VALUE, 61);
     int[] needsWork = needsWorkHistogram.getScaledBinRange(0, MAX_VALUE, 61);
-    chart.setItemLabel(excellentHistogram.getBinLabels(20));
+
+    HistogramChartUrl chart = new HistogramChartUrl();
+    chart.setItemLabel(overallHistogram.getBinLabels(20));
     chart.setValues(excellent, good, needsWork);
-    chart.setYMark(0, excellentHistogram.getMaxBin());
+    chart.setYMark(0, overallHistogram.getMaxBin());
     chart.setSize(width, height);
     chart.setBarWidth((width - HISTOGRAM_LEGEND_WIDTH) / binCount, 0, 0);
     chart.setChartLabel("Excellent", "Good", "Needs Work");

@@ -23,7 +23,7 @@ public class GradeCategoriesTest extends TestCase {
   GradeCategories grade = new GradeCategories(1, 2);
 
   public void testGetExcelentCount() throws Exception {
-    assertEquals(2, grade.getExcelentCount(asList(1, 1, 2, 3)));
+    assertEquals(2, grade.getExcellentCount(asList(1, 1, 2, 3)));
   }
 
   public void testGetGoodCount() throws Exception {
@@ -47,6 +47,12 @@ public class GradeCategoriesTest extends TestCase {
   public void testCreateHistogram() throws Exception {
     HistogramChartUrl chart = grade.createHistogram(0, 0, asList(1, 2, 2, 3, 3, 3));
     assertEquals("s:AVAAAAAAAAA,AApAAAAAAAA,AAA9AAAAAAA", chart.getMap().get("chd"));
+  }
+
+  public void testCreateHistogramBug() throws Exception {
+    grade = new GradeCategories(50, 100);
+    HistogramChartUrl chart = grade.createHistogram(0, 0, asList(4, 90));
+    assertEquals("s:f,f,A", chart.getMap().get("chd"));
   }
 
 }
