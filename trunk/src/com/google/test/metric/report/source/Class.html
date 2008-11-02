@@ -48,15 +48,18 @@
 	}
 
 }
+  .summary1 {	font-weight:bold;
+	font-style:italic;
+}
   </style>
   <title>Testability Explorer Report for class: ${classCost.className}</title>
 <#function code text>
   <#return "<tt>" + text?html?replace(' ', '&nbsp;') +"</tt>">
 </#function>
 <#function color value>
-  <#if (value <= 50) >
+  <#if (value <= maxExcelentCost) >
     <#return "style='background-color:#00FF00'">
-  <#elseif (value <= 100)>
+  <#elseif (value <= maxAcceptableCost)>
     <#return "style='background-color:#FFFF00'">
   <#else>
     <#return "style='background-color:#FF0000'">
@@ -71,7 +74,7 @@
     <td class="head" colspan="2" width="100%">Chart:</td>
   </tr>
   <tr>
-    <td class="metric">Overall cost:</td>
+    <td class="metric">Class cost:</td>
     <td class="score" ${color(overallCost)}>${overallCost}</td>
     <td rowspan="2" align="center" class="score" style="border-right:none">${overallCostChart}</td>
     <td class="score" rowspan="7">${histogramChart}</td>
@@ -125,12 +128,14 @@
     <td class="head">Source Code</td>
   </tr>
   <#list source.lines as line>
-    <#list line.methodCosts as methodCost>
+    <#list line.methodCosts as method>
       <tr>
         <td class="ln"><a name="${line.lineNumber}"/>&nbsp;</td>
-        <td nowrap class="summary" ${color(methodCost.totalCost.overall)}>${methodCost.totalCost}&nbsp;</td>
-        <td nowrap class="summary" ${color(methodCost.totalCost.overall)}>Cost for method: ${code(methodCost.methodName)}</td>
-      </tr>
+        <td nowrap class="summary" ${color(method.totalCost.overall)}>${method.totalCost}&nbsp;</td>
+        <td nowrap class="summary" ${color(method.totalCost.overall)}>${code(method.methodName)}<br>
+          Total: ${method.totalCost}&nbsp;Direct: ${method.cost}&nbsp;
+        </td>
+  </tr>
     </#list>
     <tr>
       <td class="ln"><a name="${line.lineNumber}"/>${line.lineNumber}</td>

@@ -50,6 +50,8 @@ public class ClassSourceReportTest extends TestCase {
     Configuration cfg = new Configuration();
     cfg.setTemplateLoader(new ClassPathTemplateLoader(classPath, prefix));
     cfg.setObjectWrapper(new DefaultObjectWrapper());
+    cfg.setSharedVariable("maxExcelentCost", 50);
+    cfg.setSharedVariable("maxAcceptableCost", 100);
     Template template = cfg.getTemplate("Class.html");
     FileOutputStream os = new FileOutputStream("Class.html");
     OutputStreamWriter out = new OutputStreamWriter(os);
