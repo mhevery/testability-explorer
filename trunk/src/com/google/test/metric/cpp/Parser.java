@@ -16,6 +16,8 @@
 package com.google.test.metric.cpp;
 
 import java.io.CharArrayReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 
 import com.google.test.metric.cpp.dom.TranslationUnit;
@@ -25,6 +27,15 @@ public class Parser {
   public TranslationUnit parse(String source) throws Exception {
     RootBuilder builder = new RootBuilder();
     Reader reader = new CharArrayReader(source.toCharArray());
+    InternalLexer lexer = new InternalLexer(reader);
+    InternalParser parser = new InternalParser(lexer);
+    parser.translation_unit(builder);
+    return builder.getNode();
+  }
+
+  public TranslationUnit parse(InputStream in) throws Exception {
+    RootBuilder builder = new RootBuilder();
+    Reader reader = new InputStreamReader(in);
     InternalLexer lexer = new InternalLexer(reader);
     InternalParser parser = new InternalParser(lexer);
     parser.translation_unit(builder);

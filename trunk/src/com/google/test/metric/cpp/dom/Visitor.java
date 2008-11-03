@@ -73,4 +73,16 @@ public abstract class Visitor {
 
   public void endVisit(TernaryOperation ternaryOperation) {
   }
+
+  public void beginVisit(ClassDeclaration classDeclaration) {
+  }
+
+  public void endVisit(ClassDeclaration classDeclaration) {
+  }
+
+  public void beginVisit(TranslationUnit translationUnit) {
+  }
+
+  public void endVisit(TranslationUnit translationUnit) {
+  }
 }
