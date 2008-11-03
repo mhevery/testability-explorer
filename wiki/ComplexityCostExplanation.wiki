@@ -1,0 +1,17 @@
+#summary Explanation of the complexity cost, linked from reports.
+
+= Introduction =
+
+You probably got to this page from clicking on one of the itemized costs in your html cost report.
+
+
+Here's an explanation about the Complexity Cost, how it is measured, why it can make for more untestable code, and what you can do to reduce it.
+
+= Details =
+
+
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
