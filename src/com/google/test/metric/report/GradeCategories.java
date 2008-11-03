@@ -131,4 +131,12 @@ public class GradeCategories {
     }
     return maxValue;
   }
+
+  public int getMaxExcellentCost() {
+    return maxExcellentCost;
+  }
+
+  public int getMaxAcceptableCost() {
+    return maxAcceptableCost;
+  }
 }
