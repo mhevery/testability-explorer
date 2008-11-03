@@ -7,59 +7,11 @@
 <body>
 <#include "Header.html">
 <h2>Class: <tt>${name}</tt></h2>
-<table class="source" cellspacing="0" cellpadding="0">
-  <tr>
-    <td class="head" width="100">Metric:</td>
-    <td class="head" width="100">Value:</td>
-    <td class="head" colspan="2" width="100%">Chart:</td>
-  </tr>
-  <tr>
-    <td class="metric">Class cost:</td>
-    <td class="score" ${util.color(overallCost)}>${overallCost}</td>
-    <td rowspan="2" align="center" class="score" style="border-right:none">${overallCostChart}</td>
-    <td class="score" rowspan="7">${histogramChart}</td>
-  </tr>
-  <tr>
-    <td class="score">&nbsp;</td>
-    <td class="score">&nbsp;</td>
-  </tr>
-  <tr>
-    <td class="metric">Method(s) count:</td>
-    <td class="score">${count}</td>
-    <td rowspan="5" align="center" class="score" style="border-right:none">${distributionChart}</td>
-  </tr>
-  <tr>
-    <td class="metric">&nbsp;&nbsp;&nbsp;Excellent:</td>
-    <td class="score" style="background-color:#00FF00">${excellentCount} [${(excellentPercent)?string.percent}]</td>
-  </tr>
-  <tr>
-    <td class="metric">&nbsp;&nbsp;&nbsp;Good:</td>
-    <td class="score" style="background-color:#FFFF00">${goodCount} [${(goodPercent)?string.percent}]</td>
-  </tr>
-  <tr>
-    <td class="metric">&nbsp;&nbsp;&nbsp;Needs work:</td>
-    <td class="score" style="background-color:#FF0000">${needsWorkCount} [${(needsWorkPercent)?string.percent}]</td>
-  </tr>
-  <tr>
-    <td class="score">&nbsp;</td>
-    <td class="score">&nbsp;</td>
-  </tr>
-</table>
+<@util.overview report=self name="Class" listName="Method"/>
 <br>
-<table class="source" cellspacing="0" cellpadding="0">
-  <tr>
-    <td class="head">Method</td>
-    <td class="head">Total Cost</td>
-    <td class="head">Direct Cost</td>
-  </tr>
-  <#list unitCosts?sort_by("cost") as method>
-  <tr>
-    <td class="score" ${util.color(method.cost)}><a href="#${method.lineNumber}"><tt>${method.name}</tt></a></td>
-    <td nowrap class="score" ${util.color(method.cost)}>${method.totalCost}&nbsp;</td>
-    <td nowrap class="score" ${util.color(method.cost)}>${method.directCost}&nbsp;</td>
-  </tr>
-  </#list>
-</table>
+<@util.unitList list=unitCosts name="Class" keys=["totalCost", "directCost"] headers=["Total Cost", "Direct Cost"]; method>
+#${method.lineNumber}
+</@util.unitList>
 <br>
 <table class="source" cellspacing="0" cellpadding="0">
   <tr>
