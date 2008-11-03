@@ -32,11 +32,7 @@ import com.google.test.metric.Testability;
 public class ClassSourceReportTest extends TestCase {
 
   private final ClassPath classPath = new DirectoryClassPath(new File("src"));
-  private final String prefix = "com/google/test/metric/report/source/";
-  private final int maxExcellentCost = 50;
-  private final int maxAcceptableCost = 100;
-  GradeCategories grades = new GradeCategories(maxExcellentCost,
-      maxAcceptableCost);
+  GradeCategories grades = new GradeCategories(50, 100);
   SourceReport report = new SourceReport(grades, new SourceLoader(classPath),
       new File("self-report"));
   ClassRepository repo = new JavaClassRepository();
