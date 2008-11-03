@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -187,7 +188,7 @@ public class Testability {
           worstOffenderCount);
     } else if (printer.equals("source")) {
       report = new SourceReport(new GradeCategories(maxExcellentCost,
-          maxAcceptableCost), new SourceLoader(classpath), new File("te-report"));
+          maxAcceptableCost), new SourceLoader(classpath), new File("te-report"), new Date());
     } else if (printer.equals("xml")) {
       XMLSerializer xmlSerializer = new XMLSerializer();
       xmlSerializer.setOutputByteStream(out);
