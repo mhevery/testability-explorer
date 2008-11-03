@@ -16,8 +16,6 @@
 package com.google.test.metric.report;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
 
 import junit.framework.TestCase;
 
@@ -31,42 +29,25 @@ import com.google.test.metric.MetricComputer;
 import com.google.test.metric.RegExpWhiteList;
 import com.google.test.metric.Testability;
 
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.Template;
-
 public class ClassSourceReportTest extends TestCase {
 
   private final ClassPath classPath = new DirectoryClassPath(new File("src"));
   private final String prefix = "com/google/test/metric/report/source/";
   private final int maxExcellentCost = 50;
   private final int maxAcceptableCost = 100;
-  GradeCategories grades = new GradeCategories(maxExcellentCost , maxAcceptableCost );
-  SourceReport report = new SourceReport(maxExcellentCost, maxAcceptableCost, 0,
-      new SourceLoader(classPath));
+  GradeCategories grades = new GradeCategories(maxExcellentCost,
+      maxAcceptableCost);
+  SourceReport report = new SourceReport(grades, new SourceLoader(classPath),
+      new File("self-report"));
   ClassRepository repo = new JavaClassRepository();
   MetricComputer computer = new MetricComputer(repo, null, new RegExpWhiteList(
       "!com.google"), new CostModel());
   ClassCost classCost = computer.compute(repo.getClass(Testability.class
       .getName()));
-  Configuration cfg = new Configuration();
-
-  @Override
-  protected void setUp() throws Exception {
-    cfg.setTemplateLoader(new ClassPathTemplateLoader(classPath, prefix));
-    cfg.setObjectWrapper(new DefaultObjectWrapper());
-    cfg.setSharedVariable("maxExcellentCost", maxExcellentCost);
-    cfg.setSharedVariable("maxAcceptableCost", maxAcceptableCost);
-  }
 
   public void testDumpClassToHtmlFile() throws Exception {
     ClassReport classReport = report.createClassReport(classCost);
-    Template template = cfg.getTemplate("Class.html");
-    FileOutputStream os = new FileOutputStream("Class.html");
-    OutputStreamWriter out = new OutputStreamWriter(os);
-
-    template.process(classReport, out);
-    out.close();
+    report.write("Class.html", classReport, new File("Class.html"));
   }
 
   public void testDumpPackageToHtmlFile() throws Exception {
@@ -75,12 +56,7 @@ public class ClassSourceReportTest extends TestCase {
     packageReport.addClass("a.b.C", 30);
     packageReport.addClass("a.b.D", 80);
     packageReport.addClass("a.b.E", 130);
-    Template template = cfg.getTemplate("Package.html");
-    FileOutputStream os = new FileOutputStream("Package.html");
-    OutputStreamWriter out = new OutputStreamWriter(os);
-
-    template.process(packageReport, out);
-    out.close();
+    report.write("Package.html", packageReport, new File("Package.html"));
   }
 
   public void testDumpProjectToHtmlFile() throws Exception {
@@ -88,12 +64,7 @@ public class ClassSourceReportTest extends TestCase {
     projectReport.addProject("a.b.c", 30);
     projectReport.addProject("a.b.d", 80);
     projectReport.addProject("a.b.e", 130);
-    Template template = cfg.getTemplate("Project.html");
-    FileOutputStream os = new FileOutputStream("Project.html");
-    OutputStreamWriter out = new OutputStreamWriter(os);
-
-    template.process(projectReport, out);
-    out.close();
+    report.write("Project.html", projectReport, new File("Project.html"));
   }
 
 }

@@ -46,7 +46,7 @@ public class SourceReportTest extends TestCase {
   public void testCreateSourceReport() throws Exception {
     ClassPath classPath = new DirectoryClassPath(new File("src-test"));
     SourceLoader loader = new SourceLoader(classPath);
-    SourceReport report = new SourceReport(0, 0, 0, loader);
+    SourceReport report = new SourceReport(new GradeCategories(0, 0), loader, null);
     MetricComputer computer = new MetricComputer(new JavaClassRepository(), null, new RegExpWhiteList(), new CostModel());
     ClassCost classCost = computer.compute(TestClass.class.getName());
 
