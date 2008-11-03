@@ -43,15 +43,18 @@ public class SourceReport extends SummaryReport {
 
   ClassReport createClassReport(ClassCost classCost) {
     Source source = sourceLoader.load(classCost.getClassName());
-    for (MethodCost methodCost : classCost.getMethods()) {
-      Line line = source.getLine(methodCost.getMethodLineNumber());
-      line.addMethodCost(methodCost);
-      for (ViolationCost violation : methodCost.getViolationCosts()) {
+    ClassReport classReport = new ClassReport(classCost.getClassName(), source, grades);
+    for (MethodCost method : classCost.getMethods()) {
+      classReport.addMethod(method.getMethodName(), method
+          .getMethodLineNumber(), method.getTotalCost(), method.getCost());
+      Line line = source.getLine(method.getMethodLineNumber());
+      line.addMethodCost(method);
+      for (ViolationCost violation : method.getViolationCosts()) {
         line = source.getLine(violation.getLineNumber());
         line.addCost(violation.getCost());
       }
     }
-    return new ClassReport(source, classCost, grades);
+    classReport.setOverallCost(classCost.getOverallCost());
+    return classReport;
   }
-
 }

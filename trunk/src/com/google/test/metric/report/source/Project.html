@@ -2,11 +2,10 @@
   <style type="text/css">
 <#include "te.css"/>
   </style>
-  <title>Testability Explorer Report for class: ${name}</title>
-<body>
+  <title>Testability Explorer Report</title>
 <#import "Macro.ftl" as util>
+<body>
 <#include "Header.html">
-<h2>Class: <tt>${name}</tt></h2>
 <table class="source" cellspacing="0" cellpadding="0">
   <tr>
     <td class="head" width="100">Metric:</td>
@@ -14,7 +13,7 @@
     <td class="head" colspan="2" width="100%">Chart:</td>
   </tr>
   <tr>
-    <td class="metric">Class cost:</td>
+    <td class="metric">Project cost:</td>
     <td class="score" ${util.color(overallCost)}>${overallCost}</td>
     <td rowspan="2" align="center" class="score" style="border-right:none">${overallCostChart}</td>
     <td class="score" rowspan="7">${histogramChart}</td>
@@ -24,7 +23,7 @@
     <td class="score">&nbsp;</td>
   </tr>
   <tr>
-    <td class="metric">Method(s) count:</td>
+    <td class="metric">Class(s) count:</td>
     <td class="score">${count}</td>
     <td rowspan="5" align="center" class="score" style="border-right:none">${distributionChart}</td>
   </tr>
@@ -48,40 +47,14 @@
 <br>
 <table class="source" cellspacing="0" cellpadding="0">
   <tr>
-    <td class="head">Method</td>
-    <td class="head">Total Cost</td>
-    <td class="head">Direct Cost</td>
+    <td class="head">Package:</td>
+    <td class="head">Cost:</td>
   </tr>
-  <#list unitCosts?sort_by("cost") as method>
+  <#list unitCosts?sort_by("cost") as package>
   <tr>
-    <td class="score" ${util.color(method.cost)}><a href="#${method.lineNumber}"><tt>${method.name}</tt></a></td>
-    <td class="score" ${util.color(method.cost)}>${method.totalCost}&nbsp;</td>
-    <td class="score" ${util.color(method.cost)}>${method.directCost}&nbsp;</td>
+    <td class="score" ${util.color(package.cost)}><a href="${package.name}.html"><tt>${package.name}</tt></a></td>
+    <td class="score" ${util.color(package.cost)}>${package.cost}&nbsp;</td>
   </tr>
-  </#list>
-</table>
-<br>
-<table class="source" cellspacing="0" cellpadding="0">
-  <tr>
-    <td class="head">Line&nbsp;No:</td>
-    <td class="head">Cost</td>
-    <td class="head">Source Code</td>
-  </tr>
-  <#list source.lines as line>
-    <#list line.methodCosts as method>
-      <tr>
-        <td class="ln"><a name="${line.lineNumber}"/>&nbsp;</td>
-        <td nowrap class="summary" ${util.color(method.totalCost.overall)}>${method.totalCost}&nbsp;</td>
-        <td nowrap class="summary" ${util.color(method.totalCost.overall)}>${util.code(method.methodName)}<br>
-          Total ${method.totalCost}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Direct ${method.cost}&nbsp;
-        </td>
-  </tr>
-    </#list>
-    <tr>
-      <td class="ln"><a name="${line.lineNumber}"/>${line.lineNumber}</td>
-      <td nowrap class="score">${line.score}&nbsp;</td>
-      <td nowrap class="code">${util.code(line.text)}&nbsp;</td>
-    </tr>
   </#list>
 </table>
 <#include "Footer.html">
