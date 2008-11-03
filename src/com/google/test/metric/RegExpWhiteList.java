@@ -39,11 +39,7 @@ public class RegExpWhiteList implements WhiteList {
 
   public RegExpWhiteList(String... regexps) {
     for (String regExp : regexps) {
-      if (regExp.startsWith("!")) {
-        patterns.add(new NotPredicate(regExp.substring(1)));
-      } else {
-        patterns.add(new Predicate(regExp));
-      }
+      addPackage(regExp);
     }
   }
 
@@ -56,8 +52,12 @@ public class RegExpWhiteList implements WhiteList {
     return false;
   }
 
-  public void addPackage(String regexp) {
-    patterns.add(new Predicate(regexp));
+  public void addPackage(String regExp) {
+    if (regExp.startsWith("!")) {
+      patterns.add(new NotPredicate(regExp.substring(1)));
+    } else {
+      patterns.add(new Predicate(regExp));
+    }
   }
 
 }

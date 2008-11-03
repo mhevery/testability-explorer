@@ -15,10 +15,12 @@
  */
 package com.google.test.metric.report;
 
+import com.google.test.metric.WeightedAverage;
+
 public class ProjectReport extends SummaryGraphReport<SummaryGraphReport.Unit> {
 
-  public ProjectReport(String projectName, GradeCategories grades) {
-    super(projectName, grades);
+  public ProjectReport(String projectName, GradeCategories grades, WeightedAverage average) {
+    super(projectName, grades, average);
   }
 
   public void addProject(String pacakgeName, int cost) {

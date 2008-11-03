@@ -15,11 +15,13 @@
  */
 package com.google.test.metric.report;
 
+import com.google.test.metric.WeightedAverage;
 
 public class PackageReport extends SummaryGraphReport<SummaryGraphReport.Unit> {
 
-  public PackageReport(String packageName, GradeCategories grades) {
-    super(packageName, grades);
+  public PackageReport(String packageName, GradeCategories grades,
+      WeightedAverage average) {
+    super(packageName, grades, average);
   }
 
   public void addClass(String className, int cost) {

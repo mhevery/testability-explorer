@@ -17,11 +17,14 @@ package com.google.test.metric.report;
 
 import java.util.ArrayList;
 
+import com.google.test.metric.WeightedAverage;
+
 public abstract class SummaryGraphReport<T extends SummaryGraphReport.Unit> {
 
   public static class Unit {
     private final int cost;
     private final String name;
+
     public Unit(String name, int cost) {
       this.name = name;
       this.cost = cost;
@@ -38,13 +41,15 @@ public abstract class SummaryGraphReport<T extends SummaryGraphReport.Unit> {
 
   private final GradeCategories grades;
   private final ArrayList<Integer> costs = new ArrayList<Integer>();
-  protected final ArrayList<Unit> unitCosts = new ArrayList<Unit>();
-  private int overallCost;
+  private final ArrayList<Unit> unitCosts = new ArrayList<Unit>();
+  private final WeightedAverage average;
   private final String name;
 
-  public SummaryGraphReport(String name, GradeCategories grades) {
+
+  public SummaryGraphReport(String name, GradeCategories grades, WeightedAverage average) {
     this.name = name;
     this.grades = grades;
+    this.average = average;
   }
 
   public String getName() {
@@ -52,24 +57,34 @@ public abstract class SummaryGraphReport<T extends SummaryGraphReport.Unit> {
   }
 
   public void addUnit(T unit) {
+    int cost = unit.getCost();
     unitCosts.add(unit);
-    costs.add(unit.getCost());
+    costs.add(cost);
+    average.addValue(cost);
   }
 
   public ArrayList<Unit> getUnitCosts() {
     return unitCosts;
   }
 
-  public int getOverallCost(){
-    return overallCost;
-  }
-
-  public void setOverallCost(int overallCost) {
-    this.overallCost = overallCost;
+  public int getOverallCost() {
+    return (int) average.getAverage();
   }
 
   public int getCount() {
     return unitCosts.size();
+  }
+
+  public double getExcellentPercent() {
+    return getCount() == 0 ? 0 : getExcellentCount() / getCount();
+  }
+
+  public double getGoodPercent() {
+    return getCount() == 0 ? 0 : getExcellentCount() / getCount();
+  }
+
+  public double getNeedsWorkPercent() {
+    return getCount() == 0 ? 0 : getExcellentCount() / getCount();
   }
 
   public int getExcellentCount() {

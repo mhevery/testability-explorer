@@ -58,13 +58,4 @@ public class CostModel {
     return (int) average.getAverage();
   }
 
-  public int computeOverall(List<ClassCost> classes) {
-    WeightedAverage average = new WeightedAverage(
-        WEIGHT_TO_EMPHASIZE_EXPENSIVE_METHODS);
-    for (ClassCost classCost : classes) {
-      average.addValue(classCost.getOverallCost());
-    }
-    return (int) average.getAverage();
-  }
-
 }

@@ -30,15 +30,15 @@
   </tr>
   <tr>
     <td class="metric">&nbsp;&nbsp;&nbsp;Excelent:</td>
-    <td class="score" style="background-color:#00FF00">${excellentCount} [${(excellentCount/(count))?string.percent}]</td>
+    <td class="score" style="background-color:#00FF00">${excellentCount} [${(excellentPercent)?string.percent}]</td>
   </tr>
   <tr>
     <td class="metric">&nbsp;&nbsp;&nbsp;Good:</td>
-    <td class="score" style="background-color:#FFFF00">${goodCount} [${(goodCount/(count))?string.percent}]</td>
+    <td class="score" style="background-color:#FFFF00">${goodCount} [${(goodPercent)?string.percent}]</td>
   </tr>
   <tr>
     <td class="metric">&nbsp;&nbsp;&nbsp;Needs work:</td>
-    <td class="score" style="background-color:#FF0000">${needsWorkCount} [${(needsWorkCount/(count))?string.percent}]</td>
+    <td class="score" style="background-color:#FF0000">${needsWorkCount} [${(needsWorkPercent)?string.percent}]</td>
   </tr>
   <tr>
     <td class="score">&nbsp;</td>
@@ -55,8 +55,8 @@
   <#list unitCosts?sort_by("cost") as method>
   <tr>
     <td class="score" ${util.color(method.cost)}><a href="#${method.lineNumber}"><tt>${method.name}</tt></a></td>
-    <td class="score" ${util.color(method.cost)}>${method.totalCost}&nbsp;</td>
-    <td class="score" ${util.color(method.cost)}>${method.directCost}&nbsp;</td>
+    <td nowrap class="score" ${util.color(method.cost)}>${method.totalCost}&nbsp;</td>
+    <td nowrap class="score" ${util.color(method.cost)}>${method.directCost}&nbsp;</td>
   </tr>
   </#list>
 </table>

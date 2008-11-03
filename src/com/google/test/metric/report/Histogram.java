@@ -37,6 +37,9 @@ public class Histogram {
   }
 
   private int bin(int value) {
+    if (binWidth == 0) {
+      return 0;
+    }
     return ((value - min) / binWidth);
   }
 
