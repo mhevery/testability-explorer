@@ -35,9 +35,6 @@ public class MethodCost {
    *          name of the method, such as {@code void myMethod()}.
    * @param lineNumber
    *          line number
-   * @param cyclomaticCost
-   *          complexity cost for this method, alone. Later the costs of the
-   *          other methods that this method calls will be added.
    */
   public MethodCost(String methodName, int lineNumber) {
     this.methodName = methodName;

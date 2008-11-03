@@ -43,7 +43,7 @@ public class Source {
     }
 
     public String getScore() {
-      return cost.toString();
+      return cost.toHtmlReportString();
     }
 
     public void addCost(Cost cost) {

@@ -39,8 +39,7 @@ public class ClassSourceReportTest extends TestCase {
   ClassRepository repo = new JavaClassRepository();
   MetricComputer computer = new MetricComputer(repo, null, new RegExpWhiteList(
       "!com.google"), new CostModel());
-  ClassCost classCost = computer.compute(repo.getClass(Testability.class
-      .getName()));
+  ClassCost classCost = computer.compute(repo.getClass(Testability.class.getName()));
 
   public void testDumpClassToHtmlFile() throws Exception {
     ClassReport classReport = report.createClassReport(classCost);
