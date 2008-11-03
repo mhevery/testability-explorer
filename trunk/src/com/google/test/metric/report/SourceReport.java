@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,7 +51,7 @@ public class SourceReport implements Report {
   private final ProjectReport projectByPackageReport;
 
   public SourceReport(GradeCategories grades, SourceLoader sourceLoader,
-      File outputDirectory) {
+      File outputDirectory, Date currentTime) {
     this.grades = grades;
     this.sourceLoader = sourceLoader;
     this.directory = outputDirectory;
@@ -61,6 +62,7 @@ public class SourceReport implements Report {
     try {
       cfg.setSharedVariable("maxExcellentCost", grades.getMaxExcellentCost());
       cfg.setSharedVariable("maxAcceptableCost", grades.getMaxAcceptableCost());
+      cfg.setSharedVariable("currentTime", currentTime);
     } catch (TemplateModelException e) {
       throw new RuntimeException(e);
     }

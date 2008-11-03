@@ -16,6 +16,7 @@
 package com.google.test.metric.report;
 
 import java.io.File;
+import java.util.Date;
 
 import junit.framework.TestCase;
 
@@ -46,7 +47,7 @@ public class SourceReportTest extends TestCase {
   public void testCreateSourceReport() throws Exception {
     ClassPath classPath = new DirectoryClassPath(new File("src-test"));
     SourceLoader loader = new SourceLoader(classPath);
-    SourceReport report = new SourceReport(new GradeCategories(0, 0), loader, null);
+    SourceReport report = new SourceReport(new GradeCategories(0, 0), loader, null, new Date());
     MetricComputer computer = new MetricComputer(new JavaClassRepository(), null, new RegExpWhiteList(), new CostModel());
     ClassCost classCost = computer.compute(TestClass.class.getName());
 
