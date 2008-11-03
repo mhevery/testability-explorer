@@ -18,17 +18,13 @@ package com.google.test.metric.report;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
-import java.util.Arrays;
-import java.util.List;
 
 import junit.framework.TestCase;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.DirectoryClassPath;
 import com.google.test.metric.ClassCost;
-import com.google.test.metric.ClassInfo;
 import com.google.test.metric.ClassRepository;
-import com.google.test.metric.Cost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MetricComputer;
@@ -63,7 +59,7 @@ public class ClassSourceReportTest extends TestCase {
     cfg.setSharedVariable("maxAcceptableCost", maxAcceptableCost);
   }
 
-  public void testDumpSourceToHtmlFile() throws Exception {
+  public void testDumpClassToHtmlFile() throws Exception {
     ClassReport classReport = report.createClassReport(classCost);
     Template template = cfg.getTemplate("Class.html");
     FileOutputStream os = new FileOutputStream("Class.html");
@@ -74,19 +70,29 @@ public class ClassSourceReportTest extends TestCase {
   }
 
   public void testDumpPackageToHtmlFile() throws Exception {
-    List<ClassCost> classCosts = Arrays.asList(
-        computer.compute(Testability.class.getName()),
-        computer.compute(ClassCost.class.getName()),
-        computer.compute(ClassInfo.class.getName()),
-        computer.compute(Cost.class.getName())
-        );
-    PackageReport pacakgeReport = new PackageReport(Testability.class
-        .getPackage().getName(), classCosts, grades, new CostModel());
+    PackageReport packageReport = new PackageReport(Testability.class
+        .getPackage().getName(), grades);
+    packageReport.addClass("a.b.C", 30);
+    packageReport.addClass("a.b.D", 80);
+    packageReport.addClass("a.b.E", 130);
     Template template = cfg.getTemplate("Package.html");
     FileOutputStream os = new FileOutputStream("Package.html");
     OutputStreamWriter out = new OutputStreamWriter(os);
 
-    template.process(pacakgeReport, out);
+    template.process(packageReport, out);
+    out.close();
+  }
+
+  public void testDumpProjectToHtmlFile() throws Exception {
+    ProjectReport projectReport = new ProjectReport("", grades);
+    projectReport.addProject("a.b.c", 30);
+    projectReport.addProject("a.b.d", 80);
+    projectReport.addProject("a.b.e", 130);
+    Template template = cfg.getTemplate("Project.html");
+    FileOutputStream os = new FileOutputStream("Project.html");
+    OutputStreamWriter out = new OutputStreamWriter(os);
+
+    template.process(projectReport, out);
     out.close();
   }
 

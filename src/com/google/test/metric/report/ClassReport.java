@@ -15,74 +15,52 @@
  */
 package com.google.test.metric.report;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.test.metric.Cost;
 
-import com.google.test.metric.ClassCost;
-import com.google.test.metric.MethodCost;
 
-public class ClassReport {
+public class ClassReport extends SummaryGraphReport<ClassReport.MethodUnit> {
+
+  public static class MethodUnit extends Unit {
+
+    private final int lineNumber;
+    private final Cost totalCost;
+    private final Cost directCost;
+
+    public MethodUnit(String methodName, int lineNumber, Cost totalCost,
+        Cost directCost) {
+      super(methodName, totalCost.getOverall());
+      this.lineNumber = lineNumber;
+      this.totalCost = totalCost;
+      this.directCost = directCost;
+    }
+
+    public int getLineNumber() {
+      return lineNumber;
+    }
+
+    public Cost getTotalCost() {
+      return totalCost;
+    }
+
+    public Cost getDirectCost() {
+      return directCost;
+    }
+  }
 
   private final Source source;
-  private final ClassCost classCost;
-  private final GradeCategories grades;
-  private ArrayList<Integer> costs;
 
-  public ClassReport(Source source, ClassCost classCost, GradeCategories grades) {
+  public ClassReport(String name, Source source, GradeCategories grades) {
+    super(name, grades);
     this.source = source;
-    this.classCost = classCost;
-    this.grades = grades;
   }
 
   public Source getSource() {
     return source;
   }
 
-  public ClassCost getClassCost() {
-    return classCost;
+  public void addMethod(String methodName, int lineNumber,
+      Cost totalCost, Cost directCost) {
+    addUnit(new MethodUnit(methodName, lineNumber, totalCost, directCost));
   }
 
-  public int getOverallCost() {
-    return classCost.getOverallCost();
-  }
-
-  public String getOverallCostChart() {
-    GoodnessChart chart = grades.createOverallChart(getOverallCost());
-    chart.setSize(150, 50);
-    return chart.getHtml();
-  }
-
-  public int getExcellentCount() {
-    return grades.getExcellentCount(getMethodCosts());
-  }
-
-  public int getGoodCount() {
-    return grades.getGoodCount(getMethodCosts());
-  }
-
-  public int getNeedsWorkCount() {
-    return grades.getNeedsWorkCount(getMethodCosts());
-  }
-
-  public String getDistributionChart() {
-    List<Integer> costs = getMethodCosts();
-    PieChartUrl chart = grades.createDistributionChart(costs);
-    chart.setSize(280, 50);
-    return chart.getHtml();
-  }
-
-  public String getHistogramChart() {
-    List<Integer> costs = getMethodCosts();
-    return grades.createHistogram(400, 100, costs).getHtml();
-  }
-
-  public List<Integer> getMethodCosts() {
-    if (costs == null) {
-      costs = new ArrayList<Integer>();
-      for (MethodCost methodCost : classCost.getMethods()) {
-        costs.add(methodCost.getOverallCost());
-      }
-    }
-    return costs;
-  }
 }

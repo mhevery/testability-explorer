@@ -15,15 +15,14 @@
  */
 package com.google.test.metric.report;
 
+public class ProjectReport extends SummaryGraphReport<SummaryGraphReport.Unit> {
 
-public class PackageReport extends SummaryGraphReport<SummaryGraphReport.Unit> {
-
-  public PackageReport(String packageName, GradeCategories grades) {
-    super(packageName, grades);
+  public ProjectReport(String projectName, GradeCategories grades) {
+    super(projectName, grades);
   }
 
-  public void addClass(String className, int cost) {
-    addUnit(new Unit(className, cost));
+  public void addProject(String pacakgeName, int cost) {
+    addUnit(new Unit(pacakgeName, cost));
   }
 
 }

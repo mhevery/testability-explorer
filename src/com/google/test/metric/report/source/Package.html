@@ -2,11 +2,11 @@
   <style type="text/css">
 <#include "te.css"/>
   </style>
-  <title>Testability Explorer Report for package: ${packageName}</title>
+  <title>Testability Explorer Report for package: ${name}</title>
 <#import "Macro.ftl" as util>
 <body>
 <#include "Header.html">
-<h2>Package: <tt>${packageName}</tt></h2>
+<h2>Package: <tt>${name}</tt></h2>
 <table class="source" cellspacing="0" cellpadding="0">
   <tr>
     <td class="head" width="100">Metric:</td>
@@ -25,20 +25,20 @@
   </tr>
   <tr>
     <td class="metric">Class(s) count:</td>
-    <td class="score">${packageCosts?size}</td>
+    <td class="score">${count}</td>
     <td rowspan="5" align="center" class="score" style="border-right:none">${distributionChart}</td>
   </tr>
   <tr>
     <td class="metric">&nbsp;&nbsp;&nbsp;Excelent:</td>
-    <td class="score" style="background-color:#00FF00">${excellentCount} [${(excellentCount/(packageCosts?size))?string.percent}]</td>
+    <td class="score" style="background-color:#00FF00">${excellentCount} [${(excellentCount/(count))?string.percent}]</td>
   </tr>
   <tr>
     <td class="metric">&nbsp;&nbsp;&nbsp;Good:</td>
-    <td class="score" style="background-color:#FFFF00">${goodCount} [${(goodCount/(packageCosts?size))?string.percent}]</td>
+    <td class="score" style="background-color:#FFFF00">${goodCount} [${(goodCount/(count))?string.percent}]</td>
   </tr>
   <tr>
     <td class="metric">&nbsp;&nbsp;&nbsp;Needs work:</td>
-    <td class="score" style="background-color:#FF0000">${needsWorkCount} [${(needsWorkCount/(packageCosts?size))?string.percent}]</td>
+    <td class="score" style="background-color:#FF0000">${needsWorkCount} [${(needsWorkCount/(count))?string.percent}]</td>
   </tr>
   <tr>
     <td class="score">&nbsp;</td>
@@ -48,13 +48,13 @@
 <br>
 <table class="source" cellspacing="0" cellpadding="0">
   <tr>
-    <td class="head">Class</td>
-    <td class="head">Total Cost</td>
+    <td class="head">Class:</td>
+    <td class="head">Cost:</td>
   </tr>
-  <#list classCosts?sort_by("overallCost") as class>
+  <#list unitCosts?sort_by("cost") as class>
   <tr>
-    <td class="score" ${util.color(class.overallCost)}><a href="${class.className}.html"><tt>${class.className}</tt></a></td>
-    <td class="score" ${util.color(class.overallCost)}>${class.overallCost}&nbsp;</td>
+    <td class="score" ${util.color(class.cost)}><a href="${class.name}.html"><tt>${class.name}</tt></a></td>
+    <td class="score" ${util.color(class.cost)}>${class.cost}&nbsp;</td>
   </tr>
   </#list>
 </table>
