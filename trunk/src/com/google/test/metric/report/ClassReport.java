@@ -16,6 +16,7 @@
 package com.google.test.metric.report;
 
 import com.google.test.metric.Cost;
+import com.google.test.metric.WeightedAverage;
 
 
 public class ClassReport extends SummaryGraphReport<ClassReport.MethodUnit> {
@@ -49,8 +50,8 @@ public class ClassReport extends SummaryGraphReport<ClassReport.MethodUnit> {
 
   private final Source source;
 
-  public ClassReport(String name, Source source, GradeCategories grades) {
-    super(name, grades);
+  public ClassReport(String name, Source source, GradeCategories grades, WeightedAverage average) {
+    super(name, grades, average);
     this.source = source;
   }
 

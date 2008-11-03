@@ -35,6 +35,9 @@ public class SourceLoader {
     name = name.replaceAll("\\$.*", "");
     String resource = name.replace(".", "/") + ".java";
     InputStream is = classPath.getResourceAsStream(resource);
+    if (is == null) {
+      return new Source(new ArrayList<Source.Line>());
+    }
     BufferedReader reader = new BufferedReader(new InputStreamReader(is));
     ArrayList<Source.Line> lines = new ArrayList<Source.Line>();
     String line;

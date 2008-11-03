@@ -24,8 +24,10 @@ import java.util.Map;
 
 import com.google.classpath.ClassPathFactory;
 import com.google.test.metric.ClassCost;
+import com.google.test.metric.CostModel;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.ViolationCost;
+import com.google.test.metric.WeightedAverage;
 import com.google.test.metric.report.Source.Line;
 
 import freemarker.template.Configuration;
@@ -41,7 +43,6 @@ public class SourceReport implements Report {
   private final GradeCategories grades;
   private final File directory;
   private final Configuration cfg;
-  private ProjectReport projectReport;
   private final Map<String, PackageReport> packageReports = new HashMap<String, PackageReport>();
 
   public SourceReport(GradeCategories grades, SourceLoader sourceLoader,
@@ -66,8 +67,9 @@ public class SourceReport implements Report {
   }
 
   public void printFooter() {
-    projectReport = new ProjectReport("index", grades);
+    ProjectReport projectReport = new ProjectReport("index", grades, new WeightedAverage());
     for (PackageReport packageReport : packageReports.values()) {
+      projectReport.addProject(packageReport.getName(), packageReport.getOverallCost());
       write("Package.html", packageReport);
     }
     write("Project.html", projectReport);
@@ -79,7 +81,8 @@ public class SourceReport implements Report {
     String packageName = classCost.getPackageName();
     PackageReport packageReport = packageReports.get(packageName);
     if (packageReport == null) {
-      packageReport = new PackageReport(packageName, grades);
+      packageReport = new PackageReport(packageName, grades,
+          new WeightedAverage());
       packageReports.put(packageName, packageReport);
     }
     packageReport
@@ -108,7 +111,8 @@ public class SourceReport implements Report {
   ClassReport createClassReport(ClassCost classCost) {
     Source source = sourceLoader.load(classCost.getClassName());
     ClassReport classReport = new ClassReport(classCost.getClassName(), source,
-        grades);
+        grades, new WeightedAverage(
+            CostModel.WEIGHT_TO_EMPHASIZE_EXPENSIVE_METHODS));
     for (MethodCost method : classCost.getMethods()) {
       classReport.addMethod(method.getMethodName(), method
           .getMethodLineNumber(), method.getTotalCost(), method.getCost());
@@ -119,7 +123,6 @@ public class SourceReport implements Report {
         line.addCost(violation.getCost());
       }
     }
-    classReport.setOverallCost(classCost.getOverallCost());
     return classReport;
   }
 }

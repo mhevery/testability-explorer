@@ -39,4 +39,10 @@ public class SourceLoaderTest extends TestCase {
     Source source = loader.load(InnerClass.class.getName());
     assertEquals(" * Copyright 2007 Google Inc.", source.getLine(2).getText());
   }
+
+  public void testNonExistantSource() throws Exception {
+    SourceLoader loader = new SourceLoader(classPath);
+    Source source = loader.load("X-I don't exist-X");
+    assertNotNull(source);
+  }
 }

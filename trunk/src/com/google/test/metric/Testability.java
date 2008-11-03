@@ -34,10 +34,13 @@ import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 import com.google.test.metric.report.DetailHtmlReport;
 import com.google.test.metric.report.DrillDownReport;
+import com.google.test.metric.report.GradeCategories;
 import com.google.test.metric.report.HtmlReport;
 import com.google.test.metric.report.PropertiesReport;
 import com.google.test.metric.report.Report;
 import com.google.test.metric.report.SourceLinker;
+import com.google.test.metric.report.SourceLoader;
+import com.google.test.metric.report.SourceReport;
 import com.google.test.metric.report.TextReport;
 import com.google.test.metric.report.XMLReport;
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
@@ -77,6 +80,7 @@ public class Testability {
 
   @Option(name = "-print", usage = "summary: (default) print package summary information.\n"
       + "html: print package summary information in html format.\n"
+      + "source: write out annotated source into directory.\n"
       + "detail: print detail drill down information for each method call.\n"
       + "xml: print computer readable XML format.")
   String printer = "summary";
@@ -94,14 +98,12 @@ public class Testability {
   @Option(name = "-maxLineCount", usage = "max number of lines in method to print in html summary")
   int maxLineCount = 10;
 
-  @Option(name = "cyclomatic", metaVar = "cyclomatic cost multiplier",
-          usage = "When computing the overall cost of the method the "
+  @Option(name = "cyclomatic", metaVar = "cyclomatic cost multiplier", usage = "When computing the overall cost of the method the "
       + "individual costs are added using weighted average. "
       + "This represents the weight of the cyclomatic cost.")
   double cyclomaticMultiplier = 1;
 
-  @Option(name = "global", metaVar = "global state cost multiplier",
-         usage = "When computing the overall cost of the method the "
+  @Option(name = "global", metaVar = "global state cost multiplier", usage = "When computing the overall cost of the method the "
       + "individual costs are added using weighted average. "
       + "This represents the weight of the global state cost.")
   double globalMultiplier = 10;
@@ -183,14 +185,17 @@ public class Testability {
     } else if (printer.equals("props")) {
       report = new PropertiesReport(out, maxExcellentCost, maxAcceptableCost,
           worstOffenderCount);
+    } else if (printer.equals("source")) {
+      report = new SourceReport(new GradeCategories(maxExcellentCost,
+          maxAcceptableCost), new SourceLoader(classpath), new File("te-report"));
     } else if (printer.equals("xml")) {
       XMLSerializer xmlSerializer = new XMLSerializer();
       xmlSerializer.setOutputByteStream(out);
       OutputFormat format = new OutputFormat();
       format.setIndenting(true);
       xmlSerializer.setOutputFormat(format);
-      report = new XMLReport(xmlSerializer, maxExcellentCost, maxAcceptableCost,
-          worstOffenderCount);
+      report = new XMLReport(xmlSerializer, maxExcellentCost,
+          maxAcceptableCost, worstOffenderCount);
     } else {
       throw new CmdLineException("Don't understand '-print' option '" + printer
           + "'");
@@ -206,7 +211,7 @@ public class Testability {
   }
 
   private RegExpWhiteList getWhiteList() {
-    for (String packageName : wl == null ? new String[]{} : wl.split(":")) {
+    for (String packageName : wl == null ? new String[] {} : wl.split("[,:]")) {
       whitelist.addPackage(packageName);
     }
 
@@ -218,7 +223,8 @@ public class Testability {
   }
 
   private List<String> getTemplates() {
-    List<String> templates = new ArrayList<String>(asList(templatesStr.split(":")));
+    List<String> templates = new ArrayList<String>(asList(templatesStr
+        .split(":")));
     if (templates.isEmpty()) {
       templates.add("");
       templates.add("");

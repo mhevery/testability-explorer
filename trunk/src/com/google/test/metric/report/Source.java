@@ -76,7 +76,12 @@ public class Source {
   }
 
   public Line getLine(int line) {
-    return lines.get(Math.max(0, line - 1));
+    line = Math.max(1, line);
+    line = Math.min(lines.size(), line);
+    if (lines.size() == 0) {
+      return new Line(0, "");
+    }
+    return lines.get(line - 1);
   }
 
   public List<Line> getLines() {

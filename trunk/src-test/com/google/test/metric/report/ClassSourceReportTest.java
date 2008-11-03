@@ -28,6 +28,7 @@ import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MetricComputer;
 import com.google.test.metric.RegExpWhiteList;
 import com.google.test.metric.Testability;
+import com.google.test.metric.WeightedAverage;
 
 public class ClassSourceReportTest extends TestCase {
 
@@ -48,7 +49,7 @@ public class ClassSourceReportTest extends TestCase {
 
   public void testDumpPackageToHtmlFile() throws Exception {
     PackageReport packageReport = new PackageReport(Testability.class
-        .getPackage().getName(), grades);
+        .getPackage().getName(), grades, new WeightedAverage());
     packageReport.addClass("a.b.C", 30);
     packageReport.addClass("a.b.D", 80);
     packageReport.addClass("a.b.E", 130);
@@ -56,7 +57,7 @@ public class ClassSourceReportTest extends TestCase {
   }
 
   public void testDumpProjectToHtmlFile() throws Exception {
-    ProjectReport projectReport = new ProjectReport("", grades);
+    ProjectReport projectReport = new ProjectReport("", grades, new WeightedAverage());
     projectReport.addProject("a.b.c", 30);
     projectReport.addProject("a.b.d", 80);
     projectReport.addProject("a.b.e", 130);
