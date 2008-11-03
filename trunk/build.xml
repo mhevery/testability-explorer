@@ -138,6 +138,6 @@
 
 	<target name="build-explorer" depends="clean,coverage,dist,report" />
 
-	<target name="build" depends="clean,coverage,dist,ant">
+	<target name="build" depends="clean,coverage,dist,ant,report">
 	</target>
 </project>
