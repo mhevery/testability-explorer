@@ -20,7 +20,7 @@ import com.google.test.metric.Cost;
 
 public class ClassReport extends SummaryGraphReport<ClassReport.MethodUnit> {
 
-  public static class MethodUnit extends Unit {
+  public static class MethodUnit extends SummaryGraphReport.Unit {
 
     private final int lineNumber;
     private final Cost totalCost;
