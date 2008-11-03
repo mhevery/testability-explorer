@@ -1,12 +1,12 @@
 /*
  * Copyright 2007 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -22,16 +22,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import com.google.classpath.ClassPath;
-
 import freemarker.cache.TemplateLoader;
 
 public class ClassPathTemplateLoader implements TemplateLoader {
-  private final ClassPath classPath;
   private final String prefix;
+  private final ClassLoader classLoader = getClass().getClassLoader();
 
-  public ClassPathTemplateLoader(ClassPath classPath, String prefix) {
-    this.classPath = classPath;
+  public ClassPathTemplateLoader(String prefix) {
     this.prefix = prefix;
   }
 
@@ -39,7 +36,7 @@ public class ClassPathTemplateLoader implements TemplateLoader {
   }
 
   public Object findTemplateSource(String name) throws IOException {
-    return classPath.isResource(prefix + name) ? name : null;
+    return classLoader.getResource(prefix + name) == null ? null : name;
   }
 
   public long getLastModified(Object name) {
@@ -47,8 +44,7 @@ public class ClassPathTemplateLoader implements TemplateLoader {
   }
 
   public Reader getReader(Object source, String encoding) throws IOException {
-    InputStream is = classPath.getResourceAsStream(prefix + source);
-    InputStreamReader reader = new InputStreamReader(is, encoding);
-    return reader;
+    InputStream is = classLoader.getResourceAsStream(prefix + source);
+    return new InputStreamReader(is, encoding);
   }
 }

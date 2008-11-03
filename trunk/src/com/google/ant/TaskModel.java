@@ -15,7 +15,7 @@ public class TaskModel {
   public static final String DEFAULT_RESULT_FILE = "System.out";
   public static final String DEFAULT_ERROR_FILE = "System.err";
   public static final String DEFAULT_FILTER = "";
-  public static final String DEFAULT_WHITE_LIST = "";
+  public static final String DEFAULT_WHITE_LIST = "IGNORE_ME_WHITELIST";
   public static final int DEFAULT_MAX_ACCEPTABLE_COST = 100;
   public static final int DEFAULT_MAX_EXCELLENT_COST = 50;
   public static final int DEFAULT_WORST_OFFENDER_COUNT = 20;
