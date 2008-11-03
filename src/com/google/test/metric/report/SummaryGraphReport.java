@@ -16,12 +16,14 @@
 package com.google.test.metric.report;
 
 import java.util.ArrayList;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.google.test.metric.WeightedAverage;
 
 public abstract class SummaryGraphReport<T extends SummaryGraphReport.Unit> {
 
-  public static class Unit {
+  public static class Unit implements Comparable<Unit>{
     private final int cost;
     private final String name;
 
@@ -37,11 +39,15 @@ public abstract class SummaryGraphReport<T extends SummaryGraphReport.Unit> {
     public String getName() {
       return name;
     }
+
+    public int compareTo(Unit o) {
+      return o.cost - cost;
+    }
   }
 
   private final GradeCategories grades;
   private final ArrayList<Integer> costs = new ArrayList<Integer>();
-  private final ArrayList<Unit> unitCosts = new ArrayList<Unit>();
+  private final SortedSet<Unit> unitCosts = new TreeSet<Unit>();
   private final WeightedAverage average;
   private final String name;
 
@@ -63,7 +69,7 @@ public abstract class SummaryGraphReport<T extends SummaryGraphReport.Unit> {
     average.addValue(cost);
   }
 
-  public ArrayList<Unit> getUnitCosts() {
+  public SortedSet<Unit> getUnitCosts() {
     return unitCosts;
   }
 
