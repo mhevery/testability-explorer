@@ -21,6 +21,9 @@ import java.util.Map;
 
 public class Cost {
 
+  private static final String COMPLEXITY_COST_HELP_URL = "http://code.google.com/p/testability-explorer/wiki/ComplexityCostExplanation";
+  private static final String GLOBAL_COST_HELP_URL = "http://code.google.com/p/testability-explorer/wiki/GlobalCostExplanation";
+  private static final String LAW_OF_DEMETER_COST_HELP_URL = "http://code.google.com/p/testability-explorer/wiki/LawOfDemeterCostExplanation";
   private int cyclomaticCost;
   private int globalCost;
   private int[] lodDistribution;
@@ -109,6 +112,41 @@ public class Cost {
     if (loDSum > 0) {
       builder.append(sep);
       builder.append("LOD: " + loDSum);
+      sep = ", ";
+    }
+    if (overall > 0) {
+      builder.append("]");
+    }
+    return builder.toString();
+  }
+
+  // TODO(jwolter): Refactor me so the html presentation representation is outside the Cost class.
+  // Probably this means configure the urls in the template, and take all the cost types directly
+  // in there. Build this string in the templating side of things, rather than in the core Cost
+  // side of things here. But more important first is to write up useful html pages explaining the
+  // costs.
+  public String toHtmlReportString() {
+    StringBuilder builder = new StringBuilder();
+    String sep = "";
+    if (isLinked) {
+      builder.append(sep);
+      builder.append("Cost: " + overall);
+      sep = " [";
+    }
+    if (cyclomaticCost > 0) {
+      builder.append(sep);
+      builder.append("<a href=\"" + COMPLEXITY_COST_HELP_URL + "\">CC: " + cyclomaticCost + "</a>");
+      sep = ", ";
+    }
+    if (globalCost > 0) {
+      builder.append(sep);
+      builder.append("<a href=\"" + GLOBAL_COST_HELP_URL + "\">GC: " + globalCost + "</a>");
+      sep = ", ";
+    }
+    int loDSum = getLoDSum();
+    if (loDSum > 0) {
+      builder.append(sep);
+      builder.append("<a href=\"" + LAW_OF_DEMETER_COST_HELP_URL + "\">LOD: " + loDSum + "</a>");
       sep = ", ";
     }
     if (overall > 0) {
