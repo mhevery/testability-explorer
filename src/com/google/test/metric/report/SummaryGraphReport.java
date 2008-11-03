@@ -112,7 +112,7 @@ public abstract class SummaryGraphReport<T extends SummaryGraphReport.Unit> {
   }
 
   public String getHistogramChart() {
-    return grades.createHistogram(400, 100, costs).getHtml();
+    return grades.createHistogram(500, 100, costs).getHtml();
   }
 
 }
