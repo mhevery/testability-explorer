@@ -61,7 +61,7 @@
     <td class="head">${header}:</td>
     </#list>
   </tr>
-  <#list list?sort_by("cost") as unit>
+  <#list list as unit>
   <tr>
     <td class="score" ${color(unit.cost)}><a href="<#nested unit>"><tt>${unit.name}</tt></a></td>
     <#list keys as key>
