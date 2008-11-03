@@ -115,4 +115,8 @@ public abstract class SummaryGraphReport<T extends SummaryGraphReport.Unit> {
     return grades.createHistogram(500, 100, costs).getHtml();
   }
 
+  public SummaryGraphReport<T> getSelf() {
+    return this;
+  }
+
 }
