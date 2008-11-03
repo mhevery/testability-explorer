@@ -1,11 +1,12 @@
-<html>
-  <style type="text/css">
-<#include "te.css"/>
-  </style>
-  <title>Testability Explorer Report</title>
 <#import "Macro.ftl" as util>
+<html>
+  <head>
+    <link href="te.css" rel="stylesheet" type="text/css">
+    <title>Testability Explorer Report</title>
+  </head>
 <body>
 <#include "Header.html">
+<h3>Summary by Class</h3>
 <table class="source" cellspacing="0" cellpadding="0">
   <tr>
     <td class="head" width="100">Metric:</td>
@@ -14,9 +15,9 @@
   </tr>
   <tr>
     <td class="metric">Project cost:</td>
-    <td class="score" ${util.color(overallCost)}>${overallCost}</td>
-    <td rowspan="2" align="center" class="score" style="border-right:none">${overallCostChart}</td>
-    <td class="score" rowspan="7">${histogramChart}</td>
+    <td class="score" ${util.color(classReport.overallCost)}>${classReport.overallCost}</td>
+    <td rowspan="2" align="center" class="score" style="border-right:none">${classReport.overallCostChart}</td>
+    <td class="score" rowspan="7">${classReport.histogramChart}</td>
   </tr>
   <tr>
     <td class="score">&nbsp;</td>
@@ -24,20 +25,20 @@
   </tr>
   <tr>
     <td class="metric">Class(s) count:</td>
-    <td class="score">${count}</td>
-    <td rowspan="5" align="center" class="score" style="border-right:none">${distributionChart}</td>
+    <td class="score">${classReport.count}</td>
+    <td rowspan="5" align="center" class="score" style="border-right:none">${classReport.distributionChart}</td>
   </tr>
   <tr>
     <td class="metric">&nbsp;&nbsp;&nbsp;Excelent:</td>
-    <td class="score" style="background-color:#00FF00">${excellentCount} [${(excellentPercent)?string.percent}]</td>
+    <td class="score" style="background-color:#00FF00">${classReport.excellentCount} [${(classReport.excellentPercent)?string.percent}]</td>
   </tr>
   <tr>
     <td class="metric">&nbsp;&nbsp;&nbsp;Good:</td>
-    <td class="score" style="background-color:#FFFF00">${goodCount} [${(goodPercent)?string.percent}]</td>
+    <td class="score" style="background-color:#FFFF00">${classReport.goodCount} [${(classReport.goodPercent)?string.percent}]</td>
   </tr>
   <tr>
     <td class="metric">&nbsp;&nbsp;&nbsp;Needs work:</td>
-    <td class="score" style="background-color:#FF0000">${needsWorkCount} [${(needsWorkPercent)?string.percent}]</td>
+    <td class="score" style="background-color:#FF0000">${classReport.needsWorkCount} [${(classReport.needsWorkPercent)?string.percent}]</td>
   </tr>
   <tr>
     <td class="score">&nbsp;</td>
@@ -45,15 +46,70 @@
   </tr>
 </table>
 <br>
+<h3>Summary by Package</h3>
+<table class="source" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="head" width="100">Metric:</td>
+    <td class="head" width="100">Value:</td>
+    <td class="head" colspan="2" width="100%">Chart:</td>
+  </tr>
+  <tr>
+    <td class="metric">Project cost:</td>
+    <td class="score" ${util.color(packageReport.overallCost)}>${packageReport.overallCost}</td>
+    <td rowspan="2" align="center" class="score" style="border-right:none">${packageReport.overallCostChart}</td>
+    <td class="score" rowspan="7">${packageReport.histogramChart}</td>
+  </tr>
+  <tr>
+    <td class="score">&nbsp;</td>
+    <td class="score">&nbsp;</td>
+  </tr>
+  <tr>
+    <td class="metric">Package(s) count:</td>
+    <td class="score">${packageReport.count}</td>
+    <td rowspan="5" align="center" class="score" style="border-right:none">${packageReport.distributionChart}</td>
+  </tr>
+  <tr>
+    <td class="metric">&nbsp;&nbsp;&nbsp;Excelent:</td>
+    <td class="score" style="background-color:#00FF00">${packageReport.excellentCount} [${(packageReport.excellentPercent)?string.percent}]</td>
+  </tr>
+  <tr>
+    <td class="metric">&nbsp;&nbsp;&nbsp;Good:</td>
+    <td class="score" style="background-color:#FFFF00">${packageReport.goodCount} [${(packageReport.goodPercent)?string.percent}]</td>
+  </tr>
+  <tr>
+    <td class="metric">&nbsp;&nbsp;&nbsp;Needs work:</td>
+    <td class="score" style="background-color:#FF0000">${packageReport.needsWorkCount} [${(packageReport.needsWorkPercent)?string.percent}]</td>
+  </tr>
+  <tr>
+    <td class="score">&nbsp;</td>
+    <td class="score">&nbsp;</td>
+  </tr>
+</table>
+<br>
+<h3>Packages</h3>
 <table class="source" cellspacing="0" cellpadding="0">
   <tr>
     <td class="head">Package:</td>
     <td class="head">Cost:</td>
   </tr>
-  <#list unitCosts?sort_by("cost") as package>
+  <#list packageReport.unitCosts?sort_by("cost") as package>
   <tr>
     <td class="score" ${util.color(package.cost)}><a href="${package.name}.html"><tt>${package.name}</tt></a></td>
     <td nowrap class="score" ${util.color(package.cost)}>${package.cost}&nbsp;</td>
+  </tr>
+  </#list>
+</table>
+<br>
+<h3>Classes</h3>
+<table class="source" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="head">Class:</td>
+    <td class="head">Cost:</td>
+  </tr>
+  <#list classReport.unitCosts?sort_by("cost") as class>
+  <tr>
+    <td class="score" ${util.color(class.cost)}><a href="${class.name}.html"><tt>${class.name}</tt></a></td>
+    <td nowrap class="score" ${util.color(class.cost)}>${class.cost}&nbsp;</td>
   </tr>
   </#list>
 </table>

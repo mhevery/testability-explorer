@@ -27,7 +27,7 @@ import static java.lang.Math.min;
 import java.util.List;
 
 public class GradeCategories {
-  private static final int MAX_HISTOGRAM_BINS = 100;
+  private static final int MAX_HISTOGRAM_BINS = 30;
   private static final int HISTOGRAM_LEGEND_WIDTH = 130;
   private final int maxExcellentCost;
   private final int maxAcceptableCost;

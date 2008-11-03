@@ -18,6 +18,8 @@ package com.google.test.metric.report;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,6 +46,8 @@ public class SourceReport implements Report {
   private final File directory;
   private final Configuration cfg;
   private final Map<String, PackageReport> packageReports = new HashMap<String, PackageReport>();
+  private final ProjectReport projectByClassReport;
+  private final ProjectReport projectByPackageReport;
 
   public SourceReport(GradeCategories grades, SourceLoader sourceLoader,
       File outputDirectory) {
@@ -60,19 +64,41 @@ public class SourceReport implements Report {
     } catch (TemplateModelException e) {
       throw new RuntimeException(e);
     }
+    projectByClassReport = new ProjectReport("index", grades,
+        new WeightedAverage());
+    projectByPackageReport = new ProjectReport("index", grades,
+        new WeightedAverage());
   }
 
   public void printHeader() {
     directory.mkdirs();
+    writeCSS();
+  }
+
+  private void writeCSS() {
+    try {
+      InputStream is = getClass().getResourceAsStream("source/te.css");
+      OutputStream os = new FileOutputStream(new File(directory, "te.css"));
+      int size;
+      byte[] buf = new byte[2048];
+      while((size = is.read(buf))>0) {
+        os.write(buf, 0, size);
+      }
+      os.close();
+      is.close();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   public void printFooter() {
-    ProjectReport projectReport = new ProjectReport("index", grades, new WeightedAverage());
     for (PackageReport packageReport : packageReports.values()) {
-      projectReport.addProject(packageReport.getName(), packageReport.getOverallCost());
+      projectByPackageReport.addPackage(packageReport.getName(), packageReport
+          .getOverallCost());
       write("Package.html", packageReport);
     }
-    write("Project.html", projectReport);
+    write("Project.html", new ProjectSummaryReport(projectByClassReport,
+        projectByPackageReport), new File(directory, "index.html"));
   }
 
   public void addClassCost(ClassCost classCost) {
@@ -94,7 +120,7 @@ public class SourceReport implements Report {
     write(templateName, report, file);
   }
 
-  public void write(String templateName, SummaryGraphReport<?> report, File file) {
+  public void write(String templateName, Object report, File file) {
     try {
       Template template = cfg.getTemplate(templateName);
       FileOutputStream os = new FileOutputStream(file);
@@ -123,6 +149,8 @@ public class SourceReport implements Report {
         line.addCost(violation.getCost());
       }
     }
+    projectByClassReport.addClass(classCost.getClassName(), classReport
+        .getOverallCost());
     return classReport;
   }
 }

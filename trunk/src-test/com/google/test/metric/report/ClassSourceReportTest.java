@@ -34,16 +34,23 @@ public class ClassSourceReportTest extends TestCase {
 
   private final ClassPath classPath = new DirectoryClassPath(new File("src"));
   GradeCategories grades = new GradeCategories(50, 100);
+  File out = new File("test-out");
   SourceReport report = new SourceReport(grades, new SourceLoader(classPath),
-      null);
+      out);
   ClassRepository repo = new JavaClassRepository();
   MetricComputer computer = new MetricComputer(repo, null, new RegExpWhiteList(
       "!com.google"), new CostModel());
-  ClassCost classCost = computer.compute(repo.getClass(Testability.class.getName()));
+  ClassCost classCost = computer.compute(repo.getClass(Testability.class
+      .getName()));
+
+  @Override
+  protected void setUp() throws Exception {
+    report.printHeader();
+  }
 
   public void testDumpClassToHtmlFile() throws Exception {
     ClassReport classReport = report.createClassReport(classCost);
-    report.write("Class.html", classReport, new File("Class.html"));
+    report.write("Class.html", classReport, new File(out, "Class.html"));
   }
 
   public void testDumpPackageToHtmlFile() throws Exception {
@@ -52,15 +59,25 @@ public class ClassSourceReportTest extends TestCase {
     packageReport.addClass("a.b.C", 30);
     packageReport.addClass("a.b.D", 80);
     packageReport.addClass("a.b.E", 130);
-    report.write("Package.html", packageReport, new File("Package.html"));
+    report.write("Package.html", packageReport, new File(out, "Package.html"));
   }
 
   public void testDumpProjectToHtmlFile() throws Exception {
-    ProjectReport projectReport = new ProjectReport("", grades, new WeightedAverage());
-    projectReport.addProject("a.b.c", 30);
-    projectReport.addProject("a.b.d", 80);
-    projectReport.addProject("a.b.e", 130);
-    report.write("Project.html", projectReport, new File("Project.html"));
+    ProjectReport packages = new ProjectReport("", grades,
+        new WeightedAverage());
+    packages.addPackage("a.b.c", 1);
+    packages.addPackage("a.b.d", 51);
+    packages.addPackage("a.b.e", 101);
+    ProjectReport classes = new ProjectReport(Testability.class.getPackage()
+        .getName(), grades, new WeightedAverage());
+    classes.addClass("a.b.C", 30);
+    classes.addClass("a.b.D", 80);
+    classes.addClass("a.b.E", 130);
+    classes.addClass("a.b.F", 13);
+    classes.addClass("a.b.G", 10);
+    classes.addClass("a.b.H", 3);
+    report.write("Project.html", new ProjectSummaryReport(classes, packages),
+        new File(out, "Project.html"));
   }
 
 }
