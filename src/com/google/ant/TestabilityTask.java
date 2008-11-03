@@ -125,7 +125,7 @@ public class TestabilityTask extends Task {
         "-maxExcellentCost", Integer.toString(model.getMaxExcellentCost()),
         "-maxAcceptableCost", Integer.toString(model.getMaxAcceptableCost()),
         "-worstOffenderCount", Integer.toString(model.getWorstOffenderCount()),
-//                "-whitelist", model.getWhiteList(),
+        "-whitelist", model.getWhiteList(),
         "-grouping", model.getGrouing(),
         "-print", model.getPrint()
     );

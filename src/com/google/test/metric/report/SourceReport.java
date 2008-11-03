@@ -25,7 +25,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.classpath.ClassPathFactory;
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.MethodCost;
@@ -56,8 +55,7 @@ public class SourceReport implements Report {
     this.sourceLoader = sourceLoader;
     this.directory = outputDirectory;
     cfg = new Configuration();
-    cfg.setTemplateLoader(new ClassPathTemplateLoader(new ClassPathFactory()
-        .createFromJVM(), PREFIX));
+    cfg.setTemplateLoader(new ClassPathTemplateLoader(PREFIX));
     cfg.setObjectWrapper(new DefaultObjectWrapper());
     try {
       cfg.setSharedVariable("maxExcellentCost", grades.getMaxExcellentCost());

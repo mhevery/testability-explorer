@@ -55,7 +55,7 @@ public class TaskModelTest extends TestCase {
     assertEquals(model.getMaxAcceptableCost(), TaskModel.DEFAULT_MAX_ACCEPTABLE_COST);
   }
 
-  public void testDefaultWorstOffenderCount()  throws Exception {
+  public void testDeafaultWorstOffenderCount()  throws Exception {
     assertEquals(model.getWorstOffenderCount(), -1);
     model.validate(new ArrayList<String>());
     assertEquals(model.getWorstOffenderCount(), TaskModel.DEFAULT_WORST_OFFENDER_COUNT);

@@ -94,7 +94,7 @@
 			<rule pattern="org.koshuke.args4j.**" result="com.google.test.org.koshuke.args4j.@1" />
 			<zipfileset src="lib/asm-3.0.jar" />
 			<rule pattern="org.objectweb.asm.**" result="com.google.test.org.objectweb.asm.@1" />
-			<zipfileset src="lib/classpath-explorer-r7.jar" />
+			<zipfileset src="lib/classpath-explorer-r8.jar" />
 			<zipfileset src="lib/freemarker/freemarker.jar" />
 			<rule pattern="freemarker.**" result="com.google.test.freemarker.@1" />
 		</jarjar>
@@ -119,10 +119,25 @@
 			</fileset>
 		</zip>
 	</target>
-
-	<target name="build-explorer" depends="clean,coverage,dist" />
-
-	<target name="build" depends="clean,coverage,dist">
+	
+	<target name="ant" depends="compile">
 		<ant antfile="task.xml" target="build.task" />
+	</target>
+
+	<target name="report" depends="dist,ant">
+		<taskdef name="testability" classname="com.google.ant.TestabilityTask"
+			classpath="target/dist/${project-name}-${version}-r${revision}.jar;target/dist/ant-${project-name}-${version}-r${revision}.jar" />
+		<testability filter="com.google.test.metric" print="source" 
+			whitelist="com.google.test.org,com.google.test.freemarker,com.google.test.metric.cpp" >
+			<classpath>
+				<pathelement location="target/dist/${project-name}-${version}-r${revision}.jar"/>
+				<pathelement location="src" />
+			</classpath>
+		</testability>
+	</target>
+
+	<target name="build-explorer" depends="clean,coverage,dist,report" />
+
+	<target name="build" depends="clean,coverage,dist,ant">
 	</target>
 </project>
