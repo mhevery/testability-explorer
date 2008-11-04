@@ -23,7 +23,7 @@ import com.google.test.metric.WeightedAverage;
 
 public abstract class SummaryGraphReport<T extends SummaryGraphReport.Unit> {
 
-  public static class Unit implements Comparable<Unit>{
+  public static class Unit implements Comparable<Unit> {
     private final int cost;
     private final String name;
 
@@ -52,8 +52,8 @@ public abstract class SummaryGraphReport<T extends SummaryGraphReport.Unit> {
   private final WeightedAverage average;
   private final String name;
 
-
-  public SummaryGraphReport(String name, GradeCategories grades, WeightedAverage average) {
+  public SummaryGraphReport(String name, GradeCategories grades,
+      WeightedAverage average) {
     this.name = name;
     this.grades = grades;
     this.average = average;
@@ -65,6 +65,15 @@ public abstract class SummaryGraphReport<T extends SummaryGraphReport.Unit> {
 
   public String getName() {
     return name;
+  }
+
+  public String getParent() {
+    int index = name.lastIndexOf(".");
+    if (index > 0) {
+      return name.substring(0, index);
+    } else {
+      return "";
+    }
   }
 
   public void addUnit(T unit) {
