@@ -48,6 +48,7 @@ public abstract class SummaryGraphReport<T extends SummaryGraphReport.Unit> {
   private final GradeCategories grades;
   private final ArrayList<Integer> costs = new ArrayList<Integer>();
   private final SortedSet<Unit> unitCosts = new TreeSet<Unit>();
+  private int maxUnitCosts = Integer.MAX_VALUE;
   private final WeightedAverage average;
   private final String name;
 
@@ -56,6 +57,10 @@ public abstract class SummaryGraphReport<T extends SummaryGraphReport.Unit> {
     this.name = name;
     this.grades = grades;
     this.average = average;
+  }
+
+  public void setMaxUnitCosts(int maxUnitCosts) {
+    this.maxUnitCosts = maxUnitCosts;
   }
 
   public String getName() {
@@ -67,6 +72,9 @@ public abstract class SummaryGraphReport<T extends SummaryGraphReport.Unit> {
     unitCosts.add(unit);
     costs.add(cost);
     average.addValue(cost);
+    if (unitCosts.size() > maxUnitCosts) {
+      unitCosts.remove(unitCosts.last());
+    }
   }
 
   public SortedSet<Unit> getUnitCosts() {
