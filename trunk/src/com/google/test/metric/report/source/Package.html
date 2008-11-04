@@ -6,11 +6,12 @@
   </head>
 <body>
 <#include "Header.html">
+[ <a href="index.html">Project</a> ]
 <h2>Package: <tt>${name}</tt></h2>
 <@util.overview report=self name="Package" listName="Class"/>
 <br>
 <@util.unitList list=unitCosts name="Class"; class>
-${class.name}.html
+class_${class.name}.html
 </@util.unitList>
 <#include "Footer.html">
 </body>

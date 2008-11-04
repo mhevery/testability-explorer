@@ -96,7 +96,7 @@ public class SourceReport implements Report {
     for (PackageReport packageReport : packageReports.values()) {
       projectByPackageReport.addPackage(packageReport.getName(), packageReport
           .getOverallCost());
-      write("Package.html", packageReport);
+      write("Package.html", packageReport, "package_");
     }
     write("Project.html", new ProjectSummaryReport(projectByClassReport,
         projectByPackageReport), new File(directory, "index.html"));
@@ -104,7 +104,7 @@ public class SourceReport implements Report {
 
   public void addClassCost(ClassCost classCost) {
     ClassReport classReport = createClassReport(classCost);
-    write("Class.html", classReport);
+    write("Class.html", classReport, "class_");
     String packageName = classCost.getPackageName();
     PackageReport packageReport = packageReports.get(packageName);
     if (packageReport == null) {
@@ -116,8 +116,8 @@ public class SourceReport implements Report {
         .addClass(classCost.getClassName(), classCost.getOverallCost());
   }
 
-  public void write(String templateName, SummaryGraphReport<?> report) {
-    File file = new File(directory, report.getName() + ".html");
+  public void write(String templateName, SummaryGraphReport<?> report, String prefix) {
+    File file = new File(directory, prefix + report.getName() + ".html");
     write(templateName, report, file);
   }
 
