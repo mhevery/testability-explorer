@@ -188,7 +188,8 @@ public class Testability {
           worstOffenderCount);
     } else if (printer.equals("source")) {
       report = new SourceReport(new GradeCategories(maxExcellentCost,
-          maxAcceptableCost), new SourceLoader(classpath), new File("te-report"), new Date());
+          maxAcceptableCost), new SourceLoader(classpath),
+          new File("te-report"), new Date(), worstOffenderCount);
     } else if (printer.equals("xml")) {
       XMLSerializer xmlSerializer = new XMLSerializer();
       xmlSerializer.setOutputByteStream(out);

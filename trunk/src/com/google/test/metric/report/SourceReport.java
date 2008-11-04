@@ -50,7 +50,7 @@ public class SourceReport implements Report {
   private final ProjectReport projectByPackageReport;
 
   public SourceReport(GradeCategories grades, SourceLoader sourceLoader,
-      File outputDirectory, Date currentTime) {
+      File outputDirectory, Date currentTime, int worstCount) {
     this.grades = grades;
     this.sourceLoader = sourceLoader;
     this.directory = outputDirectory;
@@ -66,6 +66,7 @@ public class SourceReport implements Report {
     }
     projectByClassReport = new ProjectReport("index", grades,
         new WeightedAverage());
+    projectByClassReport.setMaxUnitCosts(worstCount);
     projectByPackageReport = new ProjectReport("index", grades,
         new WeightedAverage());
   }
