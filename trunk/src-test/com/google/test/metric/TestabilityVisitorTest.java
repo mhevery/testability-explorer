@@ -24,6 +24,8 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import com.google.test.metric.TestabilityVisitor.Frame;
+
 public class TestabilityVisitorTest extends TestCase {
 
   final List<Integer> cost1 = Arrays.asList(0);
@@ -134,10 +136,10 @@ public class TestabilityVisitorTest extends TestCase {
   public void testLoDExample() throws Exception {
     ClassInfo clazz = repo.getClass(LoDExample.class.getName());
     MethodInfo methodInfo = clazz.getMethod("assign(Ljava/lang/Object;)V");
-    visitor.applyMethodOperations(methodInfo);
-    assertEquals(0, visitor.getLoDCount(clazz.getField("conforming")));
-    assertEquals(1, visitor.getLoDCount(clazz.getField("violator")));
-    assertEquals(1, visitor.getLoDCount(clazz.getField("transitiveViolator")));
+    Frame frame = visitor.applyMethodOperations(methodInfo);
+    assertEquals(0, frame.getLoDCount(clazz.getField("conforming")));
+    assertEquals(1, frame.getLoDCount(clazz.getField("violator")));
+    assertEquals(1, frame.getLoDCount(clazz.getField("transitiveViolator")));
   }
 
   private static class LoDMultipleSameInvocations {
@@ -152,8 +154,8 @@ public class TestabilityVisitorTest extends TestCase {
   public void testLoDMultipleSameInvocations() throws Exception {
     ClassInfo clazz = repo.getClass(LoDMultipleSameInvocations.class.getName());
     MethodInfo methodInfo = clazz.getMethod(method("execute", Obj.class));
-    visitor.applyMethodOperations(methodInfo);
-    assertEquals(2, visitor.getLoDCount(clazz.getField("plus2")));
+    Frame frame = visitor.applyMethodOperations(methodInfo);
+    assertEquals(2, frame.getLoDCount(clazz.getField("plus2")));
   }
 
   private static class LoDMultipleDifferentInvocations {
@@ -168,8 +170,8 @@ public class TestabilityVisitorTest extends TestCase {
   public void testLoDMultipleDifferentInvocations() throws Exception {
     ClassInfo clazz = repo.getClass(LoDMultipleDifferentInvocations.class.getName());
     MethodInfo methodInfo = clazz.getMethod(method("execute", Obj.class));
-    visitor.applyMethodOperations(methodInfo);
-    assertEquals(2, visitor.getLoDCount(clazz.getField("plus2")));
+    Frame frame = visitor.applyMethodOperations(methodInfo);
+    assertEquals(2, frame.getLoDCount(clazz.getField("plus2")));
     MethodCost methodCost = visitor.getLinkedMethodCost(methodInfo);
     List<LoDViolation> costSources = filterLoD(methodCost.getViolationCosts());
     assertEquals(1, costSources.size());
@@ -219,8 +221,8 @@ public class TestabilityVisitorTest extends TestCase {
   public void testLoDStaticCall() throws Exception {
     ClassInfo clazz = repo.getClass(LoDStaticCall.class.getName());
     MethodInfo methodInfo = clazz.getMethod("execute()V");
-    visitor.applyMethodOperations(methodInfo);
-    assertEquals(1, visitor.getLoDCount(clazz.getField("plus1")));
+    Frame frame = visitor.applyMethodOperations(methodInfo);
+    assertEquals(1, frame.getLoDCount(clazz.getField("plus1")));
   }
 
 }
