@@ -16,12 +16,14 @@
 package com.google.test.metric.cpp;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import junit.framework.TestCase;
 
 import org.apache.tools.ant.filters.StringInputStream;
 
 import com.google.test.metric.ClassInfo;
+import com.google.test.metric.MethodInfo;
 
 public class CppClassRepositoryTest extends TestCase {
 
@@ -40,5 +42,16 @@ public class CppClassRepositoryTest extends TestCase {
         new ArrayList<ClassInfo>());
     repository.addClass(classInfo);
     assertNotNull(repository.getClass("A"));
+  }
+
+  public void testClassWithMethod() throws Exception {
+    CppClassRepository repository = new CppClassRepository();
+    repository.parse(new StringInputStream("class A{ void foo() {} };"));
+    ClassInfo classInfo = repository.getClass("A");
+    assertNotNull(classInfo);
+    assertFalse(classInfo.isInterface());
+    assertEquals(1, classInfo.getMethods().size());
+    Iterator<MethodInfo> it = classInfo.getMethods().iterator();
+    assertEquals("foo", it.next().getName());
   }
 }

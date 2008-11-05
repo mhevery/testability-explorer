@@ -24,14 +24,16 @@ class FunctionDefinitionBuilder extends DefaultBuilder {
 
   private final Node parent;
   private Node node;
+  private final int line;
 
-  public FunctionDefinitionBuilder(Node parent) {
+  public FunctionDefinitionBuilder(Node parent, int line) {
     this.parent = parent;
+    this.line = line;
   }
 
   @Override
   public void functionDirectDeclarator(String name) {
-    node = new FunctionDefinition(name);
+    node = new FunctionDefinition(name, line);
     parent.addChild(node);
   }
 

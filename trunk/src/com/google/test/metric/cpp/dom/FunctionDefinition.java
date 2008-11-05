@@ -18,13 +18,19 @@ package com.google.test.metric.cpp.dom;
 public class FunctionDefinition extends Node {
 
   private final String name;
+  private final int line;
 
-  public FunctionDefinition(String name) {
+  public FunctionDefinition(String name, int line) {
     this.name = name;
+    this.line = line;
   }
 
   public String getName() {
     return name;
+  }
+
+  public int getLine() {
+    return line;
   }
 
   @Override

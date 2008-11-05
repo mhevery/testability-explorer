@@ -77,8 +77,8 @@ class RootBuilder extends DefaultBuilder implements BuilderContext {
   }
 
   @Override
-  public void beginFunctionDefinition() {
-    currentBuilder.beginFunctionDefinition();
+  public void beginFunctionDefinition(int line) {
+    currentBuilder.beginFunctionDefinition(line);
   }
 
   @Override

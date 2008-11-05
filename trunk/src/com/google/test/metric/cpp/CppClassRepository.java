@@ -19,23 +19,55 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 
 import com.google.test.metric.ClassInfo;
 import com.google.test.metric.ClassRepository;
+import com.google.test.metric.LocalVariableInfo;
+import com.google.test.metric.MethodInfo;
+import com.google.test.metric.ParameterInfo;
 import com.google.test.metric.cpp.dom.ClassDeclaration;
+import com.google.test.metric.cpp.dom.FunctionDefinition;
 import com.google.test.metric.cpp.dom.TranslationUnit;
 import com.google.test.metric.cpp.dom.Visitor;
+import com.google.test.metric.method.op.turing.Operation;
 
 public class CppClassRepository implements ClassRepository {
 
   private final Map<String, ClassInfo> classes = new HashMap<String, ClassInfo>();
 
   private class ClassInfoBuilder extends Visitor {
+
+    private final Stack<ClassInfo> stack = new Stack<ClassInfo>();
+
     @Override
     public void beginVisit(ClassDeclaration classDeclaration) {
       ClassInfo classInfo = new ClassInfo(classDeclaration.getName(), false,
           null, new ArrayList<ClassInfo>());
       classes.put(classDeclaration.getName(), classInfo);
+      stack.push(classInfo);
+    }
+
+    @Override
+    public void endVisit(ClassDeclaration classDeclaration) {
+      stack.pop();
+    }
+
+    @Override
+    public void beginVisit(FunctionDefinition functionDefinition) {
+      ClassInfo classInfo = stack.peek();
+      classInfo.addMethod(new MethodInfo(
+          classInfo,
+          functionDefinition.getName(),
+          functionDefinition.getLine(),
+          null,
+          null,
+          new ArrayList<ParameterInfo>(),
+          new ArrayList<LocalVariableInfo>(),
+          null,
+          new ArrayList<Integer>(),
+          new ArrayList<Operation>(),
+          false));
     }
   }
 

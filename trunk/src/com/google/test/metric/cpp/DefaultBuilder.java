@@ -77,7 +77,7 @@ class DefaultBuilder implements Builder {
     throw new UnsupportedOperationException();
   }
 
-  public void beginFunctionDefinition() {
+  public void beginFunctionDefinition(int line) {
     throw new UnsupportedOperationException();
   }
 

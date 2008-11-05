@@ -134,6 +134,16 @@ public class CppParserTest extends TestCase {
     assertEquals("A", classA.getName());
     FunctionDefinition functionFoo = classA.getChild(0);
     assertEquals("foo", functionFoo.getName());
+    assertEquals(1, functionFoo.getLine());
+  }
+
+  public void testFunctionLineNumbers() throws Exception {
+    TranslationUnit unit = parse("class A { void foo() {}\n void\n bar() {} };");
+    ClassDeclaration classA = unit.getChild(0);
+    FunctionDefinition functionFoo = classA.getChild(0);
+    assertEquals(1, functionFoo.getLine());
+    FunctionDefinition functionBar = classA.getChild(1);
+    assertEquals(3, functionBar.getLine());
   }
 
   public void testSimpleFunction() throws Exception {

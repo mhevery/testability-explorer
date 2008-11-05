@@ -47,7 +47,7 @@ class NamespaceBuilder extends DefaultBuilder {
   }
 
   @Override
-  public void beginFunctionDefinition() {
-    pushBuilder(new FunctionDefinitionBuilder(node));
+  public void beginFunctionDefinition(int line) {
+    pushBuilder(new FunctionDefinitionBuilder(node, line));
   }
 }

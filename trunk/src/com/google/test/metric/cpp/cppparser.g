@@ -525,7 +525,7 @@ external_declaration
   |
     // Function definition
     (declaration_specifiers function_declarator LCURLY)=>
-    {b.beginFunctionDefinition();}
+    {b.beginFunctionDefinition(LT(2).getLine());}
     function_definition
     {b.endFunctionDefinition();}
   |
@@ -632,7 +632,7 @@ member_declaration
   |
     // Function definition
     (declaration_specifiers function_declarator LCURLY)=>
-    {b.beginFunctionDefinition();}
+    {b.beginFunctionDefinition(LT(2).getLine());}
     function_definition
     {b.endFunctionDefinition();}
   |
