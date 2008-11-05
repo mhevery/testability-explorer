@@ -36,8 +36,8 @@ class GlobalScopeBuilder extends DefaultBuilder {
   }
 
   @Override
-  public void beginFunctionDefinition() {
-    pushBuilder(new FunctionDefinitionBuilder(parent));
+  public void beginFunctionDefinition(int line) {
+    pushBuilder(new FunctionDefinitionBuilder(parent, line));
   }
 
   @Override

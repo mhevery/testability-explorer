@@ -118,8 +118,9 @@ interface Builder {
 
   /**
    * Signals the begin of a function definition.
+   * @param line
    */
-  void beginFunctionDefinition();
+  void beginFunctionDefinition(int line);
 
   /**
    * Signals the end of a function definition.
