@@ -349,7 +349,7 @@ public class KeyedMultiStack<KEY, VALUE> {
     }
   }
 
-  public void assertEmpty() {
+  void assertEmpty() {
     for (Collection<Entry<VALUE>> entries : head.values()) {
       for (Entry<VALUE> entry : entries) {
         if (entry.depth > -1) {

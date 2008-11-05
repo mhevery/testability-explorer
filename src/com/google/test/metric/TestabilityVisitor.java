@@ -28,10 +28,24 @@ import com.google.test.metric.method.op.turing.Operation;
 
 public class TestabilityVisitor {
 
-  private final Map<Variable, Integer> lodCount = new HashMap<Variable, Integer>();
+  public static class Frame {
+    private final Map<Variable, Integer> lodCount = new HashMap<Variable, Integer>();
+    final MethodCost methodCost;
+    public Frame(MethodCost methodCost) {
+      this.methodCost = methodCost;
+    }
+    public int getLoDCount(FieldInfo variable) {
+      int count = 0;
+      if (lodCount.containsKey(variable)) {
+        count = lodCount.get(variable);
+      }
+      return count;
+    }
+
+  }
+  private final Stack<Frame> callStack = new Stack<Frame>();
   private final Set<Variable> injectables = new HashSet<Variable>();
   private final Set<Variable> statics = new HashSet<Variable>();
-  private final Stack<MethodCost> callStack = new Stack<MethodCost>();
   private final ClassRepository classRepository;
   private final Map<MethodInfo, MethodCost> methodCosts = new HashMap<MethodInfo, MethodCost>();
   private final PrintStream err;
@@ -45,6 +59,7 @@ public class TestabilityVisitor {
     this.err = err;
     this.costModel = costModel;
     this.whitelist = whitelist;
+    callStack.add(new Frame(null));
   }
 
   public MethodInfo getMethod(String clazzName, String methodName) {
@@ -59,7 +74,7 @@ public class TestabilityVisitor {
     if (callStack.isEmpty()) {
       throw new IllegalStateException();
     }
-    return callStack.peek();
+    return callStack.peek().methodCost;
   }
 
   /**
@@ -309,19 +324,20 @@ public class TestabilityVisitor {
   }
 
   public void setLoDCount(Variable value, int newCount) {
+    Map<Variable, Integer> lodCount = callStack.peek().lodCount;
     int count = lodCount.containsKey(value) ? lodCount.get(value) : 0;
     if (count < newCount) {
       lodCount.put(value, newCount);
     }
   }
 
-  public void applyMethodOperations(MethodInfo methodInfo) {
+  public Frame applyMethodOperations(MethodInfo methodInfo) {
     returnValue = null;
-    callStack.push(getMethodCost(methodInfo));
+    callStack.push(new Frame(getMethodCost(methodInfo)));
     for (Operation operation : methodInfo.getOperations()) {
       operation.visit(this);
     }
-    callStack.pop();
+    return callStack.pop();
   }
 
   public int getLoDCount(Variable variable) {
@@ -331,6 +347,7 @@ public class TestabilityVisitor {
     }
 
     int count = 0;
+    Map<Variable, Integer> lodCount = callStack.peek().lodCount;
     if (lodCount.containsKey(variable)) {
       count = lodCount.get(variable);
     }
