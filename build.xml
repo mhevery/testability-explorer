@@ -57,6 +57,7 @@
 				<fileset dir="src-test">
 					<include name="**/*Test.java" />
 					<exclude name="**/*TestCase.java" />
+					<exclude name="com/google/test/metric/PerformanceTest.java" />
 					<exclude name="**/AllTests.java" />
 					<exclude name="**/*TestCase.java" />
 					<exclude name="com/google/ant/**" />
@@ -64,6 +65,14 @@
 			</batchtest>
 		</junit>
 	</target>
+	
+    <target name="testPerf" depends="compile-tests">
+     	<java classname="com.google.test.metric.PerformanceTest">
+			<classpath refid="compile.classpath" />
+			<classpath location="target/bin"/>
+			<classpath location="target/bin-test"/>
+     	</java>
+    </target>
 
 	<target name="coverage" depends="test">
 		<emma>
@@ -138,6 +147,6 @@
 
 	<target name="build-explorer" depends="clean,coverage,dist,report" />
 
-	<target name="build" depends="clean,coverage,dist,ant,report">
+	<target name="build" depends="clean,coverage,dist,ant,report,testPerf">
 	</target>
 </project>
