@@ -35,7 +35,7 @@ public class FieldAssignment extends Operation {
 
   @Override
   public void visit(TestabilityVisitor visitor) {
-    visitor.fieldAssignment(fieldInstance, field, value, getLineNumber());
+    visitor.assignField(fieldInstance, field, value, getLineNumber());
   }
 
   @Override

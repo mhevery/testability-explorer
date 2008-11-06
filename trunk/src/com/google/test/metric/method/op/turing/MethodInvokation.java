@@ -89,7 +89,7 @@ public class MethodInvokation extends Operation {
         // Method can not be intercepted we have to add the cost
         // recursively
         if (toMethod.isInstance()) {
-          visitor.parameterAssignment(toMethod, getLineNumber(), toMethod
+          visitor.assignParameter(toMethod, getLineNumber(), toMethod
               .getMethodThis(), methodThis);
         }
         if (parameters.size() != toMethod.getParameters().size()) {
@@ -98,13 +98,13 @@ public class MethodInvokation extends Operation {
         }
         int i = 0;
         for (Variable var : parameters) {
-          visitor.parameterAssignment(toMethod, getLineNumber(), toMethod
+          visitor.assignParameter(toMethod, getLineNumber(), toMethod
               .getParameters().get(i++), var);
         }
         visitor.recordMethodCall(getLineNumber(), toMethod);
         int thisCount = visitor.getLoDCount(methodThis);
         visitor.recordLoDDispatch(getLineNumber(), toMethod, returnVariable, thisCount + 1);
-        visitor.returnAssignment(toMethod, getLineNumber(), returnVariable);
+        visitor.assignReturnValue(toMethod, getLineNumber(), returnVariable);
       }
     } catch (ClassNotFoundException e) {
       visitor.reportError("WARNING: class not found: " + clazzName);

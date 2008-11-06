@@ -34,7 +34,7 @@ public class ArrayAssignment extends Operation {
 
   @Override
   public void visit(TestabilityVisitor visistor) {
-    visistor.arrayAssignment(array, index, value, getLineNumber());
+    visistor.assignArray(array, index, value, getLineNumber());
   }
 
   @Override
