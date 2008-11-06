@@ -77,7 +77,6 @@ public class MetricComputer {
     addConstructorCost(method, visitor);
     addSetterInjection(method, visitor);
     addFieldCost(method, visitor);
-    visitor.setInjectable(method);
     visitor.applyMethodOperations(method);
     return visitor.getLinkedMethodCost(method);
   }
@@ -89,8 +88,6 @@ public class MetricComputer {
   private void addSetterInjection(MethodInfo baseMethod, TestabilityVisitor visitor) {
     for (MethodInfo setter : baseMethod.getSiblingSetters()) {
       visitor.applyImplicitCost(baseMethod, setter, Reason.IMPLICIT_SETTER);
-      visitor.setInjectable(setter);
-      visitor.applyMethodOperations(setter);
     }
   }
 
@@ -102,8 +99,6 @@ public class MetricComputer {
       MethodInfo constructor = method.getClassInfo().getConstructorWithMostNonPrimitiveParameters();
       if (constructor != null) {
         visitor.applyImplicitCost(method, constructor, Reason.IMPLICIT_CONSTRUCTOR);
-        visitor.setInjectable(constructor);
-        visitor.applyMethodOperations(constructor);
       }
     }
   }
@@ -113,7 +108,7 @@ public class MetricComputer {
       TestabilityVisitor visitor) {
     for (FieldInfo field : method.getClassInfo().getFields()) {
       if (!field.isPrivate()) {
-        visitor.setInjectable(field);
+        visitor.getRootFrame().setInjectable(field);
       }
     }
   }
@@ -126,7 +121,6 @@ public class MetricComputer {
     for (MethodInfo method : baseMethod.getClassInfo().getMethods()) {
       if (method.getName().startsWith("<clinit>")) {
         visitor.applyImplicitCost(baseMethod, method, Reason.IMPLICIT_STATIC_INIT);
-        visitor.applyMethodOperations(method);
       }
     }
   }

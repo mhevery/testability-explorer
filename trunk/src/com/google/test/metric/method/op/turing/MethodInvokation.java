@@ -66,13 +66,13 @@ public class MethodInvokation extends Operation {
   }
 
   @Override
-  public void visit(TestabilityVisitor visitor) {
+  public void visit(TestabilityVisitor.Frame visitor) {
     if (visitor.isClassWhiteListed(clazzName)) {
       return;
     }
     try {
       MethodInfo toMethod = visitor.getMethod(clazzName, name + signature);
-      if (visitor.methodAlreadyVisited(toMethod)) {
+      if (visitor.wasMethodAlreadyVisited(toMethod)) {
         // Method already counted, skip (to prevent recursion)
         if (returnVariable != null) {
           int thisCount = visitor.getLoDCount(methodThis);
@@ -81,27 +81,15 @@ public class MethodInvokation extends Operation {
         return;
       } else if (toMethod.canOverride() && visitor.isInjectable(methodThis)) {
         // Method can be overridden / injectable
-        visitor.assignOverridableReturnValue(returnVariable);
+        visitor.recordOverridableMethodCall(returnVariable);
+        if (returnVariable != null) {
+          int thisCount = visitor.getLoDCount(methodThis);
+          visitor.recordLoDDispatch(getLineNumber(), toMethod, returnVariable, thisCount + 1);
+        }
       } else {
         // Method can not be intercepted we have to add the cost
         // recursively
-        if (toMethod.isInstance()) {
-          visitor.assignParameter(toMethod, getLineNumber(), toMethod
-              .getMethodThis(), methodThis);
-        }
-        if (parameters.size() != toMethod.getParameters().size()) {
-          throw new IllegalStateException(
-              "Argument count does not match method parameter count.");
-        }
-        int i = 0;
-        for (Variable var : parameters) {
-          visitor.assignParameter(toMethod, getLineNumber(), toMethod
-              .getParameters().get(i++), var);
-        }
-        visitor.recordMethodCall(getLineNumber(), toMethod);
-        int thisCount = visitor.getLoDCount(methodThis);
-        visitor.recordLoDDispatch(getLineNumber(), toMethod, returnVariable, thisCount + 1);
-        visitor.assignReturnValue(toMethod, getLineNumber(), returnVariable);
+        visitor.recordNonOverridableMethodCall(getLineNumber(), toMethod, methodThis, parameters, returnVariable);
       }
     } catch (ClassNotFoundException e) {
       visitor.reportError("WARNING: class not found: " + clazzName);

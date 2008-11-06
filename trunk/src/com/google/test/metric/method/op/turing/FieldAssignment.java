@@ -34,7 +34,7 @@ public class FieldAssignment extends Operation {
   }
 
   @Override
-  public void visit(TestabilityVisitor visitor) {
+  public void visit(TestabilityVisitor.Frame visitor) {
     visitor.assignField(fieldInstance, field, value, getLineNumber());
   }
 

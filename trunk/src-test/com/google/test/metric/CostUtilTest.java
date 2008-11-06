@@ -32,10 +32,10 @@ public class CostUtilTest extends TestCase {
   }
 
   public void testInstanceCost0() {
+    assertEquals(1, totalGlobalCost("instanceCost0()Z"));
     assertEquals(0, cyclomaticCost("instanceCost0()Z"));
     assertEquals(0, globalCost("instanceCost0()Z"));
     assertEquals(0, totalComplexityCost("instanceCost0()Z"));
-    assertEquals(1, totalGlobalCost("instanceCost0()Z"));
     assertEquals(10, overallCost("instanceCost0()Z"));
   }
 
@@ -48,10 +48,10 @@ public class CostUtilTest extends TestCase {
   }
 
   public void testInstanceCost1() {
+    assertEquals(1, totalGlobalCost("instanceCost1()Z"));
     assertEquals(1, cyclomaticCost("instanceCost1()Z"));
     assertEquals(0, globalCost("instanceCost1()Z"));
     assertEquals(1, totalComplexityCost("instanceCost1()Z"));
-    assertEquals(1, totalGlobalCost("instanceCost1()Z"));
     assertEquals(11, overallCost("instanceCost1()Z"));
   }
 

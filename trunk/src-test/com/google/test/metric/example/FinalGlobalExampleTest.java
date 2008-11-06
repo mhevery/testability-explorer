@@ -70,10 +70,10 @@ public class FinalGlobalExampleTest extends AutoFieldClearTestCase {
   public void testAccessingANonFinalFieldCountsAgainstYou() throws Exception {
     // This method goes into final global state (cost +0) and reads a mutable value (cost +1)
     MethodCost methodCost = decoratedComputer.compute(FinalGlobalExample.class, "getGlobalCount()I");
+    assertEquals(1, methodCost.getTotalCost().getGlobalCost());
     assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
     assertEquals(0, methodCost.getCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getCyclomaticComplexityCost());
-    assertEquals(1, methodCost.getTotalCost().getGlobalCost());
     assertEquals(10, methodCost.getOverallCost());
   }
 
