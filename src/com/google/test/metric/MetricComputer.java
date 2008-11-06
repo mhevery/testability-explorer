@@ -72,61 +72,61 @@ public class MetricComputer {
    * MethodCost is guaranteed to have already been linked (sealed for adding additional costs).
    */
   public MethodCost compute(MethodInfo method) {
-    TestabilityVisitor context = new TestabilityVisitor(classRepository, err, whitelist, costModel);
-    addStaticInitializationCost(method, context);
-    addConstructorCost(method, context);
-    addSetterInjection(method, context);
-    addFieldCost(method, context);
-    context.setInjectable(method);
-    context.applyMethodOperations(method);
-    return context.getLinkedMethodCost(method);
+    TestabilityVisitor visitor = new TestabilityVisitor(classRepository, err, whitelist, costModel);
+    addStaticInitializationCost(method, visitor);
+    addConstructorCost(method, visitor);
+    addSetterInjection(method, visitor);
+    addFieldCost(method, visitor);
+    visitor.setInjectable(method);
+    visitor.applyMethodOperations(method);
+    return visitor.getLinkedMethodCost(method);
   }
 
 
 
   /** Goes through all methods and adds an implicit cost for those beginning with "set" (assuming
    * to test the {@code baseMethod}'s class, you need to be able to call the setters for initialization.  */
-  private void addSetterInjection(MethodInfo baseMethod, TestabilityVisitor context) {
+  private void addSetterInjection(MethodInfo baseMethod, TestabilityVisitor visitor) {
     for (MethodInfo setter : baseMethod.getSiblingSetters()) {
-      context.applyImplicitCost(baseMethod, setter, Reason.IMPLICIT_SETTER);
-      context.setInjectable(setter);
-      context.applyMethodOperations(setter);
+      visitor.applyImplicitCost(baseMethod, setter, Reason.IMPLICIT_SETTER);
+      visitor.setInjectable(setter);
+      visitor.applyMethodOperations(setter);
     }
   }
 
   /** Adds an implicit cost to all non-static methods for calling the constructor. (Because to test
    * any instance method, you must be able to instantiate the class.) Also marks parameters
    * injectable for the constructor with the most non-primitive parameters. */
-  private void addConstructorCost(MethodInfo method, TestabilityVisitor context) {
+  private void addConstructorCost(MethodInfo method, TestabilityVisitor visitor) {
     if (!method.isStatic() && !method.isConstructor()) {
       MethodInfo constructor = method.getClassInfo().getConstructorWithMostNonPrimitiveParameters();
       if (constructor != null) {
-        context.applyImplicitCost(method, constructor, Reason.IMPLICIT_CONSTRUCTOR);
-        context.setInjectable(constructor);
-        context.applyMethodOperations(constructor);
+        visitor.applyImplicitCost(method, constructor, Reason.IMPLICIT_CONSTRUCTOR);
+        visitor.setInjectable(constructor);
+        visitor.applyMethodOperations(constructor);
       }
     }
   }
 
   /** Doesn't really add the field costs (there are none), but marks non-private fields as injectable. */
   private void addFieldCost(MethodInfo method,
-      TestabilityVisitor context) {
+      TestabilityVisitor visitor) {
     for (FieldInfo field : method.getClassInfo().getFields()) {
       if (!field.isPrivate()) {
-        context.setInjectable(field);
+        visitor.setInjectable(field);
       }
     }
   }
 
    /** Includes the cost of all static initialization blocks, as well as static field assignments. */
-  private void addStaticInitializationCost(MethodInfo baseMethod, TestabilityVisitor context) {
+  private void addStaticInitializationCost(MethodInfo baseMethod, TestabilityVisitor visitor) {
     if (baseMethod.isStaticConstructor()) {
       return;
     }
     for (MethodInfo method : baseMethod.getClassInfo().getMethods()) {
       if (method.getName().startsWith("<clinit>")) {
-        context.applyImplicitCost(baseMethod, method, Reason.IMPLICIT_STATIC_INIT);
-        context.applyMethodOperations(method);
+        visitor.applyImplicitCost(baseMethod, method, Reason.IMPLICIT_STATIC_INIT);
+        visitor.applyMethodOperations(method);
       }
     }
   }
