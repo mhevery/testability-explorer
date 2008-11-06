@@ -15,11 +15,11 @@
  */
 package com.google.test.metric.method.op.stack;
 
+import java.util.List;
+
 import com.google.test.metric.FieldInfo;
 import com.google.test.metric.LocalField;
 import com.google.test.metric.Variable;
-
-import java.util.List;
 
 public class GetField extends StackOperation {
 
@@ -44,7 +44,6 @@ public class GetField extends StackOperation {
   public List<Variable> apply(List<Variable> input) {
     Variable instance = fieldInfo.isGlobal() ? null : input.get(0);
     return list(new LocalField(instance, fieldInfo));
-//    return list(fieldInfo);
   }
 
 }
