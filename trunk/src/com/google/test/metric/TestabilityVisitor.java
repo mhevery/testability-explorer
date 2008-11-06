@@ -30,7 +30,9 @@ public class TestabilityVisitor {
 
   public static class Frame {
     private final Map<Variable, Integer> lodCount = new HashMap<Variable, Integer>();
-    final MethodCost methodCost;
+    private final MethodCost methodCost;
+    private final Set<Variable> injectables = new HashSet<Variable>();
+    private final Set<Variable> globals = new HashSet<Variable>();
 
     public Frame(MethodCost methodCost) {
       this.methodCost = methodCost;
@@ -42,6 +44,10 @@ public class TestabilityVisitor {
         count = lodCount.get(variable);
       }
       return count;
+    }
+
+    public MethodCost getMethodCost() {
+      return methodCost;
     }
 
   }
@@ -154,6 +160,13 @@ public class TestabilityVisitor {
     assignVariable(getCurrentMethodCost(), lineNumber, destination, source);
   }
 
+  public void assignOverridableReturnValue(Variable returnVariable) {
+    if (returnVariable != null) {
+      setInjectable(returnVariable);
+      setReturnValue(returnVariable);
+    }
+  }
+
   public void assignParameter(MethodInfo inMethod, int lineNumber,
       Variable destination, Variable source) {
     assignVariable(getMethodCost(inMethod), lineNumber, destination, source);
@@ -183,7 +196,7 @@ public class TestabilityVisitor {
     if (callStack.isEmpty()) {
       throw new IllegalStateException();
     }
-    return callStack.peek().methodCost;
+    return callStack.peek().getMethodCost();
   }
 
   /**
@@ -323,7 +336,7 @@ public class TestabilityVisitor {
     setInjectable(method.getParameters());
   }
 
-  public void setInjectable(Variable var) {
+  void setInjectable(Variable var) {
     injectables.add(var);
   }
 
