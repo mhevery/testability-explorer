@@ -81,10 +81,7 @@ public class MethodInvokation extends Operation {
         return;
       } else if (toMethod.canOverride() && visitor.isInjectable(methodThis)) {
         // Method can be overridden / injectable
-        if (returnVariable != null) {
-          visitor.setInjectable(returnVariable);
-          visitor.setReturnValue(returnVariable);
-        }
+        visitor.assignOverridableReturnValue(returnVariable);
       } else {
         // Method can not be intercepted we have to add the cost
         // recursively
