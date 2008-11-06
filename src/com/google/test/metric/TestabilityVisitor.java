@@ -21,46 +21,292 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 
 import com.google.test.metric.ViolationCost.Reason;
+import com.google.test.metric.method.Constant;
 import com.google.test.metric.method.op.turing.Operation;
 
 public class TestabilityVisitor {
 
-  public static class Frame {
-    private final Map<Variable, Integer> lodCount = new HashMap<Variable, Integer>();
+  public class Frame {
+
+    private final Frame parentFrame;
     private final MethodCost methodCost;
+    private final Map<Variable, Integer> lodCount = new HashMap<Variable, Integer>();
     private final Set<Variable> injectables = new HashSet<Variable>();
     private final Set<Variable> globals = new HashSet<Variable>();
+    private Variable returnValue;
 
-    public Frame(MethodCost methodCost) {
+    public Frame(Frame parentFrame, MethodCost methodCost) {
+      this.parentFrame = parentFrame;
       this.methodCost = methodCost;
     }
 
-    public int getLoDCount(FieldInfo variable) {
-      int count = 0;
-      if (lodCount.containsKey(variable)) {
-        count = lodCount.get(variable);
+    /**
+     * If and only if the array is a static, then add it as a Global State Cost
+     * for the {@code inMethod}.
+     */
+    public void assignArray(Variable array, Variable index, Variable value,
+        int lineNumber) {
+      if (globals.contains(array)) {
+        methodCost.addGlobalCost(lineNumber, array);
       }
-      return count;
     }
 
-    public MethodCost getMethodCost() {
-      return methodCost;
+    /**
+     * The method propagates the global property of a field onto any field it is
+     * assigned to. The globality is propagated because global state is
+     * transitive (static cling) So any modification on class which is
+     * transitively global should also be penalized.
+     *
+     * <p>
+     * Note: <em>final</em> static fields are not added, because they are
+     * assumed to be constants, thus this will miss some actual global state.
+     * (The justification is that if costs were included for constants it would
+     * penalize people for a good practice -- removing magic values from code).
+     */
+    public void assignField(Variable fieldInstance, FieldInfo field,
+        Variable value, int lineNumber) {
+      MethodCost inMethod = methodCost;
+      assignVariable(inMethod, lineNumber, field, this, value);
+      if (fieldInstance == null || globals.contains(fieldInstance)) {
+        if (!field.isFinal()) {
+          inMethod.addGlobalCost(lineNumber, fieldInstance);
+        }
+        globals.add(field);
+      }
+    }
+
+    public void assignLocal(int lineNumber, Variable destination,
+        Variable source) {
+      assignVariable(methodCost, lineNumber, destination, this, source);
+    }
+
+    public void assignParameter(MethodInfo inMethod, int lineNumber,
+        Variable destination, Frame sourceFrame, Variable source) {
+      MethodCost inMethodCost = TestabilityVisitor.this.getMethodCost(inMethod);
+      assignVariable(inMethodCost, lineNumber, destination, sourceFrame, source);
+    }
+
+    public void assignReturnValue(MethodInfo inMethod, int lineNumber,
+        Variable destination) {
+      assignVariable(TestabilityVisitor.this.getMethodCost(inMethod),
+          lineNumber, destination, this, returnValue);
+    }
+
+    private void assignVariable(MethodCost inMethod, int lineNumber,
+        Variable destination, Frame sourceFrame, Variable source) {
+      if (sourceFrame.isInjectable(source)) {
+        setInjectable(destination);
+      }
+      if (destination.isGlobal() || sourceFrame.isGlobal(source)) {
+        setGlobal(destination);
+        if (source instanceof LocalField && !source.isFinal()) {
+          inMethod.addGlobalCost(lineNumber, source);
+        }
+      }
+      setLoDCount(destination, sourceFrame.getLoDCount(source));
+    }
+
+    public int getLoDCount(Variable variable) {
+      Integer count = lodCount.get(variable);
+      if (count == null) {
+        if (variable instanceof LocalField) {
+          LocalField localField = (LocalField) variable;
+          return getLoDCount(localField.getField());
+        } else {
+          return 0;
+        }
+      } else {
+        return count.intValue();
+      }
+    }
+
+    public MethodInfo getMethod(String clazzName, String methodName) {
+      return classRepository.getClass(clazzName).getMethod(methodName);
+    }
+
+    public boolean isClassWhiteListed(String clazzName) {
+      return whitelist.isClassWhiteListed(clazzName);
+    }
+
+    public boolean isGlobal(Variable var) {
+      if (var == null) {
+        return false;
+      }
+      if (var.isGlobal()) {
+        return true;
+      }
+      if (globals.contains(var)) {
+        return true;
+      }
+      if (var instanceof LocalField) {
+        LocalField field = (LocalField) var;
+        return isGlobal(field.getInstance()) || isGlobal(field.getField());
+      }
+      if (parentFrame == null) {
+        return false;
+      }
+      return rootFrame.isGlobal(var);
+    }
+
+    public boolean isInjectable(Variable var) {
+      if (injectables.contains(var)) {
+        return true;
+      } else {
+        if (var instanceof LocalField) {
+          return isInjectable(((LocalField) var).getField());
+        } else {
+          return injectables.contains(var) ? true : parentFrame != null
+              && rootFrame.isInjectable(var);
+        }
+      }
+    }
+
+    public void recordLoDDispatch(int lineNumber, MethodInfo method,
+        Variable variable, int distance) {
+      setLoDCount(variable, distance);
+      if (distance > 1) {
+        methodCost.addCostSource(new LoDViolation(lineNumber, method
+            .getFullName(), distance));
+      }
+    }
+
+    public void recordNonOverridableMethodCall(int lineNumber,
+        MethodInfo toMethod, Variable methodThis,
+        List<? extends Variable> parameters, Variable returnVariable) {
+      MethodCost to = TestabilityVisitor.this.getMethodCost(toMethod);
+      if (methodCost == to) {
+        // Prevent recursion.
+        return;
+      }
+      methodCost.addMethodCost(lineNumber, to,
+          Reason.NON_OVERRIDABLE_METHOD_CALL);
+      Frame currentFrame = new Frame(this, to);
+      if (toMethod.isInstance()) {
+        currentFrame.assignParameter(toMethod, lineNumber, toMethod
+            .getMethodThis(), currentFrame.parentFrame, methodThis);
+      }
+      currentFrame.applyMethodOperations(lineNumber, toMethod, methodThis,
+          parameters, returnVariable);
+      currentFrame.assignReturnValue(toMethod, lineNumber, returnVariable);
+    }
+
+    private void applyMethodOperations(int lineNumber, MethodInfo toMethod,
+        Variable methodThis, List<? extends Variable> parameters,
+        Variable returnVariable) {
+      if (parameters.size() != toMethod.getParameters().size()) {
+        throw new IllegalStateException(
+            "Argument count does not match method parameter count.");
+      }
+      int i = 0;
+      for (Variable var : parameters) {
+        assignParameter(toMethod, lineNumber,
+            toMethod.getParameters().get(i++), parentFrame, var);
+      }
+      returnValue = null;
+      for (Operation operation : toMethod.getOperations()) {
+        operation.visit(this);
+      }
+      int thisCount = getLoDCount(methodThis);
+      parentFrame.recordLoDDispatch(lineNumber, toMethod, returnVariable,
+          thisCount + 1);
+    }
+
+    public void recordOverridableMethodCall(Variable returnVariable) {
+      if (returnVariable != null) {
+        setInjectable(returnVariable);
+        setReturnValue(returnVariable);
+      }
+    }
+
+    public void reportError(String errorMessage) {
+      err.println(errorMessage);
+    }
+
+    void setGlobal(Variable var) {
+      globals.add(var);
+    }
+
+    public void setInjectable(List<? extends Variable> parameters) {
+      for (Variable variable : parameters) {
+        setInjectable(variable);
+      }
+    }
+
+    public void setInjectable(MethodInfo method) {
+      if (!method.isStatic()) {
+        setInjectable(method.getMethodThis());
+      }
+      setInjectable(method.getParameters());
+    }
+
+    void setInjectable(Variable var) {
+      if (parentFrame != null
+          && (var instanceof LocalField || var instanceof FieldInfo)) {
+        rootFrame.setInjectable(var);
+      } else {
+        injectables.add(var);
+      }
+    }
+
+    void setLoDCount(Variable value, int newCount) {
+      Integer count = lodCount.get(value);
+      int intCount = count == null ? 0 : count;
+      if (intCount < newCount) {
+        lodCount.put(value, newCount);
+      }
+    }
+
+    public void setReturnValue(Variable value) {
+      boolean isWorse = isGlobal(value) && !isGlobal(returnValue);
+      if (isWorse) {
+        returnValue = value;
+      }
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder buf = new StringBuilder();
+      buf.append("MethodCost: " + methodCost);
+      buf.append("\nInjectables:");
+      for (Variable var : injectables) {
+        buf.append("\n   ");
+        buf.append(var);
+      }
+      buf.append("\nGlobals:");
+      for (Variable var : globals) {
+        buf.append("\n   ");
+        buf.append(var);
+      }
+      buf.append("\nLod:");
+      for (Variable var : lodCount.keySet()) {
+        buf.append("\n   ");
+        buf.append(var);
+        buf.append(": ");
+        buf.append(lodCount.get(var));
+      }
+      return buf.toString();
+    }
+
+    public boolean wasMethodAlreadyVisited(MethodInfo toMethod) {
+      return methodCosts.containsKey(toMethod);
+    }
+
+    public Frame getParentFrame() {
+      return parentFrame;
     }
 
   }
 
-  private final Stack<Frame> callStack = new Stack<Frame>();
-  private final Set<Variable> injectables = new HashSet<Variable>();
-  private final Set<Variable> globals = new HashSet<Variable>();
+  // TODO: refactor me. The root frame needs to be of different class so that
+  // we can remove all of the ifs in Frame
+  private final Frame rootFrame = new Frame(null, null);
   private final ClassRepository classRepository;
   private final Map<MethodInfo, MethodCost> methodCosts = new HashMap<MethodInfo, MethodCost>();
   private final PrintStream err;
   private final WhiteList whitelist;
   private final CostModel costModel;
-  private Variable returnValue;
 
   public TestabilityVisitor(ClassRepository classRepository, PrintStream err,
       WhiteList whitelist, CostModel costModel) {
@@ -68,7 +314,6 @@ public class TestabilityVisitor {
     this.err = err;
     this.costModel = costModel;
     this.whitelist = whitelist;
-    callStack.add(new Frame(null));
   }
 
   /**
@@ -106,97 +351,29 @@ public class TestabilityVisitor {
    */
   public void applyImplicitCost(MethodInfo from, MethodInfo to,
       Reason costSourceType) {
-    int line = to.getStartingLineNumber();
+    int lineNumber = to.getStartingLineNumber();
     MethodCost methodCost = getMethodCost(from);
     MethodCost toMethodCost = getMethodCost(to);
-    methodCost.addMethodCost(line, toMethodCost, costSourceType);
+    methodCost.addMethodCost(lineNumber, toMethodCost, costSourceType);
+
+    applyMethodOperations(to);
   }
 
-  public Frame applyMethodOperations(MethodInfo methodInfo) {
-    returnValue = null;
-    callStack.push(new Frame(getMethodCost(methodInfo)));
-    for (Operation operation : methodInfo.getOperations()) {
-      operation.visit(this);
+  public Frame applyMethodOperations(MethodInfo method) {
+    Frame currentFrame = new Frame(rootFrame, getMethodCost(method));
+
+    if (method.getMethodThis() != null) {
+      currentFrame.setInjectable(method.getMethodThis());
     }
-    return callStack.pop();
+    currentFrame.setInjectable(method.getParameters());
+    currentFrame.applyMethodOperations(-1, method, method.getMethodThis(),
+        method.getParameters(), new Constant("rootReturn", Type.OBJECT));
+
+    return currentFrame;
   }
 
-  /**
-   * If and only if the array is a static, then add it as a Global State Cost
-   * for the {@code inMethod}.
-   */
-  public void assignArray(Variable array, Variable index, Variable value,
-      int lineNumber) {
-    if (globals.contains(array)) {
-      getCurrentMethodCost().addGlobalCost(lineNumber, array);
-    }
-  }
-
-  /**
-   * The method propagates the global property of a field onto any field it is
-   * assigned to. The globality is propagated because global state is transitive
-   * (static cling) So any modification on class which is transitively global
-   * should also be penalized.
-   *
-   * <p>
-   * Note: <em>final</em> static fields are not added, because they are assumed
-   * to be constants, thus this will miss some actual global state. (The
-   * justification is that if costs were included for constants it would
-   * penalize people for a good practice -- removing magic values from code).
-   */
-  public void assignField(Variable fieldInstance, FieldInfo field,
-      Variable value, int lineNumber) {
-    MethodCost inMethod = getCurrentMethodCost();
-    assignVariable(inMethod, lineNumber, field, value);
-    if (fieldInstance == null || globals.contains(fieldInstance)) {
-      if (!field.isFinal()) {
-        inMethod.addGlobalCost(lineNumber, fieldInstance);
-      }
-      globals.add(field);
-    }
-  }
-
-  public void assignLocal(int lineNumber, Variable destination, Variable source) {
-    assignVariable(getCurrentMethodCost(), lineNumber, destination, source);
-  }
-
-  public void assignOverridableReturnValue(Variable returnVariable) {
-    if (returnVariable != null) {
-      setInjectable(returnVariable);
-      setReturnValue(returnVariable);
-    }
-  }
-
-  public void assignParameter(MethodInfo inMethod, int lineNumber,
-      Variable destination, Variable source) {
-    assignVariable(getMethodCost(inMethod), lineNumber, destination, source);
-  }
-
-  public void assignReturnValue(MethodInfo inMethod, int lineNumber,
-      Variable destination) {
-    assignVariable(getMethodCost(inMethod), lineNumber, destination,
-        returnValue);
-  }
-
-  private void assignVariable(MethodCost inMethod, int lineNumber,
-      Variable destination, Variable source) {
-    if (isInjectable(source)) {
-      setInjectable(destination);
-    }
-    if (destination.isGlobal() || isGlobal(source)) {
-      setGlobal(destination);
-      if (source instanceof LocalField && !source.isFinal()) {
-        inMethod.addGlobalCost(lineNumber, source);
-      }
-    }
-    setLoDCount(destination, getLoDCount(source));
-  }
-
-  private MethodCost getCurrentMethodCost() {
-    if (callStack.isEmpty()) {
-      throw new IllegalStateException();
-    }
-    return callStack.peek().getMethodCost();
+  public Frame getRootFrame() {
+    return rootFrame;
   }
 
   /**
@@ -209,24 +386,6 @@ public class TestabilityVisitor {
     MethodCost cost = getMethodCost(method);
     cost.link(costModel);
     return cost;
-  }
-
-  public int getLoDCount(Variable variable) {
-    if (variable instanceof LocalField) {
-      LocalField field = (LocalField) variable;
-      variable = field.getField();
-    }
-
-    int count = 0;
-    Map<Variable, Integer> lodCount = callStack.peek().lodCount;
-    if (lodCount.containsKey(variable)) {
-      count = lodCount.get(variable);
-    }
-    return count;
-  }
-
-  public MethodInfo getMethod(String clazzName, String methodName) {
-    return classRepository.getClass(clazzName).getMethod(methodName);
   }
 
   MethodCost getMethodCost(MethodInfo method) {
@@ -242,121 +401,6 @@ public class TestabilityVisitor {
     return methodCost;
   }
 
-  // TODO(jwolter): This should be removed from this class, because it is only
-  // acting as a
-  // service locator, cluttering its responsibilities.
-  public boolean isClassWhiteListed(String className) {
-    return whitelist.isClassWhiteListed(className);
-  }
-
-  boolean isGlobal(Variable var) {
-    if (var instanceof LocalField) {
-      LocalField field = (LocalField) var;
-      return isGlobal(field.getInstance()) || isGlobal(field.getField());
-    }
-    return var != null && (var.isGlobal() || globals.contains(var));
-  }
-
-  public boolean isInjectable(Variable var) {
-    if (var instanceof LocalField) {
-      return isInjectable(((LocalField) var).getField());
-    }
-    return injectables.contains(var);
-  }
-
-  private boolean isWorse(Variable var1, Variable var2) {
-    return isGlobal(var1) && !isGlobal(var2);
-  }
-
-  public boolean methodAlreadyVisited(MethodInfo method) {
-    return methodCosts.containsKey(method);
-  }
-
-  public void recordLoDDispatch(int lineNumber, MethodInfo method,
-      Variable variable, int distance) {
-    setLoDCount(variable, distance);
-    if (distance > 1) {
-      getCurrentMethodCost().addCostSource(
-          new LoDViolation(lineNumber, method.getFullName(), distance));
-    }
-  }
-
-  /**
-   * Records that there is a call to {@code toMethod} from within {@code
-   * fromMethod}, on the {@code fromLineNumber}. Recurses into {@code toMethod}
-   * and records all of the operations there, computing for all the methods in
-   * the transitive closure (avoiding whitelisted method invocations).
-   *
-   * @param fromMethod
-   *          the method making the call of {@code toMethod}
-   * @param fromLineNumber
-   *          source code line number in the {@code fromMethod}
-   * @param toMethod
-   *          method that is getting called from within {@code fromMethod}
-   */
-  // TODO(jwolter): I don't think this needs to be on TestabilityContext, can we
-  // break it off?
-  // Does it belong to live on a MethodInfoBuilder? (I think so) or on the
-  // MethodInfo itself?
-  // Or maybe TestabilityContext should be pruned off of the extra baggage, and
-  // renamed to
-  // MethodCostBuilder? CostAccumulator?
-  public void recordMethodCall(int fromLineNumber, MethodInfo toMethod) {
-    MethodCost from = getCurrentMethodCost();
-    MethodCost to = getMethodCost(toMethod);
-    if (from != to) {
-      from
-          .addMethodCost(fromLineNumber, to, Reason.NON_OVERRIDABLE_METHOD_CALL);
-      applyMethodOperations(toMethod);
-    }
-  }
-
-  // TODO(jwolter): This should not be on this object, it only clutters the
-  // single responsibility
-  // we would like to have within it. It makes this object double as a service
-  // locator.
-  public void reportError(String errorMessage) {
-    err.println(errorMessage);
-  }
-
-  void setGlobal(Variable var) {
-    globals.add(var);
-  }
-
-  public void setInjectable(List<? extends Variable> parameters) {
-    for (Variable variable : parameters) {
-      setInjectable(variable);
-    }
-  }
-
-  void setInjectable(MethodInfo method) {
-    if (!method.isStatic()) {
-      setInjectable(method.getMethodThis());
-    }
-    setInjectable(method.getParameters());
-  }
-
-  void setInjectable(Variable var) {
-    injectables.add(var);
-  }
-
-  void setLoDCount(Variable value, int newCount) {
-    Map<Variable, Integer> lodCount = callStack.peek().lodCount;
-    int count = lodCount.containsKey(value) ? lodCount.get(value) : 0;
-    if (count < newCount) {
-      lodCount.put(value, newCount);
-    }
-  }
-
-  // TODO(jwolter): This class is too tightly coupled to the MethodInvokation
-  // class, can we pull off
-  // this method and put it somewhere else?
-  public void setReturnValue(Variable value) {
-    if (isWorse(value, returnValue)) {
-      returnValue = value;
-    }
-  }
-
   @Override
   public String toString() {
     StringBuilder buf = new StringBuilder();
@@ -366,16 +410,8 @@ public class TestabilityVisitor {
       buf.append(cost);
       buf.append("\n");
     }
-    buf.append("\nInjectables:");
-    for (Variable var : injectables) {
-      buf.append("\n   ");
-      buf.append(var);
-    }
-    buf.append("\nGlobals:");
-    for (Variable var : globals) {
-      buf.append("\n   ");
-      buf.append(var);
-    }
+    buf.append("\n==============\nROOT FRAME:\n" + rootFrame);
     return buf.toString();
   }
+
 }

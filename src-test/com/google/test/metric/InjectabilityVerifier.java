@@ -39,11 +39,11 @@ public class InjectabilityVerifier {
   public void verify(Variable variable, TestabilityVisitor context) {
     if (variable.getName().equals("this")) {
     } else if (variable.getName().endsWith("_I")) {
-      if (!context.isInjectable(variable)) {
+      if (!context.getRootFrame().isInjectable(variable)) {
         errors += "\n" + variable + " should be injectable";
       }
     } else if (variable.getName().endsWith("_NI")) {
-      if (context.isInjectable(variable)) {
+      if (context.getRootFrame().isInjectable(variable)) {
         errors += "\n" + variable + " should be non injectable";
       }
     } else {

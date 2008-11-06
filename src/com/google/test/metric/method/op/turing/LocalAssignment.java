@@ -43,7 +43,7 @@ public class LocalAssignment extends Operation {
   }
 
   @Override
-  public void visit(TestabilityVisitor visitor) {
+  public void visit(TestabilityVisitor.Frame visitor) {
     visitor.assignLocal(getLineNumber(), variable, value);
   }
 }

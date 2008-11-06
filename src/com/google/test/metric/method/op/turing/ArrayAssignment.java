@@ -33,7 +33,7 @@ public class ArrayAssignment extends Operation {
   }
 
   @Override
-  public void visit(TestabilityVisitor visistor) {
+  public void visit(TestabilityVisitor.Frame visistor) {
     visistor.assignArray(array, index, value, getLineNumber());
   }
 

@@ -28,7 +28,7 @@ public class ReturnOperation extends Operation {
   }
 
   @Override
-  public void visit(TestabilityVisitor visitor) {
+  public void visit(TestabilityVisitor.Frame visitor) {
     visitor.setReturnValue(value);
   }
 

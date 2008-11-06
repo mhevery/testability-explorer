@@ -29,6 +29,6 @@ public abstract class Operation {
     return lineNumber;
   }
 
-  public abstract void visit(TestabilityVisitor visitor);
+  public abstract void visit(TestabilityVisitor.Frame visitor);
 
 }
