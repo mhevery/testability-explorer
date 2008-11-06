@@ -48,7 +48,7 @@ public class TestabilityVisitor {
 
   private final Stack<Frame> callStack = new Stack<Frame>();
   private final Set<Variable> injectables = new HashSet<Variable>();
-  private final Set<Variable> statics = new HashSet<Variable>();
+  private final Set<Variable> globals = new HashSet<Variable>();
   private final ClassRepository classRepository;
   private final Map<MethodInfo, MethodCost> methodCosts = new HashMap<MethodInfo, MethodCost>();
   private final PrintStream err;
@@ -121,7 +121,7 @@ public class TestabilityVisitor {
    */
   public void assignArray(Variable array, Variable index, Variable value,
       int lineNumber) {
-    if (statics.contains(array)) {
+    if (globals.contains(array)) {
       getCurrentMethodCost().addGlobalCost(lineNumber, array);
     }
   }
@@ -142,11 +142,11 @@ public class TestabilityVisitor {
       Variable value, int lineNumber) {
     MethodCost inMethod = getCurrentMethodCost();
     assignVariable(inMethod, lineNumber, field, value);
-    if (fieldInstance == null || statics.contains(fieldInstance)) {
+    if (fieldInstance == null || globals.contains(fieldInstance)) {
       if (!field.isFinal()) {
         inMethod.addGlobalCost(lineNumber, fieldInstance);
       }
-      statics.add(field);
+      globals.add(field);
     }
   }
 
@@ -241,7 +241,7 @@ public class TestabilityVisitor {
       LocalField field = (LocalField) var;
       return isGlobal(field.getInstance()) || isGlobal(field.getField());
     }
-    return var != null && (var.isGlobal() || statics.contains(var));
+    return var != null && (var.isGlobal() || globals.contains(var));
   }
 
   public boolean isInjectable(Variable var) {
@@ -306,8 +306,8 @@ public class TestabilityVisitor {
     err.println(errorMessage);
   }
 
-  public void setGlobal(Variable var) {
-    statics.add(var);
+  void setGlobal(Variable var) {
+    globals.add(var);
   }
 
   public void setInjectable(List<? extends Variable> parameters) {
@@ -316,7 +316,7 @@ public class TestabilityVisitor {
     }
   }
 
-  public void setInjectable(MethodInfo method) {
+  void setInjectable(MethodInfo method) {
     if (!method.isStatic()) {
       setInjectable(method.getMethodThis());
     }
@@ -327,7 +327,7 @@ public class TestabilityVisitor {
     injectables.add(var);
   }
 
-  public void setLoDCount(Variable value, int newCount) {
+  void setLoDCount(Variable value, int newCount) {
     Map<Variable, Integer> lodCount = callStack.peek().lodCount;
     int count = lodCount.containsKey(value) ? lodCount.get(value) : 0;
     if (count < newCount) {
@@ -359,7 +359,7 @@ public class TestabilityVisitor {
       buf.append(var);
     }
     buf.append("\nGlobals:");
-    for (Variable var : statics) {
+    for (Variable var : globals) {
       buf.append("\n   ");
       buf.append(var);
     }
