@@ -44,6 +44,6 @@ public class LocalAssignment extends Operation {
 
   @Override
   public void visit(TestabilityVisitor visitor) {
-    visitor.localAssignment(getLineNumber(), variable, value);
+    visitor.assignLocal(getLineNumber(), variable, value);
   }
 }
