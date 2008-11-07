@@ -15,8 +15,10 @@
  */
 package com.google.test.metric.cpp;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.google.test.metric.ParameterInfo;
 import com.google.test.metric.cpp.dom.FunctionDefinition;
 import com.google.test.metric.cpp.dom.Node;
 
@@ -25,6 +27,7 @@ class FunctionDefinitionBuilder extends DefaultBuilder {
   private final Node parent;
   private Node node;
   private final int line;
+  private final List<ParameterInfo> parameters = new ArrayList<ParameterInfo>();
 
   public FunctionDefinitionBuilder(Node parent, int line) {
     this.parent = parent;
@@ -33,7 +36,7 @@ class FunctionDefinitionBuilder extends DefaultBuilder {
 
   @Override
   public void functionDirectDeclarator(String name) {
-    node = new FunctionDefinition(name, line);
+    node = new FunctionDefinition(name, line, parameters);
     parent.addChild(node);
   }
 
@@ -44,10 +47,7 @@ class FunctionDefinitionBuilder extends DefaultBuilder {
 
   @Override
   public void beginParameterDeclaration() {
-  }
-
-  @Override
-  public void endParameterDeclaration() {
+    pushBuilder(new ParameterDeclarationBuilder(parameters));
   }
 
   @Override

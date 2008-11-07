@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.test.metric.JavaType;
 import com.google.test.metric.Type;
 import com.google.test.metric.Variable;
 import com.google.test.metric.method.Constant;
@@ -51,14 +52,14 @@ public class Invoke extends StackOperation {
   public int getOperatorCount() {
     int count = isStatic ? 0 : 1;
     for (Type type : params) {
-      count += type.isDoubleSlot() ? 2 : 1;
+      count += JavaType.isDoubleSlot(type) ? 2 : 1;
     }
     return count;
   }
 
   @Override
   public List<Variable> apply(List<Variable> input) {
-    if (returnType == Type.VOID) {
+    if (returnType == JavaType.VOID) {
       return Collections.emptyList();
     } else {
       return list(returnValue);
@@ -81,7 +82,7 @@ public class Invoke extends StackOperation {
         skip = false;
         continue;
       }
-      if (variable.getType().isDoubleSlot()) {
+      if (JavaType.isDoubleSlot(variable.getType())) {
         skip = true;
       }
       parameters.add(variable);

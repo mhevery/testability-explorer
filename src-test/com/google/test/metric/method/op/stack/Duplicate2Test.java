@@ -1,14 +1,15 @@
 package com.google.test.metric.method.op.stack;
 
-import com.google.test.metric.Type;
-import com.google.test.metric.Variable;
-import com.google.test.metric.method.Constant;
+import static java.util.Arrays.asList;
+
+import java.util.Arrays;
+import java.util.List;
 
 import junit.framework.TestCase;
 
-import java.util.Arrays;
-import static java.util.Arrays.asList;
-import java.util.List;
+import com.google.test.metric.JavaType;
+import com.google.test.metric.Variable;
+import com.google.test.metric.method.Constant;
 
 public class Duplicate2Test extends TestCase {
 
@@ -85,7 +86,7 @@ public class Duplicate2Test extends TestCase {
   }
 
   private Variable var(Object value) {
-    return new Constant(value, Type.fromClass(value.getClass()));
+    return new Constant(value, JavaType.fromClass(value.getClass()));
   }
 
 }

@@ -15,8 +15,11 @@
  */
 package com.google.test.metric.cpp;
 
+import java.util.List;
+
 import junit.framework.TestCase;
 
+import com.google.test.metric.ParameterInfo;
 import com.google.test.metric.cpp.dom.BreakStatement;
 import com.google.test.metric.cpp.dom.CaseStatement;
 import com.google.test.metric.cpp.dom.ClassDeclaration;
@@ -160,6 +163,14 @@ public class CppParserTest extends TestCase {
     assertEquals("foo", functionFoo.getName());
     ReturnStatement returnStatement = functionFoo.getChild(0);
     assertNotNull(returnStatement);
+    List<ParameterInfo> parameters = functionFoo.getParameters();
+    assertEquals(2, parameters.size());
+    ParameterInfo parameterA = parameters.get(0);
+    assertEquals("a", parameterA.getName());
+    assertEquals("int", parameterA.getType().toString());
+    ParameterInfo parameterB = parameters.get(1);
+    assertEquals("b", parameterB.getName());
+    assertEquals("int", parameterB.getType().toString());
   }
 
   public void testForStatement() throws Exception {

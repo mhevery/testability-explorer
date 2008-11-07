@@ -15,12 +15,13 @@
  */
 package com.google.test.metric.method.op.stack;
 
-import com.google.test.metric.Variable;
-import com.google.test.metric.method.op.turing.Operation;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import com.google.test.metric.JavaType;
+import com.google.test.metric.Variable;
+import com.google.test.metric.method.op.turing.Operation;
 
 public abstract class StackOperation {
 
@@ -57,7 +58,7 @@ public abstract class StackOperation {
     ArrayList<Variable> list = new ArrayList<Variable>(vars.length);
     for (Variable variable : vars) {
       list.add(variable);
-      if (variable.getType().isDoubleSlot()) {
+      if (JavaType.isDoubleSlot(variable.getType())) {
         list.add(variable);
       }
     }

@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.objectweb.asm.Label;
 
+import com.google.test.metric.JavaType;
 import com.google.test.metric.Type;
 import com.google.test.metric.method.op.stack.JSR;
 import com.google.test.metric.method.op.stack.RetSub;
@@ -172,7 +173,7 @@ public class BlockDecomposer {
     extraLinkSteps.add(new Runnable() {
       public void run() {
         Block handlerBlock = frames.get(handler).block;
-        Type type = eType == null ? Type.fromClass(Throwable.class) : Type.fromJava(eType);
+        Type type = eType == null ? JavaType.fromClass(Throwable.class) : JavaType.fromJava(eType);
         handlerBlock.setExceptionHandler(-1, new Constant("?", type));
         exceptionHandlerBlocks.add(handlerBlock);
       }

@@ -54,4 +54,17 @@ public class CppClassRepositoryTest extends TestCase {
     Iterator<MethodInfo> it = classInfo.getMethods().iterator();
     assertEquals("foo", it.next().getName());
   }
+
+  public void testClassWithMethodWithParameters() throws Exception {
+    CppClassRepository repository = new CppClassRepository();
+    repository.parse(new StringInputStream("class A{ void foo(int a, int b) {} };"));
+    ClassInfo classInfo = repository.getClass("A");
+    assertNotNull(classInfo);
+    assertFalse(classInfo.isInterface());
+    assertEquals(1, classInfo.getMethods().size());
+    Iterator<MethodInfo> it = classInfo.getMethods().iterator();
+    MethodInfo methodInfo = it.next();
+    assertEquals("foo", methodInfo.getName());
+    assertEquals(2, methodInfo.getParameters().size());
+  }
 }

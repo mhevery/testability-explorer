@@ -1,12 +1,12 @@
 /*
  * Copyright 2007 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -15,11 +15,12 @@
  */
 package com.google.test.metric.method.op.stack;
 
+import java.util.List;
+
+import com.google.test.metric.JavaType;
 import com.google.test.metric.Type;
 import com.google.test.metric.Variable;
 import com.google.test.metric.method.Constant;
-
-import java.util.List;
 
 public class Transform extends StackOperation {
 
@@ -43,7 +44,7 @@ public class Transform extends StackOperation {
   }
 
   private int size(Type op) {
-    return op == null ? 0 : op.isDoubleSlot() ? 2 : 1;
+    return op == null ? 0 : JavaType.isDoubleSlot(op) ? 2 : 1;
   }
 
   @Override

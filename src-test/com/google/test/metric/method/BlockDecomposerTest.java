@@ -15,7 +15,7 @@
  */
 package com.google.test.metric.method;
 
-import static com.google.test.metric.Type.VOID;
+import static com.google.test.metric.JavaType.VOID;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,8 +25,8 @@ import junit.framework.TestCase;
 import org.objectweb.asm.Label;
 
 import com.google.test.metric.JavaClassRepository;
+import com.google.test.metric.JavaType;
 import com.google.test.metric.LocalVariableInfo;
-import com.google.test.metric.Type;
 import com.google.test.metric.Variable;
 import com.google.test.metric.method.op.stack.JSR;
 import com.google.test.metric.method.op.stack.Load;
@@ -185,7 +185,7 @@ public class BlockDecomposerTest extends TestCase {
   }
 
   private Load load(int value) {
-    return new Load(0, new Constant(value, Type.INT));
+    return new Load(0, new Constant(value, JavaType.INT));
   }
 
   public void testSwitch() throws Exception {
@@ -223,7 +223,7 @@ public class BlockDecomposerTest extends TestCase {
     Label lTry = new Label();
     Load l1 = load(1);
     Load l2 = load(2);
-    Return ret = new Return(1, Type.INT);
+    Return ret = new Return(1, JavaType.INT);
     Label lTryEnd = new Label();
     Label lHandle = new Label();
 
@@ -259,8 +259,8 @@ public class BlockDecomposerTest extends TestCase {
     Label lTry = new Label();
     Load l1 = load(1);
     Load l2 = load(2);
-    Store store = new Store(-1, new Variable("a", Type.INT, false, false));
-    Return ret = new Return(1, Type.INT);
+    Store store = new Store(-1, new Variable("a", JavaType.INT, false, false));
+    Return ret = new Return(1, JavaType.INT);
     Label lTryEnd = new Label();
     Label lHandle = new Label();
 
@@ -348,40 +348,40 @@ public class BlockDecomposerTest extends TestCase {
     Label finallyHandler = new Label();
     Label l20 = new Label();
     Label l22 = new Label();
-    Variable b = new LocalVariableInfo("b", Type.INT);
-    Variable e = new LocalVariableInfo("e", Type.OBJECT);
-    Variable any = new LocalVariableInfo("any", Type.OBJECT);
+    Variable b = new LocalVariableInfo("b", JavaType.INT);
+    Variable e = new LocalVariableInfo("e", JavaType.OBJECT);
+    Variable any = new LocalVariableInfo("any", JavaType.OBJECT);
     decomposer.tryCatchBlock(tryStart, tryEnd, runtimeHandler, "java/lang/RuntimeException");
     decomposer.tryCatchBlock(tryStart, catchEnd, finallyHandler, null);
 
-    /* 0*/ decomposer.addOp(new Load(0, new Constant(1, Type.INT)));
+    /* 0*/ decomposer.addOp(new Load(0, new Constant(1, JavaType.INT)));
     /* 1*/ decomposer.addOp(new Store(1, b));
     decomposer.label(tryStart);
-    /* 2*/ decomposer.addOp(new Load(2, new Constant(2, Type.INT)));
+    /* 2*/ decomposer.addOp(new Load(2, new Constant(2, JavaType.INT)));
     decomposer.label(tryEnd);
     /* 3*/ decomposer.addOp(new Store(3, b));
     /* 4*/ decomposer.unconditionalGoto(l20);
     decomposer.label(runtimeHandler);
     /* 7*/ decomposer.addOp(new Store(7, e));
-    /* 8*/ decomposer.addOp(new Load(8, new Constant(3, Type.INT)));
+    /* 8*/ decomposer.addOp(new Load(8, new Constant(3, JavaType.INT)));
     /* 9*/ decomposer.addOp(new Store(9, b));
     decomposer.label(catchEnd);
-    /*10*/ decomposer.addOp(new Load(10, new Constant(4, Type.INT)));
+    /*10*/ decomposer.addOp(new Load(10, new Constant(4, JavaType.INT)));
     /*11*/ decomposer.addOp(new Store(11, b));
     /*12*/ decomposer.unconditionalGoto(l22);
     decomposer.label(finallyHandler);
     /*15*/ decomposer.addOp(new Store(15, any));
-    /*16*/ decomposer.addOp(new Load(16, new Constant(4, Type.INT)));
+    /*16*/ decomposer.addOp(new Load(16, new Constant(4, JavaType.INT)));
     /*17*/ decomposer.addOp(new Store(17, b));
     /*18*/ decomposer.addOp(new Load(18, any));
     /*19*/ decomposer.addOp(new Throw(19));
     decomposer.label(l20);
-    /*20*/ decomposer.addOp(new Load(20, new Constant(4, Type.INT)));
+    /*20*/ decomposer.addOp(new Load(20, new Constant(4, JavaType.INT)));
     /*21*/ decomposer.addOp(new Store(21, b));
     decomposer.label(l22);
-    /*22*/ decomposer.addOp(new Load(22, new Constant(4, Type.INT)));
+    /*22*/ decomposer.addOp(new Load(22, new Constant(4, JavaType.INT)));
     /*23*/ decomposer.addOp(new Store(23, b));
-    /*24*/ decomposer.addOp(new Return(24, Type.VOID));
+    /*24*/ decomposer.addOp(new Return(24, JavaType.VOID));
 
     decomposer.decomposeIntoBlocks();
 

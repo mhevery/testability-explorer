@@ -20,7 +20,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import com.google.test.metric.FieldInfo;
-import com.google.test.metric.Type;
+import com.google.test.metric.JavaType;
 import com.google.test.metric.Variable;
 import com.google.test.metric.method.op.stack.JSR;
 import com.google.test.metric.method.op.stack.Load;
@@ -35,13 +35,13 @@ public class Stack2TuringTest extends TestCase {
     Block main = new Block("main");
     Block sub = new Block("sub");
 
-    main.addOp(new Load(0, new Variable("this", Type.OBJECT, false, false)));
+    main.addOp(new Load(0, new Variable("this", JavaType.OBJECT, false, false)));
     main.addOp(new JSR(0, sub));
-    main.addOp(new PutField(0, new FieldInfo(null, "a", Type.INT, false, false,
+    main.addOp(new PutField(0, new FieldInfo(null, "a", JavaType.INT, false, false,
         false)));
 
-    sub.addOp(new Load(0, new Constant(1, Type.INT)));
-    sub.addOp(new Return(0, Type.VOID));
+    sub.addOp(new Load(0, new Constant(1, JavaType.INT)));
+    sub.addOp(new Return(0, JavaType.VOID));
 
     Stack2Turing converter = new Stack2Turing(main);
     List<Operation> operations = converter.translate();

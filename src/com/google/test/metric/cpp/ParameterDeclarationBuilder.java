@@ -13,41 +13,36 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.test.metric.cpp.dom;
+package com.google.test.metric.cpp;
 
 import java.util.List;
 
 import com.google.test.metric.ParameterInfo;
 
-public class FunctionDefinition extends Node {
+public class ParameterDeclarationBuilder extends DefaultBuilder {
 
-  private final String name;
-  private final int line;
   private final List<ParameterInfo> parameters;
+  private List<String> typeSpecifier;
+  private String name;
 
-  public FunctionDefinition(String name, int line,
-      List<ParameterInfo> parameters) {
-    this.name = name;
-    this.line = line;
+  public ParameterDeclarationBuilder(List<ParameterInfo> parameters) {
     this.parameters = parameters;
   }
 
-  public String getName() {
-    return name;
-  }
-
-  public int getLine() {
-    return line;
-  }
-
-  public List<ParameterInfo> getParameters() {
-    return parameters;
+  @Override
+  public void simpleTypeSpecifier(List<String> sts) {
+    typeSpecifier = sts;
   }
 
   @Override
-  public void accept(Visitor visitor) {
-    visitor.beginVisit(this);
-    visitChildren(visitor);
-    visitor.endVisit(this);
+  public void directDeclarator(String id) {
+    name = id;
+  }
+
+  @Override
+  public void endParameterDeclaration() {
+    parameters.add(new ParameterInfo(name,
+        CppType.fromName(typeSpecifier.get(0))));
+    finished();
   }
 }
