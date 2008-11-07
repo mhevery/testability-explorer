@@ -55,7 +55,7 @@ public class TestabilityVisitorTest extends TestCase {
   }
 
   public void testIsInjectable() throws Exception {
-    Variable var = new Variable("", Type.fromJava("X"), false, false);
+    Variable var = new Variable("", JavaType.fromJava("X"), false, false);
     assertFalse(visitor.getRootFrame().isInjectable(var));
     visitor.getRootFrame().setInjectable(var);
     assertTrue(visitor.getRootFrame().isInjectable(var));

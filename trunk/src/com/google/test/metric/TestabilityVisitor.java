@@ -369,7 +369,7 @@ public class TestabilityVisitor {
     }
     currentFrame.setInjectable(method.getParameters());
     currentFrame.applyMethodOperations(-1, method, method.getMethodThis(),
-        method.getParameters(), new Constant("rootReturn", Type.OBJECT));
+        method.getParameters(), new Constant("rootReturn", JavaType.OBJECT));
 
     return currentFrame;
   }

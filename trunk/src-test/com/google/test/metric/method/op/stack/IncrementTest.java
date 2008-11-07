@@ -17,13 +17,13 @@ package com.google.test.metric.method.op.stack;
 
 import junit.framework.TestCase;
 
-import com.google.test.metric.Type;
+import com.google.test.metric.JavaType;
 import com.google.test.metric.Variable;
 
 public class IncrementTest extends TestCase {
 
   public void testIncrement() throws Exception {
-    Variable var = new Variable("a", Type.BOOLEAN, false, false);
+    Variable var = new Variable("a", JavaType.BOOLEAN, false, false);
     Increment inc = new Increment(-1, 1, var );
     assertEquals("iinc 1 a{boolean}", inc.toString());
   }

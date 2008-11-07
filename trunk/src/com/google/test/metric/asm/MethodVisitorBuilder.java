@@ -32,6 +32,7 @@ import com.google.test.metric.ClassInfo;
 import com.google.test.metric.ClassRepository;
 import com.google.test.metric.FieldInfo;
 import com.google.test.metric.FieldNotFoundException;
+import com.google.test.metric.JavaType;
 import com.google.test.metric.LocalVariableInfo;
 import com.google.test.metric.MethodInfo;
 import com.google.test.metric.ParameterInfo;
@@ -90,7 +91,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
     this.visibility = visibility;
     int slot = 0;
     if (!isStatic) {
-      Type thisType = Type.fromJava(classInfo.getName());
+      Type thisType = JavaType.fromJava(classInfo.getName());
       methodThis = new LocalVariableInfo("this", thisType);
       slots.put(slot++, methodThis);
       localVariables.add((LocalVariableInfo) methodThis);
@@ -99,7 +100,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
       ParameterInfo parameterInfo = new ParameterInfo("param_" + slot, type);
       parameters.add(parameterInfo);
       slots.put(slot++, parameterInfo);
-      if (type.isDoubleSlot()) {
+      if (JavaType.isDoubleSlot(type)) {
         slot++;
       }
     }
@@ -179,11 +180,11 @@ public class MethodVisitorBuilder implements MethodVisitor {
         }
 
         private void if1(String name) {
-          block.addOp(new Transform(lineNumber, name, Type.INT, null, null));
+          block.addOp(new Transform(lineNumber, name, JavaType.INT, null, null));
         }
 
         private void if2(String name) {
-          block.addOp(new Transform(lineNumber, name, Type.INT, Type.INT, null));
+          block.addOp(new Transform(lineNumber, name, JavaType.INT, JavaType.INT, null));
         }
       });
     }
@@ -239,7 +240,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
 
   public void visitLocalVariable(String name, String desc, String signature,
       Label start, Label end, int slotNum) {
-    Type type = Type.fromDesc(desc);
+    Type type = JavaType.fromDesc(desc);
     Variable variable = slots.get(slotNum);
     if (variable == null) {
       LocalVariableInfo localVar = new LocalVariableInfo(name, type);
@@ -283,7 +284,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
       throw new IllegalStateException(
           "WARNING! I don't expect primitive types:" + desc);
     }
-    final Type type = desc.contains(";") ? Type.fromDesc(desc) : Type
+    final Type type = desc.contains(";") ? JavaType.fromDesc(desc) : JavaType
         .fromJava(desc);
     recorder.add(new Runnable() {
       public void run() {
@@ -294,12 +295,12 @@ public class MethodVisitorBuilder implements MethodVisitor {
             break;
           case Opcodes.NEWARRAY :
           case Opcodes.ANEWARRAY :
-            block.addOp(new Transform(lineNumber, "newarray", Type.INT, null,
+            block.addOp(new Transform(lineNumber, "newarray", JavaType.INT, null,
                 type.toArray()));
             break;
           case Opcodes.INSTANCEOF :
-            block.addOp(new Transform(lineNumber, "instanceof", Type.OBJECT,
-                null, Type.INT));
+            block.addOp(new Transform(lineNumber, "instanceof", JavaType.OBJECT,
+                null, JavaType.INT));
             break;
           case Opcodes.CHECKCAST :
             block
@@ -315,35 +316,35 @@ public class MethodVisitorBuilder implements MethodVisitor {
   public void visitVarInsn(final int opcode, final int var) {
     switch (opcode) {
       case Opcodes.ILOAD :
-        load(var, Type.INT);
+        load(var, JavaType.INT);
         break;
       case Opcodes.LLOAD :
-        load(var, Type.LONG);
+        load(var, JavaType.LONG);
         break;
       case Opcodes.FLOAD :
-        load(var, Type.FLOAT);
+        load(var, JavaType.FLOAT);
         break;
       case Opcodes.DLOAD :
-        load(var, Type.DOUBLE);
+        load(var, JavaType.DOUBLE);
         break;
       case Opcodes.ALOAD :
-        load(var, Type.OBJECT);
+        load(var, JavaType.OBJECT);
         break;
 
       case Opcodes.ISTORE :
-        store(var, Type.INT);
+        store(var, JavaType.INT);
         break;
       case Opcodes.LSTORE :
-        store(var, Type.LONG);
+        store(var, JavaType.LONG);
         break;
       case Opcodes.FSTORE :
-        store(var, Type.FLOAT);
+        store(var, JavaType.FLOAT);
         break;
       case Opcodes.DSTORE :
-        store(var, Type.DOUBLE);
+        store(var, JavaType.DOUBLE);
         break;
       case Opcodes.ASTORE :
-        store(var, Type.OBJECT);
+        store(var, JavaType.OBJECT);
         break;
 
       case Opcodes.RET :
@@ -404,7 +405,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
   public void visitLdcInsn(final Object cst) {
     recorder.add(new Runnable() {
       public void run() {
-        block.addOp(new Load(lineNumber, new Constant(cst, Type.fromClass(cst
+        block.addOp(new Load(lineNumber, new Constant(cst, JavaType.fromClass(cst
             .getClass()))));
       }
     });
@@ -415,7 +416,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
       case Opcodes.ACONST_NULL :
         recorder.add(new Runnable() {
           public void run() {
-            block.addOp(new Load(lineNumber, new Constant(null, Type.OBJECT)));
+            block.addOp(new Load(lineNumber, new Constant(null, JavaType.OBJECT)));
           }
         });
         break;
@@ -426,69 +427,69 @@ public class MethodVisitorBuilder implements MethodVisitor {
       case Opcodes.ICONST_3 :
       case Opcodes.ICONST_4 :
       case Opcodes.ICONST_5 :
-        loadConstant(opcode - Opcodes.ICONST_M1 - 1, Type.INT);
+        loadConstant(opcode - Opcodes.ICONST_M1 - 1, JavaType.INT);
         break;
       case Opcodes.LCONST_0 :
       case Opcodes.LCONST_1 :
-        loadConstant(opcode - Opcodes.LCONST_0, Type.LONG);
+        loadConstant(opcode - Opcodes.LCONST_0, JavaType.LONG);
         break;
       case Opcodes.FCONST_0 :
       case Opcodes.FCONST_1 :
       case Opcodes.FCONST_2 :
-        loadConstant(opcode - Opcodes.FCONST_0, Type.FLOAT);
+        loadConstant(opcode - Opcodes.FCONST_0, JavaType.FLOAT);
         break;
       case Opcodes.DCONST_0 :
       case Opcodes.DCONST_1 :
-        loadConstant(opcode - Opcodes.DCONST_0, Type.DOUBLE);
+        loadConstant(opcode - Opcodes.DCONST_0, JavaType.DOUBLE);
         break;
       case Opcodes.IALOAD :
-        recordArrayLoad(Type.INT);
+        recordArrayLoad(JavaType.INT);
         break;
       case Opcodes.LALOAD :
-        recordArrayLoad(Type.LONG);
+        recordArrayLoad(JavaType.LONG);
         break;
       case Opcodes.FALOAD :
-        recordArrayLoad(Type.FLOAT);
+        recordArrayLoad(JavaType.FLOAT);
         break;
       case Opcodes.DALOAD :
-        recordArrayLoad(Type.DOUBLE);
+        recordArrayLoad(JavaType.DOUBLE);
         break;
       case Opcodes.AALOAD :
-        recordArrayLoad(Type.OBJECT);
+        recordArrayLoad(JavaType.OBJECT);
         break;
       case Opcodes.BALOAD :
-        recordArrayLoad(Type.BYTE);
+        recordArrayLoad(JavaType.BYTE);
         break;
       case Opcodes.CALOAD :
-        recordArrayLoad(Type.CHAR);
+        recordArrayLoad(JavaType.CHAR);
         break;
       case Opcodes.SALOAD :
-        recordArrayLoad(Type.SHORT);
+        recordArrayLoad(JavaType.SHORT);
         break;
 
       case Opcodes.IASTORE :
-        recordArrayStore(Type.INT);
+        recordArrayStore(JavaType.INT);
         break;
       case Opcodes.LASTORE :
-        recordArrayStore(Type.LONG);
+        recordArrayStore(JavaType.LONG);
         break;
       case Opcodes.FASTORE :
-        recordArrayStore(Type.FLOAT);
+        recordArrayStore(JavaType.FLOAT);
         break;
       case Opcodes.DASTORE :
-        recordArrayStore(Type.DOUBLE);
+        recordArrayStore(JavaType.DOUBLE);
         break;
       case Opcodes.AASTORE :
-        recordArrayStore(Type.OBJECT);
+        recordArrayStore(JavaType.OBJECT);
         break;
       case Opcodes.BASTORE :
-        recordArrayStore(Type.BYTE);
+        recordArrayStore(JavaType.BYTE);
         break;
       case Opcodes.CASTORE :
-        recordArrayStore(Type.CHAR);
+        recordArrayStore(JavaType.CHAR);
         break;
       case Opcodes.SASTORE :
-        recordArrayStore(Type.SHORT);
+        recordArrayStore(JavaType.SHORT);
         break;
       case Opcodes.POP :
       case Opcodes.POP2 :
@@ -525,19 +526,19 @@ public class MethodVisitorBuilder implements MethodVisitor {
         });
         break;
       case Opcodes.IRETURN :
-        _return(Type.INT);
+        _return(JavaType.INT);
         break;
       case Opcodes.FRETURN :
-        _return(Type.FLOAT);
+        _return(JavaType.FLOAT);
         break;
       case Opcodes.ARETURN :
-        _return(Type.OBJECT);
+        _return(JavaType.OBJECT);
         break;
       case Opcodes.LRETURN :
-        _return(Type.LONG);
+        _return(JavaType.LONG);
         break;
       case Opcodes.DRETURN :
-        _return(Type.DOUBLE);
+        _return(JavaType.DOUBLE);
         break;
       case Opcodes.ATHROW :
         recorder.add(new Runnable() {
@@ -547,178 +548,178 @@ public class MethodVisitorBuilder implements MethodVisitor {
         });
         break;
       case Opcodes.RETURN :
-        _return(Type.VOID);
+        _return(JavaType.VOID);
         break;
       case Opcodes.LCMP :
-        operation("cmp", Type.LONG, Type.LONG, Type.INT);
+        operation("cmp", JavaType.LONG, JavaType.LONG, JavaType.INT);
         break;
       case Opcodes.FCMPL :
-        operation("cmpl", Type.FLOAT, Type.FLOAT, Type.INT);
+        operation("cmpl", JavaType.FLOAT, JavaType.FLOAT, JavaType.INT);
         break;
       case Opcodes.FCMPG :
-        operation("cmpg", Type.FLOAT, Type.FLOAT, Type.INT);
+        operation("cmpg", JavaType.FLOAT, JavaType.FLOAT, JavaType.INT);
         break;
       case Opcodes.DCMPL :
-        operation("cmpl", Type.DOUBLE, Type.DOUBLE, Type.INT);
+        operation("cmpl", JavaType.DOUBLE, JavaType.DOUBLE, JavaType.INT);
         break;
       case Opcodes.DCMPG :
-        operation("cmpg", Type.DOUBLE, Type.DOUBLE, Type.INT);
+        operation("cmpg", JavaType.DOUBLE, JavaType.DOUBLE, JavaType.INT);
         break;
       case Opcodes.LSHL :
-        operation("shl", Type.LONG, Type.INT, Type.LONG);
+        operation("shl", JavaType.LONG, JavaType.INT, JavaType.LONG);
         break;
       case Opcodes.LSHR :
-        operation("shr", Type.LONG, Type.INT, Type.LONG);
+        operation("shr", JavaType.LONG, JavaType.INT, JavaType.LONG);
         break;
       case Opcodes.LUSHR :
-        operation("ushr", Type.LONG, Type.INT, Type.LONG);
+        operation("ushr", JavaType.LONG, JavaType.INT, JavaType.LONG);
         break;
       case Opcodes.LADD :
-        operation("add", Type.LONG, Type.LONG, Type.LONG);
+        operation("add", JavaType.LONG, JavaType.LONG, JavaType.LONG);
         break;
       case Opcodes.LSUB :
-        operation("sub", Type.LONG, Type.LONG, Type.LONG);
+        operation("sub", JavaType.LONG, JavaType.LONG, JavaType.LONG);
         break;
       case Opcodes.LDIV :
-        operation("div", Type.LONG, Type.LONG, Type.LONG);
+        operation("div", JavaType.LONG, JavaType.LONG, JavaType.LONG);
         break;
       case Opcodes.LREM :
-        operation("rem", Type.LONG, Type.LONG, Type.LONG);
+        operation("rem", JavaType.LONG, JavaType.LONG, JavaType.LONG);
         break;
       case Opcodes.LAND :
-        operation("and", Type.LONG, Type.LONG, Type.LONG);
+        operation("and", JavaType.LONG, JavaType.LONG, JavaType.LONG);
         break;
       case Opcodes.LOR :
-        operation("or", Type.LONG, Type.LONG, Type.LONG);
+        operation("or", JavaType.LONG, JavaType.LONG, JavaType.LONG);
         break;
       case Opcodes.LXOR :
-        operation("xor", Type.LONG, Type.LONG, Type.LONG);
+        operation("xor", JavaType.LONG, JavaType.LONG, JavaType.LONG);
         break;
       case Opcodes.LMUL :
-        operation("mul", Type.LONG, Type.LONG, Type.LONG);
+        operation("mul", JavaType.LONG, JavaType.LONG, JavaType.LONG);
         break;
       case Opcodes.FADD :
-        operation("add", Type.FLOAT, Type.FLOAT, Type.FLOAT);
+        operation("add", JavaType.FLOAT, JavaType.FLOAT, JavaType.FLOAT);
         break;
       case Opcodes.FSUB :
-        operation("sub", Type.FLOAT, Type.FLOAT, Type.FLOAT);
+        operation("sub", JavaType.FLOAT, JavaType.FLOAT, JavaType.FLOAT);
         break;
       case Opcodes.FMUL :
-        operation("mul", Type.FLOAT, Type.FLOAT, Type.FLOAT);
+        operation("mul", JavaType.FLOAT, JavaType.FLOAT, JavaType.FLOAT);
         break;
       case Opcodes.FREM :
-        operation("rem", Type.FLOAT, Type.FLOAT, Type.FLOAT);
+        operation("rem", JavaType.FLOAT, JavaType.FLOAT, JavaType.FLOAT);
         break;
       case Opcodes.FDIV :
-        operation("div", Type.FLOAT, Type.FLOAT, Type.FLOAT);
+        operation("div", JavaType.FLOAT, JavaType.FLOAT, JavaType.FLOAT);
         break;
       case Opcodes.ISHL :
-        operation("shl", Type.INT, Type.INT, Type.INT);
+        operation("shl", JavaType.INT, JavaType.INT, JavaType.INT);
         break;
       case Opcodes.ISHR :
-        operation("shr", Type.INT, Type.INT, Type.INT);
+        operation("shr", JavaType.INT, JavaType.INT, JavaType.INT);
         break;
       case Opcodes.IUSHR :
-        operation("ushr", Type.INT, Type.INT, Type.INT);
+        operation("ushr", JavaType.INT, JavaType.INT, JavaType.INT);
         break;
       case Opcodes.IADD :
-        operation("add", Type.INT, Type.INT, Type.INT);
+        operation("add", JavaType.INT, JavaType.INT, JavaType.INT);
         break;
       case Opcodes.ISUB :
-        operation("sub", Type.INT, Type.INT, Type.INT);
+        operation("sub", JavaType.INT, JavaType.INT, JavaType.INT);
         break;
       case Opcodes.IMUL :
-        operation("mul", Type.INT, Type.INT, Type.INT);
+        operation("mul", JavaType.INT, JavaType.INT, JavaType.INT);
         break;
       case Opcodes.IDIV :
-        operation("div", Type.INT, Type.INT, Type.INT);
+        operation("div", JavaType.INT, JavaType.INT, JavaType.INT);
         break;
       case Opcodes.IREM :
-        operation("rem", Type.INT, Type.INT, Type.INT);
+        operation("rem", JavaType.INT, JavaType.INT, JavaType.INT);
         break;
       case Opcodes.IAND :
-        operation("and", Type.INT, Type.INT, Type.INT);
+        operation("and", JavaType.INT, JavaType.INT, JavaType.INT);
         break;
       case Opcodes.IOR :
-        operation("or", Type.INT, Type.INT, Type.INT);
+        operation("or", JavaType.INT, JavaType.INT, JavaType.INT);
         break;
       case Opcodes.IXOR :
-        operation("xor", Type.INT, Type.INT, Type.INT);
+        operation("xor", JavaType.INT, JavaType.INT, JavaType.INT);
         break;
       case Opcodes.DSUB :
-        operation("sub", Type.DOUBLE, Type.DOUBLE, Type.DOUBLE);
+        operation("sub", JavaType.DOUBLE, JavaType.DOUBLE, JavaType.DOUBLE);
         break;
       case Opcodes.DADD :
-        operation("add", Type.DOUBLE, Type.DOUBLE, Type.DOUBLE);
+        operation("add", JavaType.DOUBLE, JavaType.DOUBLE, JavaType.DOUBLE);
         break;
       case Opcodes.DMUL :
-        operation("mul", Type.DOUBLE, Type.DOUBLE, Type.DOUBLE);
+        operation("mul", JavaType.DOUBLE, JavaType.DOUBLE, JavaType.DOUBLE);
         break;
       case Opcodes.DDIV :
-        operation("div", Type.DOUBLE, Type.DOUBLE, Type.DOUBLE);
+        operation("div", JavaType.DOUBLE, JavaType.DOUBLE, JavaType.DOUBLE);
         break;
       case Opcodes.DREM :
-        operation("rem", Type.DOUBLE, Type.DOUBLE, Type.DOUBLE);
+        operation("rem", JavaType.DOUBLE, JavaType.DOUBLE, JavaType.DOUBLE);
         break;
       case Opcodes.L2I :
-        convert(Type.LONG, Type.INT);
+        convert(JavaType.LONG, JavaType.INT);
         break;
       case Opcodes.L2F :
-        convert(Type.LONG, Type.FLOAT);
+        convert(JavaType.LONG, JavaType.FLOAT);
         break;
       case Opcodes.L2D :
-        convert(Type.LONG, Type.DOUBLE);
+        convert(JavaType.LONG, JavaType.DOUBLE);
         break;
       case Opcodes.LNEG :
-        operation("neg", Type.LONG, null, Type.LONG);
+        operation("neg", JavaType.LONG, null, JavaType.LONG);
         break;
       case Opcodes.F2I :
-        convert(Type.FLOAT, Type.INT);
+        convert(JavaType.FLOAT, JavaType.INT);
         break;
       case Opcodes.F2L :
-        convert(Type.FLOAT, Type.LONG);
+        convert(JavaType.FLOAT, JavaType.LONG);
         break;
       case Opcodes.FNEG :
-        operation("neg", Type.FLOAT, null, Type.FLOAT);
+        operation("neg", JavaType.FLOAT, null, JavaType.FLOAT);
         break;
       case Opcodes.F2D :
-        convert(Type.FLOAT, Type.DOUBLE);
+        convert(JavaType.FLOAT, JavaType.DOUBLE);
         break;
       case Opcodes.D2I :
-        convert(Type.DOUBLE, Type.INT);
+        convert(JavaType.DOUBLE, JavaType.INT);
         break;
       case Opcodes.D2L :
-        convert(Type.DOUBLE, Type.LONG);
+        convert(JavaType.DOUBLE, JavaType.LONG);
         break;
       case Opcodes.D2F :
-        convert(Type.DOUBLE, Type.FLOAT);
+        convert(JavaType.DOUBLE, JavaType.FLOAT);
         break;
       case Opcodes.DNEG :
-        operation("neg", Type.DOUBLE, null, Type.DOUBLE);
+        operation("neg", JavaType.DOUBLE, null, JavaType.DOUBLE);
         break;
       case Opcodes.I2L :
-        convert(Type.INT, Type.LONG);
+        convert(JavaType.INT, JavaType.LONG);
         break;
       case Opcodes.I2F :
-        convert(Type.INT, Type.FLOAT);
+        convert(JavaType.INT, JavaType.FLOAT);
         break;
       case Opcodes.I2D :
-        convert(Type.INT, Type.DOUBLE);
+        convert(JavaType.INT, JavaType.DOUBLE);
         break;
       case Opcodes.I2B :
-        convert(Type.INT, Type.BYTE);
+        convert(JavaType.INT, JavaType.BYTE);
         break;
       case Opcodes.I2C :
-        convert(Type.INT, Type.CHAR);
+        convert(JavaType.INT, JavaType.CHAR);
         break;
       case Opcodes.I2S :
-        convert(Type.INT, Type.SHORT);
+        convert(JavaType.INT, JavaType.SHORT);
         break;
       case Opcodes.INEG :
-        operation("neg", Type.INT, null, Type.INT);
+        operation("neg", JavaType.INT, null, JavaType.INT);
         break;
       case Opcodes.ARRAYLENGTH :
-        operation("arraylength", Type.OBJECT.toArray(), null, Type.INT);
+        operation("arraylength", JavaType.OBJECT.toArray(), null, JavaType.INT);
         break;
       case Opcodes.MONITORENTER :
         recorder.add(new Runnable() {
@@ -844,7 +845,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
   public void visitIincInsn(final int var, final int increment) {
     recorder.add(new Runnable() {
       public void run() {
-        Variable variable = variable(var, Type.INT);
+        Variable variable = variable(var, JavaType.INT);
         block.addOp(new Increment(lineNumber, increment, variable));
       }
     });
@@ -856,10 +857,10 @@ public class MethodVisitorBuilder implements MethodVisitor {
         newArray(operand, toType(operand));
         break;
       case Opcodes.BIPUSH :
-        loadConstant(operand, Type.INT);
+        loadConstant(operand, JavaType.INT);
         break;
       case Opcodes.SIPUSH :
-        loadConstant(operand, Type.INT);
+        loadConstant(operand, JavaType.INT);
         break;
       default :
         throw new UnsupportedOperationException("Unexpected opcode: " + opcode);
@@ -869,21 +870,21 @@ public class MethodVisitorBuilder implements MethodVisitor {
   private Type toType(int operand) {
     switch (operand) {
       case Opcodes.T_BOOLEAN :
-        return Type.BOOLEAN;
+        return JavaType.BOOLEAN;
       case Opcodes.T_BYTE :
-        return Type.BYTE;
+        return JavaType.BYTE;
       case Opcodes.T_CHAR :
-        return Type.CHAR;
+        return JavaType.CHAR;
       case Opcodes.T_DOUBLE :
-        return Type.DOUBLE;
+        return JavaType.DOUBLE;
       case Opcodes.T_FLOAT :
-        return Type.FLOAT;
+        return JavaType.FLOAT;
       case Opcodes.T_INT :
-        return Type.INT;
+        return JavaType.INT;
       case Opcodes.T_LONG :
-        return Type.LONG;
+        return JavaType.LONG;
       case Opcodes.T_SHORT :
-        return Type.SHORT;
+        return JavaType.SHORT;
       default :
         throw new IllegalArgumentException();
     }
@@ -892,7 +893,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
   private void newArray(final int operand, final Type type) {
     recorder.add(new Runnable() {
       public void run() {
-        block.addOp(new Transform(lineNumber, "newarray", Type.INT, null, type
+        block.addOp(new Transform(lineNumber, "newarray", JavaType.INT, null, type
             .toArray()));
       }
     });
@@ -904,7 +905,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
   public void visitMultiANewArrayInsn(final String clazz, final int dims) {
     recorder.add(new Runnable() {
       public void run() {
-        block.addOp(new MultiANewArrayIns(lineNumber, Type.fromDesc(clazz),
+        block.addOp(new MultiANewArrayIns(lineNumber, JavaType.fromDesc(clazz),
             dims));
       }
     });
@@ -943,7 +944,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
         field = ownerClass.getField(fieldName);
       } catch (FieldNotFoundException e) {
         field =
-            new FieldInfo(ownerClass, "FAKE:" + fieldName, Type
+            new FieldInfo(ownerClass, "FAKE:" + fieldName, JavaType
                 .fromDesc(fieldDesc), false, isStatic, false);
       }
       block.addOp(new com.google.test.metric.method.op.stack.PutField(
@@ -973,7 +974,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
       try {
         field = ownerClass.getField(fieldName);
       } catch (FieldNotFoundException e) {
-        field = new FieldInfo(ownerClass, "FAKE:" + fieldName, Type
+        field = new FieldInfo(ownerClass, "FAKE:" + fieldName, JavaType
                 .fromDesc(fieldDesc), false, isStatic, false);
       }
       block.addOp(new GetField(lineNumber, field));

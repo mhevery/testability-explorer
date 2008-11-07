@@ -15,19 +15,20 @@
  */
 package com.google.test.metric.method.op.stack;
 
+import java.util.List;
+
+import com.google.test.metric.JavaType;
 import com.google.test.metric.Type;
 import com.google.test.metric.Variable;
 import com.google.test.metric.method.op.turing.Operation;
 import com.google.test.metric.method.op.turing.ReturnOperation;
-
-import java.util.List;
 
 public class Return extends Pop {
 
   private final Type type;
 
   public Return(int lineNumber, Type type) {
-    super(lineNumber, type == Type.VOID ? 0 : (type.isDoubleSlot() ? 2 : 1));
+    super(lineNumber, type == JavaType.VOID ? 0 : (JavaType.isDoubleSlot(type) ? 2 : 1));
     this.type = type;
   }
 
@@ -38,7 +39,7 @@ public class Return extends Pop {
 
   @Override
   public Operation toOperation(List<Variable> input) {
-    if (type == Type.VOID) {
+    if (type == JavaType.VOID) {
       return super.toOperation(input);
     } else {
       return new ReturnOperation(lineNumber, input.get(0));

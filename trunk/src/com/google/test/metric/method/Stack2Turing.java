@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.test.metric.JavaType;
 import com.google.test.metric.Variable;
 import com.google.test.metric.collection.KeyedMultiStack;
 import com.google.test.metric.collection.PopClosure;
@@ -105,7 +106,7 @@ public class Stack2Turing {
     Iterator<Variable> iter = variables.iterator();
     while (iter.hasNext()) {
       final Variable variable = iter.next();
-      if (variable.getType().isDoubleSlot()) {
+      if (JavaType.isDoubleSlot(variable.getType())) {
         Variable varNext = iter.hasNext() ? iter.next() : null;
         if (variable != varNext) {
           throw new IllegalStateException("Variable list '"

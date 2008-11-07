@@ -20,7 +20,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import com.google.test.metric.Type;
+import com.google.test.metric.JavaType;
 import com.google.test.metric.Variable;
 
 public class SwapTest extends TestCase {
@@ -31,8 +31,8 @@ public class SwapTest extends TestCase {
 
   public void testApplySwaps() throws Exception {
     Swap swap = new Swap(-1);
-    Variable first = new Variable(null, Type.BOOLEAN, false, false);
-    Variable second = new Variable(null, Type.BOOLEAN, false, false);
+    Variable first = new Variable(null, JavaType.BOOLEAN, false, false);
+    Variable second = new Variable(null, JavaType.BOOLEAN, false, false);
     List<Variable> inputs = new ArrayList<Variable>();
     inputs.add(first);
     inputs.add(second);

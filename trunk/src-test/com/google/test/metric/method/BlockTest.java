@@ -22,6 +22,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import com.google.test.metric.FieldInfo;
+import com.google.test.metric.JavaType;
 import com.google.test.metric.Type;
 import com.google.test.metric.Variable;
 import com.google.test.metric.method.op.stack.GetField;
@@ -33,7 +34,7 @@ import com.google.test.metric.method.op.turing.Operation;
 
 public class BlockTest extends TestCase {
 
-  private static final Type OBJECT = Type.fromClass(Object.class);
+  private static final Type OBJECT = JavaType.fromClass(Object.class);
 
   public void testBlockToString() throws Exception {
     Block block = new Block("1");
@@ -83,8 +84,8 @@ public class BlockTest extends TestCase {
         false, true, false)));
     block.addOp(new GetField(-1, new FieldInfo(null, "p2", OBJECT,
         false, true, false)));
-    block.addOp(new Invoke(-1, null, "methodA", "(II)A", asList(Type.INT,
-        Type.INT), false, OBJECT));
+    block.addOp(new Invoke(-1, null, "methodA", "(II)A", asList(JavaType.INT,
+        JavaType.INT), false, OBJECT));
     block.addOp(new PutField(-1, new FieldInfo(null, "dst", OBJECT,
         false, true, false)));
 
@@ -112,8 +113,8 @@ public class BlockTest extends TestCase {
     branchA.addOp(new Load(-1, var("A")));
     branchB.addOp(new Load(-1, var("B")));
     joined.addOp(new Load(-1, var("joined")));
-    joined.addOp(new Invoke(-1, null, "m", "(III)V", asList(Type.INT,
-        Type.INT, Type.INT), false, Type.VOID));
+    joined.addOp(new Invoke(-1, null, "m", "(III)V", asList(JavaType.INT,
+        JavaType.INT, JavaType.INT), false, JavaType.VOID));
 
     List<Operation> operations = new Stack2Turing(root).translate();
     assertEquals(2, operations.size());

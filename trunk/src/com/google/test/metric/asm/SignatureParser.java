@@ -21,6 +21,7 @@ import java.util.List;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 
+import com.google.test.metric.JavaType;
 import com.google.test.metric.Type;
 
 public class SignatureParser extends NoopSignatureVisitor {
@@ -47,12 +48,12 @@ public class SignatureParser extends NoopSignatureVisitor {
 
     @Override
     public void visitBaseType(char descriptor) {
-      setter.set(Type.fromDesc("" + descriptor));
+      setter.set(JavaType.fromDesc("" + descriptor));
     }
 
     @Override
     public void visitClassType(String name) {
-      setter.set(Type.fromJava(name));
+      setter.set(JavaType.fromJava(name));
     }
 
   }
@@ -71,12 +72,12 @@ public class SignatureParser extends NoopSignatureVisitor {
 
   @Override
   public void visitBaseType(char descriptor) {
-    parameters.add(Type.fromDesc("" + descriptor));
+    parameters.add(JavaType.fromDesc("" + descriptor));
   }
 
   @Override
   public void visitClassType(String name) {
-    parameters.add(Type.fromJava(name));
+    parameters.add(JavaType.fromJava(name));
   }
 
   @Override
