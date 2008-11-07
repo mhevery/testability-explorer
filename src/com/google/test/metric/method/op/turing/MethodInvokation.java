@@ -81,11 +81,7 @@ public class MethodInvokation extends Operation {
         return;
       } else if (toMethod.canOverride() && visitor.isInjectable(methodThis)) {
         // Method can be overridden / injectable
-        visitor.recordOverridableMethodCall(returnVariable);
-        if (returnVariable != null) {
-          int thisCount = visitor.getLoDCount(methodThis);
-          visitor.recordLoDDispatch(getLineNumber(), toMethod, returnVariable, thisCount + 1);
-        }
+        visitor.recordOverridableMethodCall(getLineNumber(), toMethod, methodThis, returnVariable);
       } else {
         // Method can not be intercepted we have to add the cost
         // recursively

@@ -42,6 +42,27 @@ public class TestabilityVisitor {
       this.methodCost = methodCost;
     }
 
+    private void applyMethodOperations(int lineNumber, MethodInfo toMethod,
+        Variable methodThis, List<? extends Variable> parameters,
+        Variable returnVariable) {
+      if (parameters.size() != toMethod.getParameters().size()) {
+        throw new IllegalStateException(
+            "Argument count does not match method parameter count.");
+      }
+      int i = 0;
+      for (Variable var : parameters) {
+        assignParameter(toMethod, lineNumber,
+            toMethod.getParameters().get(i++), parentFrame, var);
+      }
+      returnValue = null;
+      for (Operation operation : toMethod.getOperations()) {
+        operation.visit(this);
+      }
+      int thisCount = getLoDCount(methodThis);
+      parentFrame.recordLoDDispatch(lineNumber, toMethod, returnVariable,
+          thisCount + 1);
+    }
+
     /**
      * If and only if the array is a static, then add it as a Global State Cost
      * for the {@code inMethod}.
@@ -126,6 +147,10 @@ public class TestabilityVisitor {
       return classRepository.getClass(clazzName).getMethod(methodName);
     }
 
+    public Frame getParentFrame() {
+      return parentFrame;
+    }
+
     public boolean isClassWhiteListed(String clazzName) {
       return whitelist.isClassWhiteListed(clazzName);
     }
@@ -192,31 +217,15 @@ public class TestabilityVisitor {
       currentFrame.assignReturnValue(toMethod, lineNumber, returnVariable);
     }
 
-    private void applyMethodOperations(int lineNumber, MethodInfo toMethod,
-        Variable methodThis, List<? extends Variable> parameters,
-        Variable returnVariable) {
-      if (parameters.size() != toMethod.getParameters().size()) {
-        throw new IllegalStateException(
-            "Argument count does not match method parameter count.");
-      }
-      int i = 0;
-      for (Variable var : parameters) {
-        assignParameter(toMethod, lineNumber,
-            toMethod.getParameters().get(i++), parentFrame, var);
-      }
-      returnValue = null;
-      for (Operation operation : toMethod.getOperations()) {
-        operation.visit(this);
-      }
-      int thisCount = getLoDCount(methodThis);
-      parentFrame.recordLoDDispatch(lineNumber, toMethod, returnVariable,
-          thisCount + 1);
-    }
-
-    public void recordOverridableMethodCall(Variable returnVariable) {
+    public void recordOverridableMethodCall(int lineNumber,
+        MethodInfo toMethod, Variable methodThis, Variable returnVariable) {
       if (returnVariable != null) {
         setInjectable(returnVariable);
         setReturnValue(returnVariable);
+      }
+      if (returnVariable != null) {
+        int thisCount = getLoDCount(methodThis);
+        recordLoDDispatch(lineNumber, toMethod, returnVariable, thisCount + 1);
       }
     }
 
@@ -291,10 +300,6 @@ public class TestabilityVisitor {
 
     public boolean wasMethodAlreadyVisited(MethodInfo toMethod) {
       return methodCosts.containsKey(toMethod);
-    }
-
-    public Frame getParentFrame() {
-      return parentFrame;
     }
 
   }
@@ -372,10 +377,6 @@ public class TestabilityVisitor {
     return currentFrame;
   }
 
-  public Frame getRootFrame() {
-    return rootFrame;
-  }
-
   /**
    * Looks up the MethodCost and returns the cached one, or a new one is created
    * for this method. Then link() is called. Note: this returns the linked
@@ -399,6 +400,10 @@ public class TestabilityVisitor {
       methodCosts.put(method, methodCost);
     }
     return methodCost;
+  }
+
+  public Frame getRootFrame() {
+    return rootFrame;
   }
 
   @Override
