@@ -105,13 +105,14 @@ public class TestabilityVisitor {
 
     public void assignParameter(MethodInfo inMethod, int lineNumber,
         Variable destination, Frame sourceFrame, Variable source) {
-      MethodCost inMethodCost = TestabilityVisitor.this.getMethodCost(inMethod);
+      MethodCost inMethodCost = getMethodCost(inMethod);
       assignVariable(inMethodCost, lineNumber, destination, sourceFrame, source);
     }
 
     public void assignReturnValue(MethodInfo inMethod, int lineNumber,
         Variable destination) {
-      assignVariable(TestabilityVisitor.this.getMethodCost(inMethod),
+      MethodCost inMethodCost = getMethodCost(inMethod);
+      assignVariable(inMethodCost,
           lineNumber, destination, this, returnValue);
     }
 
@@ -145,10 +146,6 @@ public class TestabilityVisitor {
 
     public MethodInfo getMethod(String clazzName, String methodName) {
       return classRepository.getClass(clazzName).getMethod(methodName);
-    }
-
-    public Frame getParentFrame() {
-      return parentFrame;
     }
 
     public boolean isClassWhiteListed(String clazzName) {
@@ -200,7 +197,7 @@ public class TestabilityVisitor {
     public void recordNonOverridableMethodCall(int lineNumber,
         MethodInfo toMethod, Variable methodThis,
         List<? extends Variable> parameters, Variable returnVariable) {
-      MethodCost to = TestabilityVisitor.this.getMethodCost(toMethod);
+      MethodCost to = getMethodCost(toMethod);
       if (methodCost == to) {
         // Prevent recursion.
         return;
