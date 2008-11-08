@@ -28,14 +28,17 @@ import com.google.test.metric.method.op.turing.Operation;
 
 public class TestabilityVisitor {
 
-  public class Frame extends VariableFrame {
+  public class Frame {
 
     private final Frame parentFrame;
     private final MethodCost methodCost;
     private Variable returnValue;
+    private final VariableState globalVariables;
+    private final VariableState localVariables = new VariableState();
 
-    public Frame(Frame parentFrame, MethodCost methodCost) {
+    public Frame(Frame parentFrame, VariableState globalVariables, MethodCost methodCost) {
       this.parentFrame = parentFrame;
+      this.globalVariables = globalVariables;
       this.methodCost = methodCost;
     }
 
@@ -55,7 +58,7 @@ public class TestabilityVisitor {
       for (Operation operation : toMethod.getOperations()) {
         operation.visit(this);
       }
-      int thisCount = getLoDCount(methodThis);
+      int thisCount = localVariables.getLoDCount(methodThis);
       parentFrame.recordLoDDispatch(lineNumber, toMethod, returnVariable,
           thisCount + 1);
     }
@@ -123,45 +126,64 @@ public class TestabilityVisitor {
           inMethod.addGlobalCost(lineNumber, source);
         }
       }
-      setLoDCount(destination, sourceFrame.getLoDCount(source));
+      localVariables.setLoDCount(destination, sourceFrame.localVariables.getLoDCount(source));
     }
 
-    public MethodInfo getMethod(String clazzName, String methodName) {
-      return classRepository.getClass(clazzName).getMethod(methodName);
-    }
-
-    public boolean isClassWhiteListed(String clazzName) {
-      return whitelist.isClassWhiteListed(clazzName);
-    }
-
-    @Override
-    public boolean isGlobal(Variable var) {
-      if (super.isGlobal(var)) {
+    boolean isGlobal(Variable var) {
+      if (localVariables.isGlobal(var)) {
         return true;
       } else {
-        return rootFrame.isGlobal(var);
+        return globalVariables.isGlobal(var);
       }
     }
 
-    @Override
-    public boolean isInjectable(Variable var) {
-      if (super.isInjectable(var)) {
+    boolean isInjectable(Variable var) {
+      if (localVariables.isInjectable(var)) {
         return true;
       } else {
-        return rootFrame.isInjectable(var);
+        return globalVariables.isInjectable(var);
       }
     }
 
-    public void recordLoDDispatch(int lineNumber, MethodInfo method,
+    private void recordLoDDispatch(int lineNumber, MethodInfo method,
         Variable variable, int distance) {
-      setLoDCount(variable, distance);
+      localVariables.setLoDCount(variable, distance);
       if (distance > 1) {
         methodCost.addCostSource(new LoDViolation(lineNumber, method
             .getFullName(), distance));
       }
     }
 
-    public void recordNonOverridableMethodCall(int lineNumber,
+    public void recordMethodCall(String clazzName, int lineNumber, String methodName, Variable methodThis, List<Variable> parameters, Variable returnVariable) {
+      try {
+        if (whitelist.isClassWhiteListed(clazzName)) {
+          return;
+        }
+        MethodInfo toMethod = classRepository.getClass(clazzName).getMethod(methodName);
+        if (methodCosts.containsKey(toMethod)) {
+          // Method already counted, skip (to prevent recursion)
+          if (returnVariable != null) {
+            int thisCount = localVariables.getLoDCount(methodThis);
+            recordLoDDispatch(lineNumber, toMethod, returnVariable, thisCount + 1);
+          }
+          return;
+        } else if (toMethod.canOverride() && isInjectable(methodThis)) {
+          // Method can be overridden / injectable
+          recordOverridableMethodCall(lineNumber, toMethod, methodThis, returnVariable);
+        } else {
+          // Method can not be intercepted we have to add the cost
+          // recursively
+          recordNonOverridableMethodCall(lineNumber, toMethod, methodThis, parameters, returnVariable);
+        }
+      } catch (ClassNotFoundException e) {
+        err.println(("WARNING: class not found: " + clazzName));
+      } catch (MethodNotFoundException e) {
+        err.println(("WARNING: method not found: " + e.getMethodName()
+        + " in " + e.getClassInfo().getName()));
+      }
+    }
+
+    private void recordNonOverridableMethodCall(int lineNumber,
         MethodInfo toMethod, Variable methodThis,
         List<? extends Variable> parameters, Variable returnVariable) {
       MethodCost to = getMethodCost(toMethod);
@@ -171,7 +193,7 @@ public class TestabilityVisitor {
       }
       methodCost.addMethodCost(lineNumber, to,
           Reason.NON_OVERRIDABLE_METHOD_CALL);
-      Frame currentFrame = new Frame(this, to);
+      Frame currentFrame = new Frame(this, globalVariables, to);
       if (toMethod.isInstance()) {
         currentFrame.assignParameter(toMethod, lineNumber, toMethod
             .getMethodThis(), currentFrame.parentFrame, methodThis);
@@ -181,50 +203,44 @@ public class TestabilityVisitor {
       currentFrame.assignReturnValue(toMethod, lineNumber, returnVariable);
     }
 
-    public void recordOverridableMethodCall(int lineNumber,
+    private void recordOverridableMethodCall(int lineNumber,
         MethodInfo toMethod, Variable methodThis, Variable returnVariable) {
       if (returnVariable != null) {
         setInjectable(returnVariable);
         setReturnValue(returnVariable);
       }
       if (returnVariable != null) {
-        int thisCount = getLoDCount(methodThis);
+        int thisCount = localVariables.getLoDCount(methodThis);
         recordLoDDispatch(lineNumber, toMethod, returnVariable, thisCount + 1);
       }
     }
 
-    public void reportError(String errorMessage) {
-      err.println(errorMessage);
+    void setGlobal(Variable var) {
+      if (var instanceof LocalField || var instanceof FieldInfo) {
+        globalVariables.setGlobal(var);
+      } else {
+        localVariables.setGlobal(var);
+      }
     }
 
-    public void setInjectable(List<? extends Variable> parameters) {
+    void setInjectable(List<? extends Variable> parameters) {
       for (Variable variable : parameters) {
         setInjectable(variable);
       }
     }
 
-    public void setInjectable(MethodInfo method) {
+    void setInjectable(MethodInfo method) {
       if (!method.isStatic()) {
         setInjectable(method.getMethodThis());
       }
       setInjectable(method.getParameters());
     }
 
-    @Override
     void setInjectable(Variable var) {
       if (var instanceof LocalField || var instanceof FieldInfo) {
-        rootFrame.setInjectable(var);
+        globalVariables.setInjectable(var);
       } else {
-        super.setInjectable(var);
-      }
-    }
-
-    @Override
-    void setGlobal(Variable var) {
-      if (var instanceof LocalField || var instanceof FieldInfo) {
-        rootFrame.setGlobal(var);
-      } else {
-        super.setGlobal(var);
+        localVariables.setInjectable(var);
       }
     }
 
@@ -240,18 +256,18 @@ public class TestabilityVisitor {
       return "MethodCost: " + methodCost + "\n" + super.toString();
     }
 
-    public boolean wasMethodAlreadyVisited(MethodInfo toMethod) {
-      return methodCosts.containsKey(toMethod);
+    int getLoDCount(Variable variable) {
+      return localVariables.getLoDCount(variable);
     }
 
   }
 
-  public static class VariableFrame {
+  public static class VariableState {
     private final Map<Variable, Integer> lodCount = new HashMap<Variable, Integer>();
     private final Set<Variable> injectables = new HashSet<Variable>();
     private final Set<Variable> globals = new HashSet<Variable>();
 
-    public int getLoDCount(Variable variable) {
+    int getLoDCount(Variable variable) {
       Integer count = lodCount.get(variable);
       if (count == null) {
         if (variable instanceof LocalField) {
@@ -265,7 +281,7 @@ public class TestabilityVisitor {
       }
     }
 
-    public boolean isGlobal(Variable var) {
+    boolean isGlobal(Variable var) {
       if (var == null) {
         return false;
       }
@@ -282,7 +298,7 @@ public class TestabilityVisitor {
       return false;
     }
 
-    public boolean isInjectable(Variable var) {
+    boolean isInjectable(Variable var) {
       if (var == null) {
         return false;
       }
@@ -340,7 +356,7 @@ public class TestabilityVisitor {
 
   // TODO: refactor me. The root frame needs to be of different class so that
   // we can remove all of the ifs in Frame
-  private final VariableFrame rootFrame = new VariableFrame();
+  private final VariableState globalVariables = new VariableState();
   private final ClassRepository classRepository;
   private final Map<MethodInfo, MethodCost> methodCosts = new HashMap<MethodInfo, MethodCost>();
   private final PrintStream err;
@@ -399,7 +415,7 @@ public class TestabilityVisitor {
   }
 
   public Frame applyMethodOperations(MethodInfo method) {
-    Frame currentFrame = new Frame(new Frame(null, null), getMethodCost(method));
+    Frame currentFrame = new Frame(new Frame(null, globalVariables, null), globalVariables, getMethodCost(method));
 
     if (method.getMethodThis() != null) {
       currentFrame.setInjectable(method.getMethodThis());
@@ -436,8 +452,13 @@ public class TestabilityVisitor {
     return methodCost;
   }
 
-  public VariableFrame getRootFrame() {
-    return rootFrame;
+  public VariableState getGlobalVariables() {
+    return globalVariables;
+  }
+
+  //Temporary for testing
+  Frame newFrame(Frame parent, MethodCost method) {
+    return new Frame(parent, globalVariables, method);
   }
 
   @Override
@@ -449,13 +470,8 @@ public class TestabilityVisitor {
       buf.append(cost);
       buf.append("\n");
     }
-    buf.append("\n==============\nROOT FRAME:\n" + rootFrame);
+    buf.append("\n==============\nROOT FRAME:\n" + globalVariables);
     return buf.toString();
-  }
-
-  //Temporary for testing
-  Frame newFrame(Frame parent, MethodCost method) {
-    return new Frame(parent, method);
   }
 
 }
