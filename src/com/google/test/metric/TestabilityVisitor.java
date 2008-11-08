@@ -17,10 +17,8 @@ package com.google.test.metric;
 
 import java.io.PrintStream;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.google.test.metric.ViolationCost.Reason;
 import com.google.test.metric.method.Constant;
@@ -32,13 +30,13 @@ public class TestabilityVisitor {
 
     private final Frame parentFrame;
     private final MethodCost methodCost;
+    private final LocalVariableState variableState;
     private Variable returnValue;
-    private final VariableState globalVariables;
-    private final VariableState localVariables = new VariableState();
 
-    public Frame(Frame parentFrame, VariableState globalVariables, MethodCost methodCost) {
+    public Frame(Frame parentFrame, VariableState globalVariables,
+        MethodCost methodCost) {
       this.parentFrame = parentFrame;
-      this.globalVariables = globalVariables;
+      this.variableState = new LocalVariableState(globalVariables);
       this.methodCost = methodCost;
     }
 
@@ -58,7 +56,7 @@ public class TestabilityVisitor {
       for (Operation operation : toMethod.getOperations()) {
         operation.visit(this);
       }
-      int thisCount = localVariables.getLoDCount(methodThis);
+      int thisCount = variableState.getLoDCount(methodThis);
       parentFrame.recordLoDDispatch(lineNumber, toMethod, returnVariable,
           thisCount + 1);
     }
@@ -94,7 +92,7 @@ public class TestabilityVisitor {
         if (!field.isFinal()) {
           inMethod.addGlobalCost(lineNumber, fieldInstance);
         }
-        setGlobal(field);
+        variableState.setGlobal(field);
       }
     }
 
@@ -118,19 +116,20 @@ public class TestabilityVisitor {
     private void assignVariable(MethodCost inMethod, int lineNumber,
         Variable destination, Frame sourceFrame, Variable source) {
       if (sourceFrame.isInjectable(source)) {
-        setInjectable(destination);
+        variableState.setInjectable(destination);
       }
       if (destination.isGlobal() || sourceFrame.isGlobal(source)) {
-        setGlobal(destination);
+        variableState.setGlobal(destination);
         if (source instanceof LocalField && !source.isFinal()) {
           inMethod.addGlobalCost(lineNumber, source);
         }
       }
-      localVariables.setLoDCount(destination, sourceFrame.localVariables.getLoDCount(source));
+      variableState.setLoDCount(destination, sourceFrame.variableState
+          .getLoDCount(source));
     }
 
     boolean isGlobal(Variable var) {
-      if (localVariables.isGlobal(var)) {
+      if (variableState.isGlobal(var)) {
         return true;
       } else {
         return globalVariables.isGlobal(var);
@@ -138,7 +137,7 @@ public class TestabilityVisitor {
     }
 
     boolean isInjectable(Variable var) {
-      if (localVariables.isInjectable(var)) {
+      if (variableState.isInjectable(var)) {
         return true;
       } else {
         return globalVariables.isInjectable(var);
@@ -147,39 +146,46 @@ public class TestabilityVisitor {
 
     private void recordLoDDispatch(int lineNumber, MethodInfo method,
         Variable variable, int distance) {
-      localVariables.setLoDCount(variable, distance);
+      variableState.setLoDCount(variable, distance);
       if (distance > 1) {
         methodCost.addCostSource(new LoDViolation(lineNumber, method
             .getFullName(), distance));
       }
     }
 
-    public void recordMethodCall(String clazzName, int lineNumber, String methodName, Variable methodThis, List<Variable> parameters, Variable returnVariable) {
+    public void recordMethodCall(String clazzName, int lineNumber,
+        String methodName, Variable methodThis, List<Variable> parameters,
+        Variable returnVariable) {
       try {
         if (whitelist.isClassWhiteListed(clazzName)) {
           return;
         }
-        MethodInfo toMethod = classRepository.getClass(clazzName).getMethod(methodName);
+        MethodInfo toMethod = classRepository.getClass(clazzName).getMethod(
+            methodName);
         if (methodCosts.containsKey(toMethod)) {
           // Method already counted, skip (to prevent recursion)
           if (returnVariable != null) {
-            int thisCount = localVariables.getLoDCount(methodThis);
-            recordLoDDispatch(lineNumber, toMethod, returnVariable, thisCount + 1);
+            int thisCount = variableState.getLoDCount(methodThis);
+            recordLoDDispatch(lineNumber, toMethod, returnVariable,
+                thisCount + 1);
           }
           return;
         } else if (toMethod.canOverride() && isInjectable(methodThis)) {
           // Method can be overridden / injectable
-          recordOverridableMethodCall(lineNumber, toMethod, methodThis, returnVariable);
+          recordOverridableMethodCall(lineNumber, toMethod, methodThis,
+              returnVariable);
         } else {
           // Method can not be intercepted we have to add the cost
           // recursively
-          recordNonOverridableMethodCall(lineNumber, toMethod, methodThis, parameters, returnVariable);
+          recordNonOverridableMethodCall(lineNumber, toMethod, methodThis,
+              parameters, returnVariable);
         }
       } catch (ClassNotFoundException e) {
         err.println(("WARNING: class not found: " + clazzName));
       } catch (MethodNotFoundException e) {
-        err.println(("WARNING: method not found: " + e.getMethodName()
-        + " in " + e.getClassInfo().getName()));
+        err
+            .println(("WARNING: method not found: " + e.getMethodName()
+                + " in " + e.getClassInfo().getName()));
       }
     }
 
@@ -193,7 +199,7 @@ public class TestabilityVisitor {
       }
       methodCost.addMethodCost(lineNumber, to,
           Reason.NON_OVERRIDABLE_METHOD_CALL);
-      Frame currentFrame = new Frame(this, globalVariables, to);
+      Frame currentFrame = new Frame(this, variableState.getGlobalVariableState(), to);
       if (toMethod.isInstance()) {
         currentFrame.assignParameter(toMethod, lineNumber, toMethod
             .getMethodThis(), currentFrame.parentFrame, methodThis);
@@ -206,42 +212,26 @@ public class TestabilityVisitor {
     private void recordOverridableMethodCall(int lineNumber,
         MethodInfo toMethod, Variable methodThis, Variable returnVariable) {
       if (returnVariable != null) {
-        setInjectable(returnVariable);
+        variableState.setInjectable(returnVariable);
         setReturnValue(returnVariable);
       }
       if (returnVariable != null) {
-        int thisCount = localVariables.getLoDCount(methodThis);
+        int thisCount = variableState.getLoDCount(methodThis);
         recordLoDDispatch(lineNumber, toMethod, returnVariable, thisCount + 1);
-      }
-    }
-
-    void setGlobal(Variable var) {
-      if (var instanceof LocalField || var instanceof FieldInfo) {
-        globalVariables.setGlobal(var);
-      } else {
-        localVariables.setGlobal(var);
       }
     }
 
     void setInjectable(List<? extends Variable> parameters) {
       for (Variable variable : parameters) {
-        setInjectable(variable);
+        variableState.setInjectable(variable);
       }
     }
 
     void setInjectable(MethodInfo method) {
       if (!method.isStatic()) {
-        setInjectable(method.getMethodThis());
+        variableState.setInjectable(method.getMethodThis());
       }
       setInjectable(method.getParameters());
-    }
-
-    void setInjectable(Variable var) {
-      if (var instanceof LocalField || var instanceof FieldInfo) {
-        globalVariables.setInjectable(var);
-      } else {
-        localVariables.setInjectable(var);
-      }
     }
 
     public void setReturnValue(Variable value) {
@@ -257,99 +247,7 @@ public class TestabilityVisitor {
     }
 
     int getLoDCount(Variable variable) {
-      return localVariables.getLoDCount(variable);
-    }
-
-  }
-
-  public static class VariableState {
-    private final Map<Variable, Integer> lodCount = new HashMap<Variable, Integer>();
-    private final Set<Variable> injectables = new HashSet<Variable>();
-    private final Set<Variable> globals = new HashSet<Variable>();
-
-    int getLoDCount(Variable variable) {
-      Integer count = lodCount.get(variable);
-      if (count == null) {
-        if (variable instanceof LocalField) {
-          LocalField localField = (LocalField) variable;
-          return getLoDCount(localField.getField());
-        } else {
-          return 0;
-        }
-      } else {
-        return count.intValue();
-      }
-    }
-
-    boolean isGlobal(Variable var) {
-      if (var == null) {
-        return false;
-      }
-      if (var.isGlobal()) {
-        return true;
-      }
-      if (globals.contains(var)) {
-        return true;
-      }
-      if (var instanceof LocalField) {
-        LocalField field = (LocalField) var;
-        return isGlobal(field.getInstance()) || isGlobal(field.getField());
-      }
-      return false;
-    }
-
-    boolean isInjectable(Variable var) {
-      if (var == null) {
-        return false;
-      }
-      if (injectables.contains(var)) {
-        return true;
-      } else {
-        if (var instanceof LocalField) {
-          return isInjectable(((LocalField) var).getField());
-        } else {
-          return false;
-        }
-      }
-    }
-
-    void setGlobal(Variable var) {
-      globals.add(var);
-    }
-
-    void setInjectable(Variable var) {
-      injectables.add(var);
-    }
-
-    void setLoDCount(Variable value, int newCount) {
-      Integer count = lodCount.get(value);
-      int intCount = count == null ? 0 : count;
-      if (intCount < newCount) {
-        lodCount.put(value, newCount);
-      }
-    }
-
-    @Override
-    public String toString() {
-      StringBuilder buf = new StringBuilder();
-      buf.append("\nInjectables:");
-      for (Variable var : injectables) {
-        buf.append("\n   ");
-        buf.append(var);
-      }
-      buf.append("\nGlobals:");
-      for (Variable var : globals) {
-        buf.append("\n   ");
-        buf.append(var);
-      }
-      buf.append("\nLod:");
-      for (Variable var : lodCount.keySet()) {
-        buf.append("\n   ");
-        buf.append(var);
-        buf.append(": ");
-        buf.append(lodCount.get(var));
-      }
-      return buf.toString();
+      return variableState.getLoDCount(variable);
     }
 
   }
@@ -415,10 +313,11 @@ public class TestabilityVisitor {
   }
 
   public Frame applyMethodOperations(MethodInfo method) {
-    Frame currentFrame = new Frame(new Frame(null, globalVariables, null), globalVariables, getMethodCost(method));
+    Frame currentFrame = new Frame(new Frame(null, globalVariables, null),
+        globalVariables, getMethodCost(method));
 
     if (method.getMethodThis() != null) {
-      currentFrame.setInjectable(method.getMethodThis());
+      currentFrame.variableState.setInjectable(method.getMethodThis());
     }
     currentFrame.setInjectable(method.getParameters());
     currentFrame.applyMethodOperations(-1, method, method.getMethodThis(),
@@ -456,7 +355,7 @@ public class TestabilityVisitor {
     return globalVariables;
   }
 
-  //Temporary for testing
+  // Temporary for testing
   Frame newFrame(Frame parent, MethodCost method) {
     return new Frame(parent, globalVariables, method);
   }
