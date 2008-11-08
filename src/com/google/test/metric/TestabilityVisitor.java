@@ -67,7 +67,7 @@ public class TestabilityVisitor {
      */
     public void assignArray(Variable array, Variable index, Variable value,
         int lineNumber) {
-      if (isGlobal(array)) {
+      if (variableState.isGlobal(array)) {
         methodCost.addGlobalCost(lineNumber, array);
       }
     }
@@ -88,7 +88,7 @@ public class TestabilityVisitor {
         Variable value, int lineNumber) {
       MethodCost inMethod = methodCost;
       assignVariable(inMethod, lineNumber, field, this, value);
-      if (fieldInstance == null || isGlobal(fieldInstance)) {
+      if (fieldInstance == null || variableState.isGlobal(fieldInstance)) {
         if (!field.isFinal()) {
           inMethod.addGlobalCost(lineNumber, fieldInstance);
         }
@@ -115,10 +115,10 @@ public class TestabilityVisitor {
 
     private void assignVariable(MethodCost inMethod, int lineNumber,
         Variable destination, Frame sourceFrame, Variable source) {
-      if (sourceFrame.isInjectable(source)) {
+      if (sourceFrame.variableState.isInjectable(source)) {
         variableState.setInjectable(destination);
       }
-      if (destination.isGlobal() || sourceFrame.isGlobal(source)) {
+      if (destination.isGlobal() || sourceFrame.variableState.isGlobal(source)) {
         variableState.setGlobal(destination);
         if (source instanceof LocalField && !source.isFinal()) {
           inMethod.addGlobalCost(lineNumber, source);
@@ -126,22 +126,6 @@ public class TestabilityVisitor {
       }
       variableState.setLoDCount(destination, sourceFrame.variableState
           .getLoDCount(source));
-    }
-
-    boolean isGlobal(Variable var) {
-      if (variableState.isGlobal(var)) {
-        return true;
-      } else {
-        return globalVariables.isGlobal(var);
-      }
-    }
-
-    boolean isInjectable(Variable var) {
-      if (variableState.isInjectable(var)) {
-        return true;
-      } else {
-        return globalVariables.isInjectable(var);
-      }
     }
 
     private void recordLoDDispatch(int lineNumber, MethodInfo method,
@@ -170,7 +154,7 @@ public class TestabilityVisitor {
                 thisCount + 1);
           }
           return;
-        } else if (toMethod.canOverride() && isInjectable(methodThis)) {
+        } else if (toMethod.canOverride() && variableState.isInjectable(methodThis)) {
           // Method can be overridden / injectable
           recordOverridableMethodCall(lineNumber, toMethod, methodThis,
               returnVariable);
@@ -235,7 +219,7 @@ public class TestabilityVisitor {
     }
 
     public void setReturnValue(Variable value) {
-      boolean isWorse = isGlobal(value) && !isGlobal(returnValue);
+      boolean isWorse = variableState.isGlobal(value) && !variableState.isGlobal(returnValue);
       if (isWorse) {
         returnValue = value;
       }
@@ -248,6 +232,10 @@ public class TestabilityVisitor {
 
     int getLoDCount(Variable variable) {
       return variableState.getLoDCount(variable);
+    }
+
+    public VariableState getVariableState() {
+      return variableState;
     }
 
   }

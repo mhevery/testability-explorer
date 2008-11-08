@@ -73,7 +73,7 @@ public class TestabilityVisitorTest extends TestCase {
     visitor.getGlobalVariables().setInjectable(instance);
     currentFrame.assignParameter(method, 1, dst, parentFrame, instance);
     assertFalse(visitor.getGlobalVariables().isGlobal(dst));
-    assertTrue(currentFrame.isInjectable(dst));
+    assertTrue(currentFrame.getVariableState().isInjectable(dst));
     assertEquals(0, visitor.getLinkedMethodCost(method).getTotalCost().getGlobalCost());
   }
 
@@ -96,7 +96,7 @@ public class TestabilityVisitorTest extends TestCase {
     visitor.getGlobalVariables().setInjectable(field);
     currentFrame.assignParameter(method, 1, dst, parentFrame, localField);
     assertFalse(visitor.getGlobalVariables().isGlobal(dst));
-    assertTrue(currentFrame.isInjectable(dst));
+    assertTrue(currentFrame.getVariableState().isInjectable(dst));
     assertEquals(0, visitor.getLinkedMethodCost(method).getTotalCost().getGlobalCost());
   }
 
@@ -210,8 +210,8 @@ public class TestabilityVisitorTest extends TestCase {
     MethodInfo methodInfo = clazz.getMethod(method("execute", Obj.class));
     visitor.getGlobalVariables().setInjectable(methodInfo.getParameters().get(0));
     visitor.applyMethodOperations(methodInfo);
-    assertTrue(currentFrame.isInjectable(clazz.getField("injectable1")));
-    assertTrue(currentFrame.isInjectable(clazz.getField("injectable2")));
+    assertTrue(currentFrame.getVariableState().isInjectable(clazz.getField("injectable1")));
+    assertTrue(currentFrame.getVariableState().isInjectable(clazz.getField("injectable2")));
   }
 
   private static class LoDStaticCall {
