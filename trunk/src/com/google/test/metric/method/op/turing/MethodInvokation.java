@@ -17,9 +17,6 @@ package com.google.test.metric.method.op.turing;
 
 import java.util.List;
 
-import com.google.test.metric.ClassNotFoundException;
-import com.google.test.metric.MethodInfo;
-import com.google.test.metric.MethodNotFoundException;
 import com.google.test.metric.TestabilityVisitor;
 import com.google.test.metric.Variable;
 
@@ -67,32 +64,8 @@ public class MethodInvokation extends Operation {
 
   @Override
   public void visit(TestabilityVisitor.Frame visitor) {
-    if (visitor.isClassWhiteListed(clazzName)) {
-      return;
-    }
-    try {
-      MethodInfo toMethod = visitor.getMethod(clazzName, name + signature);
-      if (visitor.wasMethodAlreadyVisited(toMethod)) {
-        // Method already counted, skip (to prevent recursion)
-        if (returnVariable != null) {
-          int thisCount = visitor.getLoDCount(methodThis);
-          visitor.recordLoDDispatch(getLineNumber(), toMethod, returnVariable, thisCount + 1);
-        }
-        return;
-      } else if (toMethod.canOverride() && visitor.isInjectable(methodThis)) {
-        // Method can be overridden / injectable
-        visitor.recordOverridableMethodCall(getLineNumber(), toMethod, methodThis, returnVariable);
-      } else {
-        // Method can not be intercepted we have to add the cost
-        // recursively
-        visitor.recordNonOverridableMethodCall(getLineNumber(), toMethod, methodThis, parameters, returnVariable);
-      }
-    } catch (ClassNotFoundException e) {
-      visitor.reportError("WARNING: class not found: " + clazzName);
-    } catch (MethodNotFoundException e) {
-      visitor.reportError("WARNING: method not found: " + e.getMethodName()
-          + " in " + e.getClassInfo().getName());
-    }
+    visitor.recordMethodCall(clazzName, getLineNumber(), name + signature,
+        methodThis, parameters, returnVariable);
   }
 
   public Variable getMethodThis() {

@@ -108,7 +108,7 @@ public class MetricComputer {
       TestabilityVisitor visitor) {
     for (FieldInfo field : method.getClassInfo().getFields()) {
       if (!field.isPrivate()) {
-        visitor.getRootFrame().setInjectable(field);
+        visitor.getGlobalVariables().setInjectable(field);
       }
     }
   }
