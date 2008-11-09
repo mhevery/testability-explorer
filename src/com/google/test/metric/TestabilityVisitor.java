@@ -44,7 +44,8 @@ public class TestabilityVisitor {
 
     protected void addGlobalCost(int lineNumber, Variable variable) {
       Cost globalCost = Cost.global(1);
-      methodCost.addCostSource(new GlobalCost(lineNumber, variable, globalCost));
+      methodCost
+          .addCostSource(new GlobalCost(lineNumber, variable, globalCost));
     }
 
     protected void addLoDCost(int lineNumber, MethodInfo method, int distance) {
@@ -144,8 +145,8 @@ public class TestabilityVisitor {
           inMethod.addGlobalCost(lineNumber, source);
         }
       }
-      variableState.setLoDCount(destination, sourceFrame.variableState
-          .getLoDCount(source));
+      int loDCount = sourceFrame.variableState.getLoDCount(source);
+      variableState.setLoDCount(destination, loDCount);
     }
 
     int getLoDCount(Variable variable) {
