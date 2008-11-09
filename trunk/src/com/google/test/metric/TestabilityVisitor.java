@@ -68,8 +68,8 @@ public class TestabilityVisitor {
       }
       int i = 0;
       for (Variable var : parameters) {
-        assignParameter(toMethod, lineNumber,
-            toMethod.getParameters().get(i++), parentFrame, var);
+        assignParameter(lineNumber, toMethod.getParameters().get(i++),
+            parentFrame, var);
       }
       returnValue = null;
       for (Operation operation : toMethod.getOperations()) {
@@ -108,7 +108,7 @@ public class TestabilityVisitor {
      */
     public void assignField(Variable fieldInstance, FieldInfo field,
         Variable value, int lineNumber) {
-      assignVariable(methodCost, lineNumber, field, this, value);
+      assignVariable(field, lineNumber, this, value);
       if (fieldInstance == null || variableState.isGlobal(fieldInstance)) {
         if (!field.isFinal()) {
           methodCost.addGlobalCost(lineNumber, fieldInstance);
@@ -119,36 +119,32 @@ public class TestabilityVisitor {
 
     public void assignLocal(int lineNumber, Variable destination,
         Variable source) {
-      assignVariable(methodCost, lineNumber, destination, this, source);
+      assignVariable(destination, lineNumber, this, source);
     }
 
-    public void assignParameter(MethodInfo inMethod, int lineNumber,
-        Variable destination, Frame sourceFrame, Variable source) {
-      MethodCost inMethodCost = getMethodCost(inMethod);
-      assignVariable(inMethodCost, lineNumber, destination, sourceFrame, source);
+    void assignParameter(int lineNumber, Variable destination,
+        Frame sourceFrame, Variable source) {
+      assignVariable(destination, lineNumber, sourceFrame, source);
     }
 
-    public void assignReturnValue(MethodInfo inMethod, int lineNumber,
-        Variable destination) {
-      MethodCost inMethodCost = getMethodCost(inMethod);
-      assignVariable(inMethodCost, lineNumber, destination, this, returnValue);
+    public void assignReturnValue(int lineNumber, Variable destination) {
+      assignVariable(destination, lineNumber, this, returnValue);
     }
 
-    private void assignVariable(MethodCost inMethod, int lineNumber,
-        Variable destination, Frame sourceFrame, Variable source) {
-      if (sourceFrame.variableState.isInjectable(source)) {
+    private void assignVariable(Variable destination,
+        int lineNumber, Frame srcFrame, Variable source) {
+      if (srcFrame.variableState.isInjectable(source)) {
         variableState.setInjectable(destination);
       }
-      if (destination.isGlobal() || sourceFrame.variableState.isGlobal(source)) {
+      if (destination.isGlobal() || srcFrame.variableState.isGlobal(source)) {
         variableState.setGlobal(destination);
         if (source instanceof LocalField && !source.isFinal()) {
-          inMethod.addGlobalCost(lineNumber, source);
+          addGlobalCost(lineNumber, source);
         }
       }
-      int loDCount = sourceFrame.variableState.getLoDCount(source);
+      int loDCount = srcFrame.variableState.getLoDCount(source);
       variableState.setLoDCount(destination, loDCount);
     }
-
     int getLoDCount(Variable variable) {
       return variableState.getLoDCount(variable);
     }
@@ -209,12 +205,12 @@ public class TestabilityVisitor {
       Frame currentFrame = new Frame(this, variableState
           .getGlobalVariableState(), to);
       if (toMethod.isInstance()) {
-        currentFrame.assignParameter(toMethod, lineNumber, toMethod
+        currentFrame.assignParameter(lineNumber, toMethod
             .getMethodThis(), currentFrame.parentFrame, methodThis);
       }
       currentFrame.applyMethodOperations(lineNumber, toMethod, methodThis,
           parameters, returnVariable);
-      currentFrame.assignReturnValue(toMethod, lineNumber, returnVariable);
+      currentFrame.assignReturnValue(lineNumber, returnVariable);
     }
 
     private void recordOverridableMethodCall(int lineNumber,
