@@ -15,7 +15,6 @@
  */
 package com.google.test.metric;
 
-import java.util.List;
 
 public class CostModel {
 
@@ -39,7 +38,7 @@ public class CostModel {
     this.globalMultiplier = globalMultiplier;
   }
 
-  public int computeMethod(Cost cost) {
+  public int computeOverall(Cost cost) {
     int sum = 0;
     sum += cyclomaticMultiplier * cost.getCyclomaticComplexityCost();
     sum += globalMultiplier * cost.getGlobalCost();
@@ -49,13 +48,14 @@ public class CostModel {
     return sum;
   }
 
-  public int computeClass(List<MethodCost> methods) {
+  public int computeClass(ClassCost classCost) {
     WeightedAverage average = new WeightedAverage(
         WEIGHT_TO_EMPHASIZE_EXPENSIVE_METHODS);
-    for (MethodCost methodCost : methods) {
-      average.addValue(computeMethod(methodCost.getTotalCost()));
+    for (MethodCost methodCost : classCost.getMethods()) {
+      average.addValue(computeOverall(methodCost.getTotalCost()));
     }
     return (int) average.getAverage();
   }
+
 
 }

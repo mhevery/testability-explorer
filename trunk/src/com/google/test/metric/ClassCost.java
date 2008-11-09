@@ -22,27 +22,24 @@ import java.util.Map;
 public class ClassCost {
 
   public static class CostComparator implements java.util.Comparator<ClassCost> {
-    public int compare(ClassCost c1, ClassCost c2) {
-      int diff = (c2.getOverallCost() - c1.getOverallCost());
-      return diff == 0 ? c1.className.compareTo(c2.className) : diff;
-    }
-  }
+    private final CostModel costModel;
 
-  public static class PackageComparator implements java.util.Comparator<ClassCost> {
+    public CostComparator(CostModel costModel) {
+      this.costModel = costModel;
+    }
+
     public int compare(ClassCost c1, ClassCost c2) {
-      // we sort by fully qualified path to get packages in right order
-      return c1.getClassName().compareTo(c2.getClassName());
+      int diff = (costModel.computeClass(c2) - costModel.computeClass(c1));
+      return diff == 0 ? c1.className.compareTo(c2.className) : diff;
     }
   }
 
   private final List<MethodCost> methods;
   private final String className;
-  private final int overallCost;
 
-  public ClassCost(String className, List<MethodCost> methods, CostModel costModel) {
+  public ClassCost(String className, List<MethodCost> methods) {
     this.className = className;
     this.methods = methods;
-    this.overallCost = costModel.computeClass(methods);
   }
 
   public MethodCost getMethodCost(String methodName) {
@@ -57,7 +54,7 @@ public class ClassCost {
 
   @Override
   public String toString() {
-    return className + " " + getOverallCost();
+    return className;
   }
 
   public String getClassName() {
@@ -113,14 +110,9 @@ public class ClassCost {
     return cost;
   }
 
-  public int getOverallCost() {
-    return overallCost;
-  }
-
   public Map<String, Object> getAttributes() {
     HashMap<String, Object> map = new HashMap<String, Object>();
     map.put("class", className);
-    map.put("cost", overallCost);
     return map;
   }
 

@@ -20,14 +20,11 @@ import static java.util.Arrays.asList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import junit.framework.TestCase;
 
 public class ClassCostTest extends TestCase {
 
-  private final CostModel costModel = new CostModel();
   private final  MethodCost methodCost0 = new MethodCost("c.g.t.A.method0()V", 0);
   private final  MethodCost methodCost1 = new MethodCost("c.g.t.A.method1()V", 0);
   private final  MethodCost methodCost2 = new MethodCost("c.g.t.A.method2()V", 0);
@@ -45,13 +42,12 @@ public class ClassCostTest extends TestCase {
     methodCost2.addCyclomaticCost(0);
     methodCost2.addCyclomaticCost(0);
 
-    CostModel context = new CostModel();
-    methodCost0.link(context);
-    methodCost1.link(context);
-    methodCost2.link(context);
-    classCost0 = new ClassCost("FAKE_classInfo0", asList(methodCost0), costModel);
-    classCost1 = new ClassCost("FAKE_classInfo1", asList(methodCost1), costModel);
-    classCost2 = new ClassCost("FAKE_classInfo2", asList(methodCost2), costModel);
+    methodCost0.link();
+    methodCost1.link();
+    methodCost2.link();
+    classCost0 = new ClassCost("FAKE_classInfo0", asList(methodCost0));
+    classCost1 = new ClassCost("FAKE_classInfo1", asList(methodCost1));
+    classCost2 = new ClassCost("FAKE_classInfo2", asList(methodCost2));
   }
 
   public void testSumsUpTotalClassCostCorrectly() throws Exception {
@@ -66,7 +62,7 @@ public class ClassCostTest extends TestCase {
     classCosts.add(classCost0);
     classCosts.add(classCost2);
 
-    Collections.sort(classCosts, new ClassCost.CostComparator());
+    Collections.sort(classCosts, new ClassCost.CostComparator(new CostModel()));
 
     assertEquals(classCost2, classCosts.get(0));
     assertEquals(classCost1, classCosts.get(1));
@@ -74,33 +70,13 @@ public class ClassCostTest extends TestCase {
   }
 
   public void testGetPackageName() throws Exception {
-    ClassCost classCost0 = new ClassCost("com.a.b.c.Dee", asList(methodCost0), costModel);
+    ClassCost classCost0 = new ClassCost("com.a.b.c.Dee", asList(methodCost0));
 
     assertEquals("com.a.b.c", classCost0.getPackageName());
 
-    classCost0 = new ClassCost("Dee", asList(methodCost0), costModel);
+    classCost0 = new ClassCost("Dee", asList(methodCost0));
 
     assertEquals("", classCost0.getPackageName());
   }
 
-  public void testPackageComparator() throws Exception {
-    ClassCost classCost0 = new ClassCost("com.a.b.c.Dab", asList(methodCost0), costModel);
-    ClassCost classCost1 = new ClassCost("com.a.b.c.Dac", asList(methodCost1), costModel);
-    ClassCost classCost2 = new ClassCost("com.a.b.c.Daa", asList(methodCost0), costModel);
-    ClassCost classCost3 = new ClassCost("com.a.b.c.Dxx", asList(methodCost2), costModel);
-
-    SortedSet<ClassCost> ss = new TreeSet<ClassCost>(new ClassCost.PackageComparator());
-
-    ss.add(classCost3);
-    ss.add(classCost0);
-    ss.add(classCost2);
-    ss.add(classCost1);
-
-    ClassCost[] ccs = ss.toArray(new ClassCost[ss.size()]);
-
-    assertEquals(ccs[0], classCost2);
-    assertEquals(ccs[1], classCost0);
-    assertEquals(ccs[2], classCost1);
-    assertEquals(ccs[3], classCost3);
-  }
 }

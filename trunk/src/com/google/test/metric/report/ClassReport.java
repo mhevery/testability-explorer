@@ -28,8 +28,8 @@ public class ClassReport extends SummaryGraphReport<ClassReport.MethodUnit> {
     private final Cost directCost;
 
     public MethodUnit(String methodName, int lineNumber, Cost totalCost,
-        Cost directCost) {
-      super(methodName, totalCost.getOverall());
+        Cost directCost, int overallCost) {
+      super(methodName, overallCost);
       this.lineNumber = lineNumber;
       this.totalCost = totalCost;
       this.directCost = directCost;
@@ -60,8 +60,8 @@ public class ClassReport extends SummaryGraphReport<ClassReport.MethodUnit> {
   }
 
   public void addMethod(String methodName, int lineNumber,
-      Cost totalCost, Cost directCost) {
-    addUnit(new MethodUnit(methodName, lineNumber, totalCost, directCost));
+      int overallCost, Cost totalCost, Cost directCost) {
+    addUnit(new MethodUnit(methodName, lineNumber, totalCost, directCost, overallCost));
   }
 
 }

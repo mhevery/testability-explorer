@@ -35,8 +35,7 @@ public class LoDViolation extends ViolationCost {
   }
 
   @Override
-  public void link(Cost directCost, Cost dependantCost, CostModel costModel) {
-    cost.link(costModel);
+  public void link(Cost directCost, Cost dependantCost) {
     directCost.add(cost);
   }
 

@@ -25,9 +25,10 @@
     <#list line.methodCosts as method>
       <tr>
         <td class="ln"><a name="${line.lineNumber}"/>&nbsp;</td>
-        <td nowrap class="summary" ${util.color(method.totalCost.overall)}>${method.totalCost}&nbsp;</td>
-        <td class="summary" ${util.color(method.totalCost.overall)}>${method.methodName}<br>
-          Total ${method.totalCost}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Direct ${method.cost}&nbsp;
+        <td nowrap class="summary" ${util.color(computeOverallCost(method.totalCost))}>Cost: ${computeOverallCost(method.totalCost)} [${method.totalCost}]&nbsp;</td>
+        <td class="summary" ${util.color(computeOverallCost(method.totalCost))}>${method.methodName}<br>
+          Total ${printCost(method.totalCost)}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          Direct ${printCost(method.cost)}&nbsp;
         </td>
   </tr>
     </#list>

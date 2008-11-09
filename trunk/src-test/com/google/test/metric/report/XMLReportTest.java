@@ -62,11 +62,11 @@ public class XMLReportTest extends TestCase {
   }
 
   public void testPrintCost() throws Exception {
-    XMLReport report = new XMLReport(handler, 0, 0, 0);
+    XMLReport report = new XMLReport(handler, costModel, 0, 0, 0);
 
     MethodCost methodCost = new MethodCost("methodName", 1) {
       @Override
-      public Cost link(CostModel costModel) {
+      public Cost link() {
         return cost;
       }
     };
@@ -74,15 +74,15 @@ public class XMLReportTest extends TestCase {
     methodCost.addCyclomaticCost(0);
     ViolationCost violation = new MethodInvokationCost(123, methodCost,
         Reason.IMPLICIT_STATIC_INIT);
-    violation.link(Cost.none(), Cost.none(), null);
+    violation.link(Cost.none(), Cost.none());
     report.writeCost(violation);
     assertXMLEquals("<cost cyclomatic=\"2\" global=\"3\" line=\"123\" "
-        + "lod=\"0\" method=\"methodName\" overall=\"0\" "
+        + "lod=\"0\" method=\"methodName\" overall=\"32\" "
         + "reason=\"implicit cost from static initialization\"/>");
   }
 
   public void testPrintMethodCost() throws Exception {
-    XMLReport report = new XMLReport(handler, 0, 0, 0) {
+    XMLReport report = new XMLReport(handler, costModel, 0, 0, 0) {
       @Override
       public void writeCost(ViolationCost violation) throws SAXException {
         write("L" + violation.getLineNumber() + ",");
@@ -94,14 +94,14 @@ public class XMLReportTest extends TestCase {
     methodCost.addCyclomaticCost(234);
     methodCost.addCyclomaticCost(345);
     methodCost.addGlobalCost(456, null);
-    methodCost.link(costModel);
+    methodCost.link();
     report.writeCost(methodCost);
     assertXMLEquals("<method cyclomatic=\"2\" global=\"2\" line=\"123\" "
         + "lod=\"0\" name=\"methodName\" overall=\"22\">L123,L234,L345,L456,</method>");
   }
 
   public void testPrintClassCost() throws Exception {
-    XMLReport report = new XMLReport(handler, 0, 0, 0) {
+    XMLReport report = new XMLReport(handler, costModel, 0, 0, 0) {
       @Override
       public void writeCost(MethodCost methodCost) throws SAXException {
         write(methodCost.getMethodName() + "()");
@@ -112,15 +112,15 @@ public class XMLReportTest extends TestCase {
     m1.addCyclomaticCost(0);
     MethodCost m2 = new MethodCost("M2", -1);
     m2.addCyclomaticCost(0);
-    m1.link(costModel);
-    m2.link(costModel);
-    ClassCost classCost = new ClassCost("className", asList(m1, m2), costModel);
+    m1.link();
+    m2.link();
+    ClassCost classCost = new ClassCost("className", asList(m1, m2));
     report.writeCost(classCost);
     assertXMLEquals("<class class=\"className\" cost=\"1\">M1()M2()</class>");
   }
 
   public void testWholeDocument() throws Exception {
-    XMLReport report = new XMLReport(handler, 1, 2, 3) {
+    XMLReport report = new XMLReport(handler, costModel, 1, 2, 3) {
       @Override
       public void writeCost(ClassCost cost) throws SAXException {
         write(cost.getClassName() + ";");
@@ -130,9 +130,9 @@ public class XMLReportTest extends TestCase {
     MethodCost m1 = new MethodCost("M1", -1);
     m1.addCyclomaticCost(0);
     m1.addCyclomaticCost(0);
-    m1.link(costModel);
-    ClassCost c1 = new ClassCost("C1", asList(m1), costModel);
-    ClassCost c2 = new ClassCost("C2", asList(m1), costModel);
+    m1.link();
+    ClassCost c1 = new ClassCost("C1", asList(m1));
+    ClassCost c2 = new ClassCost("C2", asList(m1));
     report.addClassCost(c1);
     report.addClassCost(c2);
     report.printFooter();

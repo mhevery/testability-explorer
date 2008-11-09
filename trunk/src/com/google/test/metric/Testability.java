@@ -20,7 +20,6 @@ import static java.util.Arrays.asList;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.SortedSet;
@@ -74,10 +73,6 @@ public class Testability {
       + "given values. (Always whitelists java.*. RegExp OK.)")
   String wl = null;
   private RegExpWhiteList whitelist = new RegExpWhiteList();
-
-  @Option(name = "-grouping", usage = "cost: (default) groupy by cost.\n"
-      + "package: group by package of classes. Does NOT work with 'detail' print mode.")
-  String grouping = "cost";
 
   @Option(name = "-print", usage = "summary: (default) print package summary information.\n"
       + "html: print package summary information in html format.\n"
@@ -166,37 +161,39 @@ public class Testability {
     whitelist = getWhiteList();
     templates = getTemplates();
     classpath = getClassPath();
-    Comparator<ClassCost> groupingComparator = getGroupingComparator();
-    report = getReportPrinter(groupingComparator);
+    report = getReportPrinter();
   }
 
-  private Report getReportPrinter(Comparator<ClassCost> groupingComparator)
+  private Report getReportPrinter()
       throws CmdLineException {
+    CostModel costModel = new CostModel(cyclomaticMultiplier, globalMultiplier);
     if (printer.equals("summary")) {
-      report = new TextReport(out, maxExcellentCost, maxAcceptableCost,
-          worstOffenderCount, groupingComparator);
+      report = new TextReport(out, costModel, maxExcellentCost, maxAcceptableCost,
+          worstOffenderCount);
     } else if (printer.equals("html")) {
       SourceLinker linker = new SourceLinker(templates.get(0), templates.get(1));
-      DetailHtmlReport detailHtmlReport = new DetailHtmlReport(out, linker,
-          maxMethodCount, maxLineCount);
-      report = new HtmlReport(out, maxExcellentCost, maxAcceptableCost,
-          worstOffenderCount, detailHtmlReport, groupingComparator);
+      DetailHtmlReport detailHtmlReport = new DetailHtmlReport(out, costModel,
+          linker, maxMethodCount, maxLineCount);
+      report = new HtmlReport(out, costModel, maxExcellentCost, maxAcceptableCost,
+          worstOffenderCount, detailHtmlReport);
     } else if (printer.equals("detail")) {
-      report = new DrillDownReport(out, entryList, printDepth, minCost);
+      report = new DrillDownReport(out, costModel, entryList, printDepth, minCost);
     } else if (printer.equals("props")) {
-      report = new PropertiesReport(out, maxExcellentCost, maxAcceptableCost,
+      report = new PropertiesReport(out, costModel, maxExcellentCost, maxAcceptableCost,
           worstOffenderCount);
     } else if (printer.equals("source")) {
-      report = new SourceReport(new GradeCategories(maxExcellentCost,
-          maxAcceptableCost), new SourceLoader(classpath),
-          new File("te-report"), new Date(), worstOffenderCount);
+      GradeCategories gradeCategories = new GradeCategories(maxExcellentCost,
+          maxAcceptableCost);
+      SourceLoader sourceLoader = new SourceLoader(classpath);
+      report = new SourceReport(gradeCategories, sourceLoader,
+          new File("te-report"), costModel, new Date(), worstOffenderCount);
     } else if (printer.equals("xml")) {
       XMLSerializer xmlSerializer = new XMLSerializer();
       xmlSerializer.setOutputByteStream(out);
       OutputFormat format = new OutputFormat();
       format.setIndenting(true);
       xmlSerializer.setOutputFormat(format);
-      report = new XMLReport(xmlSerializer, maxExcellentCost,
+      report = new XMLReport(xmlSerializer, costModel, maxExcellentCost,
           maxAcceptableCost, worstOffenderCount);
     } else {
       throw new CmdLineException("Don't understand '-print' option '" + printer
@@ -235,24 +232,10 @@ public class Testability {
     return templates;
   }
 
-  private Comparator<ClassCost> getGroupingComparator() {
-    Comparator<ClassCost> groupingComparator;
-
-    if (grouping.equals("package")) {
-      groupingComparator = new ClassCost.PackageComparator();
-    } else {
-      groupingComparator = new ClassCost.CostComparator();
-    }
-
-    return groupingComparator;
-  }
-
   public Report execute() throws CmdLineException {
     postParse();
     ClassRepository repository = new JavaClassRepository(classpath);
-    CostModel costModel = new CostModel(cyclomaticMultiplier, globalMultiplier);
-    MetricComputer computer = new MetricComputer(repository, err, whitelist,
-        costModel);
+    MetricComputer computer = new MetricComputer(repository, err, whitelist);
     SortedSet<String> classNames = collectClassNamesToEnter(entryList);
     report.printHeader();
     for (String className : classNames) {

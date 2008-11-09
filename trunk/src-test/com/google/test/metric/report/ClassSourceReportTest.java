@@ -37,10 +37,10 @@ public class ClassSourceReportTest extends TestCase {
   GradeCategories grades = new GradeCategories(50, 100);
   File out = new File("test-out");
   SourceReport report = new SourceReport(grades, new SourceLoader(classPath),
-      out, new Date(), 10);
+      out, new CostModel(), new Date(), 10);
   ClassRepository repo = new JavaClassRepository();
   MetricComputer computer = new MetricComputer(repo, null, new RegExpWhiteList(
-      "!com.google"), new CostModel());
+      "!com.google"));
   ClassCost classCost = computer.compute(repo.getClass(Testability.class
       .getName()));
 

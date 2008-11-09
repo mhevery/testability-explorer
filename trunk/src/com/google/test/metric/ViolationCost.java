@@ -79,8 +79,7 @@ public abstract class ViolationCost {
     return "Line " + lineNumber + ": " + getDescription() + " (" + reason + ")";
   }
 
-  public abstract void link(Cost directCost, Cost dependantCost,
-      CostModel costModel);
+  public abstract void link(Cost directCost, Cost dependantCost);
 
   public Cost getCost() {
     return cost;

@@ -15,11 +15,12 @@
  */
 package com.google.test.metric.report;
 
-import com.google.test.metric.ClassCost;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Properties;
+
+import com.google.test.metric.ClassCost;
+import com.google.test.metric.CostModel;
 
 /**
  * Write out the classes and their metrics in a Java properties file format.
@@ -30,6 +31,7 @@ public class PropertiesReport implements Report {
 
   private final Properties properties = new Properties();
   private final OutputStream out;
+  private final CostModel costModel;
 
   /**
    * @param out where the report should be written
@@ -37,13 +39,14 @@ public class PropertiesReport implements Report {
    * @param maxAcceptableCost  unused
    * @param worstOffenderCount  unused
    */
-  public PropertiesReport(OutputStream out, int maxExcellentCost,
+  public PropertiesReport(OutputStream out, CostModel costModel, int maxExcellentCost,
       int maxAcceptableCost, int worstOffenderCount) {
     this.out = out;
+    this.costModel = costModel;
   }
 
   public void addClassCost(ClassCost classCost) {
-    properties.setProperty(classCost.getClassName(), String.valueOf(classCost.getOverallCost()));
+    properties.setProperty(classCost.getClassName(), String.valueOf(costModel.computeClass(classCost)));
   }
 
   public void printFooter() {

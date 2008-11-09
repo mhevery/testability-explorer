@@ -36,7 +36,6 @@ public class CostUtilTest extends TestCase {
     assertEquals(0, cyclomaticCost("instanceCost0()Z"));
     assertEquals(0, globalCost("instanceCost0()Z"));
     assertEquals(0, totalComplexityCost("instanceCost0()Z"));
-    assertEquals(10, overallCost("instanceCost0()Z"));
   }
 
   public void testStaticCost0() {
@@ -44,7 +43,6 @@ public class CostUtilTest extends TestCase {
     assertEquals(0, globalCost("staticCost0()Z"));
     assertEquals(0, totalComplexityCost("staticCost0()Z"));
     assertEquals(1, totalGlobalCost("staticCost0()Z"));
-    assertEquals(10, overallCost("staticCost0()Z"));
   }
 
   public void testInstanceCost1() {
@@ -52,7 +50,6 @@ public class CostUtilTest extends TestCase {
     assertEquals(1, cyclomaticCost("instanceCost1()Z"));
     assertEquals(0, globalCost("instanceCost1()Z"));
     assertEquals(1, totalComplexityCost("instanceCost1()Z"));
-    assertEquals(11, overallCost("instanceCost1()Z"));
   }
 
   public void testStaticCost1() {
@@ -60,7 +57,6 @@ public class CostUtilTest extends TestCase {
     assertEquals(0, globalCost("staticCost1()Z"));
     assertEquals(1, totalComplexityCost("staticCost1()Z"));
     assertEquals(1, totalGlobalCost("staticCost1()Z"));
-    assertEquals(11, overallCost("staticCost1()Z"));
   }
 
   public void testInstanceCost2() {
@@ -68,7 +64,6 @@ public class CostUtilTest extends TestCase {
     assertEquals(0, globalCost("instanceCost2()Z"));
     assertEquals(2, totalComplexityCost("instanceCost2()Z"));
     assertEquals(1, totalGlobalCost("instanceCost2()Z"));
-    assertEquals(12, overallCost("instanceCost2()Z"));
   }
 
   public void testStatcCost2() {
@@ -76,7 +71,6 @@ public class CostUtilTest extends TestCase {
     assertEquals(0, globalCost("staticCost2()Z"));
     assertEquals(2, totalComplexityCost("staticCost2()Z"));
     assertEquals(1, totalGlobalCost("staticCost2()Z"));
-    assertEquals(12, overallCost("staticCost2()Z"));
   }
 
   public void testInstanceCost3() {
@@ -84,7 +78,6 @@ public class CostUtilTest extends TestCase {
     assertEquals(0, globalCost("instanceCost3()Z"));
     assertEquals(3, totalComplexityCost("instanceCost3()Z"));
     assertEquals(1, totalGlobalCost("instanceCost3()Z"));
-    assertEquals(13, overallCost("instanceCost3()Z"));
   }
 
   public void testStaticCost3() {
@@ -92,7 +85,6 @@ public class CostUtilTest extends TestCase {
     assertEquals(0, globalCost("staticCost3()Z"));
     assertEquals(3, totalComplexityCost("staticCost3()Z"));
     assertEquals(1, totalGlobalCost("staticCost3()Z"));
-    assertEquals(13, overallCost("staticCost3()Z"));
   }
 
   public void testInstanceCost4() {
@@ -100,7 +92,6 @@ public class CostUtilTest extends TestCase {
     assertEquals(0, globalCost("instanceCost4()Z"));
     assertEquals(4, totalComplexityCost("instanceCost4()Z"));
     assertEquals(1, totalGlobalCost("instanceCost4()Z"));
-    assertEquals(14, overallCost("instanceCost4()Z"));
   }
 
   public void testStaticCost4() {
@@ -108,7 +99,6 @@ public class CostUtilTest extends TestCase {
     assertEquals(0, globalCost("staticCost4()Z"));
     assertEquals(4, totalComplexityCost("staticCost4()Z"));
     assertEquals(1, totalGlobalCost("staticCost4()Z"));
-    assertEquals(14, overallCost("staticCost4()Z"));
   }
 
   public void testCostUtilClassCost() throws Exception {
@@ -117,8 +107,6 @@ public class CostUtilTest extends TestCase {
     assertEquals(1, classCost.getHighestMethodGlobalCost());
     assertEquals(20, classCost.getTotalComplexityCost());
     assertEquals(12, classCost.getTotalGlobalCost());
-    // TODO(jwolter): Does this make sense? We have an overall cost lower than either total cost.
-    assertEquals(11, classCost.getOverallCost());
   }
 
   private int totalComplexityCost(String method) {
@@ -135,10 +123,6 @@ public class CostUtilTest extends TestCase {
 
   private int totalGlobalCost(String method) {
     return methodCostFor(method).getTotalCost().getGlobalCost();
-  }
-
-  private int overallCost(String method) {
-    return methodCostFor(method).getOverallCost();
   }
 
   private MethodCost methodCostFor(String method) {

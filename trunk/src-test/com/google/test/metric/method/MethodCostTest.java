@@ -33,9 +33,9 @@ public class MethodCostTest extends TestCase {
     cost3.addCyclomaticCost(0);
     cost.addMethodCost(0, cost3, Reason.NON_OVERRIDABLE_METHOD_CALL);
     CostModel costModel = new CostModel(2, 10);
-    cost.link(costModel);
+    cost.link();
 
-    assertEquals((long) 2 * (3 + 1) + 10 * 1, cost.getOverallCost());
+    assertEquals((long) 2 * (3 + 1) + 10 * 1, costModel.computeOverall(cost.getTotalCost()));
   }
 
 }

@@ -39,7 +39,6 @@ public class WorkInTheConstructorTest extends AutoFieldClearTestCase {
     ClassCost classCost = decoratedComputer.compute(Cost2ToConstruct.class);
     assertEquals(2, classCost.getHighestMethodComplexityCost());
     assertEquals(0, classCost.getHighestMethodGlobalCost());
-    assertEquals(2, classCost.getOverallCost());
     assertEquals(0, classCost.getTotalGlobalCost());
     assertEquals(2, classCost.getTotalComplexityCost());
   }
@@ -48,7 +47,6 @@ public class WorkInTheConstructorTest extends AutoFieldClearTestCase {
     ClassCost classCost = decoratedComputer.compute(StaticWorkInTheConstructor.class);
     assertEquals(2, classCost.getHighestMethodComplexityCost());
     assertEquals(0, classCost.getHighestMethodGlobalCost());
-    assertEquals(2, classCost.getOverallCost());
     assertEquals(0, classCost.getTotalGlobalCost());
     assertEquals(2, classCost.getTotalComplexityCost());
   }
@@ -57,7 +55,6 @@ public class WorkInTheConstructorTest extends AutoFieldClearTestCase {
     ClassCost classCost = decoratedComputer.compute(ObjectInstantiationWorkInTheConstructor.class);
     assertEquals(2, classCost.getHighestMethodComplexityCost());
     assertEquals(0, classCost.getHighestMethodGlobalCost());
-    assertEquals(2, classCost.getOverallCost());
     assertEquals(0, classCost.getTotalGlobalCost());
     assertEquals(2, classCost.getTotalComplexityCost());
   }

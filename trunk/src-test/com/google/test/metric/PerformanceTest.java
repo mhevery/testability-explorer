@@ -29,7 +29,7 @@ public class PerformanceTest {
   Runtime runtime = Runtime.getRuntime();
   JavaClassRepository repo = new JavaClassRepository();
   MetricComputer computer = new MetricComputer(repo, null,
-      new RegExpWhiteList(), new CostModel());
+      new RegExpWhiteList());
   File reportDir = new File("target/reports/perf");
 
   public void testStringAnalysisPerformance() throws Exception {
