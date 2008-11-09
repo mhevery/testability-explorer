@@ -167,7 +167,6 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
     MethodCost cost = computer.compute(TreeInjection.class, "<init>()V");
     assertEquals(0l, cost.getTotalCost().getCyclomaticComplexityCost());
     assertEquals(0l, cost.getTotalCost().getGlobalCost());
-    assertEquals(0l, cost.getOverallCost());
   }
 
   public void testTreeTitleTcc0CostIsZeroBecauseInjectable() throws Exception {
@@ -381,7 +380,7 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
   public void testGlobalLoadAccessStateThroughFinalShouldBeOne() {
     MethodCost cost =
         computer.compute(GlobalStateUser.class, "accessMutableState()V");
-    new DrillDownReport(new PrintStream(new ByteArrayOutputStream()),
+    new DrillDownReport(new PrintStream(new ByteArrayOutputStream()), new CostModel(),
         null, Integer.MAX_VALUE, 0).print("", cost, 10);
     assertEquals("Expecting one for read and one for write", 2L,
         cost.getTotalCost().getGlobalCost());

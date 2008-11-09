@@ -30,16 +30,16 @@ import com.google.test.metric.MethodCost;
 public class PropertiesReportTest extends TestCase {
 
   ByteArrayOutputStream out = new ByteArrayOutputStream();
-  PropertiesReport report = new PropertiesReport(out, 0, 0, 0);
   CostModel costModel = new CostModel(1, 1);
+  PropertiesReport report = new PropertiesReport(out, costModel, 0, 0, 0);
 
   private static final String CLASS_NAME = "com.google.foo.Bar";
   public void testReport() throws Exception {
 
     MethodCost methodCost = new MethodCost("doThing", 3);
     methodCost.addCyclomaticCost(0);
-    methodCost.link(new CostModel(1.0, 1.0));
-    final ClassCost classCost = new ClassCost(CLASS_NAME, Arrays.asList(methodCost), costModel);
+    methodCost.link();
+    final ClassCost classCost = new ClassCost(CLASS_NAME, Arrays.asList(methodCost));
     report.addClassCost(classCost);
     report.printFooter();
 

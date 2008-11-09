@@ -25,9 +25,10 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import com.google.test.metric.ClassCost;
-import com.google.test.metric.ViolationCost;
+import com.google.test.metric.CostModel;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvokationCost;
+import com.google.test.metric.ViolationCost;
 
 public class DrillDownReport implements Report {
   public static final String NEW_LINE = getProperty("line.separator");
@@ -35,17 +36,20 @@ public class DrillDownReport implements Report {
   private static final String DIVIDER = "-----------------------------------------\n";
   private final PrintStream out;
   private final List<String> entryList;
-  private final SortedSet<ClassCost> toPrint = new TreeSet<ClassCost>(
-      new ClassCost.CostComparator());
+  private final SortedSet<ClassCost> toPrint;
   private final int maxDepth;
   private final int minCost;
 
-  public DrillDownReport(PrintStream out, List<String> entryList, int maxDepth,
-      int minCost) {
+  private final CostModel costModel;
+
+  public DrillDownReport(PrintStream out, CostModel costModel,
+      List<String> entryList, int maxDepth, int minCost) {
     this.out = out;
     this.entryList = entryList;
+    this.costModel = costModel;
     this.maxDepth = maxDepth;
     this.minCost = minCost;
+    toPrint = new TreeSet<ClassCost>(new ClassCost.CostComparator(costModel));
   }
 
   public void printHeader() {
@@ -73,8 +77,8 @@ public class DrillDownReport implements Report {
       long tcc = classCost.getTotalComplexityCost();
       long tgc = classCost.getTotalGlobalCost();
       out.println(NEW_LINE + "Testability cost for " + classCost.getClassName()
-          + " [ cost = " + classCost.getOverallCost() + " ]" + " [ " + tcc
-          + " TCC, " + tgc + " TGC ]");
+          + " [ cost = " + costModel.computeClass(classCost) + " ]" + " [ "
+          + tcc + " TCC, " + tgc + " TGC ]");
       for (MethodCost cost : classCost.getMethods()) {
         print("  ", cost, maxDepth);
       }
@@ -97,7 +101,7 @@ public class DrillDownReport implements Report {
     if (!(line instanceof MethodInvokationCost)) {
       return;
     }
-    MethodCost method = ((MethodInvokationCost)line).getMethodCost();
+    MethodCost method = ((MethodInvokationCost) line).getMethodCost();
     if (shouldPrint(method, maxDepth, alreadSeen)) {
       out.print(prefix);
       out.print("line ");

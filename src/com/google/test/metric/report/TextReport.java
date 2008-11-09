@@ -16,22 +16,16 @@
 
 package com.google.test.metric.report;
 import java.io.PrintStream;
-import java.util.Comparator;
 
 import com.google.test.metric.ClassCost;
+import com.google.test.metric.CostModel;
 
 
 public class TextReport extends SummaryReport {
 
   private final PrintStream out;
-  public TextReport(PrintStream out, int maxExcellentCost, int maxAcceptableCost, int worstOffenderCount) {
-    super(maxExcellentCost, maxAcceptableCost, worstOffenderCount);
-    this.out = out;
-  }
-
-   public TextReport(PrintStream out, int maxExcellentCost, int maxAcceptableCost, int worstOffenderCount,
-                     Comparator<ClassCost> comparator) {
-    super(maxExcellentCost, maxAcceptableCost, worstOffenderCount, comparator);
+  public TextReport(PrintStream out, CostModel costModel, int maxExcellentCost, int maxAcceptableCost, int worstOffenderCount) {
+    super(costModel, maxExcellentCost, maxAcceptableCost, worstOffenderCount);
     this.out = out;
   }
 

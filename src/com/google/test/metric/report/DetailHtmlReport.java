@@ -23,24 +23,25 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.google.test.metric.ClassCost;
-import com.google.test.metric.ViolationCost;
+import com.google.test.metric.CostModel;
 import com.google.test.metric.MethodCost;
+import com.google.test.metric.ViolationCost;
 import com.google.test.metric.ViolationCost.Reason;
 
 public class DetailHtmlReport {
 
-  static class CostSourceComparator implements Comparator<ViolationCost> {
+  class CostSourceComparator implements Comparator<ViolationCost> {
     public int compare(ViolationCost cost1, ViolationCost cost2) {
-      int c1 = cost1.getCost().getOverall();
-      int c2 = cost2.getCost().getOverall();
+      int c1 = costModel.computeOverall(cost1.getCost());
+      int c2 = costModel.computeOverall(cost2.getCost());
       return (c2 - c1);
     }
   }
 
-  public static class MethodCostComparator implements Comparator<MethodCost> {
+  class MethodCostComparator implements Comparator<MethodCost> {
     public int compare(MethodCost cost1, MethodCost cost2) {
-      int c1 = cost1.getOverallCost();
-      int c2 = cost2.getOverallCost();
+      int c1 = costModel.computeOverall(cost1.getTotalCost());
+      int c2 = costModel.computeOverall(cost2.getTotalCost());
       return (c2 - c1);
     }
   }
@@ -49,11 +50,13 @@ public class DetailHtmlReport {
   private final int maxLineCount;
   private final int maxMethodCount;
   private final SourceLinkGenerator linkGenerator;
+  private final CostModel costModel;
 
-  public DetailHtmlReport(PrintStream out, SourceLinkGenerator linkGenerator,
-      int maxMethodCount, int maxLineCount) {
+  public DetailHtmlReport(PrintStream out, CostModel costModel,
+      SourceLinkGenerator linkGenerator, int maxMethodCount, int maxLineCount) {
     this.out = out;
     this.linkGenerator = linkGenerator;
+    this.costModel = costModel;
     this.maxMethodCount = maxMethodCount;
     this.maxLineCount = maxLineCount;
   }
@@ -79,12 +82,13 @@ public class DetailHtmlReport {
     String text = "<div class=\"Method\">" + "<span class='expand'>[+]</span>"
         + "{methodName} [&nbsp;{cost}&nbsp;]";
     text = text.replace("{methodName}", "" + method.getMethodName());
-    text = text.replace("{cost}", "" + method.getOverallCost());
+    text = text.replace("{cost}", "" + costModel.computeOverall(method.getTotalCost()));
     write(text);
 
     List<ViolationCost> violations = method.getViolationCosts();
     Collections.sort(violations, new CostSourceComparator());
-    for (ViolationCost violation : violations.subList(0, min(maxLineCount, violations.size()))) {
+    for (ViolationCost violation : violations.subList(0, min(maxLineCount,
+        violations.size()))) {
       write(violation, classFilePath);
     }
     write("</div>");
@@ -101,7 +105,7 @@ public class DetailHtmlReport {
         .getClassName());
     String link = linkGenerator.buildClassLink(classFilePath, "source");
     text = text.replace("{className}", classCost.getClassName());
-    text = text.replace("{cost}", "" + classCost.getOverallCost());
+    text = text.replace("{cost}", "" + costModel.computeClass(classCost));
     // Don't show the link if we don't have one
     if (!link.equals("source")) {
       text = text.replace("{link}", "<span class=\"smaller\">(" + link

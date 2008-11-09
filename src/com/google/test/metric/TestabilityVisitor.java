@@ -247,13 +247,11 @@ public class TestabilityVisitor {
   private final Map<MethodInfo, MethodCost> methodCosts = new HashMap<MethodInfo, MethodCost>();
   private final PrintStream err;
   private final WhiteList whitelist;
-  private final CostModel costModel;
 
   public TestabilityVisitor(ClassRepository classRepository, PrintStream err,
-      WhiteList whitelist, CostModel costModel) {
+      WhiteList whitelist) {
     this.classRepository = classRepository;
     this.err = err;
-    this.costModel = costModel;
     this.whitelist = whitelist;
   }
 
@@ -322,7 +320,7 @@ public class TestabilityVisitor {
    */
   public MethodCost getLinkedMethodCost(MethodInfo method) {
     MethodCost cost = getMethodCost(method);
-    cost.link(costModel);
+    cost.link();
     return cost;
   }
 

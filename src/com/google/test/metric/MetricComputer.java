@@ -26,14 +26,12 @@ public class MetricComputer {
   private final ClassRepository classRepository;
   private final PrintStream err;
   private final WhiteList whitelist;
-  private final CostModel costModel;
 
   public MetricComputer(ClassRepository classRepository, PrintStream err,
-      WhiteList whitelist, CostModel costModel) {
+      WhiteList whitelist) {
     this.classRepository = classRepository;
     this.err = err;
     this.whitelist = whitelist;
-    this.costModel = costModel;
   }
 
   public ClassCost compute(String name) {
@@ -53,7 +51,7 @@ public class MetricComputer {
     for (MethodInfo method : clazz.getMethods()) {
       methods.add(compute(method));
     }
-    return new ClassCost(clazz.getName(), methods, costModel);
+    return new ClassCost(clazz.getName(), methods);
   }
 
   /**
@@ -72,7 +70,7 @@ public class MetricComputer {
    * MethodCost is guaranteed to have already been linked (sealed for adding additional costs).
    */
   public MethodCost compute(MethodInfo method) {
-    TestabilityVisitor visitor = new TestabilityVisitor(classRepository, err, whitelist, costModel);
+    TestabilityVisitor visitor = new TestabilityVisitor(classRepository, err, whitelist);
     addStaticInitializationCost(method, visitor);
     addConstructorCost(method, visitor);
     addSetterInjection(method, visitor);

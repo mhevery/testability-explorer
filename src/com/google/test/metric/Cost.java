@@ -27,8 +27,6 @@ public class Cost {
   private int cyclomaticCost;
   private int globalCost;
   private int[] lodDistribution;
-  private int overall;
-  private boolean isLinked = false;
 
   private Cost(int cyclomaticCost, int globalCost, int[] lodDistribution) {
     this.cyclomaticCost = cyclomaticCost;
@@ -59,7 +57,6 @@ public class Cost {
   }
 
   public void add(Cost cost) {
-    assertNotLinked();
     cyclomaticCost += cost.cyclomaticCost;
     globalCost += cost.globalCost;
     int[] other = cost.lodDistribution;
@@ -76,7 +73,6 @@ public class Cost {
   }
 
   public void addDependant(Cost cost) {
-    assertNotLinked();
     cyclomaticCost += cost.cyclomaticCost;
     globalCost += cost.globalCost;
   }
@@ -93,11 +89,6 @@ public class Cost {
   public String toString() {
     StringBuilder builder = new StringBuilder();
     String sep = "";
-    if (isLinked) {
-      builder.append(sep);
-      builder.append("Cost: " + overall);
-      sep = " [";
-    }
     if (cyclomaticCost > 0) {
       builder.append(sep);
       builder.append("CC: " + cyclomaticCost);
@@ -114,9 +105,6 @@ public class Cost {
       builder.append("LOD: " + loDSum);
       sep = ", ";
     }
-    if (overall > 0) {
-      builder.append("]");
-    }
     return builder.toString();
   }
 
@@ -128,11 +116,6 @@ public class Cost {
   public String toHtmlReportString() {
     StringBuilder builder = new StringBuilder();
     String sep = "";
-    if (isLinked) {
-      builder.append(sep);
-      builder.append("Cost: " + overall);
-      sep = " [";
-    }
     if (cyclomaticCost > 0) {
       builder.append(sep);
       builder.append("<a href=\"" + COMPLEXITY_COST_HELP_URL + "\">CC: " + cyclomaticCost + "</a>");
@@ -148,9 +131,6 @@ public class Cost {
       builder.append(sep);
       builder.append("<a href=\"" + LAW_OF_DEMETER_COST_HELP_URL + "\">LOD: " + loDSum + "</a>");
       sep = ", ";
-    }
-    if (overall > 0) {
-      builder.append("]");
     }
     return builder.toString();
   }
@@ -172,22 +152,6 @@ public class Cost {
   }
 
 
-  public int getOverall() {
-    return overall;
-  }
-
-  public void link(CostModel costModel) {
-    assertNotLinked();
-    overall = costModel.computeMethod(this);
-    isLinked = true;
-  }
-
-  private void assertNotLinked() {
-    if (isLinked) {
-      throw new IllegalStateException("Expecting unlinked cost.");
-    }
-  }
-
   public int[] getLoDDistribution() {
     return lodDistribution;
   }
@@ -199,7 +163,6 @@ public class Cost {
     result = prime * result + cyclomaticCost;
     result = prime * result + globalCost;
     result = prime * result + Arrays.hashCode(lodDistribution);
-    result = prime * result + overall;
     return result;
   }
 
@@ -224,15 +187,11 @@ public class Cost {
     if (!Arrays.equals(lodDistribution, other.lodDistribution)) {
       return false;
     }
-    if (overall != other.overall) {
-      return false;
-    }
     return true;
   }
 
   Map<String, Object> getAttributes() {
     Map<String, Object> atts = new HashMap<String, Object>();
-    atts.put("overall", getOverall());
     atts.put("cyclomatic", getCyclomaticComplexityCost());
     atts.put("global", getGlobalCost());
     atts.put("lod", getLoDSum());
@@ -240,9 +199,7 @@ public class Cost {
   }
 
   public static Cost create(int overall, int cyclomatic, int global, int lod) {
-    Cost cost = new Cost(cyclomatic, global, new int[] { lod });
-    cost.overall = overall;
-    return cost;
+    return new Cost(cyclomatic, global, new int[] { lod });
   }
 
 }

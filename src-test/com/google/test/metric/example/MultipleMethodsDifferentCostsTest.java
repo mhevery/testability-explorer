@@ -61,14 +61,12 @@ public class MultipleMethodsDifferentCostsTest extends AutoFieldClearTestCase {
     assertEquals(0, methodCost.getCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getGlobalCost());
     assertEquals(4, methodCost.getTotalCost().getCyclomaticComplexityCost());
-    assertEquals(4, methodCost.getOverallCost());
 
     methodCost = cost("methodTcc0BecauseOverridableMethodCalls()V");
     assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
     assertEquals(0, methodCost.getCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getCyclomaticComplexityCost());
-    assertEquals(0, methodCost.getOverallCost());
   }
 
   public void testStaticTcc4Cost() throws Exception {
@@ -77,7 +75,6 @@ public class MultipleMethodsDifferentCostsTest extends AutoFieldClearTestCase {
     assertEquals(0, methodCost.getCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getGlobalCost());
     assertEquals(4, methodCost.getTotalCost().getCyclomaticComplexityCost());
-    assertEquals(4, methodCost.getOverallCost());
 
     methodCost = cost("methodTcc4BecauseStaticMethodCalls()V");
     assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
@@ -85,7 +82,6 @@ public class MultipleMethodsDifferentCostsTest extends AutoFieldClearTestCase {
     assertEquals(0, methodCost.getTotalCost().getGlobalCost());
     // TCC 4 because it doesn't double count for the same offense within one method
     assertEquals(4, methodCost.getTotalCost().getCyclomaticComplexityCost());
-    assertEquals(4, methodCost.getOverallCost());
   }
 
   public void testPrivateTcc4Cost() throws Exception {
@@ -94,7 +90,6 @@ public class MultipleMethodsDifferentCostsTest extends AutoFieldClearTestCase {
     assertEquals(0, methodCost.getCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getGlobalCost());
     assertEquals(4, methodCost.getTotalCost().getCyclomaticComplexityCost());
-    assertEquals(4, methodCost.getOverallCost());
 
     methodCost = cost("methodTcc4BecausePrivateMethodCalls()V");
     assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
@@ -102,7 +97,6 @@ public class MultipleMethodsDifferentCostsTest extends AutoFieldClearTestCase {
     assertEquals(0, methodCost.getTotalCost().getGlobalCost());
     // TCC 4 because it doesn't double count for the same offense within one method
     assertEquals(4, methodCost.getTotalCost().getCyclomaticComplexityCost());
-    assertEquals(4, methodCost.getOverallCost());
   }
 
   public void testFinalTcc4Cost() throws Exception {
@@ -111,7 +105,6 @@ public class MultipleMethodsDifferentCostsTest extends AutoFieldClearTestCase {
     assertEquals(0, methodCost.getCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getGlobalCost());
     assertEquals(4, methodCost.getTotalCost().getCyclomaticComplexityCost());
-    assertEquals(4, methodCost.getOverallCost());
 
     methodCost = cost("methodTcc4BecauseFinalMethodCalls()V");
     assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
@@ -119,7 +112,6 @@ public class MultipleMethodsDifferentCostsTest extends AutoFieldClearTestCase {
     assertEquals(0, methodCost.getTotalCost().getGlobalCost());
     // TCC 4 because it doesn't double count for the same offense within one method
     assertEquals(4, methodCost.getTotalCost().getCyclomaticComplexityCost());
-    assertEquals(4, methodCost.getOverallCost());
   }
 
   public void testMultipleDifferentNonOverridibleMethodsTcc12Cost() throws Exception {
@@ -128,7 +120,6 @@ public class MultipleMethodsDifferentCostsTest extends AutoFieldClearTestCase {
     assertEquals(0, methodCost.getCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getGlobalCost());
     assertEquals(12, methodCost.getTotalCost().getCyclomaticComplexityCost());
-    assertEquals(12, methodCost.getOverallCost());
   }
 
   public void testClassCost() throws Exception {
@@ -142,7 +133,6 @@ public class MultipleMethodsDifferentCostsTest extends AutoFieldClearTestCase {
           /
         (Math.pow(4, weight) * 7 + Math.pow(12, weight)));
     assertEquals(7, expectedOverallCost);
-    assertEquals(expectedOverallCost, classCost.getOverallCost());
     assertEquals(4*7 + 12, classCost.getTotalComplexityCost());
     assertEquals(0, classCost.getTotalGlobalCost());
   }

@@ -47,10 +47,10 @@ public class DetailHtmlReportTest extends TestCase {
   public void testWriteLineCost() throws Exception {
     MethodCost methodCost = createMethodCallWithOverallCost("a.methodName()V", 64);
     MethodInvokationCost cost = new MethodInvokationCost(123, methodCost, Reason.NON_OVERRIDABLE_METHOD_CALL);
-    cost.link(Cost.none(), Cost.none(), costModel);
+    cost.link(Cost.none(), Cost.none());
 
-    DetailHtmlReport report = new DetailHtmlReport(stream, new SourceLinker(
-        emptyLineTemplate, emptyClassTemplate), 10, 10);
+    DetailHtmlReport report = new DetailHtmlReport(stream, costModel, new SourceLinker(
+            emptyLineTemplate, emptyClassTemplate), 10, 10);
     report.write(cost, "");
     String text = out.toString();
 
@@ -64,10 +64,10 @@ public class DetailHtmlReportTest extends TestCase {
   public void testLinkedLineCost() throws Exception {
     MethodCost methodCost = createMethodCallWithOverallCost("a.methodName()V", 64);
     MethodInvokationCost lineCost = new MethodInvokationCost(123, methodCost, Reason.NON_OVERRIDABLE_METHOD_CALL);
-    methodCost.link(costModel);
+    methodCost.link();
 
-    DetailHtmlReport report = new DetailHtmlReport(stream, new SourceLinker(
-        lineTemplate, classTemplate), 10, 10);
+    DetailHtmlReport report = new DetailHtmlReport(stream, costModel, new SourceLinker(
+            lineTemplate, classTemplate), 10, 10);
     report.write(lineCost, "com/google/ant/TaskModel.java");
     String text = out.toString();
 
@@ -76,8 +76,8 @@ public class DetailHtmlReportTest extends TestCase {
   }
 
   public void testWriteMethodCost() throws Exception {
-    DetailHtmlReport report = new DetailHtmlReport(stream, new SourceLinker(
-        emptyLineTemplate, emptyClassTemplate), 10, 10) {
+    DetailHtmlReport report = new DetailHtmlReport(stream, costModel, new SourceLinker(
+            emptyLineTemplate, emptyClassTemplate), 10, 10) {
       @Override
       public void write(ViolationCost cost, String classFilePath) {
         write(" MARKER:" + cost.getLineNumber());
@@ -87,7 +87,7 @@ public class DetailHtmlReportTest extends TestCase {
     MethodCost methodCost = createMethodCallWithOverallCost("a.methodX()V", 0);
     methodCost.addMethodCost(123, createMethodCallWithOverallCost("cost1", 567), Reason.NON_OVERRIDABLE_METHOD_CALL);
     methodCost.addMethodCost(543, createMethodCallWithOverallCost("cost2", 789), Reason.NON_OVERRIDABLE_METHOD_CALL);
-    methodCost.link(costModel);
+    methodCost.link();
     report.write(methodCost, "");
     String text = out.toString();
     assertTrue(text, text.contains("<div class=\"Method\""));
@@ -100,8 +100,8 @@ public class DetailHtmlReportTest extends TestCase {
   }
 
   public void testWriteClassCost() throws Exception {
-    DetailHtmlReport report = new DetailHtmlReport(stream, new SourceLinker(
-        emptyLineTemplate, emptyClassTemplate), 10, 10) {
+    DetailHtmlReport report = new DetailHtmlReport(stream, costModel, new SourceLinker(
+            emptyLineTemplate, emptyClassTemplate), 10, 10) {
       @Override
       public void write(MethodCost methodCost, String classFilePath) {
         write(" MARKER:" + methodCost.getMethodName());
@@ -111,11 +111,11 @@ public class DetailHtmlReportTest extends TestCase {
     List<MethodCost> methods = new ArrayList<MethodCost>();
     MethodCost m1 = createMethodCallWithOverallCost("methodX", 233);
     MethodCost m2 = createMethodCallWithOverallCost("methodY", 544);
-    m1.link(costModel);
-    m2.link(costModel);
+    m1.link();
+    m2.link();
     methods.add(m1);
     methods.add(m2);
-    ClassCost classCost = new ClassCost("classFoo", methods, costModel);
+    ClassCost classCost = new ClassCost("classFoo", methods);
     report.write(classCost);
     String text = out.toString();
 
@@ -129,11 +129,11 @@ public class DetailHtmlReportTest extends TestCase {
   }
 
   public void testLinkedClassCost() throws Exception {
-    DetailHtmlReport report = new DetailHtmlReport(stream, new SourceLinker(
-       lineTemplate , classTemplate), 10, 10) ;
+    DetailHtmlReport report = new DetailHtmlReport(stream, costModel, new SourceLinker(
+         lineTemplate , classTemplate), 10, 10) ;
 
     List<MethodCost> methods = new ArrayList<MethodCost>();
-    ClassCost classCost = new ClassCost("com.google.ant.TaskModel", methods, costModel);
+    ClassCost classCost = new ClassCost("com.google.ant.TaskModel", methods);
     report.write(classCost);
     String text = out.toString();
 

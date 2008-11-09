@@ -53,7 +53,6 @@ public class MutableGlobalExampleTest extends AutoFieldClearTestCase {
     assertEquals(0, methodCost.getCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getCyclomaticComplexityCost());
     assertEquals(0, methodCost.getTotalCost().getGlobalCost());
-    assertEquals(0, methodCost.getOverallCost());
   }
 
   public void testAccessingAFinalFieldDoesNotCountAgainstYouButInitialGlobalDoes() throws Exception {
@@ -65,7 +64,6 @@ public class MutableGlobalExampleTest extends AutoFieldClearTestCase {
     assertEquals(0, methodCost.getTotalCost().getCyclomaticComplexityCost());
     // Total Global Cost of 1, because of the {@code mutableInstance}.
     assertEquals(1, methodCost.getTotalCost().getGlobalCost());
-    assertEquals(10, methodCost.getOverallCost());
   }
 
   public void testAccessingANonFinalFieldCountsAgainstYou() throws Exception {
@@ -75,7 +73,6 @@ public class MutableGlobalExampleTest extends AutoFieldClearTestCase {
     assertEquals(0, methodCost.getCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getCyclomaticComplexityCost());
     assertEquals(2, methodCost.getTotalCost().getGlobalCost());
-    assertEquals(20, methodCost.getOverallCost());
   }
 
   public void testWritingANonFinalFieldCountsAgainstYou() throws Exception {
@@ -85,7 +82,6 @@ public class MutableGlobalExampleTest extends AutoFieldClearTestCase {
     assertEquals(0, methodCost.getCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getCyclomaticComplexityCost());
     assertEquals(2, methodCost.getTotalCost().getGlobalCost());
-    assertEquals(20, methodCost.getOverallCost());
   }
 
   public void testGadgetTotalClassCosts() {
@@ -93,7 +89,6 @@ public class MutableGlobalExampleTest extends AutoFieldClearTestCase {
     ClassCost classCost = decoratedComputer.compute(Gadget.class);
     assertEquals(0, classCost.getHighestMethodComplexityCost());
     assertEquals(0, classCost.getHighestMethodGlobalCost());
-    assertEquals(0, classCost.getOverallCost());
     assertEquals(0, classCost.getTotalComplexityCost());
     assertEquals(0, classCost.getTotalGlobalCost());
   }
@@ -104,7 +99,6 @@ public class MutableGlobalExampleTest extends AutoFieldClearTestCase {
     ClassCost classCost = decoratedComputer.compute(MutableGlobal.class);
     assertEquals(0, classCost.getHighestMethodComplexityCost());
     assertEquals(1, classCost.getHighestMethodGlobalCost());
-    assertEquals(10, classCost.getOverallCost());
     assertEquals(0, classCost.getTotalComplexityCost());
     assertEquals(2, classCost.getTotalGlobalCost());
   }
@@ -114,7 +108,6 @@ public class MutableGlobalExampleTest extends AutoFieldClearTestCase {
     ClassCost classCost = decoratedComputer.compute(MutableGlobalExample.class);
     assertEquals(0, classCost.getHighestMethodComplexityCost());
     assertEquals(2, classCost.getHighestMethodGlobalCost());
-    assertEquals(18, classCost.getOverallCost());
     assertEquals(0, classCost.getTotalComplexityCost());
 
     /* There are three instance methods which access expensive (mutable) global state:

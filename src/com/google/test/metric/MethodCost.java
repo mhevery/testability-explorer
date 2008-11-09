@@ -53,17 +53,15 @@ public class MethodCost {
     }
   }
 
-  public Cost link(CostModel costModel) {
+  public Cost link() {
     if (!isLinked) {
       isLinked = true;
       Cost dependantCost = Cost.none();
       for (ViolationCost costSource : costSources) {
-        costSource.link(directCost, dependantCost, costModel);
+        costSource.link(directCost, dependantCost);
       }
       totalCost.addDependant(dependantCost);
       totalCost.add(directCost);
-      totalCost.link(costModel);
-      directCost.link(costModel);
     }
     return getTotalCost();
   }
@@ -114,11 +112,6 @@ public class MethodCost {
 
   public Cost getCost() {
     return directCost;
-  }
-
-  //TODO: inline
-  public int getOverallCost() {
-    return getTotalCost().getOverall();
   }
 
   public Map<String, Object> getAttributes() {

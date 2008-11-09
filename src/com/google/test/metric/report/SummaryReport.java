@@ -16,12 +16,12 @@
 package com.google.test.metric.report;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import com.google.test.metric.ClassCost;
+import com.google.test.metric.CostModel;
 import com.google.test.metric.WeightedAverage;
 
 public abstract class SummaryReport implements Report {
@@ -36,22 +36,18 @@ public abstract class SummaryReport implements Report {
   protected int goodCount = 0;
   protected int needsWorkCount = 0;
   protected int worstCost = 1;
+  private final CostModel costModel;
 
-  public SummaryReport(int maxExcellentCost, int maxAcceptableCost, int worstOffenderCount) {
-    this.worstOffenders = new TreeSet<ClassCost>(new ClassCost.CostComparator());
+  public SummaryReport(CostModel costModel, int maxExcellentCost, int maxAcceptableCost, int worstOffenderCount) {
+    this.costModel = costModel;
+    this.worstOffenders = new TreeSet<ClassCost>(new ClassCost.CostComparator(costModel));
     this.maxExcellentCost = maxExcellentCost;
     this.maxAcceptableCost = maxAcceptableCost;
     this.worstOffenderCount = worstOffenderCount;
   }
 
-  public SummaryReport(int maxExcellentCost, int maxAcceptableCost, int worstOffenderCount,
-                       Comparator<ClassCost> comparator) {
-    this(maxExcellentCost, maxAcceptableCost, worstOffenderCount);
-    this.worstOffenders = new TreeSet<ClassCost>(comparator);
-  }
-
   public void addClassCost(ClassCost classCost) {
-    int cost = (int) classCost.getOverallCost();
+    int cost = costModel.computeClass(classCost);
     if (cost < maxExcellentCost) {
       excellentCount++;
     } else if (cost < maxAcceptableCost) {
@@ -59,7 +55,7 @@ public abstract class SummaryReport implements Report {
     } else {
       needsWorkCount++;
     }
-    costs.add((int)classCost.getOverallCost());
+    costs.add(cost);
     worstOffenders.add(classCost);
     if (worstOffenders.size() > worstOffenderCount) {
       worstOffenders.remove(worstOffenders.last());

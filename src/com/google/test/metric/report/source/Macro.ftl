@@ -65,7 +65,7 @@
   <tr>
     <td class="score" ${color(unit.cost)}><a href="<#nested unit>"><tt>${unit.name}</tt></a></td>
     <#list keys as key>
-    <td nowrap class="score" ${color(unit.cost)}>${unit[key]}&nbsp;</td>
+    <td nowrap class="score" ${color(unit.cost)}>${printCost(unit[key])}&nbsp;</td>
     </#list>
   </tr>
   </#list>

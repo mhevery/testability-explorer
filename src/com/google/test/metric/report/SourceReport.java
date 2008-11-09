@@ -23,22 +23,62 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.test.metric.ClassCost;
+import com.google.test.metric.Cost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.ViolationCost;
 import com.google.test.metric.WeightedAverage;
 import com.google.test.metric.report.Source.Line;
 
+import freemarker.ext.beans.BeanModel;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.SimpleNumber;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import freemarker.template.TemplateMethodModelEx;
+import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 
 public class SourceReport implements Report {
+
+  private class PrintCostMethod implements TemplateMethodModelEx {
+    @SuppressWarnings("unchecked")
+    public Object exec(List arguments) throws TemplateModelException {
+      TemplateModel model = (TemplateModel) arguments.get(0);
+      if (model instanceof SimpleNumber) {
+        SimpleNumber number = (SimpleNumber) model;
+        return "" + number;
+      } else if (model instanceof BeanModel) {
+        BeanModel arg0 = (BeanModel) model;
+        Cost cost = (Cost) arg0.getAdaptedObject(Cost.class);
+        return "Cost: " + costModel.computeOverall(cost) + " [" + cost + "]";
+      } else {
+        throw new IllegalStateException();
+      }
+    }
+  }
+
+  private class OverallCostMethod implements TemplateMethodModelEx {
+    @SuppressWarnings("unchecked")
+    public Object exec(List arguments) throws TemplateModelException {
+      TemplateModel model = (TemplateModel) arguments.get(0);
+      if (model instanceof SimpleNumber) {
+        SimpleNumber number = (SimpleNumber) model;
+        return number;
+      } else if (model instanceof BeanModel) {
+        BeanModel arg0 = (BeanModel) model;
+        Cost cost = (Cost) arg0.getAdaptedObject(Cost.class);
+        return costModel.computeOverall(cost);
+      } else {
+        throw new IllegalStateException();
+      }
+    }
+  }
 
   private final String PREFIX = "com/google/test/metric/report/source/";
   private final SourceLoader sourceLoader;
@@ -48,12 +88,15 @@ public class SourceReport implements Report {
   private final Map<String, PackageReport> packageReports = new HashMap<String, PackageReport>();
   private final ProjectReport projectByClassReport;
   private final ProjectReport projectByPackageReport;
+  private final CostModel costModel;
 
   public SourceReport(GradeCategories grades, SourceLoader sourceLoader,
-      File outputDirectory, Date currentTime, int worstCount) {
+      File outputDirectory, CostModel costModel, Date currentTime,
+      int worstCount) {
     this.grades = grades;
     this.sourceLoader = sourceLoader;
     this.directory = outputDirectory;
+    this.costModel = costModel;
     cfg = new Configuration();
     cfg.setTemplateLoader(new ClassPathTemplateLoader(PREFIX));
     cfg.setObjectWrapper(new DefaultObjectWrapper());
@@ -61,6 +104,8 @@ public class SourceReport implements Report {
       cfg.setSharedVariable("maxExcellentCost", grades.getMaxExcellentCost());
       cfg.setSharedVariable("maxAcceptableCost", grades.getMaxAcceptableCost());
       cfg.setSharedVariable("currentTime", currentTime);
+      cfg.setSharedVariable("computeOverallCost", new OverallCostMethod());
+      cfg.setSharedVariable("printCost", new PrintCostMethod());
     } catch (TemplateModelException e) {
       throw new RuntimeException(e);
     }
@@ -82,7 +127,7 @@ public class SourceReport implements Report {
       OutputStream os = new FileOutputStream(new File(directory, "te.css"));
       int size;
       byte[] buf = new byte[2048];
-      while((size = is.read(buf))>0) {
+      while ((size = is.read(buf)) > 0) {
         os.write(buf, 0, size);
       }
       os.close();
@@ -112,11 +157,12 @@ public class SourceReport implements Report {
           new WeightedAverage());
       packageReports.put(packageName, packageReport);
     }
-    packageReport
-        .addClass(classCost.getClassName(), classCost.getOverallCost());
+    packageReport.addClass(classCost.getClassName(), costModel
+        .computeClass(classCost));
   }
 
-  public void write(String templateName, SummaryGraphReport<?> report, String prefix) {
+  public void write(String templateName, SummaryGraphReport<?> report,
+      String prefix) {
     File file = new File(directory, prefix + report.getName() + ".html");
     write(templateName, report, file);
   }
@@ -141,8 +187,10 @@ public class SourceReport implements Report {
         grades, new WeightedAverage(
             CostModel.WEIGHT_TO_EMPHASIZE_EXPENSIVE_METHODS));
     for (MethodCost method : classCost.getMethods()) {
+      int overallCost = costModel.computeOverall(method.getTotalCost());
       classReport.addMethod(method.getMethodName(), method
-          .getMethodLineNumber(), method.getTotalCost(), method.getCost());
+          .getMethodLineNumber(), overallCost, method.getTotalCost(), method
+          .getCost());
       Line line = source.getLine(method.getMethodLineNumber());
       line.addMethodCost(method);
       for (ViolationCost violation : method.getViolationCosts()) {

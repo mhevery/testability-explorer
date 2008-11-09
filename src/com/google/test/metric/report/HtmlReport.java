@@ -31,9 +31,9 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Comparator;
 
 import com.google.test.metric.ClassCost;
+import com.google.test.metric.CostModel;
 
 public class HtmlReport extends SummaryReport {
 
@@ -43,18 +43,10 @@ public class HtmlReport extends SummaryReport {
   protected final PrintStream out;
   private final DetailHtmlReport detailHtmlReport;
 
-  public HtmlReport(PrintStream out, int maxExcellentCount,
+  public HtmlReport(PrintStream out, CostModel costModel, int maxExcellentCount,
       int maxAcceptableCost, int worstOffenderCount,
       DetailHtmlReport detailHtmlReport) {
-    super(maxExcellentCount, maxAcceptableCost, worstOffenderCount);
-    this.out = out;
-    this.detailHtmlReport = detailHtmlReport;
-  }
-
-  public HtmlReport(PrintStream out, int maxExcellentCount,
-      int maxAcceptableCost, int worstOffenderCount,
-      DetailHtmlReport detailHtmlReport, Comparator<ClassCost> comparator) {
-    super(maxExcellentCount, maxAcceptableCost, worstOffenderCount, comparator);
+    super(costModel, maxExcellentCount, maxAcceptableCost, worstOffenderCount);
     this.out = out;
     this.detailHtmlReport = detailHtmlReport;
   }

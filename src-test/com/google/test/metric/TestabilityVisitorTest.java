@@ -47,7 +47,7 @@ public class TestabilityVisitorTest extends TestCase {
   private final JavaClassRepository repo = new JavaClassRepository();
 
   TestabilityVisitor visitor =
-    new TestabilityVisitor(repo, null, new RegExpWhiteList(), new CostModel());
+    new TestabilityVisitor(repo, null, new RegExpWhiteList());
   TestabilityVisitor.Frame parentFrame = visitor.newFrame(null, null);
   TestabilityVisitor.Frame currentFrame = visitor.newFrame(parentFrame, null);
 

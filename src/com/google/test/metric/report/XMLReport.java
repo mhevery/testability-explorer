@@ -24,17 +24,20 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
 import com.google.test.metric.ClassCost;
+import com.google.test.metric.CostModel;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.ViolationCost;
 
 public class XMLReport extends SummaryReport {
 
   private final ContentHandler out;
+  private final CostModel costModel;
 
-  public XMLReport(ContentHandler out, int maxExcellentCost,
+  public XMLReport(ContentHandler out, CostModel costModel, int maxExcellentCost,
       int maxAcceptableCost, int worstOffenderCount) {
-    super(maxExcellentCost, maxAcceptableCost, worstOffenderCount);
+    super(costModel, maxExcellentCost, maxAcceptableCost, worstOffenderCount);
     this.out = out;
+    this.costModel = costModel;
   }
 
   public void printHeader() {
@@ -79,11 +82,15 @@ public class XMLReport extends SummaryReport {
   }
 
   void writeCost(ViolationCost violation) throws SAXException {
-    writeElement("cost", violation.getAttributes());
+    Map<String, Object> attributes = violation.getAttributes();
+    attributes.put("overall", costModel.computeOverall(violation.getCost()));
+    writeElement("cost", attributes);
   }
 
   void writeCost(MethodCost methodCost) throws SAXException {
-    startElement("method", methodCost.getAttributes());
+    Map<String, Object> attributes = methodCost.getAttributes();
+    attributes.put("overall", costModel.computeOverall(methodCost.getTotalCost()));
+    startElement("method", attributes);
     for (ViolationCost violation : methodCost.getViolationCosts()) {
       writeCost(violation);
     }
@@ -91,7 +98,9 @@ public class XMLReport extends SummaryReport {
   }
 
   void writeCost(ClassCost classCost) throws SAXException {
-    startElement("class", classCost.getAttributes());
+    Map<String, Object> attributes = classCost.getAttributes();
+    attributes.put("cost", costModel.computeClass(classCost));
+    startElement("class", attributes);
     for (MethodCost cost : classCost.getMethods()) {
       writeCost(cost);
     }

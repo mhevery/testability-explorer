@@ -13,16 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
- 
+
 package com.google.test.metric.testing;
 
+import java.io.PrintStream;
+
 import com.google.test.metric.ClassRepository;
-import com.google.test.metric.CostModel;
 import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MetricComputer;
 import com.google.test.metric.RegExpWhiteList;
-
-import java.io.PrintStream;
 
 /**
  * For use in tests, this is a preferable way to construct a {@code MetricComputer},
@@ -36,7 +35,6 @@ public class MetricComputerBuilder {
   private ClassRepository repo = new JavaClassRepository();
   private PrintStream printStream = null;
   private RegExpWhiteList whitelist = new RegExpWhiteList();
-  private CostModel costModel = new CostModel();
 
   public MetricComputerBuilder withClassRepository(ClassRepository repository) {
     this.repo = repository;
@@ -53,13 +51,8 @@ public class MetricComputerBuilder {
     return this;
   }
 
-  public MetricComputerBuilder withCostModel(CostModel model) {
-    this.costModel = model;
-    return this;
-  }
-
   public MetricComputer build() {
-    return new MetricComputer(repo, printStream, whitelist, costModel);
+    return new MetricComputer(repo, printStream, whitelist);
   }
 
 }

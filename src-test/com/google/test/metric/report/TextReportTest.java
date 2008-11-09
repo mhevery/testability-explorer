@@ -31,8 +31,8 @@ import com.google.test.metric.MethodCost;
 public class TextReportTest extends TestCase {
 
   ByteArrayOutputStream out = new ByteArrayOutputStream();
-  TextReport report = new TextReport(new PrintStream(out), 50, 100, 0);
   CostModel costModel = new CostModel(1, 1);
+  TextReport report = new TextReport(new PrintStream(out), costModel, 50, 100, 0);
 
   private void assertOutput(String... expected) {
     StringBuilder buf = new StringBuilder();
@@ -49,9 +49,9 @@ public class TextReportTest extends TestCase {
     for (int i = 0; i < cost; i++) {
       methodCost.addCyclomaticCost(i);
     }
-    methodCost.link(new CostModel(1, 1));
+    methodCost.link();
     methods.add(methodCost);
-    ClassCost classCost = new ClassCost(name, methods, costModel);
+    ClassCost classCost = new ClassCost(name, methods);
     return classCost;
   }
 
