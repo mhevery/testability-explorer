@@ -40,6 +40,20 @@ public class TestabilityVisitor {
       this.methodCost = methodCost;
     }
 
+    protected void addGlobalCost(int lineNumber, Variable variable) {
+      methodCost.addCostSource(new GlobalCost(lineNumber, variable));
+    }
+
+    protected void addLoDCost(int lineNumber, MethodInfo method, int distance) {
+      methodCost.addCostSource(new LoDViolation(lineNumber, method
+          .getFullName(), distance));
+    }
+
+    protected void addMethodInvocationCost(int lineNumber, MethodCost to) {
+      methodCost.addCostSource(new MethodInvokationCost(lineNumber, to,
+          Reason.NON_OVERRIDABLE_METHOD_CALL));
+    }
+
     private void applyMethodOperations(int lineNumber, MethodInfo toMethod,
         Variable methodThis, List<? extends Variable> parameters,
         Variable returnVariable) {
@@ -57,8 +71,11 @@ public class TestabilityVisitor {
         operation.visit(this);
       }
       int thisCount = variableState.getLoDCount(methodThis);
-      parentFrame.recordLoDDispatch(lineNumber, toMethod, returnVariable,
-          thisCount + 1);
+      int distance = thisCount + 1;
+      parentFrame.variableState.setLoDCount(returnVariable, distance);
+      if (distance > 1) {
+        parentFrame.addLoDCost(lineNumber, toMethod, distance);
+      }
     }
 
     /**
@@ -68,7 +85,7 @@ public class TestabilityVisitor {
     public void assignArray(Variable array, Variable index, Variable value,
         int lineNumber) {
       if (variableState.isGlobal(array)) {
-        methodCost.addGlobalCost(lineNumber, array);
+        addGlobalCost(lineNumber, array);
       }
     }
 
@@ -77,7 +94,7 @@ public class TestabilityVisitor {
      * assigned to. The globality is propagated because global state is
      * transitive (static cling) So any modification on class which is
      * transitively global should also be penalized.
-     *
+     * 
      * <p>
      * Note: <em>final</em> static fields are not added, because they are
      * assumed to be constants, thus this will miss some actual global state.
@@ -128,13 +145,12 @@ public class TestabilityVisitor {
           .getLoDCount(source));
     }
 
-    private void recordLoDDispatch(int lineNumber, MethodInfo method,
-        Variable variable, int distance) {
-      variableState.setLoDCount(variable, distance);
-      if (distance > 1) {
-        methodCost.addCostSource(new LoDViolation(lineNumber, method
-            .getFullName(), distance));
-      }
+    int getLoDCount(Variable variable) {
+      return variableState.getLoDCount(variable);
+    }
+
+    public VariableState getVariableState() {
+      return variableState;
     }
 
     public void recordMethodCall(String clazzName, int lineNumber,
@@ -150,11 +166,15 @@ public class TestabilityVisitor {
           // Method already counted, skip (to prevent recursion)
           if (returnVariable != null) {
             int thisCount = variableState.getLoDCount(methodThis);
-            recordLoDDispatch(lineNumber, toMethod, returnVariable,
-                thisCount + 1);
+            int distance = thisCount + 1;
+            variableState.setLoDCount(returnVariable, distance);
+            if (distance > 1) {
+              addLoDCost(lineNumber, toMethod, distance);
+            }
           }
           return;
-        } else if (toMethod.canOverride() && variableState.isInjectable(methodThis)) {
+        } else if (toMethod.canOverride()
+            && variableState.isInjectable(methodThis)) {
           // Method can be overridden / injectable
           recordOverridableMethodCall(lineNumber, toMethod, methodThis,
               returnVariable);
@@ -181,9 +201,9 @@ public class TestabilityVisitor {
         // Prevent recursion.
         return;
       }
-      methodCost.addMethodCost(lineNumber, to,
-          Reason.NON_OVERRIDABLE_METHOD_CALL);
-      Frame currentFrame = new Frame(this, variableState.getGlobalVariableState(), to);
+      addMethodInvocationCost(lineNumber, to);
+      Frame currentFrame = new Frame(this, variableState
+          .getGlobalVariableState(), to);
       if (toMethod.isInstance()) {
         currentFrame.assignParameter(toMethod, lineNumber, toMethod
             .getMethodThis(), currentFrame.parentFrame, methodThis);
@@ -201,7 +221,11 @@ public class TestabilityVisitor {
       }
       if (returnVariable != null) {
         int thisCount = variableState.getLoDCount(methodThis);
-        recordLoDDispatch(lineNumber, toMethod, returnVariable, thisCount + 1);
+        int distance = thisCount + 1;
+        variableState.setLoDCount(returnVariable, distance);
+        if (distance > 1) {
+          addLoDCost(lineNumber, toMethod, distance);
+        }
       }
     }
 
@@ -219,7 +243,8 @@ public class TestabilityVisitor {
     }
 
     public void setReturnValue(Variable value) {
-      boolean isWorse = variableState.isGlobal(value) && !variableState.isGlobal(returnValue);
+      boolean isWorse = variableState.isGlobal(value)
+          && !variableState.isGlobal(returnValue);
       if (isWorse) {
         returnValue = value;
       }
@@ -228,14 +253,6 @@ public class TestabilityVisitor {
     @Override
     public String toString() {
       return "MethodCost: " + methodCost + "\n" + super.toString();
-    }
-
-    int getLoDCount(Variable variable) {
-      return variableState.getLoDCount(variable);
-    }
-
-    public VariableState getVariableState() {
-      return variableState;
     }
 
   }
@@ -259,7 +276,7 @@ public class TestabilityVisitor {
    * Implicit costs are added to the {@code from} method's costs when it is
    * assumed that the costs must be incurred in order for the {@code from}
    * method to execute. Example:
-   *
+   * 
    * <pre>
    * void fromMethod() {
    *   this.someObject.toMethod();
@@ -278,7 +295,7 @@ public class TestabilityVisitor {
    * <li>Note that the same implicit costs apply for the class that has the
    * fromMethod. (Meaning a method will always have the implicit costs of the
    * containing class and super-classes at a minimum).</li> </ul>
-   *
+   * 
    * @param from
    *          the method that we are adding the implicit cost upon.
    * @param to
@@ -312,6 +329,10 @@ public class TestabilityVisitor {
     return currentFrame;
   }
 
+  public VariableState getGlobalVariables() {
+    return globalVariables;
+  }
+
   /**
    * Looks up the MethodCost and returns the cached one, or a new one is created
    * for this method. Then link() is called. Note: this returns the linked
@@ -335,10 +356,6 @@ public class TestabilityVisitor {
       methodCosts.put(method, methodCost);
     }
     return methodCost;
-  }
-
-  public VariableState getGlobalVariables() {
-    return globalVariables;
   }
 
   // Temporary for testing
