@@ -18,8 +18,9 @@ package com.google.test.metric;
 
 public class CyclomaticCost extends ViolationCost {
 
-  public CyclomaticCost(int lineNumber) {
+  public CyclomaticCost(int lineNumber, Cost cyclomaticCost) {
     super(lineNumber, null);
+    cost = cyclomaticCost;
   }
 
   @Override
@@ -29,7 +30,6 @@ public class CyclomaticCost extends ViolationCost {
 
   @Override
   public void link(Cost directCost, Cost dependantCost) {
-    cost = Cost.cyclomatic(1);
     directCost.addDependant(cost);
   }
 

@@ -81,7 +81,7 @@ public class MethodCost {
   }
 
   public void addMethodCost(int line, MethodCost cost, Reason costSourceType) {
-    addCostSource(new MethodInvokationCost(line, cost, costSourceType));
+    addCostSource(new MethodInvokationCost(line, cost, costSourceType, Cost.none()));
   }
 
   public void addGlobalCost(int lineNumber, Variable variable) {
@@ -89,7 +89,7 @@ public class MethodCost {
   }
 
   public void addCyclomaticCost(int lineNumberWithComplexity) {
-    addCostSource(new CyclomaticCost(lineNumberWithComplexity));
+    addCostSource(new CyclomaticCost(lineNumberWithComplexity, Cost.cyclomatic(1)));
   }
 
 

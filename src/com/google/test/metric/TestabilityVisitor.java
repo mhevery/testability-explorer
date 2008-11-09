@@ -42,21 +42,34 @@ public class TestabilityVisitor {
       this.methodCost = methodCost;
     }
 
+    private Cost getTotalCost() {
+      Cost totalCost = Cost.none();
+      totalCost.add(direct);
+      totalCost.add(indirect);
+      return totalCost;
+    }
+
     protected void addGlobalCost(int lineNumber, Variable variable) {
       Cost globalCost = Cost.global(1);
-      methodCost
-          .addCostSource(new GlobalCost(lineNumber, variable, globalCost));
+      direct.add(globalCost);
+      ViolationCost cost = new GlobalCost(lineNumber, variable, globalCost);
+      methodCost.addCostSource(cost);
     }
 
     protected void addLoDCost(int lineNumber, MethodInfo method, int distance) {
       Cost lodCost = Cost.lod(distance);
-      methodCost.addCostSource(new LoDViolation(lineNumber, method
-          .getFullName(), lodCost, distance));
+      direct.add(lodCost);
+      ViolationCost cost = new LoDViolation(lineNumber, method.getFullName(),
+          lodCost, distance);
+      methodCost.addCostSource(cost);
     }
 
-    protected void addMethodInvocationCost(int lineNumber, MethodCost to) {
-      methodCost.addCostSource(new MethodInvokationCost(lineNumber, to,
-          Reason.NON_OVERRIDABLE_METHOD_CALL));
+    protected void addMethodInvocationCost(int lineNumber, MethodCost to,
+        Cost methodInvocationCost) {
+      indirect.add(methodInvocationCost);
+      ViolationCost cost = new MethodInvokationCost(lineNumber, to,
+          Reason.NON_OVERRIDABLE_METHOD_CALL, methodInvocationCost);
+      methodCost.addCostSource(cost);
     }
 
     private void applyMethodOperations(int lineNumber, MethodInfo toMethod,
@@ -131,8 +144,8 @@ public class TestabilityVisitor {
       assignVariable(destination, lineNumber, this, returnValue);
     }
 
-    private void assignVariable(Variable destination,
-        int lineNumber, Frame srcFrame, Variable source) {
+    private void assignVariable(Variable destination, int lineNumber,
+        Frame srcFrame, Variable source) {
       if (srcFrame.variableState.isInjectable(source)) {
         variableState.setInjectable(destination);
       }
@@ -145,6 +158,7 @@ public class TestabilityVisitor {
       int loDCount = srcFrame.variableState.getLoDCount(source);
       variableState.setLoDCount(destination, loDCount);
     }
+
     int getLoDCount(Variable variable) {
       return variableState.getLoDCount(variable);
     }
@@ -197,16 +211,16 @@ public class TestabilityVisitor {
         MethodInfo toMethod, Variable methodThis,
         List<? extends Variable> parameters, Variable returnVariable) {
       MethodCost to = getMethodCost(toMethod);
-      addMethodInvocationCost(lineNumber, to);
-      Frame currentFrame = new Frame(this, variableState
-          .getGlobalVariableState(), to);
+      Frame childFrame = new Frame(this,
+          variableState.getGlobalVariableState(), to);
       if (toMethod.isInstance()) {
-        currentFrame.assignParameter(lineNumber, toMethod
-            .getMethodThis(), currentFrame.parentFrame, methodThis);
+        childFrame.assignParameter(lineNumber, toMethod.getMethodThis(),
+            childFrame.parentFrame, methodThis);
       }
-      currentFrame.applyMethodOperations(lineNumber, toMethod, methodThis,
+      childFrame.applyMethodOperations(lineNumber, toMethod, methodThis,
           parameters, returnVariable);
-      currentFrame.assignReturnValue(lineNumber, returnVariable);
+      childFrame.assignReturnValue(lineNumber, returnVariable);
+      addMethodInvocationCost(lineNumber, to, childFrame.getTotalCost());
     }
 
     private void recordOverridableMethodCall(int lineNumber,

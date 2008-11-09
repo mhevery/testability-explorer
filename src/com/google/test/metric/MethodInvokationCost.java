@@ -24,9 +24,10 @@ public class MethodInvokationCost extends ViolationCost {
   private final MethodCost methodCost;
 
   public MethodInvokationCost(int lineNumber, MethodCost methodCost,
-      Reason costSourceType) {
+      Reason costSourceType, Cost invocationCost) {
     super(lineNumber, costSourceType);
     this.methodCost = methodCost;
+    this.cost = invocationCost;
   }
 
   @Override
