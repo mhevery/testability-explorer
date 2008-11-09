@@ -22,11 +22,11 @@ public class LoDViolation extends ViolationCost {
   private final String methodName;
   private final int distance;
 
-  public LoDViolation(int lineNumber, String methodName, int distance) {
+  public LoDViolation(int lineNumber, String methodName, Cost lod, int distance) {
     super(lineNumber, Reason.LAW_OF_DEMETER);
     this.methodName = methodName;
     this.distance = distance;
-    cost = Cost.lod(distance);
+    this.cost = lod;
   }
 
   @Override

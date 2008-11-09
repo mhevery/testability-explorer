@@ -85,7 +85,7 @@ public class MethodCost {
   }
 
   public void addGlobalCost(int lineNumber, Variable variable) {
-    addCostSource(new GlobalCost(lineNumber, variable));
+    addCostSource(new GlobalCost(lineNumber, variable, Cost.global(1)));
   }
 
   public void addCyclomaticCost(int lineNumberWithComplexity) {

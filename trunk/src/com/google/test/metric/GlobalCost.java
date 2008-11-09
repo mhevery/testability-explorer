@@ -22,10 +22,10 @@ public class GlobalCost extends ViolationCost {
 
   private final Variable variable;
 
-  public GlobalCost(int lineNumber, Variable variable) {
+  public GlobalCost(int lineNumber, Variable variable, Cost globalCost) {
     super(lineNumber, Reason.GLOBAL);
     this.variable = variable;
-    cost = Cost.global(1);
+    this.cost = globalCost;
   }
 
   @Override
