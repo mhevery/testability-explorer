@@ -111,7 +111,7 @@ public class TestabilityVisitor {
       assignVariable(field, lineNumber, this, value);
       if (fieldInstance == null || variableState.isGlobal(fieldInstance)) {
         if (!field.isFinal()) {
-          methodCost.addGlobalCost(lineNumber, fieldInstance);
+          addGlobalCost(lineNumber, fieldInstance);
         }
         variableState.setGlobal(field);
       }
@@ -197,10 +197,6 @@ public class TestabilityVisitor {
         MethodInfo toMethod, Variable methodThis,
         List<? extends Variable> parameters, Variable returnVariable) {
       MethodCost to = getMethodCost(toMethod);
-      if (methodCost == to) {
-        // Prevent recursion.
-        return;
-      }
       addMethodInvocationCost(lineNumber, to);
       Frame currentFrame = new Frame(this, variableState
           .getGlobalVariableState(), to);
