@@ -34,12 +34,14 @@ public class TestabilityVisitor {
     private Variable returnValue;
     private final Cost direct = Cost.none();
     private final Cost indirect = Cost.none();
+    private final MethodInfo method;
 
     public Frame(Frame parentFrame, VariableState globalVariables,
-        MethodCost methodCost) {
+        MethodInfo method) {
       this.parentFrame = parentFrame;
+      this.method = method;
       this.variableState = new LocalVariableState(globalVariables);
-      this.methodCost = methodCost;
+      this.methodCost = getMethodCost(method);
     }
 
     private Cost getTotalCost() {
@@ -212,7 +214,7 @@ public class TestabilityVisitor {
         List<? extends Variable> parameters, Variable returnVariable) {
       MethodCost to = getMethodCost(toMethod);
       Frame childFrame = new Frame(this,
-          variableState.getGlobalVariableState(), to);
+          variableState.getGlobalVariableState(), toMethod);
       if (toMethod.isInstance()) {
         childFrame.assignParameter(lineNumber, toMethod.getMethodThis(),
             childFrame.parentFrame, methodThis);
@@ -265,6 +267,70 @@ public class TestabilityVisitor {
       return "MethodCost: " + methodCost + "\n" + super.toString();
     }
 
+    public VariableState getGlobalVariables() {
+      return globalVariables;
+    }
+
+    public Frame applyMethodOperations() {
+      if (method.getMethodThis() != null) {
+        variableState.setInjectable(method.getMethodThis());
+      }
+      setInjectable(method.getParameters());
+      Constant returnVariable = new Constant("rootReturn", JavaType.OBJECT);
+      applyMethodOperations(-1, method, method.getMethodThis(),
+          method.getParameters(), returnVariable);
+      return this;
+    }
+
+    /**
+     * Implicit costs are added to the {@code from} method's costs when it is
+     * assumed that the costs must be incurred in order for the {@code from}
+     * method to execute. Example:
+     *
+     * <pre>
+     * void fromMethod() {
+     *   this.someObject.toMethod();
+     * }
+     * </pre>
+     * <p>
+     * We would add the implicit cost of the toMethod() to the fromMethod().
+     * Implicit Costs consist of:
+     * <ul>
+     * <li>Cost of construction for the someObject field referenced in
+     * fromMethod()</li>
+     * <li>Static initialization blocks in someObject
+     * </ul>
+     * <li>The cost of calling all the methods starting with "set" on
+     * someObject.</ul>
+     * <li>Note that the same implicit costs apply for the class that has the
+     * fromMethod. (Meaning a method will always have the implicit costs of the
+     * containing class and super-classes at a minimum).</li> </ul>
+     *
+     * @param implicitMethod
+     *          the method that is getting called by {@code from} and contributes
+     *          cost transitively.
+     * @param costSourceType
+     *          the type of implicit cost to record, for giving the user
+     *          information about why they have the costs they have.
+     * @return
+     */
+    public Frame applyImplicitCost(MethodInfo implicitMethod,
+        Reason reason) {
+      if (implicitMethod.getMethodThis() != null) {
+        variableState.setInjectable(implicitMethod.getMethodThis());
+      }
+      setInjectable(implicitMethod.getParameters());
+      Constant ret = new Constant("return", JavaType.OBJECT);
+      int lineNumber = implicitMethod.getStartingLineNumber();
+      recordNonOverridableMethodCall(lineNumber, implicitMethod, implicitMethod
+          .getMethodThis(), implicitMethod.getParameters(), ret);
+      return this;
+    }
+
+    public Frame getParentFrame() {
+      return parentFrame;
+    }
+
   }
 
   // TODO: refactor me. The root frame needs to be of different class so that
@@ -280,63 +346,6 @@ public class TestabilityVisitor {
     this.classRepository = classRepository;
     this.err = err;
     this.whitelist = whitelist;
-  }
-
-  /**
-   * Implicit costs are added to the {@code from} method's costs when it is
-   * assumed that the costs must be incurred in order for the {@code from}
-   * method to execute. Example:
-   *
-   * <pre>
-   * void fromMethod() {
-   *   this.someObject.toMethod();
-   * }
-   * </pre>
-   * <p>
-   * We would add the implicit cost of the toMethod() to the fromMethod().
-   * Implicit Costs consist of:
-   * <ul>
-   * <li>Cost of construction for the someObject field referenced in
-   * fromMethod()</li>
-   * <li>Static initialization blocks in someObject
-   * </ul>
-   * <li>The cost of calling all the methods starting with "set" on
-   * someObject.</ul>
-   * <li>Note that the same implicit costs apply for the class that has the
-   * fromMethod. (Meaning a method will always have the implicit costs of the
-   * containing class and super-classes at a minimum).</li> </ul>
-   *
-   * @param from
-   *          the method that we are adding the implicit cost upon.
-   * @param to
-   *          the method that is getting called by {@code from} and contributes
-   *          cost transitively.
-   * @param costSourceType
-   *          the type of implicit cost to record, for giving the user
-   *          information about why they have the costs they have.
-   */
-  public void applyImplicitCost(MethodInfo from, MethodInfo to,
-      Reason costSourceType) {
-    int lineNumber = to.getStartingLineNumber();
-    MethodCost methodCost = getMethodCost(from);
-    MethodCost toMethodCost = getMethodCost(to);
-    methodCost.addMethodCost(lineNumber, toMethodCost, costSourceType);
-
-    applyMethodOperations(to);
-  }
-
-  public Frame applyMethodOperations(MethodInfo method) {
-    Frame currentFrame = new Frame(new Frame(null, globalVariables, null),
-        globalVariables, getMethodCost(method));
-
-    if (method.getMethodThis() != null) {
-      currentFrame.variableState.setInjectable(method.getMethodThis());
-    }
-    currentFrame.setInjectable(method.getParameters());
-    currentFrame.applyMethodOperations(-1, method, method.getMethodThis(),
-        method.getParameters(), new Constant("rootReturn", JavaType.OBJECT));
-
-    return currentFrame;
   }
 
   public VariableState getGlobalVariables() {
@@ -356,6 +365,9 @@ public class TestabilityVisitor {
   }
 
   MethodCost getMethodCost(MethodInfo method) {
+    if (method == null) {
+      return null;
+    }
     MethodCost methodCost = methodCosts.get(method);
     if (methodCost == null) {
       methodCost = new MethodCost(method.getFullName(), method
@@ -366,11 +378,6 @@ public class TestabilityVisitor {
       methodCosts.put(method, methodCost);
     }
     return methodCost;
-  }
-
-  // Temporary for testing
-  Frame newFrame(Frame parent, MethodCost method) {
-    return new Frame(parent, globalVariables, method);
   }
 
   @Override
@@ -384,6 +391,11 @@ public class TestabilityVisitor {
     }
     buf.append("\n==============\nROOT FRAME:\n" + globalVariables);
     return buf.toString();
+  }
+
+  public Frame createFrame(MethodInfo method) {
+    Frame parent = new Frame(null, globalVariables, null);
+    return new Frame(parent, globalVariables, method);
   }
 
 }

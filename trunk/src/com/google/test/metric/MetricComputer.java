@@ -19,6 +19,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.test.metric.TestabilityVisitor.Frame;
 import com.google.test.metric.ViolationCost.Reason;
 
 public class MetricComputer {
@@ -71,11 +72,12 @@ public class MetricComputer {
    */
   public MethodCost compute(MethodInfo method) {
     TestabilityVisitor visitor = new TestabilityVisitor(classRepository, err, whitelist);
-    addStaticInitializationCost(method, visitor);
-    addConstructorCost(method, visitor);
-    addSetterInjection(method, visitor);
-    addFieldCost(method, visitor);
-    visitor.applyMethodOperations(method);
+    TestabilityVisitor.Frame frame = visitor.createFrame(method);
+    addStaticInitializationCost(method, frame);
+    addConstructorCost(method, frame);
+    addSetterInjection(method, frame);
+    addFieldCost(method, frame);
+    frame.applyMethodOperations();
     return visitor.getLinkedMethodCost(method);
   }
 
@@ -83,42 +85,42 @@ public class MetricComputer {
 
   /** Goes through all methods and adds an implicit cost for those beginning with "set" (assuming
    * to test the {@code baseMethod}'s class, you need to be able to call the setters for initialization.  */
-  private void addSetterInjection(MethodInfo baseMethod, TestabilityVisitor visitor) {
+  private void addSetterInjection(MethodInfo baseMethod, Frame frame) {
     for (MethodInfo setter : baseMethod.getSiblingSetters()) {
-      visitor.applyImplicitCost(baseMethod, setter, Reason.IMPLICIT_SETTER);
+      frame.applyImplicitCost(setter, Reason.IMPLICIT_SETTER);
     }
   }
 
   /** Adds an implicit cost to all non-static methods for calling the constructor. (Because to test
    * any instance method, you must be able to instantiate the class.) Also marks parameters
    * injectable for the constructor with the most non-primitive parameters. */
-  private void addConstructorCost(MethodInfo method, TestabilityVisitor visitor) {
+  private void addConstructorCost(MethodInfo method, Frame frame) {
     if (!method.isStatic() && !method.isConstructor()) {
       MethodInfo constructor = method.getClassInfo().getConstructorWithMostNonPrimitiveParameters();
       if (constructor != null) {
-        visitor.applyImplicitCost(method, constructor, Reason.IMPLICIT_CONSTRUCTOR);
+        frame.applyImplicitCost(constructor, Reason.IMPLICIT_CONSTRUCTOR);
       }
     }
   }
 
   /** Doesn't really add the field costs (there are none), but marks non-private fields as injectable. */
   private void addFieldCost(MethodInfo method,
-      TestabilityVisitor visitor) {
+      Frame frame) {
     for (FieldInfo field : method.getClassInfo().getFields()) {
       if (!field.isPrivate()) {
-        visitor.getGlobalVariables().setInjectable(field);
+        frame.getGlobalVariables().setInjectable(field);
       }
     }
   }
 
    /** Includes the cost of all static initialization blocks, as well as static field assignments. */
-  private void addStaticInitializationCost(MethodInfo baseMethod, TestabilityVisitor visitor) {
+  private void addStaticInitializationCost(MethodInfo baseMethod, Frame frame) {
     if (baseMethod.isStaticConstructor()) {
       return;
     }
     for (MethodInfo method : baseMethod.getClassInfo().getMethods()) {
       if (method.getName().startsWith("<clinit>")) {
-        visitor.applyImplicitCost(baseMethod, method, Reason.IMPLICIT_STATIC_INIT);
+        frame.applyImplicitCost(method, Reason.IMPLICIT_STATIC_INIT);
       }
     }
   }
