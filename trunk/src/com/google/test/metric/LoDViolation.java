@@ -23,10 +23,9 @@ public class LoDViolation extends ViolationCost {
   private final int distance;
 
   public LoDViolation(int lineNumber, String methodName, Cost lod, int distance) {
-    super(lineNumber, Reason.LAW_OF_DEMETER);
+    super(lineNumber, lod, Reason.LAW_OF_DEMETER);
     this.methodName = methodName;
     this.distance = distance;
-    this.cost = lod;
   }
 
   @Override
@@ -36,7 +35,7 @@ public class LoDViolation extends ViolationCost {
 
   @Override
   public void link(Cost directCost, Cost dependantCost) {
-    directCost.add(cost);
+    directCost.add(getCost());
   }
 
 }

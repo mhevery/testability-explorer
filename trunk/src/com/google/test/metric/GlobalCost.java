@@ -23,14 +23,13 @@ public class GlobalCost extends ViolationCost {
   private final Variable variable;
 
   public GlobalCost(int lineNumber, Variable variable, Cost globalCost) {
-    super(lineNumber, Reason.GLOBAL);
+    super(lineNumber, globalCost, Reason.GLOBAL);
     this.variable = variable;
-    this.cost = globalCost;
   }
 
   @Override
   public void link(Cost directCost, Cost dependantCost) {
-    directCost.add(cost);
+    directCost.add(getCost());
   }
 
   @Override
