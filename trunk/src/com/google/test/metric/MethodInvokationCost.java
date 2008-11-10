@@ -14,11 +14,9 @@
  * the License.
  */
 // Copyright 2008 Google Inc. All Rights Reserved.
-
 package com.google.test.metric;
 
 import java.util.Map;
-
 
 public class MethodInvokationCost extends ViolationCost {
   private final MethodCost methodCost;
@@ -31,8 +29,15 @@ public class MethodInvokationCost extends ViolationCost {
 
   @Override
   public void link(Cost directCost, Cost dependantCost) {
-    cost = methodCost.link().copyNoLOD();
-    dependantCost.addDependant(getCost());
+    Cost linkCost = methodCost.link().copyNoLOD();
+    if (false && !cost.equals(linkCost)) {
+      // TODO: Re-enable this!
+      throw new IllegalStateException(String.format(
+          "Expected: '%s' was: '%s'. In Method '%s', Reasong '%s'.", linkCost,
+          cost, methodCost.getMethodName(), reason.name()));
+    }
+    cost = linkCost;
+    dependantCost.addDependant(cost);
   }
 
   public MethodCost getMethodCost() {

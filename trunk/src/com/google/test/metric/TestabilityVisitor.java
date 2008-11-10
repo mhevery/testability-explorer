@@ -197,8 +197,11 @@ public class TestabilityVisitor {
         } else {
           // Method can not be intercepted we have to add the cost
           // recursively
-          recordNonOverridableMethodCall(lineNumber, toMethod, methodThis,
+          Frame childFrame = new Frame(this, globalVariables, toMethod);
+          childFrame.recordMethodCall(lineNumber, toMethod, methodThis,
               parameters, returnVariable);
+          addMethodInvocationCost(lineNumber, getMethodCost(toMethod),
+              childFrame.getTotalCost());
         }
       } catch (ClassNotFoundException e) {
         err.println(("WARNING: class not found: " + clazzName));
@@ -209,20 +212,16 @@ public class TestabilityVisitor {
       }
     }
 
-    private void recordNonOverridableMethodCall(int lineNumber,
-        MethodInfo toMethod, Variable methodThis,
-        List<? extends Variable> parameters, Variable returnVariable) {
-      MethodCost to = getMethodCost(toMethod);
-      Frame childFrame = new Frame(this,
-          variableState.getGlobalVariableState(), toMethod);
+    private void recordMethodCall(int lineNumber, MethodInfo toMethod,
+        Variable methodThis, List<? extends Variable> parameters,
+        Variable returnVariable) {
       if (toMethod.isInstance()) {
-        childFrame.assignParameter(lineNumber, toMethod.getMethodThis(),
-            childFrame.parentFrame, methodThis);
+        assignParameter(lineNumber, toMethod.getMethodThis(), parentFrame,
+            methodThis);
       }
-      childFrame.applyMethodOperations(lineNumber, toMethod, methodThis,
-          parameters, returnVariable);
-      childFrame.assignReturnValue(lineNumber, returnVariable);
-      addMethodInvocationCost(lineNumber, to, childFrame.getTotalCost());
+      applyMethodOperations(lineNumber, toMethod, methodThis, parameters,
+          returnVariable);
+      assignReturnValue(lineNumber, returnVariable);
     }
 
     private void recordOverridableMethodCall(int lineNumber,
@@ -277,8 +276,8 @@ public class TestabilityVisitor {
       }
       setInjectable(method.getParameters());
       Constant returnVariable = new Constant("rootReturn", JavaType.OBJECT);
-      applyMethodOperations(-1, method, method.getMethodThis(),
-          method.getParameters(), returnVariable);
+      applyMethodOperations(-1, method, method.getMethodThis(), method
+          .getParameters(), returnVariable);
       return this;
     }
 
@@ -307,23 +306,26 @@ public class TestabilityVisitor {
      * containing class and super-classes at a minimum).</li> </ul>
      *
      * @param implicitMethod
-     *          the method that is getting called by {@code from} and contributes
-     *          cost transitively.
+     *          the method that is getting called by {@code from} and
+     *          contributes cost transitively.
      * @param costSourceType
      *          the type of implicit cost to record, for giving the user
      *          information about why they have the costs they have.
      * @return
      */
-    public Frame applyImplicitCost(MethodInfo implicitMethod,
-        Reason reason) {
+    public Frame applyImplicitCost(MethodInfo implicitMethod, Reason reason) {
       if (implicitMethod.getMethodThis() != null) {
         variableState.setInjectable(implicitMethod.getMethodThis());
       }
       setInjectable(implicitMethod.getParameters());
       Constant ret = new Constant("return", JavaType.OBJECT);
       int lineNumber = implicitMethod.getStartingLineNumber();
-      recordNonOverridableMethodCall(lineNumber, implicitMethod, implicitMethod
+      Frame childFrame = new Frame(this,
+          variableState.getGlobalVariableState(), implicitMethod);
+      childFrame.recordMethodCall(lineNumber, implicitMethod, implicitMethod
           .getMethodThis(), implicitMethod.getParameters(), ret);
+      addMethodInvocationCost(lineNumber, getMethodCost(implicitMethod),
+          childFrame.getTotalCost());
       return this;
     }
 
