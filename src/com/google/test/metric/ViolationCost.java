@@ -48,7 +48,7 @@ public abstract class ViolationCost {
   }
 
   private final int lineNumber;
-  private final Reason reason;
+  protected final Reason reason;
   protected Cost cost;
 
   /**
