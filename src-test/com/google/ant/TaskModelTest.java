@@ -67,12 +67,6 @@ public class TaskModelTest extends TestCase {
     assertEquals(model.getWhiteList(), TaskModel.DEFAULT_WHITE_LIST);
   }
 
-  public void testDefaultGrouping()  throws Exception {
-    assertEquals(model.getGrouing(), null);
-    model.validate(new ArrayList<String>());
-    assertEquals(model.getGrouing(), TaskModel.DEFAULT_GROUPING);
-  }
-
   public void testDefaultPrint()  throws Exception {
     assertEquals(model.getPrint(), null);
     model.validate(new ArrayList<String>());

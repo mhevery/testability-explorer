@@ -50,9 +50,6 @@ public class TestabilityTask extends Task {
     model.setMinCost(cost);
   }
 
-  public void setGrouping(String groupingVal) {
-    model.setGrouping(groupingVal);
-  }
 
   public void setPrint(String printVal) {
     model.setPrint(printVal);
@@ -126,7 +123,6 @@ public class TestabilityTask extends Task {
         "-maxAcceptableCost", Integer.toString(model.getMaxAcceptableCost()),
         "-worstOffenderCount", Integer.toString(model.getWorstOffenderCount()),
         "-whitelist", model.getWhiteList(),
-        "-grouping", model.getGrouing(),
         "-print", model.getPrint()
     );
   }
@@ -142,7 +138,6 @@ public class TestabilityTask extends Task {
     log("-maxAcceptableCost"+ " " +  Integer.toString(model.getMaxAcceptableCost()), Project.MSG_VERBOSE);
     log("-worstOffenderCount"+ " " +  Integer.toString(model.getWorstOffenderCount()), Project.MSG_VERBOSE);
     log("-whitelist"+ " " +  model.getWhiteList(), Project.MSG_VERBOSE);
-    log("-grouping"+ " " + model.getGrouing(), Project.MSG_VERBOSE);
     log("-print"+ " " +  model.getPrint(), Project.MSG_VERBOSE);
   }
 
