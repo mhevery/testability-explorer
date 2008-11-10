@@ -25,15 +25,14 @@ public class MethodInvokationCost extends ViolationCost {
 
   public MethodInvokationCost(int lineNumber, MethodCost methodCost,
       Reason costSourceType, Cost invocationCost) {
-    super(lineNumber, costSourceType);
+    super(lineNumber, invocationCost, costSourceType);
     this.methodCost = methodCost;
-    this.cost = invocationCost;
   }
 
   @Override
   public void link(Cost directCost, Cost dependantCost) {
     cost = methodCost.link().copyNoLOD();
-    dependantCost.addDependant(cost);
+    dependantCost.addDependant(getCost());
   }
 
   public MethodCost getMethodCost() {

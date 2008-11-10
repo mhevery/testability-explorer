@@ -61,8 +61,9 @@ public abstract class ViolationCost {
    *          the type of cost, used to help guide people why they are getting
    *          charged for each different cost.
    */
-  public ViolationCost(int lineNumber, Reason costSourceType) {
+  public ViolationCost(int lineNumber, Cost cost, Reason costSourceType) {
     this.lineNumber = lineNumber;
+    this.cost = cost;
     this.reason = costSourceType;
   }
 
