@@ -54,7 +54,6 @@ public class TaskModel {
   private int maxAcceptableCost = -1;
   private int worstOffenderCount = -1;
   private String whiteList = null;
-  private String grouping = null;
   private String print = null;
   private int cyclomatic = -1;
   private int global = -1;
@@ -91,13 +90,6 @@ public class TaskModel {
     return minCost;
   }
 
-  public void setGrouping(String groupingVal) {
-    grouping = groupingVal;
-  }
-
-  public String getGrouing() {
-    return grouping;
-  }
   public void setPrint(String printVal) {
     print = printVal;
   }
@@ -259,10 +251,6 @@ public class TaskModel {
       messages.add(TaskModel.ERROR_WORST_OFFENDER_COUNT_NOT_SET);
     }
 
-    if (! isGroupingSet()) {
-      grouping = DEFAULT_GROUPING;
-      messages.add(TaskModel.ERROR_GROUPING_NOT_SET);
-    }
     if (! isPrintSet()) {
       print = DEFAULT_PRINT;
       messages.add(TaskModel.ERROR_PRINT_NOT_SET);
@@ -339,10 +327,6 @@ public class TaskModel {
 
   private boolean isWorstOffenderCountSet() {
     return worstOffenderCount != -1;
-  }
-
-  private boolean isGroupingSet() {
-    return grouping != null;
   }
 
   private boolean isPrintSet() {
