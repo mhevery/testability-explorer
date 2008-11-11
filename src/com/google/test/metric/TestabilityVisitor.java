@@ -213,7 +213,7 @@ public class TestabilityVisitor {
           childFrame.recordMethodCall(lineNumber, toMethod, methodThis,
               parameters, returnVariable);
           addMethodInvocationCost(lineNumber, getMethodCost(toMethod),
-              childFrame.getTotalCost());
+              childFrame.getTotalCost().copyNoLOD());
         }
       } catch (ClassNotFoundException e) {
         err.println(("WARNING: class not found: " + clazzName));
