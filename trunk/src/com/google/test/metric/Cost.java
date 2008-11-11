@@ -56,7 +56,7 @@ public class Cost {
     return new Cost(0, 0, counts);
   }
 
-  public void add(Cost cost) {
+  public Cost add(Cost cost) {
     cyclomaticCost += cost.cyclomaticCost;
     globalCost += cost.globalCost;
     int[] other = cost.lodDistribution;
@@ -70,6 +70,7 @@ public class Cost {
       int count2 = i < other.length ? other[i] : 0;
       lodDistribution[i] = count1 + count2;
     }
+    return this;
   }
 
   public void addDependant(Cost cost) {

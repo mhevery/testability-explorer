@@ -32,9 +32,11 @@ public class MethodInvokationCost extends ViolationCost {
     Cost linkCost = methodCost.link().copyNoLOD();
     if (false && !cost.equals(linkCost)) {
       // TODO: Re-enable this!
-      throw new IllegalStateException(String.format(
+      String error = String.format(
           "Expected: '%s' was: '%s'. In Method '%s', Reasong '%s'.", linkCost,
-          cost, methodCost.getMethodName(), reason.name()));
+          cost, methodCost.getMethodName(), reason.name());
+      System.out.println(error);
+      throw new IllegalStateException(error);
     }
     cost = linkCost;
     dependantCost.addDependant(cost);

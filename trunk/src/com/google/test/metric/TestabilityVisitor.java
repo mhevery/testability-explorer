@@ -42,6 +42,11 @@ public class TestabilityVisitor {
       this.method = method;
       this.variableState = new LocalVariableState(globalVariables);
       this.methodCost = getMethodCost(method);
+      if (method != null) {
+        for (Integer lineNumberWithComplexity : method.getLinesOfComplexity()) {
+          addCyclomaticCost(lineNumberWithComplexity);
+        }
+      }
     }
 
     private Cost getTotalCost() {
@@ -49,6 +54,13 @@ public class TestabilityVisitor {
       totalCost.add(direct);
       totalCost.add(indirect);
       return totalCost;
+    }
+
+    protected void addCyclomaticCost(int lineNumber) {
+      Cost cyclomaticCost = Cost.cyclomatic(1);
+      direct.add(cyclomaticCost);
+      ViolationCost cost = new CyclomaticCost(lineNumber, cyclomaticCost);
+      methodCost.addCostSource(cost);
     }
 
     protected void addGlobalCost(int lineNumber, Variable variable) {
@@ -374,9 +386,6 @@ public class TestabilityVisitor {
     if (methodCost == null) {
       methodCost = new MethodCost(method.getFullName(), method
           .getStartingLineNumber());
-      for (Integer lineNumberWithComplexity : method.getLinesOfComplexity()) {
-        methodCost.addCyclomaticCost(lineNumberWithComplexity);
-      }
       methodCosts.put(method, methodCost);
     }
     return methodCost;

@@ -80,19 +80,6 @@ public class MethodCost {
     costSources.add(costSource);
   }
 
-  public void addMethodCost(int line, MethodCost cost, Reason costSourceType) {
-    addCostSource(new MethodInvokationCost(line, cost, costSourceType, Cost.none()));
-  }
-
-  public void addGlobalCost(int lineNumber, Variable variable) {
-    addCostSource(new GlobalCost(lineNumber, variable, Cost.global(1)));
-  }
-
-  public void addCyclomaticCost(int lineNumberWithComplexity) {
-    addCostSource(new CyclomaticCost(lineNumberWithComplexity, Cost.cyclomatic(1)));
-  }
-
-
   @Override
   public String toString() {
     return getMethodName() + toCostsString();
