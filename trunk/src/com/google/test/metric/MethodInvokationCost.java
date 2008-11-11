@@ -30,10 +30,10 @@ public class MethodInvokationCost extends ViolationCost {
   @Override
   public void link(Cost directCost, Cost dependantCost) {
     Cost linkCost = methodCost.link().copyNoLOD();
-    if (false && !cost.equals(linkCost)) {
+    if (true && !cost.equals(linkCost)) {
       // TODO: Re-enable this!
       String error = String.format(
-          "Expected: '%s' was: '%s'. In Method '%s', Reasong '%s'.", linkCost,
+          "Expected: '%s' was: '%s'. To Method '%s', Reasong '%s'.", linkCost,
           cost, methodCost.getMethodName(), reason.name());
       System.out.println(error);
       throw new IllegalStateException(error);
