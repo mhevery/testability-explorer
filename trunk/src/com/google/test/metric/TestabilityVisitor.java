@@ -32,23 +32,25 @@ public class TestabilityVisitor {
 
     private final MethodCost methodCost;
     private final Map<MethodInfo, MethodCost> methodCosts;
+    private final int remainingDepth;
 
     public CostRecordingFrame(PrintStream err, ClassRepository classRepository,
         ParentFrame parentFrame, WhiteList whitelist,
-        VariableState globalVariables,
-        Map<MethodInfo, MethodCost> methodCosts,
-        Set<MethodInfo> alreadyVisited, MethodInfo method) {
+        VariableState globalVariables, Map<MethodInfo, MethodCost> methodCosts,
+        Set<MethodInfo> alreadyVisited, MethodInfo method, int remainingDepth) {
       super(err, classRepository, parentFrame, whitelist, globalVariables,
           alreadyVisited, method);
       this.methodCosts = methodCosts;
+      this.remainingDepth = remainingDepth;
       this.methodCost = getMethodCostCache(method);
     }
 
     public CostRecordingFrame(PrintStream err, ClassRepository classRepository,
-        WhiteList whitelist, VariableState globalVariables, MethodInfo method) {
+        WhiteList whitelist, VariableState globalVariables, MethodInfo method,
+        int remainingDepth) {
       this(err, classRepository, new ParentFrame(globalVariables), whitelist,
           globalVariables, new HashMap<MethodInfo, MethodCost>(),
-          new HashSet<MethodInfo>(), method);
+          new HashSet<MethodInfo>(), method, remainingDepth);
     }
 
     @Override
@@ -160,8 +162,13 @@ public class TestabilityVisitor {
 
     @Override
     protected Frame createChildFrame(MethodInfo method) {
-      return new CostRecordingFrame(err, classRepository, this, whitelist,
-          globalVariableState, methodCosts, alreadyVisited, method);
+      if (remainingDepth == 0) {
+        return super.createChildFrame(method);
+      } else {
+        return new CostRecordingFrame(err, classRepository, this, whitelist,
+            globalVariableState, methodCosts, alreadyVisited, method,
+            remainingDepth - 1);
+      }
     }
 
   }
@@ -463,9 +470,9 @@ public class TestabilityVisitor {
     this.whitelist = whitelist;
   }
 
-  public CostRecordingFrame createFrame(MethodInfo method) {
+  public CostRecordingFrame createFrame(MethodInfo method, int recordingDepth) {
     return new CostRecordingFrame(err, classRepository, whitelist,
-        globalVariables, method);
+        globalVariables, method, recordingDepth);
   }
 
   @Override

@@ -28,12 +28,14 @@ public class MetricComputer {
   private final ClassRepository classRepository;
   private final PrintStream err;
   private final WhiteList whitelist;
+  private final int recordingDepth;
 
   public MetricComputer(ClassRepository classRepository, PrintStream err,
-      WhiteList whitelist) {
+      WhiteList whitelist, int recordingDepth) {
     this.classRepository = classRepository;
     this.err = err;
     this.whitelist = whitelist;
+    this.recordingDepth = recordingDepth;
   }
 
   public ClassCost compute(String name) {
@@ -73,7 +75,7 @@ public class MetricComputer {
    */
   public MethodCost compute(MethodInfo method) {
     TestabilityVisitor visitor = new TestabilityVisitor(classRepository, new VariableState(), err, whitelist);
-    TestabilityVisitor.CostRecordingFrame frame = visitor.createFrame(method);
+    TestabilityVisitor.CostRecordingFrame frame = visitor.createFrame(method, recordingDepth);
     addStaticInitializationCost(method, frame);
     addConstructorCost(method, frame);
     addSetterInjection(method, frame);

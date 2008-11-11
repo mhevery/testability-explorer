@@ -40,7 +40,7 @@ public class ClassSourceReportTest extends TestCase {
       out, new CostModel(), new Date(), 10);
   ClassRepository repo = new JavaClassRepository();
   MetricComputer computer = new MetricComputer(repo, null, new RegExpWhiteList(
-      "!com.google"));
+      "!com.google"), 1);
   ClassCost classCost = computer.compute(repo.getClass(Testability.class
       .getName()));
 

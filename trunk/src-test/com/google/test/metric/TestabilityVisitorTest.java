@@ -50,7 +50,7 @@ public class TestabilityVisitorTest extends TestCase {
 
   TestabilityVisitor visitor =
     new TestabilityVisitor(repo, globalVariables, null, new RegExpWhiteList());
-  TestabilityVisitor.CostRecordingFrame frame = visitor.createFrame(method);
+  TestabilityVisitor.CostRecordingFrame frame = visitor.createFrame(method, 1);
   ParentFrame parentFrame = frame.getParentFrame();
 
   private String method(String string, Class<?> clazz) {
@@ -141,7 +141,7 @@ public class TestabilityVisitorTest extends TestCase {
   public void testLoDExample() throws Exception {
     ClassInfo clazz = repo.getClass(LoDExample.class.getName());
     MethodInfo methodInfo = clazz.getMethod("assign(Ljava/lang/Object;)V");
-    CostRecordingFrame frame = visitor.createFrame(methodInfo);
+    CostRecordingFrame frame = visitor.createFrame(methodInfo, 1);
     frame.applyMethodOperations();
     assertEquals(0, frame.getLoDCount(clazz.getField("conforming")));
     assertEquals(1, frame.getLoDCount(clazz.getField("violator")));
@@ -160,7 +160,7 @@ public class TestabilityVisitorTest extends TestCase {
   public void testLoDMultipleSameInvocations() throws Exception {
     ClassInfo clazz = repo.getClass(LoDMultipleSameInvocations.class.getName());
     MethodInfo methodInfo = clazz.getMethod(method("execute", Obj.class));
-    CostRecordingFrame frame = visitor.createFrame(methodInfo);
+    CostRecordingFrame frame = visitor.createFrame(methodInfo, 1);
     frame.applyMethodOperations();
     assertEquals(2, frame.getLoDCount(clazz.getField("plus2")));
   }
@@ -177,7 +177,7 @@ public class TestabilityVisitorTest extends TestCase {
   public void testLoDMultipleDifferentInvocations() throws Exception {
     ClassInfo clazz = repo.getClass(LoDMultipleDifferentInvocations.class.getName());
     MethodInfo methodInfo = clazz.getMethod(method("execute", Obj.class));
-    CostRecordingFrame frame = visitor.createFrame(methodInfo);
+    CostRecordingFrame frame = visitor.createFrame(methodInfo, 1);
     frame.applyMethodOperations();
     assertEquals(2, frame.getLoDCount(clazz.getField("plus2")));
     MethodCost methodCost = frame.getMethodCost();
@@ -214,7 +214,7 @@ public class TestabilityVisitorTest extends TestCase {
     ClassInfo clazz = repo.getClass(MultipleInjectability.class.getName());
     MethodInfo methodInfo = clazz.getMethod(method("execute", Obj.class));
     globalVariables.setInjectable(methodInfo.getParameters().get(0));
-    visitor.createFrame(methodInfo).applyMethodOperations();
+    visitor.createFrame(methodInfo, 1).applyMethodOperations();
     assertTrue(frame.getVariableState().isInjectable(clazz.getField("injectable1")));
     assertTrue(frame.getVariableState().isInjectable(clazz.getField("injectable2")));
   }
@@ -229,7 +229,7 @@ public class TestabilityVisitorTest extends TestCase {
   public void testLoDStaticCall() throws Exception {
     ClassInfo clazz = repo.getClass(LoDStaticCall.class.getName());
     MethodInfo methodInfo = clazz.getMethod("execute()V");
-    CostRecordingFrame frame = visitor.createFrame(methodInfo);
+    CostRecordingFrame frame = visitor.createFrame(methodInfo, 1);
     frame.applyMethodOperations();
     assertEquals(1, frame.getLoDCount(clazz.getField("plus1")));
   }
