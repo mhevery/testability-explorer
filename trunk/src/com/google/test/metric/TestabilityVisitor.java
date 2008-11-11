@@ -18,7 +18,6 @@ package com.google.test.metric;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.google.test.metric.ViolationCost.Reason;
 import com.google.test.metric.method.Constant;
@@ -35,18 +34,33 @@ public class TestabilityVisitor {
     private final Cost direct = Cost.none();
     private final Cost indirect = Cost.none();
     private final MethodInfo method;
+    private final HashMap<MethodInfo, MethodCost> methodCosts;
 
-    public Frame(Frame parentFrame, VariableState globalVariables,
+    public Frame(VariableState globalVariables, HashMap<MethodInfo, MethodCost> methodCosts,
+        MethodInfo method) {
+      this(new Frame(globalVariables), globalVariables, methodCosts, method);
+    }
+
+    public Frame(Frame parentFrame, VariableState globalVariables, HashMap<MethodInfo, MethodCost> methodCosts,
         MethodInfo method) {
       this.parentFrame = parentFrame;
+      this.methodCosts = methodCosts;
       this.method = method;
       this.variableState = new LocalVariableState(globalVariables);
-      this.methodCost = getMethodCost(method);
+      this.methodCost = getMethodCostCache(method);
       if (method != null) {
         for (Integer lineNumberWithComplexity : method.getLinesOfComplexity()) {
           addCyclomaticCost(lineNumberWithComplexity);
         }
       }
+    }
+
+    private Frame(VariableState globalVariables) {
+      this.parentFrame = null;
+      this.method = null;
+      this.methodCost = null;
+      this.methodCosts = null;
+      this.variableState = new LocalVariableState(globalVariables);
     }
 
     private Cost getTotalCost() {
@@ -209,10 +223,10 @@ public class TestabilityVisitor {
         } else {
           // Method can not be intercepted we have to add the cost
           // recursively
-          Frame childFrame = new Frame(this, globalVariables, toMethod);
+          Frame childFrame = new Frame(this, globalVariables, methodCosts, toMethod);
           childFrame.recordMethodCall(lineNumber, toMethod, methodThis,
               parameters, returnVariable);
-          addMethodInvocationCost(lineNumber, getMethodCost(toMethod),
+          addMethodInvocationCost(lineNumber, getMethodCostCache(toMethod),
               childFrame.getTotalCost().copyNoLOD());
         }
       } catch (ClassNotFoundException e) {
@@ -282,7 +296,7 @@ public class TestabilityVisitor {
       return globalVariables;
     }
 
-    public Frame applyMethodOperations() {
+    public MethodCost applyMethodOperations() {
       if (method.getMethodThis() != null) {
         variableState.setInjectable(method.getMethodThis());
       }
@@ -290,7 +304,7 @@ public class TestabilityVisitor {
       Constant returnVariable = new Constant("rootReturn", JavaType.OBJECT);
       applyMethodOperations(-1, method, method.getMethodThis(), method
           .getParameters(), returnVariable);
-      return this;
+      return methodCost;
     }
 
     /**
@@ -325,7 +339,7 @@ public class TestabilityVisitor {
      *          information about why they have the costs they have.
      * @return
      */
-    public Frame applyImplicitCost(MethodInfo implicitMethod, Reason reason) {
+    public void applyImplicitCost(MethodInfo implicitMethod, Reason reason) {
       if (implicitMethod.getMethodThis() != null) {
         variableState.setInjectable(implicitMethod.getMethodThis());
       }
@@ -333,16 +347,29 @@ public class TestabilityVisitor {
       Constant ret = new Constant("return", JavaType.OBJECT);
       int lineNumber = implicitMethod.getStartingLineNumber();
       Frame childFrame = new Frame(this,
-          variableState.getGlobalVariableState(), implicitMethod);
+          variableState.getGlobalVariableState(), methodCosts, implicitMethod);
       childFrame.recordMethodCall(lineNumber, implicitMethod, implicitMethod
           .getMethodThis(), implicitMethod.getParameters(), ret);
-      addMethodInvocationCost(lineNumber, getMethodCost(implicitMethod),
+      addMethodInvocationCost(lineNumber, getMethodCostCache(implicitMethod),
           childFrame.getTotalCost());
-      return this;
     }
 
     public Frame getParentFrame() {
       return parentFrame;
+    }
+
+    public MethodCost getMethodCost() {
+      return methodCost;
+    }
+
+    private MethodCost getMethodCostCache(MethodInfo method) {
+      MethodCost methodCost = methodCosts.get(method);
+      if (methodCost == null) {
+        methodCost = new MethodCost(method.getFullName(), method
+            .getStartingLineNumber());
+        methodCosts.put(method, methodCost);
+      }
+      return methodCost;
     }
 
   }
@@ -351,7 +378,6 @@ public class TestabilityVisitor {
   // we can remove all of the ifs in Frame
   private final VariableState globalVariables;
   private final ClassRepository classRepository;
-  private final Map<MethodInfo, MethodCost> methodCosts = new HashMap<MethodInfo, MethodCost>();
   private final PrintStream err;
   private final WhiteList whitelist;
 
@@ -363,54 +389,16 @@ public class TestabilityVisitor {
     this.whitelist = whitelist;
   }
 
-  /**
-   * Looks up the MethodCost and returns the cached one, or a new one is created
-   * for this method. Then link() is called. Note: this returns the linked
-   * method cost only because some tests require linking (and don't go through
-   * the usual route of ClassCost#link().
-   */
-  public MethodCost getLinkedMethodCost(MethodInfo method) {
-    if (method == null) {
-      return null;
-    }
-    MethodCost methodCost = methodCosts.get(method);
-    if (methodCost == null) {
-      methodCost = new MethodCost(method.getFullName(), method
-          .getStartingLineNumber());
-      methodCosts.put(method, methodCost);
-    }
-    return methodCost;
-  }
-
-  public MethodCost getMethodCost(MethodInfo method) {
-    if (method == null) {
-      return null;
-    }
-    MethodCost methodCost = methodCosts.get(method);
-    if (methodCost == null) {
-      methodCost = new MethodCost(method.getFullName(), method
-          .getStartingLineNumber());
-      methodCosts.put(method, methodCost);
-    }
-    return methodCost;
-  }
-
   @Override
   public String toString() {
     StringBuilder buf = new StringBuilder();
     buf.append("MethodCost:");
-    for (MethodCost cost : methodCosts.values()) {
-      buf.append("  ");
-      buf.append(cost);
-      buf.append("\n");
-    }
     buf.append("\n==============\nROOT FRAME:\n" + globalVariables);
     return buf.toString();
   }
 
   public Frame createFrame(MethodInfo method) {
-    Frame parent = new Frame(null, globalVariables, null);
-    return new Frame(parent, globalVariables, method);
+    return new Frame(globalVariables, new HashMap<MethodInfo, MethodCost>(), method);
   }
 
 }
