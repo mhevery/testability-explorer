@@ -45,9 +45,10 @@ public class TestabilityVisitorTest extends TestCase {
       new MethodInfo(classInfo, "method", 0, "()V", null, null, null, null, cost1, null, false);
 
   private final JavaClassRepository repo = new JavaClassRepository();
+  private final VariableState globalVariables = new VariableState();
 
   TestabilityVisitor visitor =
-    new TestabilityVisitor(repo, null, new RegExpWhiteList());
+    new TestabilityVisitor(repo, globalVariables, null, new RegExpWhiteList());
   TestabilityVisitor.Frame currentFrame = visitor.createFrame(method);
   TestabilityVisitor.Frame parentFrame = currentFrame.getParentFrame();
 
@@ -57,69 +58,69 @@ public class TestabilityVisitorTest extends TestCase {
 
   public void testIsInjectable() throws Exception {
     Variable var = new Variable("", JavaType.fromJava("X"), false, false);
-    assertFalse(visitor.getGlobalVariables().isInjectable(var));
-    visitor.getGlobalVariables().setInjectable(var);
-    assertTrue(visitor.getGlobalVariables().isInjectable(var));
+    assertFalse(globalVariables.isInjectable(var));
+    globalVariables.setInjectable(var);
+    assertTrue(globalVariables.isInjectable(var));
   }
 
   public void testNoop() throws Exception {
     currentFrame.assignParameter(1, dst, parentFrame, instance);
-    assertFalse(visitor.getGlobalVariables().isGlobal(dst));
-    assertFalse(visitor.getGlobalVariables().isInjectable(dst));
+    assertFalse(globalVariables.isGlobal(dst));
+    assertFalse(globalVariables.isInjectable(dst));
     assertEquals(0, visitor.getLinkedMethodCost(method).getTotalCost().getGlobalCost());
   }
 
   public void testInjectability() throws Exception {
-    visitor.getGlobalVariables().setInjectable(instance);
+    globalVariables.setInjectable(instance);
     currentFrame.assignParameter(1, dst, parentFrame, instance);
-    assertFalse(visitor.getGlobalVariables().isGlobal(dst));
+    assertFalse(globalVariables.isGlobal(dst));
     assertTrue(currentFrame.getVariableState().isInjectable(dst));
     assertEquals(0, visitor.getLinkedMethodCost(method).getTotalCost().getGlobalCost());
   }
 
   public void testFieldReadNoop() throws Exception {
     currentFrame.assignParameter(1, dst, parentFrame, localField);
-    assertFalse(visitor.getGlobalVariables().isGlobal(dst));
-    assertFalse(visitor.getGlobalVariables().isInjectable(dst));
+    assertFalse(globalVariables.isGlobal(dst));
+    assertFalse(globalVariables.isInjectable(dst));
     assertEquals(0, visitor.getLinkedMethodCost(method).getTotalCost().getGlobalCost());
   }
 
   public void testFieldReadInjectableInstance() throws Exception {
-    visitor.getGlobalVariables().setInjectable(instance);
+    globalVariables.setInjectable(instance);
     currentFrame.assignParameter(1, dst, parentFrame, localField);
-    assertFalse(visitor.getGlobalVariables().isGlobal(dst));
-    assertFalse(visitor.getGlobalVariables().isInjectable(dst));
+    assertFalse(globalVariables.isGlobal(dst));
+    assertFalse(globalVariables.isInjectable(dst));
     assertEquals(0, visitor.getLinkedMethodCost(method).getTotalCost().getGlobalCost());
   }
 
   public void testFieldReadInjectableField() throws Exception {
-    visitor.getGlobalVariables().setInjectable(field);
+    globalVariables.setInjectable(field);
     currentFrame.assignParameter(1, dst, parentFrame, localField);
-    assertFalse(visitor.getGlobalVariables().isGlobal(dst));
+    assertFalse(globalVariables.isGlobal(dst));
     assertTrue(currentFrame.getVariableState().isInjectable(dst));
     assertEquals(0, visitor.getLinkedMethodCost(method).getTotalCost().getGlobalCost());
   }
 
   public void testFieldReadGlobalInstance() throws Exception {
-    visitor.getGlobalVariables().setGlobal(instance);
+    globalVariables.setGlobal(instance);
     currentFrame.assignParameter(1, dstField, parentFrame, localField);
-    assertTrue(visitor.getGlobalVariables().isGlobal(dstField));
-    assertFalse(visitor.getGlobalVariables().isInjectable(dstField));
+    assertTrue(globalVariables.isGlobal(dstField));
+    assertFalse(globalVariables.isInjectable(dstField));
     assertEquals(1, visitor.getLinkedMethodCost(method).getTotalCost().getGlobalCost());
   }
 
   public void testFinalFieldReadGlobalInstance() throws Exception {
-    visitor.getGlobalVariables().setGlobal(instance);
+    globalVariables.setGlobal(instance);
     currentFrame.assignParameter(1, dstField, parentFrame, localFinalField);
-    assertTrue(visitor.getGlobalVariables().isGlobal(dstField));
-    assertFalse(visitor.getGlobalVariables().isInjectable(dstField));
+    assertTrue(globalVariables.isGlobal(dstField));
+    assertFalse(globalVariables.isInjectable(dstField));
     assertEquals(0, visitor.getLinkedMethodCost(method).getTotalCost().getGlobalCost());
   }
 
   public void testReadFinalStaticField() throws Exception {
     currentFrame.assignParameter(1, dstField, parentFrame, localStaticFinalField);
-    assertTrue(visitor.getGlobalVariables().isGlobal(dstField));
-    assertFalse(visitor.getGlobalVariables().isInjectable(dstField));
+    assertTrue(globalVariables.isGlobal(dstField));
+    assertFalse(globalVariables.isInjectable(dstField));
     assertEquals(0, visitor.getLinkedMethodCost(method).getTotalCost().getGlobalCost());
   }
 
@@ -208,7 +209,7 @@ public class TestabilityVisitorTest extends TestCase {
   public void testMultipleInjectability() throws Exception {
     ClassInfo clazz = repo.getClass(MultipleInjectability.class.getName());
     MethodInfo methodInfo = clazz.getMethod(method("execute", Obj.class));
-    visitor.getGlobalVariables().setInjectable(methodInfo.getParameters().get(0));
+    globalVariables.setInjectable(methodInfo.getParameters().get(0));
     visitor.createFrame(methodInfo).applyMethodOperations();
     assertTrue(currentFrame.getVariableState().isInjectable(clazz.getField("injectable1")));
     assertTrue(currentFrame.getVariableState().isInjectable(clazz.getField("injectable2")));

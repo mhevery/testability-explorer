@@ -349,21 +349,18 @@ public class TestabilityVisitor {
 
   // TODO: refactor me. The root frame needs to be of different class so that
   // we can remove all of the ifs in Frame
-  private final VariableState globalVariables = new VariableState();
+  private final VariableState globalVariables;
   private final ClassRepository classRepository;
   private final Map<MethodInfo, MethodCost> methodCosts = new HashMap<MethodInfo, MethodCost>();
   private final PrintStream err;
   private final WhiteList whitelist;
 
-  public TestabilityVisitor(ClassRepository classRepository, PrintStream err,
-      WhiteList whitelist) {
+  public TestabilityVisitor(ClassRepository classRepository, VariableState variableState,
+      PrintStream err, WhiteList whitelist) {
     this.classRepository = classRepository;
+    this.globalVariables = variableState;
     this.err = err;
     this.whitelist = whitelist;
-  }
-
-  public VariableState getGlobalVariables() {
-    return globalVariables;
   }
 
   /**
