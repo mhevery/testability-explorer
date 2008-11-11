@@ -52,7 +52,7 @@ public class MetricComputerBuilder {
   }
 
   public MetricComputer build() {
-    return new MetricComputer(repo, printStream, whitelist);
+    return new MetricComputer(repo, printStream, whitelist, 1);
   }
 
 }

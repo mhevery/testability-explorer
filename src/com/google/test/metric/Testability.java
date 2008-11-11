@@ -235,7 +235,7 @@ public class Testability {
   public Report execute() throws CmdLineException {
     postParse();
     ClassRepository repository = new JavaClassRepository(classpath);
-    MetricComputer computer = new MetricComputer(repository, err, whitelist);
+    MetricComputer computer = new MetricComputer(repository, err, whitelist, printDepth);
     SortedSet<String> classNames = collectClassNamesToEnter(entryList);
     report.printHeader();
     for (String className : classNames) {
