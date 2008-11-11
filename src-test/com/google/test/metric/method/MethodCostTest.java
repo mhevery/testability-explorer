@@ -17,21 +17,25 @@ package com.google.test.metric.method;
 
 import junit.framework.TestCase;
 
+import com.google.test.metric.Cost;
 import com.google.test.metric.CostModel;
+import com.google.test.metric.CyclomaticCost;
+import com.google.test.metric.GlobalCost;
 import com.google.test.metric.MethodCost;
+import com.google.test.metric.MethodInvokationCost;
 import com.google.test.metric.ViolationCost.Reason;
 
 public class MethodCostTest extends TestCase {
 
   public void testComputeOverallCost() throws Exception {
     MethodCost cost = new MethodCost("a", 0);
-    cost.addCyclomaticCost(0);
-    cost.addGlobalCost(0, null);
+    cost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
+    cost.addCostSource(new GlobalCost(0, null, Cost.global(1)));
     MethodCost cost3 = new MethodCost("b", 0);
-    cost3.addCyclomaticCost(0);
-    cost3.addCyclomaticCost(0);
-    cost3.addCyclomaticCost(0);
-    cost.addMethodCost(0, cost3, Reason.NON_OVERRIDABLE_METHOD_CALL);
+    cost3.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
+    cost3.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
+    cost3.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
+    cost.addCostSource(new MethodInvokationCost(0, cost3, Reason.NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(3)));
     CostModel costModel = new CostModel(2, 10);
     cost.link();
 

@@ -27,6 +27,7 @@ import junit.framework.TestCase;
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.Cost;
 import com.google.test.metric.CostModel;
+import com.google.test.metric.CyclomaticCost;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvokationCost;
 import com.google.test.metric.ViolationCost;
@@ -46,7 +47,7 @@ public class DetailHtmlReportTest extends TestCase {
 
   public void testWriteLineCost() throws Exception {
     MethodCost methodCost = createMethodCallWithOverallCost("a.methodName()V", 64);
-    MethodInvokationCost cost = new MethodInvokationCost(123, methodCost, Reason.NON_OVERRIDABLE_METHOD_CALL, Cost.none());
+    MethodInvokationCost cost = new MethodInvokationCost(123, methodCost, Reason.NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(64));
     cost.link(Cost.none(), Cost.none());
 
     DetailHtmlReport report = new DetailHtmlReport(stream, costModel, new SourceLinker(
@@ -85,8 +86,8 @@ public class DetailHtmlReportTest extends TestCase {
     };
 
     MethodCost methodCost = createMethodCallWithOverallCost("a.methodX()V", 0);
-    methodCost.addMethodCost(123, createMethodCallWithOverallCost("cost1", 567), Reason.NON_OVERRIDABLE_METHOD_CALL);
-    methodCost.addMethodCost(543, createMethodCallWithOverallCost("cost2", 789), Reason.NON_OVERRIDABLE_METHOD_CALL);
+    methodCost.addCostSource(new MethodInvokationCost(123, createMethodCallWithOverallCost("cost1", 567), Reason.NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(567)));
+    methodCost.addCostSource(new MethodInvokationCost(543, createMethodCallWithOverallCost("cost2", 789), Reason.NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(789)));
     methodCost.link();
     report.write(methodCost, "");
     String text = out.toString();
@@ -147,7 +148,7 @@ public class DetailHtmlReportTest extends TestCase {
       int overallCost) {
     MethodCost methodCost = new MethodCost(methodName, -1);
     for (int i = 0; i < overallCost; i++) {
-      methodCost.addCyclomaticCost(i);
+      methodCost.addCostSource(new CyclomaticCost(i, Cost.cyclomatic(1)));
     }
     return methodCost;
   }

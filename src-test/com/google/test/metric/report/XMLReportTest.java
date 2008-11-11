@@ -26,6 +26,8 @@ import org.xml.sax.SAXException;
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.Cost;
 import com.google.test.metric.CostModel;
+import com.google.test.metric.CyclomaticCost;
+import com.google.test.metric.GlobalCost;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvokationCost;
 import com.google.test.metric.ViolationCost;
@@ -70,10 +72,10 @@ public class XMLReportTest extends TestCase {
         return cost;
       }
     };
-    methodCost.addCyclomaticCost(0);
-    methodCost.addCyclomaticCost(0);
+    methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
+    methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     ViolationCost violation = new MethodInvokationCost(123, methodCost,
-        Reason.IMPLICIT_STATIC_INIT, Cost.none());
+        Reason.IMPLICIT_STATIC_INIT, Cost.cyclomatic(2).add(Cost.global(3)));
     violation.link(Cost.none(), Cost.none());
     report.writeCost(violation);
     assertXMLEquals("<cost cyclomatic=\"2\" global=\"3\" line=\"123\" "
@@ -90,10 +92,10 @@ public class XMLReportTest extends TestCase {
 
     };
     MethodCost methodCost = new MethodCost("methodName", 123);
-    methodCost.addGlobalCost(123, null);
-    methodCost.addCyclomaticCost(234);
-    methodCost.addCyclomaticCost(345);
-    methodCost.addGlobalCost(456, null);
+    methodCost.addCostSource(new GlobalCost(123, null, Cost.global(1)));
+    methodCost.addCostSource(new CyclomaticCost(234, Cost.cyclomatic(1)));
+    methodCost.addCostSource(new CyclomaticCost(345, Cost.cyclomatic(1)));
+    methodCost.addCostSource(new GlobalCost(456, null, Cost.global(1)));
     methodCost.link();
     report.writeCost(methodCost);
     assertXMLEquals("<method cyclomatic=\"2\" global=\"2\" line=\"123\" "
@@ -108,10 +110,10 @@ public class XMLReportTest extends TestCase {
       }
     };
     MethodCost m1 = new MethodCost("M1", -1);
-    m1.addCyclomaticCost(0);
-    m1.addCyclomaticCost(0);
+    m1.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
+    m1.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     MethodCost m2 = new MethodCost("M2", -1);
-    m2.addCyclomaticCost(0);
+    m2.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     m1.link();
     m2.link();
     ClassCost classCost = new ClassCost("className", asList(m1, m2));
@@ -128,8 +130,8 @@ public class XMLReportTest extends TestCase {
     };
     report.printHeader();
     MethodCost m1 = new MethodCost("M1", -1);
-    m1.addCyclomaticCost(0);
-    m1.addCyclomaticCost(0);
+    m1.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
+    m1.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     m1.link();
     ClassCost c1 = new ClassCost("C1", asList(m1));
     ClassCost c2 = new ClassCost("C2", asList(m1));
