@@ -19,16 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.google.test.metric.ViolationCost.Reason;
-
 public class MethodCost {
 
   private final String methodName;
   private final int lineNumber;
   private final List<ViolationCost> costSources = new ArrayList<ViolationCost>();
   private final Cost directCost = Cost.none();
-  private final Cost totalCost = Cost.none();
-  private boolean isLinked = false;
+  private final Cost dependantCost = Cost.none();
 
   /**
    * @param methodName
@@ -41,34 +38,8 @@ public class MethodCost {
     this.lineNumber = lineNumber;
   }
 
-  private void assertLinked() {
-    if (!isLinked) {
-      throw new IllegalStateException("Need to link first.");
-    }
-  }
-
-  private void assertNotLinked() {
-    if (isLinked) {
-      throw new IllegalStateException("Can not call after linked.");
-    }
-  }
-
-  public Cost link() {
-    if (!isLinked) {
-      isLinked = true;
-      Cost dependantCost = Cost.none();
-      for (ViolationCost costSource : costSources) {
-        costSource.link(directCost, dependantCost);
-      }
-      totalCost.addDependant(dependantCost);
-      totalCost.add(directCost);
-    }
-    return getTotalCost();
-  }
-
   public Cost getTotalCost() {
-    assertLinked();
-    return totalCost;
+    return Cost.none().add(directCost).add(dependantCost);
   }
 
   public String getMethodName() {
@@ -76,7 +47,7 @@ public class MethodCost {
   }
 
   public void addCostSource(ViolationCost costSource) {
-    assertNotLinked();
+    costSource.link(directCost, dependantCost);
     costSources.add(costSource);
   }
 
@@ -86,7 +57,7 @@ public class MethodCost {
   }
 
   public String toCostsString() {
-    return " [" + totalCost + " / " + directCost + "]";
+    return " [" + getTotalCost() + " / " + directCost + "]";
   }
 
   public int getMethodLineNumber() {
@@ -102,10 +73,13 @@ public class MethodCost {
   }
 
   public Map<String, Object> getAttributes() {
-    Map<String, Object> map = totalCost.getAttributes();
+    Map<String, Object> map = getTotalCost().getAttributes();
     map.put("line", lineNumber);
     map.put("name", methodName);
     return map;
+  }
+
+  public void link() {
   }
 
 }
