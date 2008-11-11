@@ -71,7 +71,7 @@ public class MetricComputer {
    * MethodCost is guaranteed to have already been linked (sealed for adding additional costs).
    */
   public MethodCost compute(MethodInfo method) {
-    TestabilityVisitor visitor = new TestabilityVisitor(classRepository, err, whitelist);
+    TestabilityVisitor visitor = new TestabilityVisitor(classRepository, new VariableState(), err, whitelist);
     TestabilityVisitor.Frame frame = visitor.createFrame(method);
     addStaticInitializationCost(method, frame);
     addConstructorCost(method, frame);
