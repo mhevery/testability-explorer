@@ -373,12 +373,19 @@ public class TestabilityVisitor {
    * the usual route of ClassCost#link().
    */
   public MethodCost getLinkedMethodCost(MethodInfo method) {
-    MethodCost cost = getMethodCost(method);
-    cost.link();
-    return cost;
+    if (method == null) {
+      return null;
+    }
+    MethodCost methodCost = methodCosts.get(method);
+    if (methodCost == null) {
+      methodCost = new MethodCost(method.getFullName(), method
+          .getStartingLineNumber());
+      methodCosts.put(method, methodCost);
+    }
+    return methodCost;
   }
 
-  MethodCost getMethodCost(MethodInfo method) {
+  public MethodCost getMethodCost(MethodInfo method) {
     if (method == null) {
       return null;
     }

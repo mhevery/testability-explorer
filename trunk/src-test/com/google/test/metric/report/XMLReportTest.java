@@ -40,7 +40,6 @@ public class XMLReportTest extends TestCase {
   private static final String XML_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
   private final StringWriter out = new StringWriter();
   private final XMLSerializer handler = new XMLSerializer();
-  private final Cost cost = Cost.create(1, 2, 3, 4);
   private final CostModel costModel = new CostModel();
 
   @Override
@@ -66,12 +65,7 @@ public class XMLReportTest extends TestCase {
   public void testPrintCost() throws Exception {
     XMLReport report = new XMLReport(handler, costModel, 0, 0, 0);
 
-    MethodCost methodCost = new MethodCost("methodName", 1) {
-      @Override
-      public Cost link() {
-        return cost;
-      }
-    };
+    MethodCost methodCost = new MethodCost("methodName", 1);
     methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     ViolationCost violation = new MethodInvokationCost(123, methodCost,
