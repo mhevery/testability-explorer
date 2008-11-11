@@ -19,6 +19,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.test.metric.TestabilityVisitor.CostRecordingFrame;
 import com.google.test.metric.TestabilityVisitor.Frame;
 import com.google.test.metric.ViolationCost.Reason;
 
@@ -72,7 +73,7 @@ public class MetricComputer {
    */
   public MethodCost compute(MethodInfo method) {
     TestabilityVisitor visitor = new TestabilityVisitor(classRepository, new VariableState(), err, whitelist);
-    TestabilityVisitor.Frame frame = visitor.createFrame(method);
+    TestabilityVisitor.CostRecordingFrame frame = visitor.createFrame(method);
     addStaticInitializationCost(method, frame);
     addConstructorCost(method, frame);
     addSetterInjection(method, frame);
@@ -84,7 +85,7 @@ public class MetricComputer {
 
   /** Goes through all methods and adds an implicit cost for those beginning with "set" (assuming
    * to test the {@code baseMethod}'s class, you need to be able to call the setters for initialization.  */
-  private void addSetterInjection(MethodInfo baseMethod, Frame frame) {
+  private void addSetterInjection(MethodInfo baseMethod, CostRecordingFrame frame) {
     for (MethodInfo setter : baseMethod.getSiblingSetters()) {
       frame.applyImplicitCost(setter, Reason.IMPLICIT_SETTER);
     }
@@ -93,7 +94,7 @@ public class MetricComputer {
   /** Adds an implicit cost to all non-static methods for calling the constructor. (Because to test
    * any instance method, you must be able to instantiate the class.) Also marks parameters
    * injectable for the constructor with the most non-primitive parameters. */
-  private void addConstructorCost(MethodInfo method, Frame frame) {
+  private void addConstructorCost(MethodInfo method, CostRecordingFrame frame) {
     if (!method.isStatic() && !method.isConstructor()) {
       MethodInfo constructor = method.getClassInfo().getConstructorWithMostNonPrimitiveParameters();
       if (constructor != null) {
@@ -113,7 +114,7 @@ public class MetricComputer {
   }
 
    /** Includes the cost of all static initialization blocks, as well as static field assignments. */
-  private void addStaticInitializationCost(MethodInfo baseMethod, Frame frame) {
+  private void addStaticInitializationCost(MethodInfo baseMethod, CostRecordingFrame frame) {
     if (baseMethod.isStaticConstructor()) {
       return;
     }
