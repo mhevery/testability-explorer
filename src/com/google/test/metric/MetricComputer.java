@@ -77,8 +77,7 @@ public class MetricComputer {
     addConstructorCost(method, frame);
     addSetterInjection(method, frame);
     addFieldCost(method, frame);
-    frame.applyMethodOperations();
-    return visitor.getLinkedMethodCost(method);
+    return frame.applyMethodOperations();
   }
 
 
