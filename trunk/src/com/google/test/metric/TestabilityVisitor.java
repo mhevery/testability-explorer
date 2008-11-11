@@ -17,7 +17,10 @@ package com.google.test.metric;
 
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.google.test.metric.ViolationCost.Reason;
 import com.google.test.metric.method.Constant;
@@ -25,71 +28,77 @@ import com.google.test.metric.method.op.turing.Operation;
 
 public class TestabilityVisitor {
 
-  public static class Frame extends ParentFrame {
+  public static class CostRecordingFrame extends Frame {
 
-    private final ParentFrame parentFrame;
     private final MethodCost methodCost;
-    private final Cost direct = Cost.none();
-    private final Cost indirect = Cost.none();
-    private final MethodInfo method;
-    private final HashMap<MethodInfo, MethodCost> methodCosts;
-    private Variable returnValue;
-    private final WhiteList whitelist;
-    private final PrintStream err;
-    private final ClassRepository classRepository;
+    private final Map<MethodInfo, MethodCost> methodCosts;
 
-    public Frame(PrintStream err, ClassRepository classRepository,
+    public CostRecordingFrame(PrintStream err, ClassRepository classRepository,
         ParentFrame parentFrame, WhiteList whitelist,
         VariableState globalVariables,
-        HashMap<MethodInfo, MethodCost> methodCosts, MethodInfo method) {
-      super(globalVariables);
-      this.err = err;
-      this.classRepository = classRepository;
-      this.parentFrame = parentFrame;
-      this.whitelist = whitelist;
+        Map<MethodInfo, MethodCost> methodCosts,
+        Set<MethodInfo> alreadyVisited, MethodInfo method) {
+      super(err, classRepository, parentFrame, whitelist, globalVariables,
+          alreadyVisited, method);
       this.methodCosts = methodCosts;
-      this.method = method;
       this.methodCost = getMethodCostCache(method);
-      for (Integer lineNumberWithComplexity : method.getLinesOfComplexity()) {
-        addCyclomaticCost(lineNumberWithComplexity);
-      }
     }
 
-    public Frame(PrintStream err, ClassRepository classRepository,
+    public CostRecordingFrame(PrintStream err, ClassRepository classRepository,
         WhiteList whitelist, VariableState globalVariables, MethodInfo method) {
       this(err, classRepository, new ParentFrame(globalVariables), whitelist,
-          globalVariables, new HashMap<MethodInfo, MethodCost>(), method);
-    }
-
-    protected void addCyclomaticCost(int lineNumber) {
-      Cost cyclomaticCost = Cost.cyclomatic(1);
-      direct.add(cyclomaticCost);
-      ViolationCost cost = new CyclomaticCost(lineNumber, cyclomaticCost);
-      methodCost.addCostSource(cost);
-    }
-
-    protected void addGlobalCost(int lineNumber, Variable variable) {
-      Cost globalCost = Cost.global(1);
-      direct.add(globalCost);
-      ViolationCost cost = new GlobalCost(lineNumber, variable, globalCost);
-      methodCost.addCostSource(cost);
+          globalVariables, new HashMap<MethodInfo, MethodCost>(),
+          new HashSet<MethodInfo>(), method);
     }
 
     @Override
-    protected void addLoDCost(int lineNumber, MethodInfo method, int distance) {
-      Cost lodCost = Cost.lod(distance);
-      direct.add(lodCost);
+    protected Cost addCyclomaticCost(int lineNumber) {
+      Cost cyclomaticCost = super.addCyclomaticCost(lineNumber);
+      ViolationCost cost = new CyclomaticCost(lineNumber, cyclomaticCost);
+      methodCost.addCostSource(cost);
+      return cyclomaticCost;
+    }
+
+    @Override
+    protected Cost addGlobalCost(int lineNumber, Variable variable) {
+      Cost globalCost = super.addGlobalCost(lineNumber, variable);
+      ViolationCost cost = new GlobalCost(lineNumber, variable, globalCost);
+      methodCost.addCostSource(cost);
+      return globalCost;
+    }
+
+    @Override
+    protected Cost addLoDCost(int lineNumber, MethodInfo method, int distance) {
+      Cost lodCost = super.addLoDCost(lineNumber, method, distance);
       ViolationCost cost = new LoDViolation(lineNumber, method.getFullName(),
           lodCost, distance);
       methodCost.addCostSource(cost);
+      return lodCost;
     }
 
-    protected void addMethodInvocationCost(int lineNumber, MethodCost to,
+    @Override
+    protected Cost addMethodInvocationCost(int lineNumber, MethodInfo to,
         Cost methodInvocationCost) {
-      indirect.add(methodInvocationCost);
-      ViolationCost cost = new MethodInvokationCost(lineNumber, to,
-          Reason.NON_OVERRIDABLE_METHOD_CALL, methodInvocationCost);
+      super.addMethodInvocationCost(lineNumber, to, methodInvocationCost);
+      ViolationCost cost = new MethodInvokationCost(lineNumber,
+          getMethodCostCache(to), Reason.NON_OVERRIDABLE_METHOD_CALL,
+          methodInvocationCost);
       methodCost.addCostSource(cost);
+      return methodInvocationCost;
+    }
+
+    public MethodCost getMethodCost() {
+      return methodCost;
+    }
+
+    protected MethodCost getMethodCostCache(MethodInfo method) {
+      MethodCost methodCost = methodCosts.get(method);
+      if (methodCost == null) {
+        methodCost = new MethodCost(method.getFullName(), method
+            .getStartingLineNumber());
+        methodCosts.put(method, methodCost);
+      }
+      return methodCost;
     }
 
     /**
@@ -131,15 +140,14 @@ public class TestabilityVisitor {
       setInjectable(implicitMethod.getParameters());
       Constant ret = new Constant("return", JavaType.OBJECT);
       int lineNumber = implicitMethod.getStartingLineNumber();
-      Frame childFrame = new Frame(err, classRepository, this, whitelist,
-          variableState.getGlobalVariableState(), methodCosts, implicitMethod);
-      childFrame.recordMethodCall(lineNumber, implicitMethod, implicitMethod
+      recordNonOveridableMethodCall(lineNumber, implicitMethod, implicitMethod
           .getMethodThis(), implicitMethod.getParameters(), ret);
-      addMethodInvocationCost(lineNumber, getMethodCostCache(implicitMethod),
-          childFrame.getTotalCost());
     }
 
     public MethodCost applyMethodOperations() {
+      for (Integer lineNumberWithComplexity : method.getLinesOfComplexity()) {
+        addCyclomaticCost(lineNumberWithComplexity);
+      }
       if (method.getMethodThis() != null) {
         variableState.setInjectable(method.getMethodThis());
       }
@@ -150,28 +158,63 @@ public class TestabilityVisitor {
       return methodCost;
     }
 
-    private void applyMethodOperations(int lineNumber, MethodInfo toMethod,
-        Variable methodThis, List<? extends Variable> parameters,
-        Variable returnVariable) {
-      if (parameters.size() != toMethod.getParameters().size()) {
-        throw new IllegalStateException(
-            "Argument count does not match method parameter count.");
-      }
-      int i = 0;
-      for (Variable var : parameters) {
-        assignParameter(lineNumber, toMethod.getParameters().get(i++),
-            parentFrame, var);
-      }
-      returnValue = null;
-      for (Operation operation : toMethod.getOperations()) {
-        operation.visit(this);
-      }
-      int thisCount = variableState.getLoDCount(methodThis);
-      int distance = thisCount + 1;
-      parentFrame.variableState.setLoDCount(returnVariable, distance);
-      if (distance > 1) {
-        parentFrame.addLoDCost(lineNumber, toMethod, distance);
-      }
+    @Override
+    protected Frame createChildFrame(MethodInfo method) {
+      return new CostRecordingFrame(err, classRepository, this, whitelist,
+          globalVariableState, methodCosts, alreadyVisited, method);
+    }
+
+  }
+
+  public static class Frame extends ParentFrame {
+
+    protected final ParentFrame parentFrame;
+    protected final Cost direct = Cost.none();
+    protected final Cost indirect = Cost.none();
+    protected final MethodInfo method;
+    protected Variable returnValue;
+    protected final WhiteList whitelist;
+    protected final PrintStream err;
+    protected final ClassRepository classRepository;
+    protected final Set<MethodInfo> alreadyVisited;
+
+    public Frame(PrintStream err, ClassRepository classRepository,
+        ParentFrame parentFrame, WhiteList whitelist,
+        VariableState globalVariables, Set<MethodInfo> alreadyVisited,
+        MethodInfo method) {
+      super(globalVariables);
+      this.err = err;
+      this.classRepository = classRepository;
+      this.parentFrame = parentFrame;
+      this.whitelist = whitelist;
+      this.alreadyVisited = alreadyVisited;
+      this.method = method;
+      alreadyVisited.add(method);
+    }
+
+    protected Cost addCyclomaticCost(int lineNumber) {
+      Cost cyclomaticCost = Cost.cyclomatic(1);
+      direct.add(cyclomaticCost);
+      return cyclomaticCost;
+    }
+
+    protected Cost addGlobalCost(int lineNumber, Variable variable) {
+      Cost globalCost = Cost.global(1);
+      direct.add(globalCost);
+      return globalCost;
+    }
+
+    @Override
+    protected Cost addLoDCost(int lineNumber, MethodInfo method, int distance) {
+      Cost lodCost = Cost.lod(distance);
+      direct.add(lodCost);
+      return lodCost;
+    }
+
+    protected Cost addMethodInvocationCost(int lineNumber, MethodInfo to,
+        Cost methodInvocationCost) {
+      indirect.add(methodInvocationCost);
+      return methodInvocationCost;
     }
 
     /**
@@ -241,21 +284,7 @@ public class TestabilityVisitor {
       return variableState.getLoDCount(variable);
     }
 
-    public MethodCost getMethodCost() {
-      return methodCost;
-    }
-
-    private MethodCost getMethodCostCache(MethodInfo method) {
-      MethodCost methodCost = methodCosts.get(method);
-      if (methodCost == null) {
-        methodCost = new MethodCost(method.getFullName(), method
-            .getStartingLineNumber());
-        methodCosts.put(method, methodCost);
-      }
-      return methodCost;
-    }
-
-    public ParentFrame getParentFrame() {
+    ParentFrame getParentFrame() {
       return parentFrame;
     }
 
@@ -270,9 +299,36 @@ public class TestabilityVisitor {
       return variableState;
     }
 
+    protected void applyMethodOperations(int lineNumber, MethodInfo toMethod,
+        Variable methodThis, List<? extends Variable> parameters,
+        Variable returnVariable) {
+      if (parameters.size() != toMethod.getParameters().size()) {
+        throw new IllegalStateException(
+            "Argument count does not match method parameter count.");
+      }
+      int i = 0;
+      for (Variable var : parameters) {
+        assignParameter(lineNumber, toMethod.getParameters().get(i++),
+            parentFrame, var);
+      }
+      returnValue = null;
+      for (Operation operation : toMethod.getOperations()) {
+        operation.visit(this);
+      }
+      int thisCount = variableState.getLoDCount(methodThis);
+      int distance = thisCount + 1;
+      parentFrame.variableState.setLoDCount(returnVariable, distance);
+      if (distance > 1) {
+        parentFrame.addLoDCost(lineNumber, toMethod, distance);
+      }
+    }
+
     private void recordMethodCall(int lineNumber, MethodInfo toMethod,
         Variable methodThis, List<? extends Variable> parameters,
         Variable returnVariable) {
+      for (Integer lineNumberWithComplexity : toMethod.getLinesOfComplexity()) {
+        addCyclomaticCost(lineNumberWithComplexity);
+      }
       if (toMethod.isInstance()) {
         assignParameter(lineNumber, toMethod.getMethodThis(), parentFrame,
             methodThis);
@@ -291,7 +347,7 @@ public class TestabilityVisitor {
         }
         MethodInfo toMethod = classRepository.getClass(clazzName).getMethod(
             methodName);
-        if (methodCosts.containsKey(toMethod)) {
+        if (alreadyVisited.contains(toMethod)) {
           // Method already counted, skip (to prevent recursion)
           if (returnVariable != null) {
             int thisCount = variableState.getLoDCount(methodThis);
@@ -310,12 +366,8 @@ public class TestabilityVisitor {
         } else {
           // Method can not be intercepted we have to add the cost
           // recursively
-          Frame childFrame = new Frame(err, classRepository, this, whitelist,
-              getGlobalVariables(), methodCosts, toMethod);
-          childFrame.recordMethodCall(lineNumber, toMethod, methodThis,
+          recordNonOveridableMethodCall(lineNumber, toMethod, methodThis,
               parameters, returnVariable);
-          addMethodInvocationCost(lineNumber, getMethodCostCache(toMethod),
-              childFrame.getTotalCost().copyNoLOD());
         }
       } catch (ClassNotFoundException e) {
         err.println("WARNING: class not found: " + clazzName);
@@ -323,6 +375,21 @@ public class TestabilityVisitor {
         err.println("WARNING: method not found: " + e.getMethodName() + " in "
             + e.getClassInfo().getName());
       }
+    }
+
+    protected void recordNonOveridableMethodCall(int lineNumber,
+        MethodInfo toMethod, Variable methodThis,
+        List<? extends Variable> parameters, Variable returnVariable) {
+      Frame childFrame = createChildFrame(toMethod);
+      childFrame.recordMethodCall(lineNumber, toMethod, methodThis, parameters,
+          returnVariable);
+      addMethodInvocationCost(lineNumber, toMethod, childFrame.getTotalCost()
+          .copyNoLOD());
+    }
+
+    protected Frame createChildFrame(MethodInfo toMethod) {
+      return new Frame(err, classRepository, this, whitelist,
+          getGlobalVariables(), alreadyVisited, toMethod);
     }
 
     private void recordOverridableMethodCall(int lineNumber,
@@ -341,17 +408,10 @@ public class TestabilityVisitor {
       }
     }
 
-    void setInjectable(List<? extends Variable> parameters) {
+    protected void setInjectable(List<? extends Variable> parameters) {
       for (Variable variable : parameters) {
         variableState.setInjectable(variable);
       }
-    }
-
-    void setInjectable(MethodInfo method) {
-      if (!method.isStatic()) {
-        variableState.setInjectable(method.getMethodThis());
-      }
-      setInjectable(method.getParameters());
     }
 
     public void setReturnValue(Variable value) {
@@ -364,7 +424,7 @@ public class TestabilityVisitor {
 
     @Override
     public String toString() {
-      return "MethodCost: " + methodCost + "\n" + super.toString();
+      return "MethodCost: " + method + "\n" + super.toString();
     }
 
   }
@@ -378,7 +438,8 @@ public class TestabilityVisitor {
       this.variableState = new LocalVariableState(globalVariableState);
     }
 
-    protected void addLoDCost(int lineNumber, MethodInfo toMethod, int distance) {
+    protected Cost addLoDCost(int lineNumber, MethodInfo toMethod, int distance) {
+      return null;
     }
 
     public VariableState getGlobalVariables() {
@@ -402,8 +463,9 @@ public class TestabilityVisitor {
     this.whitelist = whitelist;
   }
 
-  public Frame createFrame(MethodInfo method) {
-    return new Frame(err, classRepository, whitelist, globalVariables, method);
+  public CostRecordingFrame createFrame(MethodInfo method) {
+    return new CostRecordingFrame(err, classRepository, whitelist,
+        globalVariables, method);
   }
 
   @Override
