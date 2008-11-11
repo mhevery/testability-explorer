@@ -50,7 +50,6 @@ public class TestabilityVisitorTest extends TestCase {
   TestabilityVisitor visitor =
     new TestabilityVisitor(repo, globalVariables, null, new RegExpWhiteList());
   TestabilityVisitor.Frame frame = visitor.createFrame(method);
-  TestabilityVisitor.Frame parentFrame = frame.getParentFrame();
 
   private String method(String string, Class<?> clazz) {
     return "execute(L"+clazz.getName().replace(".", "/")+";)V";
@@ -64,7 +63,7 @@ public class TestabilityVisitorTest extends TestCase {
   }
 
   public void testNoop() throws Exception {
-    frame.assignParameter(1, dst, parentFrame, instance);
+    frame.assignParameter(1, dst, frame.getParentFrame(), instance);
     assertFalse(globalVariables.isGlobal(dst));
     assertFalse(globalVariables.isInjectable(dst));
     assertEquals(0, frame.getMethodCost().getTotalCost().getGlobalCost());
@@ -72,14 +71,14 @@ public class TestabilityVisitorTest extends TestCase {
 
   public void testInjectability() throws Exception {
     globalVariables.setInjectable(instance);
-    frame.assignParameter(1, dst, parentFrame, instance);
+    frame.assignParameter(1, dst, frame.getParentFrame(), instance);
     assertFalse(globalVariables.isGlobal(dst));
     assertTrue(frame.getVariableState().isInjectable(dst));
     assertEquals(0, frame.getMethodCost().getTotalCost().getGlobalCost());
   }
 
   public void testFieldReadNoop() throws Exception {
-    frame.assignParameter(1, dst, parentFrame, localField);
+    frame.assignParameter(1, dst, frame.getParentFrame(), localField);
     assertFalse(globalVariables.isGlobal(dst));
     assertFalse(globalVariables.isInjectable(dst));
     assertEquals(0, frame.getMethodCost().getTotalCost().getGlobalCost());
@@ -87,7 +86,7 @@ public class TestabilityVisitorTest extends TestCase {
 
   public void testFieldReadInjectableInstance() throws Exception {
     globalVariables.setInjectable(instance);
-    frame.assignParameter(1, dst, parentFrame, localField);
+    frame.assignParameter(1, dst, frame.getParentFrame(), localField);
     assertFalse(globalVariables.isGlobal(dst));
     assertFalse(globalVariables.isInjectable(dst));
     assertEquals(0, frame.getMethodCost().getTotalCost().getGlobalCost());
@@ -95,7 +94,7 @@ public class TestabilityVisitorTest extends TestCase {
 
   public void testFieldReadInjectableField() throws Exception {
     globalVariables.setInjectable(field);
-    frame.assignParameter(1, dst, parentFrame, localField);
+    frame.assignParameter(1, dst, frame.getParentFrame(), localField);
     assertFalse(globalVariables.isGlobal(dst));
     assertTrue(frame.getVariableState().isInjectable(dst));
     assertEquals(0, frame.getMethodCost().getTotalCost().getGlobalCost());
@@ -103,7 +102,7 @@ public class TestabilityVisitorTest extends TestCase {
 
   public void testFieldReadGlobalInstance() throws Exception {
     globalVariables.setGlobal(instance);
-    frame.assignParameter(1, dstField, parentFrame, localField);
+    frame.assignParameter(1, dstField, frame.getParentFrame(), localField);
     assertTrue(globalVariables.isGlobal(dstField));
     assertFalse(globalVariables.isInjectable(dstField));
     assertEquals(1, frame.getMethodCost().getTotalCost().getGlobalCost());
@@ -111,14 +110,14 @@ public class TestabilityVisitorTest extends TestCase {
 
   public void testFinalFieldReadGlobalInstance() throws Exception {
     globalVariables.setGlobal(instance);
-    frame.assignParameter(1, dstField, parentFrame, localFinalField);
+    frame.assignParameter(1, dstField, frame.getParentFrame(), localFinalField);
     assertTrue(globalVariables.isGlobal(dstField));
     assertFalse(globalVariables.isInjectable(dstField));
     assertEquals(0, frame.getMethodCost().getTotalCost().getGlobalCost());
   }
 
   public void testReadFinalStaticField() throws Exception {
-    frame.assignParameter(1, dstField, parentFrame, localStaticFinalField);
+    frame.assignParameter(1, dstField, frame.getParentFrame(), localStaticFinalField);
     assertTrue(globalVariables.isGlobal(dstField));
     assertFalse(globalVariables.isInjectable(dstField));
     assertEquals(0, frame.getMethodCost().getTotalCost().getGlobalCost());

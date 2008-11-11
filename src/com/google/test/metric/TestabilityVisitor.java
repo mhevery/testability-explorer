@@ -25,49 +25,40 @@ import com.google.test.metric.method.op.turing.Operation;
 
 public class TestabilityVisitor {
 
-  public class Frame {
+  public static class Frame extends ParentFrame {
 
-    private final Frame parentFrame;
+    private final ParentFrame parentFrame;
     private final MethodCost methodCost;
-    private final LocalVariableState variableState;
-    private Variable returnValue;
     private final Cost direct = Cost.none();
     private final Cost indirect = Cost.none();
     private final MethodInfo method;
     private final HashMap<MethodInfo, MethodCost> methodCosts;
+    private Variable returnValue;
+    private final WhiteList whitelist;
+    private final PrintStream err;
+    private final ClassRepository classRepository;
 
-    public Frame(VariableState globalVariables, HashMap<MethodInfo, MethodCost> methodCosts,
-        MethodInfo method) {
-      this(new Frame(globalVariables), globalVariables, methodCosts, method);
-    }
-
-    public Frame(Frame parentFrame, VariableState globalVariables, HashMap<MethodInfo, MethodCost> methodCosts,
-        MethodInfo method) {
+    public Frame(PrintStream err, ClassRepository classRepository,
+        ParentFrame parentFrame, WhiteList whitelist,
+        VariableState globalVariables,
+        HashMap<MethodInfo, MethodCost> methodCosts, MethodInfo method) {
+      super(globalVariables);
+      this.err = err;
+      this.classRepository = classRepository;
       this.parentFrame = parentFrame;
+      this.whitelist = whitelist;
       this.methodCosts = methodCosts;
       this.method = method;
-      this.variableState = new LocalVariableState(globalVariables);
       this.methodCost = getMethodCostCache(method);
-      if (method != null) {
-        for (Integer lineNumberWithComplexity : method.getLinesOfComplexity()) {
-          addCyclomaticCost(lineNumberWithComplexity);
-        }
+      for (Integer lineNumberWithComplexity : method.getLinesOfComplexity()) {
+        addCyclomaticCost(lineNumberWithComplexity);
       }
     }
 
-    private Frame(VariableState globalVariables) {
-      this.parentFrame = null;
-      this.method = null;
-      this.methodCost = null;
-      this.methodCosts = null;
-      this.variableState = new LocalVariableState(globalVariables);
-    }
-
-    private Cost getTotalCost() {
-      Cost totalCost = Cost.none();
-      totalCost.add(direct);
-      totalCost.add(indirect);
-      return totalCost;
+    public Frame(PrintStream err, ClassRepository classRepository,
+        WhiteList whitelist, VariableState globalVariables, MethodInfo method) {
+      this(err, classRepository, new ParentFrame(globalVariables), whitelist,
+          globalVariables, new HashMap<MethodInfo, MethodCost>(), method);
     }
 
     protected void addCyclomaticCost(int lineNumber) {
@@ -84,6 +75,7 @@ public class TestabilityVisitor {
       methodCost.addCostSource(cost);
     }
 
+    @Override
     protected void addLoDCost(int lineNumber, MethodInfo method, int distance) {
       Cost lodCost = Cost.lod(distance);
       direct.add(lodCost);
@@ -98,6 +90,64 @@ public class TestabilityVisitor {
       ViolationCost cost = new MethodInvokationCost(lineNumber, to,
           Reason.NON_OVERRIDABLE_METHOD_CALL, methodInvocationCost);
       methodCost.addCostSource(cost);
+    }
+
+    /**
+     * Implicit costs are added to the {@code from} method's costs when it is
+     * assumed that the costs must be incurred in order for the {@code from}
+     * method to execute. Example:
+     *
+     * <pre>
+     * void fromMethod() {
+     *   this.someObject.toMethod();
+     * }
+     * </pre>
+     * <p>
+     * We would add the implicit cost of the toMethod() to the fromMethod().
+     * Implicit Costs consist of:
+     * <ul>
+     * <li>Cost of construction for the someObject field referenced in
+     * fromMethod()</li>
+     * <li>Static initialization blocks in someObject
+     * </ul>
+     * <li>The cost of calling all the methods starting with "set" on
+     * someObject.</ul>
+     * <li>Note that the same implicit costs apply for the class that has the
+     * fromMethod. (Meaning a method will always have the implicit costs of the
+     * containing class and super-classes at a minimum).</li> </ul>
+     *
+     * @param implicitMethod
+     *          the method that is getting called by {@code from} and
+     *          contributes cost transitively.
+     * @param costSourceType
+     *          the type of implicit cost to record, for giving the user
+     *          information about why they have the costs they have.
+     * @return
+     */
+    public void applyImplicitCost(MethodInfo implicitMethod, Reason reason) {
+      if (implicitMethod.getMethodThis() != null) {
+        variableState.setInjectable(implicitMethod.getMethodThis());
+      }
+      setInjectable(implicitMethod.getParameters());
+      Constant ret = new Constant("return", JavaType.OBJECT);
+      int lineNumber = implicitMethod.getStartingLineNumber();
+      Frame childFrame = new Frame(err, classRepository, this, whitelist,
+          variableState.getGlobalVariableState(), methodCosts, implicitMethod);
+      childFrame.recordMethodCall(lineNumber, implicitMethod, implicitMethod
+          .getMethodThis(), implicitMethod.getParameters(), ret);
+      addMethodInvocationCost(lineNumber, getMethodCostCache(implicitMethod),
+          childFrame.getTotalCost());
+    }
+
+    public MethodCost applyMethodOperations() {
+      if (method.getMethodThis() != null) {
+        variableState.setInjectable(method.getMethodThis());
+      }
+      setInjectable(method.getParameters());
+      Constant returnVariable = new Constant("rootReturn", JavaType.OBJECT);
+      applyMethodOperations(-1, method, method.getMethodThis(), method
+          .getParameters(), returnVariable);
+      return methodCost;
     }
 
     private void applyMethodOperations(int lineNumber, MethodInfo toMethod,
@@ -164,7 +214,7 @@ public class TestabilityVisitor {
     }
 
     void assignParameter(int lineNumber, Variable destination,
-        Frame sourceFrame, Variable source) {
+        ParentFrame sourceFrame, Variable source) {
       assignVariable(destination, lineNumber, sourceFrame, source);
     }
 
@@ -173,17 +223,17 @@ public class TestabilityVisitor {
     }
 
     private void assignVariable(Variable destination, int lineNumber,
-        Frame srcFrame, Variable source) {
-      if (srcFrame.variableState.isInjectable(source)) {
+        ParentFrame sourceFrame, Variable source) {
+      if (sourceFrame.variableState.isInjectable(source)) {
         variableState.setInjectable(destination);
       }
-      if (destination.isGlobal() || srcFrame.variableState.isGlobal(source)) {
+      if (destination.isGlobal() || sourceFrame.variableState.isGlobal(source)) {
         variableState.setGlobal(destination);
         if (source instanceof LocalField && !source.isFinal()) {
           addGlobalCost(lineNumber, source);
         }
       }
-      int loDCount = srcFrame.variableState.getLoDCount(source);
+      int loDCount = sourceFrame.variableState.getLoDCount(source);
       variableState.setLoDCount(destination, loDCount);
     }
 
@@ -191,8 +241,45 @@ public class TestabilityVisitor {
       return variableState.getLoDCount(variable);
     }
 
+    public MethodCost getMethodCost() {
+      return methodCost;
+    }
+
+    private MethodCost getMethodCostCache(MethodInfo method) {
+      MethodCost methodCost = methodCosts.get(method);
+      if (methodCost == null) {
+        methodCost = new MethodCost(method.getFullName(), method
+            .getStartingLineNumber());
+        methodCosts.put(method, methodCost);
+      }
+      return methodCost;
+    }
+
+    public ParentFrame getParentFrame() {
+      return parentFrame;
+    }
+
+    private Cost getTotalCost() {
+      Cost totalCost = Cost.none();
+      totalCost.add(direct);
+      totalCost.add(indirect);
+      return totalCost;
+    }
+
     public VariableState getVariableState() {
       return variableState;
+    }
+
+    private void recordMethodCall(int lineNumber, MethodInfo toMethod,
+        Variable methodThis, List<? extends Variable> parameters,
+        Variable returnVariable) {
+      if (toMethod.isInstance()) {
+        assignParameter(lineNumber, toMethod.getMethodThis(), parentFrame,
+            methodThis);
+      }
+      applyMethodOperations(lineNumber, toMethod, methodThis, parameters,
+          returnVariable);
+      assignReturnValue(lineNumber, returnVariable);
     }
 
     public void recordMethodCall(String clazzName, int lineNumber,
@@ -223,31 +310,19 @@ public class TestabilityVisitor {
         } else {
           // Method can not be intercepted we have to add the cost
           // recursively
-          Frame childFrame = new Frame(this, globalVariables, methodCosts, toMethod);
+          Frame childFrame = new Frame(err, classRepository, this, whitelist,
+              getGlobalVariables(), methodCosts, toMethod);
           childFrame.recordMethodCall(lineNumber, toMethod, methodThis,
               parameters, returnVariable);
           addMethodInvocationCost(lineNumber, getMethodCostCache(toMethod),
               childFrame.getTotalCost().copyNoLOD());
         }
       } catch (ClassNotFoundException e) {
-        err.println(("WARNING: class not found: " + clazzName));
+        err.println("WARNING: class not found: " + clazzName);
       } catch (MethodNotFoundException e) {
-        err
-            .println(("WARNING: method not found: " + e.getMethodName()
-                + " in " + e.getClassInfo().getName()));
+        err.println("WARNING: method not found: " + e.getMethodName() + " in "
+            + e.getClassInfo().getName());
       }
-    }
-
-    private void recordMethodCall(int lineNumber, MethodInfo toMethod,
-        Variable methodThis, List<? extends Variable> parameters,
-        Variable returnVariable) {
-      if (toMethod.isInstance()) {
-        assignParameter(lineNumber, toMethod.getMethodThis(), parentFrame,
-            methodThis);
-      }
-      applyMethodOperations(lineNumber, toMethod, methodThis, parameters,
-          returnVariable);
-      assignReturnValue(lineNumber, returnVariable);
     }
 
     private void recordOverridableMethodCall(int lineNumber,
@@ -292,84 +367,22 @@ public class TestabilityVisitor {
       return "MethodCost: " + methodCost + "\n" + super.toString();
     }
 
+  }
+
+  public static class ParentFrame {
+    protected final VariableState globalVariableState;
+    protected final LocalVariableState variableState;
+
+    public ParentFrame(VariableState globalVariableState) {
+      this.globalVariableState = globalVariableState;
+      this.variableState = new LocalVariableState(globalVariableState);
+    }
+
+    protected void addLoDCost(int lineNumber, MethodInfo toMethod, int distance) {
+    }
+
     public VariableState getGlobalVariables() {
-      return globalVariables;
-    }
-
-    public MethodCost applyMethodOperations() {
-      if (method.getMethodThis() != null) {
-        variableState.setInjectable(method.getMethodThis());
-      }
-      setInjectable(method.getParameters());
-      Constant returnVariable = new Constant("rootReturn", JavaType.OBJECT);
-      applyMethodOperations(-1, method, method.getMethodThis(), method
-          .getParameters(), returnVariable);
-      return methodCost;
-    }
-
-    /**
-     * Implicit costs are added to the {@code from} method's costs when it is
-     * assumed that the costs must be incurred in order for the {@code from}
-     * method to execute. Example:
-     *
-     * <pre>
-     * void fromMethod() {
-     *   this.someObject.toMethod();
-     * }
-     * </pre>
-     * <p>
-     * We would add the implicit cost of the toMethod() to the fromMethod().
-     * Implicit Costs consist of:
-     * <ul>
-     * <li>Cost of construction for the someObject field referenced in
-     * fromMethod()</li>
-     * <li>Static initialization blocks in someObject
-     * </ul>
-     * <li>The cost of calling all the methods starting with "set" on
-     * someObject.</ul>
-     * <li>Note that the same implicit costs apply for the class that has the
-     * fromMethod. (Meaning a method will always have the implicit costs of the
-     * containing class and super-classes at a minimum).</li> </ul>
-     *
-     * @param implicitMethod
-     *          the method that is getting called by {@code from} and
-     *          contributes cost transitively.
-     * @param costSourceType
-     *          the type of implicit cost to record, for giving the user
-     *          information about why they have the costs they have.
-     * @return
-     */
-    public void applyImplicitCost(MethodInfo implicitMethod, Reason reason) {
-      if (implicitMethod.getMethodThis() != null) {
-        variableState.setInjectable(implicitMethod.getMethodThis());
-      }
-      setInjectable(implicitMethod.getParameters());
-      Constant ret = new Constant("return", JavaType.OBJECT);
-      int lineNumber = implicitMethod.getStartingLineNumber();
-      Frame childFrame = new Frame(this,
-          variableState.getGlobalVariableState(), methodCosts, implicitMethod);
-      childFrame.recordMethodCall(lineNumber, implicitMethod, implicitMethod
-          .getMethodThis(), implicitMethod.getParameters(), ret);
-      addMethodInvocationCost(lineNumber, getMethodCostCache(implicitMethod),
-          childFrame.getTotalCost());
-    }
-
-    public Frame getParentFrame() {
-      return parentFrame;
-    }
-
-    public MethodCost getMethodCost() {
-      return methodCost;
-    }
-
-    private MethodCost getMethodCostCache(MethodInfo method) {
-      MethodCost methodCost = methodCosts.get(method);
-      if (methodCost == null) {
-        methodCost = new MethodCost(method.getFullName(), method
-            .getStartingLineNumber());
-        methodCosts.put(method, methodCost);
-      }
-      return methodCost;
+      return globalVariableState;
     }
 
   }
@@ -381,12 +394,16 @@ public class TestabilityVisitor {
   private final PrintStream err;
   private final WhiteList whitelist;
 
-  public TestabilityVisitor(ClassRepository classRepository, VariableState variableState,
-      PrintStream err, WhiteList whitelist) {
+  public TestabilityVisitor(ClassRepository classRepository,
+      VariableState variableState, PrintStream err, WhiteList whitelist) {
     this.classRepository = classRepository;
     this.globalVariables = variableState;
     this.err = err;
     this.whitelist = whitelist;
+  }
+
+  public Frame createFrame(MethodInfo method) {
+    return new Frame(err, classRepository, whitelist, globalVariables, method);
   }
 
   @Override
@@ -395,10 +412,6 @@ public class TestabilityVisitor {
     buf.append("MethodCost:");
     buf.append("\n==============\nROOT FRAME:\n" + globalVariables);
     return buf.toString();
-  }
-
-  public Frame createFrame(MethodInfo method) {
-    return new Frame(globalVariables, new HashMap<MethodInfo, MethodCost>(), method);
   }
 
 }
