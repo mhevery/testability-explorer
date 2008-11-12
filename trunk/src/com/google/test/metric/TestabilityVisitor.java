@@ -171,6 +171,26 @@ public class TestabilityVisitor {
       }
     }
 
+    @Override
+    void assignVariable(Variable destination, int lineNumber,
+        ParentFrame sourceFrame, Variable source) {
+      super.assignVariable(destination, lineNumber, sourceFrame, source);
+      int loDCount = sourceFrame.variableState.getLoDCount(source);
+      variableState.setLoDCount(destination, loDCount);
+    }
+
+    @Override
+    protected void incrementLoD(int lineNumber, MethodInfo toMethod,
+        Variable destination, Variable source, ParentFrame destinationFrame) {
+      if (source != null) {
+        int thisCount = variableState.getLoDCount(destination);
+        int distance = thisCount + 1;
+        destinationFrame.variableState.setLoDCount(source, distance);
+        if (distance > 1) {
+          destinationFrame.addLoDCost(lineNumber, toMethod, distance);
+        }
+      }
+    }
   }
 
   public static class Frame extends ParentFrame {
@@ -272,7 +292,7 @@ public class TestabilityVisitor {
       assignVariable(destination, lineNumber, this, returnValue);
     }
 
-    private void assignVariable(Variable destination, int lineNumber,
+    void assignVariable(Variable destination, int lineNumber,
         ParentFrame sourceFrame, Variable source) {
       if (sourceFrame.variableState.isInjectable(source)) {
         variableState.setInjectable(destination);
@@ -283,8 +303,6 @@ public class TestabilityVisitor {
           addGlobalCost(lineNumber, source);
         }
       }
-      int loDCount = sourceFrame.variableState.getLoDCount(source);
-      variableState.setLoDCount(destination, loDCount);
     }
 
     int getLoDCount(Variable variable) {
@@ -322,12 +340,7 @@ public class TestabilityVisitor {
       for (Operation operation : toMethod.getOperations()) {
         operation.visit(this);
       }
-      int thisCount = variableState.getLoDCount(methodThis);
-      int distance = thisCount + 1;
-      parentFrame.variableState.setLoDCount(returnVariable, distance);
-      if (distance > 1) {
-        parentFrame.addLoDCost(lineNumber, toMethod, distance);
-      }
+      incrementLoD(lineNumber, toMethod, methodThis, returnVariable, parentFrame);
     }
 
     private void recordMethodCall(int lineNumber, MethodInfo toMethod,
@@ -356,15 +369,7 @@ public class TestabilityVisitor {
             methodName);
         if (alreadyVisited.contains(toMethod)) {
           // Method already counted, skip (to prevent recursion)
-          if (returnVariable != null) {
-            int thisCount = variableState.getLoDCount(methodThis);
-            int distance = thisCount + 1;
-            variableState.setLoDCount(returnVariable, distance);
-            if (distance > 1) {
-              addLoDCost(lineNumber, toMethod, distance);
-            }
-          }
-          return;
+          incrementLoD(lineNumber, toMethod, methodThis, returnVariable, parentFrame);
         } else if (toMethod.canOverride()
             && variableState.isInjectable(methodThis)) {
           // Method can be overridden / injectable
@@ -405,14 +410,11 @@ public class TestabilityVisitor {
         variableState.setInjectable(returnVariable);
         setReturnValue(returnVariable);
       }
-      if (returnVariable != null) {
-        int thisCount = variableState.getLoDCount(methodThis);
-        int distance = thisCount + 1;
-        variableState.setLoDCount(returnVariable, distance);
-        if (distance > 1) {
-          addLoDCost(lineNumber, toMethod, distance);
-        }
-      }
+      incrementLoD(lineNumber, toMethod, methodThis, returnVariable, this);
+    }
+
+    protected void incrementLoD(int lineNumber, MethodInfo toMethod,
+        Variable destination, Variable source, ParentFrame destinationFrame) {
     }
 
     protected void setInjectable(List<? extends Variable> parameters) {
