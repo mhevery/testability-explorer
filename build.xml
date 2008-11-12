@@ -103,7 +103,7 @@
 			<rule pattern="org.koshuke.args4j.**" result="com.google.test.org.koshuke.args4j.@1" />
 			<zipfileset src="lib/asm-3.0.jar" />
 			<rule pattern="org.objectweb.asm.**" result="com.google.test.org.objectweb.asm.@1" />
-			<zipfileset src="lib/classpath-explorer-r8.jar" />
+			<zipfileset src="lib/classpath-explorer-r10.jar" />
 			<zipfileset src="lib/freemarker/freemarker.jar" />
 			<rule pattern="freemarker.**" result="com.google.test.freemarker.@1" />
 		</jarjar>
