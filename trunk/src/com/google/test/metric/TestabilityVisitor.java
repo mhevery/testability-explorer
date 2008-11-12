@@ -272,7 +272,7 @@ public class TestabilityVisitor {
       assignVariable(field, lineNumber, this, value);
       if (fieldInstance == null || variableState.isGlobal(fieldInstance)) {
         if (!field.isFinal()) {
-          addGlobalCost(lineNumber, fieldInstance);
+          addGlobalCost(lineNumber, field);
         }
         variableState.setGlobal(field);
       }
