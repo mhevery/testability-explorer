@@ -77,6 +77,22 @@ public class XMLReportTest extends TestCase {
         + "reason=\"implicit cost from static initialization\"/>");
   }
 
+  // This was throwing NPE before
+  public void testPrintCostNullReason() throws Exception {
+    XMLReport report = new XMLReport(handler, costModel, 0, 0, 0);
+
+    MethodCost methodCost = new MethodCost("methodName", 1);
+    methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
+    methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
+    ViolationCost violation = new MethodInvokationCost(123, methodCost,
+        null, Cost.cyclomatic(2).add(Cost.global(3)));
+    violation.link(Cost.none(), Cost.none());
+    report.writeCost(violation);
+    assertXMLEquals("<cost cyclomatic=\"2\" global=\"3\" line=\"123\" "
+        + "lod=\"0\" method=\"methodName\" overall=\"32\" "
+        + "reason=\"\"/>");
+  }
+
   public void testPrintMethodCost() throws Exception {
     XMLReport report = new XMLReport(handler, costModel, 0, 0, 0) {
       @Override
