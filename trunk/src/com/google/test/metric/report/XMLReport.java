@@ -76,7 +76,8 @@ public class XMLReport extends SummaryReport {
       throws SAXException {
     AttributesImpl atts = new AttributesImpl();
     for (String key : new TreeSet<String>(values.keySet())) {
-      atts.addAttribute(null, key, key, null, values.get(key).toString());
+      atts.addAttribute(null, key, key, null,
+          values.get(key) == null ? "" : values.get(key).toString());
     }
     out.startElement(null, elementName, elementName, atts);
   }
