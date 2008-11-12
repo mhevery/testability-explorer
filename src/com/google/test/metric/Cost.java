@@ -30,14 +30,15 @@ public class Cost {
   private int globalCost;
   private int[] lodDistribution;
 
-  private Cost(int cyclomaticCost, int globalCost, int[] lodDistribution) {
+
+  public Cost() {
+    this(0, 0, EMPTY);
+  }
+
+  public Cost(int cyclomaticCost, int globalCost, int[] lodDistribution) {
     this.cyclomaticCost = cyclomaticCost;
     this.globalCost = globalCost;
     this.lodDistribution = lodDistribution;
-  }
-
-  public static Cost none() {
-    return new Cost(0, 0, EMPTY);
   }
 
   public static Cost global(int count) {
@@ -151,7 +152,7 @@ public class Cost {
   }
 
   public Cost copyNoLOD() {
-    return new Cost(cyclomaticCost, globalCost, new int[0]);
+    return new Cost(cyclomaticCost, globalCost, EMPTY);
   }
 
 
@@ -201,8 +202,16 @@ public class Cost {
     return atts;
   }
 
-  public static Cost create(int overall, int cyclomatic, int global, int lod) {
-    return new Cost(cyclomatic, global, new int[] { lod });
+  public void addCyclomaticCost(int cyclomaticCost) {
+    this.cyclomaticCost += cyclomaticCost;
+  }
+
+  public void addGlobalCost(int globalCost) {
+    this.globalCost += globalCost;
+  }
+
+  public void addLodDistance(int distance) {
+    add(Cost.lod(distance));
   }
 
 }

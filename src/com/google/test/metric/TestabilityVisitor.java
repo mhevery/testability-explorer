@@ -54,39 +54,35 @@ public class TestabilityVisitor {
     }
 
     @Override
-    protected Cost addCyclomaticCost(int lineNumber) {
-      Cost cyclomaticCost = super.addCyclomaticCost(lineNumber);
-      ViolationCost cost = new CyclomaticCost(lineNumber, cyclomaticCost);
+    protected void addCyclomaticCost(int lineNumber) {
+      super.addCyclomaticCost(lineNumber);
+      ViolationCost cost = new CyclomaticCost(lineNumber, Cost.cyclomatic(1));
       methodCost.addCostSource(cost);
-      return cyclomaticCost;
     }
 
     @Override
-    protected Cost addGlobalCost(int lineNumber, Variable variable) {
-      Cost globalCost = super.addGlobalCost(lineNumber, variable);
-      ViolationCost cost = new GlobalCost(lineNumber, variable, globalCost);
+    protected void addGlobalCost(int lineNumber, Variable variable) {
+      super.addGlobalCost(lineNumber, variable);
+      ViolationCost cost = new GlobalCost(lineNumber, variable, Cost.global(1));
       methodCost.addCostSource(cost);
-      return globalCost;
     }
 
     @Override
-    protected Cost addLoDCost(int lineNumber, MethodInfo method, int distance) {
-      Cost lodCost = super.addLoDCost(lineNumber, method, distance);
+    protected void addLoDCost(int lineNumber, MethodInfo method, int distance) {
+      super.addLoDCost(lineNumber, method, distance);
       ViolationCost cost = new LoDViolation(lineNumber, method.getFullName(),
-          lodCost, distance);
+          Cost.lod(distance), distance);
       methodCost.addCostSource(cost);
-      return lodCost;
     }
 
     @Override
-    protected Cost addMethodInvocationCost(int lineNumber, MethodInfo to,
+    protected void addMethodInvocationCost(int lineNumber, MethodInfo to,
         Cost methodInvocationCost) {
       super.addMethodInvocationCost(lineNumber, to, methodInvocationCost);
       ViolationCost cost = new MethodInvokationCost(lineNumber,
           getMethodCostCache(to), Reason.NON_OVERRIDABLE_METHOD_CALL,
           methodInvocationCost);
       methodCost.addCostSource(cost);
-      return methodInvocationCost;
     }
 
     public MethodCost getMethodCost() {
@@ -196,8 +192,8 @@ public class TestabilityVisitor {
   public static class Frame extends ParentFrame {
 
     protected final ParentFrame parentFrame;
-    protected final Cost direct = Cost.none();
-    protected final Cost indirect = Cost.none();
+    protected final Cost direct = new Cost();
+    protected final Cost indirect = new Cost();
     protected final MethodInfo method;
     protected Variable returnValue;
     protected final WhiteList whitelist;
@@ -219,29 +215,22 @@ public class TestabilityVisitor {
       alreadyVisited.add(method);
     }
 
-    protected Cost addCyclomaticCost(int lineNumber) {
-      Cost cyclomaticCost = Cost.cyclomatic(1);
-      direct.add(cyclomaticCost);
-      return cyclomaticCost;
+    protected void addCyclomaticCost(int lineNumber) {
+      direct.addCyclomaticCost(1);
     }
 
-    protected Cost addGlobalCost(int lineNumber, Variable variable) {
-      Cost globalCost = Cost.global(1);
-      direct.add(globalCost);
-      return globalCost;
+    protected void addGlobalCost(int lineNumber, Variable variable) {
+      direct.addGlobalCost(1);
     }
 
     @Override
-    protected Cost addLoDCost(int lineNumber, MethodInfo method, int distance) {
-      Cost lodCost = Cost.lod(distance);
-      direct.add(lodCost);
-      return lodCost;
+    protected void addLoDCost(int lineNumber, MethodInfo method, int distance) {
+      direct.addLodDistance(distance);
     }
 
-    protected Cost addMethodInvocationCost(int lineNumber, MethodInfo to,
+    protected void addMethodInvocationCost(int lineNumber, MethodInfo to,
         Cost methodInvocationCost) {
       indirect.add(methodInvocationCost);
-      return methodInvocationCost;
     }
 
     /**
@@ -314,7 +303,7 @@ public class TestabilityVisitor {
     }
 
     private Cost getTotalCost() {
-      Cost totalCost = Cost.none();
+      Cost totalCost = new Cost();
       totalCost.add(direct);
       totalCost.add(indirect);
       return totalCost;
@@ -447,8 +436,7 @@ public class TestabilityVisitor {
       this.variableState = new LocalVariableState(globalVariableState);
     }
 
-    protected Cost addLoDCost(int lineNumber, MethodInfo toMethod, int distance) {
-      return null;
+    protected void addLoDCost(int lineNumber, MethodInfo toMethod, int distance) {
     }
 
     public VariableState getGlobalVariables() {

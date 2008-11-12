@@ -27,7 +27,7 @@ public class Source {
     private final int lineNumber;
     private final String text;
     private final List<MethodCost> methodCosts = new ArrayList<MethodCost>();
-    private final Cost cost = Cost.none();
+    private final Cost cost = new Cost();
 
     public Line(int lineNumber, String text) {
       this.lineNumber = lineNumber;

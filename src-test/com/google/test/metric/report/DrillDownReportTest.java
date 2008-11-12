@@ -92,7 +92,7 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   public void test2DeepSupress0Cost() throws Exception {
     DrillDownReport printer =
       new DrillDownReport(new PrintStream(out), costModel, null, MAX_VALUE, 2);
-    methodCost1.addCostSource(new MethodInvokationCost(8, methodCost0, Reason.NON_OVERRIDABLE_METHOD_CALL, Cost.none()));
+    methodCost1.addCostSource(new MethodInvokationCost(8, methodCost0, Reason.NON_OVERRIDABLE_METHOD_CALL, new Cost()));
     methodCost1.addCostSource(new MethodInvokationCost(13, methodCost3, Reason.NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(3)));
     methodCost1.link();
     printer.print("", methodCost1, MAX_VALUE);
@@ -135,7 +135,7 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
     DrillDownReport printer =
       new DrillDownReport(new PrintStream(out), costModel, null, MAX_VALUE, 0);
     methodCost3.addCostSource(new MethodInvokationCost(1, methodCost2, Reason.NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(2)));
-    methodCost2.addCostSource(new MethodInvokationCost(2, methodCost2, Reason.NON_OVERRIDABLE_METHOD_CALL, Cost.none()));
+    methodCost2.addCostSource(new MethodInvokationCost(2, methodCost2, Reason.NON_OVERRIDABLE_METHOD_CALL, new Cost()));
     methodCost3.link();
     printer.print("", methodCost3, 10);
     assertStringEquals("c.g.t.A.method3()V [CC: 5 / CC: 3]\n" +

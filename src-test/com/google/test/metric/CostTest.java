@@ -20,10 +20,10 @@ import junit.framework.TestCase;
 public class CostTest extends TestCase {
 
   public void testAddingZeroIsZero() throws Exception {
-    Cost none = Cost.none();
-    none.add(Cost.none());
-    assertEquals(Cost.none(), Cost.none());
-    assertEquals(0, Cost.none().getLoDSum());
+    Cost none = new Cost();
+    none.add(new Cost());
+    assertEquals(new Cost(), new Cost());
+    assertEquals(0, new Cost().getLoDSum());
   }
 
   public void testAddOfGreaterSize() throws Exception {
