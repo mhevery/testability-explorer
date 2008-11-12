@@ -257,13 +257,18 @@ public class Testability {
   SortedSet<String> collectClassNamesToEnter(List<String> entryList) {
     SortedSet<String> classes = new TreeSet<String>();
     List<String> queue = new ArrayList<String>(entryList);
+    List<String> visitedPackages = new ArrayList<String>(entryList);
     while (!queue.isEmpty()) {
       String prefix = queue.remove(0);
       prefix = prefix.replace(".", "/");
       prefix = prefix.replaceAll("^/+", "");
       prefix = prefix.replaceAll("/+$", "");
-      for (String packageName : classpath.listPackages(prefix)) {
-        queue.add(prefix + "/" + packageName);
+      for (String name : classpath.listPackages(prefix)) {
+        String packageName = prefix + "/" + name;
+        if (!visitedPackages.contains(packageName)) {
+          queue.add(packageName);
+          visitedPackages.add(packageName);
+        }
       }
       if (classpath.isResource(prefix + ".class")) {
         classes.add(prefix);
