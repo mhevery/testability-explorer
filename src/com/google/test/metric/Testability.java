@@ -15,6 +15,8 @@
  */
 package com.google.test.metric;
 
+import static com.google.classpath.RegExpResourceFilter.ANY;
+import static com.google.classpath.RegExpResourceFilter.ENDS_WITH_CLASS;
 import static java.util.Arrays.asList;
 
 import java.io.File;
@@ -32,6 +34,7 @@ import org.kohsuke.args4j.Option;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
+import com.google.classpath.RegExpResourceFilter;
 import com.google.test.metric.report.DetailHtmlReport;
 import com.google.test.metric.report.DrillDownReport;
 import com.google.test.metric.report.GradeCategories;
@@ -236,7 +239,11 @@ public class Testability {
     postParse();
     ClassRepository repository = new JavaClassRepository(classpath);
     MetricComputer computer = new MetricComputer(repository, err, whitelist, printDepth);
-    SortedSet<String> classNames = collectClassNamesToEnter(entryList);
+    SortedSet<String> classNames = new TreeSet<String>();
+    RegExpResourceFilter resourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
+    for (String entry : entryList) {
+      classNames.addAll(asList(classpath.findResources(entry, resourceFilter)));
+    }
     report.printHeader();
     for (String className : classNames) {
       try {
@@ -254,32 +261,4 @@ public class Testability {
     return report;
   }
 
-  SortedSet<String> collectClassNamesToEnter(List<String> entryList) {
-    SortedSet<String> classes = new TreeSet<String>();
-    List<String> queue = new ArrayList<String>(entryList);
-    List<String> visitedPackages = new ArrayList<String>(entryList);
-    while (!queue.isEmpty()) {
-      String prefix = queue.remove(0);
-      prefix = prefix.replace(".", "/");
-      prefix = prefix.replaceAll("^/+", "");
-      prefix = prefix.replaceAll("/+$", "");
-      for (String name : classpath.listPackages(prefix)) {
-        String packageName = prefix + "/" + name;
-        if (!visitedPackages.contains(packageName)) {
-          queue.add(packageName);
-          visitedPackages.add(packageName);
-        }
-      }
-      if (classpath.isResource(prefix + ".class")) {
-        classes.add(prefix);
-      }
-      for (String name : classpath.listResources(prefix)) {
-        if (name.endsWith(".class")) {
-          String clazzName = prefix + "/" + name.replace(".class", "");
-          classes.add(clazzName);
-        }
-      }
-    }
-    return classes;
-  }
 }

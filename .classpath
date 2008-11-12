@@ -10,7 +10,7 @@
 	<classpathentry kind="lib" path="lib/junit.jar"/>
 	<classpathentry kind="lib" path="lib/ant.jar"/>
 	<classpathentry kind="lib" path="lib/antlr-2.7.7.jar"/>
-	<classpathentry kind="lib" path="lib/classpath-explorer-r8.jar"/>
+	<classpathentry kind="lib" path="lib/classpath-explorer-r9.jar" sourcepath="/classpath-explorer"/>
 	<classpathentry kind="lib" path="lib/freemarker/freemarker.jar"/>
 	<classpathentry kind="lib" path="lib/shiftone-jrat.jar"/>
 	<classpathentry kind="output" path="bin"/>
