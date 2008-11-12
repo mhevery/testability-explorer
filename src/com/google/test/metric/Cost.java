@@ -21,6 +21,8 @@ import java.util.Map;
 
 public class Cost {
 
+  private static final int[] EMPTY = new int[0];
+
   private static final String COMPLEXITY_COST_HELP_URL = "http://code.google.com/p/testability-explorer/wiki/ComplexityCostExplanation";
   private static final String GLOBAL_COST_HELP_URL = "http://code.google.com/p/testability-explorer/wiki/GlobalCostExplanation";
   private static final String LAW_OF_DEMETER_COST_HELP_URL = "http://code.google.com/p/testability-explorer/wiki/LawOfDemeterCostExplanation";
@@ -35,11 +37,11 @@ public class Cost {
   }
 
   public static Cost none() {
-    return new Cost(0, 0, new int[0]);
+    return new Cost(0, 0, EMPTY);
   }
 
   public static Cost global(int count) {
-    return new Cost(0, count, new int[0]);
+    return new Cost(0, count, EMPTY);
   }
 
   public static Cost lod(int distance) {
@@ -49,7 +51,7 @@ public class Cost {
   }
 
   public static Cost cyclomatic(int cyclomaticCost) {
-    return new Cost(cyclomaticCost, 0, new int[0]);
+    return new Cost(cyclomaticCost, 0, EMPTY);
   }
 
   public static Object lodDistribution(int... counts) {
