@@ -167,29 +167,29 @@ public class Testability {
     report = getReportPrinter();
   }
 
-  private Report getReportPrinter()
-      throws CmdLineException {
+  private Report getReportPrinter() throws CmdLineException {
     CostModel costModel = new CostModel(cyclomaticMultiplier, globalMultiplier);
     if (printer.equals("summary")) {
-      report = new TextReport(out, costModel, maxExcellentCost, maxAcceptableCost,
-          worstOffenderCount);
+      report = new TextReport(out, costModel, maxExcellentCost,
+          maxAcceptableCost, worstOffenderCount);
     } else if (printer.equals("html")) {
       SourceLinker linker = new SourceLinker(templates.get(0), templates.get(1));
       DetailHtmlReport detailHtmlReport = new DetailHtmlReport(out, costModel,
           linker, maxMethodCount, maxLineCount);
-      report = new HtmlReport(out, costModel, maxExcellentCost, maxAcceptableCost,
-          worstOffenderCount, detailHtmlReport);
+      report = new HtmlReport(out, costModel, maxExcellentCost,
+          maxAcceptableCost, worstOffenderCount, detailHtmlReport);
     } else if (printer.equals("detail")) {
-      report = new DrillDownReport(out, costModel, entryList, printDepth, minCost);
+      report = new DrillDownReport(out, costModel, entryList, printDepth,
+          minCost);
     } else if (printer.equals("props")) {
-      report = new PropertiesReport(out, costModel, maxExcellentCost, maxAcceptableCost,
-          worstOffenderCount);
+      report = new PropertiesReport(out, costModel, maxExcellentCost,
+          maxAcceptableCost, worstOffenderCount);
     } else if (printer.equals("source")) {
       GradeCategories gradeCategories = new GradeCategories(maxExcellentCost,
           maxAcceptableCost);
       SourceLoader sourceLoader = new SourceLoader(classpath);
-      report = new SourceReport(gradeCategories, sourceLoader,
-          new File("te-report"), costModel, new Date(), worstOffenderCount);
+      report = new SourceReport(gradeCategories, sourceLoader, new File(
+          "te-report"), costModel, new Date(), worstOffenderCount);
     } else if (printer.equals("xml")) {
       XMLSerializer xmlSerializer = new XMLSerializer();
       xmlSerializer.setOutputByteStream(out);
@@ -238,14 +238,20 @@ public class Testability {
   public Report execute() throws CmdLineException {
     postParse();
     ClassRepository repository = new JavaClassRepository(classpath);
-    MetricComputer computer = new MetricComputer(repository, err, whitelist, printDepth);
+    MetricComputer computer = new MetricComputer(repository, err, whitelist,
+        printDepth);
     SortedSet<String> classNames = new TreeSet<String>();
-    RegExpResourceFilter resourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
+    RegExpResourceFilter resourceFilter = new RegExpResourceFilter(ANY,
+        ENDS_WITH_CLASS);
     for (String entry : entryList) {
+      if (entry.equals(".")) {
+        entry = "";
+      }
       classNames.addAll(asList(classpath.findResources(entry, resourceFilter)));
     }
     report.printHeader();
-    for (String className : classNames) {
+    for (String resource : classNames) {
+      String className = resource.replace(".class", "").replace("/", ".");
       try {
         if (!whitelist.isClassWhiteListed(className)) {
           ClassInfo clazz = repository.getClass(className);
@@ -260,5 +266,4 @@ public class Testability {
     report.printFooter();
     return report;
   }
-
 }
