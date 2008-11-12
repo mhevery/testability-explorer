@@ -24,8 +24,8 @@ public class MethodCost {
   private final String methodName;
   private final int lineNumber;
   private final List<ViolationCost> costSources = new ArrayList<ViolationCost>();
-  private final Cost directCost = Cost.none();
-  private final Cost dependantCost = Cost.none();
+  private final Cost directCost = new Cost();
+  private final Cost dependantCost = new Cost();
 
   /**
    * @param methodName
@@ -39,7 +39,7 @@ public class MethodCost {
   }
 
   public Cost getTotalCost() {
-    return Cost.none().add(directCost).add(dependantCost);
+    return new Cost().add(directCost).add(dependantCost);
   }
 
   public String getMethodName() {

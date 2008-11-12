@@ -48,7 +48,7 @@ public class DetailHtmlReportTest extends TestCase {
   public void testWriteLineCost() throws Exception {
     MethodCost methodCost = createMethodCallWithOverallCost("a.methodName()V", 64);
     MethodInvokationCost cost = new MethodInvokationCost(123, methodCost, Reason.NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(64));
-    cost.link(Cost.none(), Cost.none());
+    cost.link(new Cost(), new Cost());
 
     DetailHtmlReport report = new DetailHtmlReport(stream, costModel, new SourceLinker(
             emptyLineTemplate, emptyClassTemplate), 10, 10);
@@ -64,7 +64,7 @@ public class DetailHtmlReportTest extends TestCase {
 
   public void testLinkedLineCost() throws Exception {
     MethodCost methodCost = createMethodCallWithOverallCost("a.methodName()V", 64);
-    MethodInvokationCost lineCost = new MethodInvokationCost(123, methodCost, Reason.NON_OVERRIDABLE_METHOD_CALL, Cost.none());
+    MethodInvokationCost lineCost = new MethodInvokationCost(123, methodCost, Reason.NON_OVERRIDABLE_METHOD_CALL, new Cost());
     methodCost.link();
 
     DetailHtmlReport report = new DetailHtmlReport(stream, costModel, new SourceLinker(

@@ -80,6 +80,7 @@ public abstract class ViolationCost {
     return "Line " + lineNumber + ": " + getDescription() + " (" + reason + ")";
   }
 
+  //TODO: (misko) get rid of this method
   public abstract void link(Cost directCost, Cost dependantCost);
 
   public Cost getCost() {

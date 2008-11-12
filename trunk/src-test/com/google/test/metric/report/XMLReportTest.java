@@ -70,7 +70,6 @@ public class XMLReportTest extends TestCase {
     methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     ViolationCost violation = new MethodInvokationCost(123, methodCost,
         Reason.IMPLICIT_STATIC_INIT, Cost.cyclomatic(2).add(Cost.global(3)));
-    violation.link(Cost.none(), Cost.none());
     report.writeCost(violation);
     assertXMLEquals("<cost cyclomatic=\"2\" global=\"3\" line=\"123\" "
         + "lod=\"0\" method=\"methodName\" overall=\"32\" "
@@ -86,7 +85,6 @@ public class XMLReportTest extends TestCase {
     methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     ViolationCost violation = new MethodInvokationCost(123, methodCost,
         null, Cost.cyclomatic(2).add(Cost.global(3)));
-    violation.link(Cost.none(), Cost.none());
     report.writeCost(violation);
     assertXMLEquals("<cost cyclomatic=\"2\" global=\"3\" line=\"123\" "
         + "lod=\"0\" method=\"methodName\" overall=\"32\" "
