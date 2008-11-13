@@ -25,15 +25,24 @@ import com.google.test.metric.JavaType;
 import com.google.test.metric.Variable;
 import com.google.test.metric.collection.KeyedMultiStack;
 import com.google.test.metric.collection.PopClosure;
+import com.google.test.metric.collection.KeyedMultiStack.ValueCompactor;
 import com.google.test.metric.method.op.stack.JSR;
 import com.google.test.metric.method.op.stack.StackOperation;
 import com.google.test.metric.method.op.turing.Operation;
 
 public class Stack2Turing {
 
+  public static class VariableCompactor<T> extends ValueCompactor<Variable> {
+    @Override
+    public List<List<Variable>> compact(List<List<Variable>> pushValues) {
+      return pushValues;
+    }
+  }
+
   private final Block rootBlock;
   private final List<Operation> operations = new ArrayList<Operation>();
-  public KeyedMultiStack<Block, Variable> stack = new KeyedMultiStack<Block, Variable>();
+  private final ValueCompactor<Variable> pathCompactor = new VariableCompactor<Variable>();
+  public KeyedMultiStack<Block, Variable> stack = new KeyedMultiStack<Block, Variable>(pathCompactor);
 
   public Stack2Turing(Block block) {
     this.rootBlock = block;
