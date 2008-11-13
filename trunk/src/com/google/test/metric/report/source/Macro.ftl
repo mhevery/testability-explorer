@@ -36,15 +36,15 @@
   </tr>
   <tr>
     <td class="metric">&nbsp;&nbsp;&nbsp;Excellent:</td>
-    <td class="score" style="background-color:#00FF00">${report.excellentCount} [${(report.excellentPercent)?string.percent}]</td>
+    <td class="score" style="background-color:#00FF00">${report.excellentCount}&nbsp;[${(report.excellentPercent)?string.percent}]</td>
   </tr>
   <tr>
     <td class="metric">&nbsp;&nbsp;&nbsp;Good:</td>
-    <td class="score" style="background-color:#FFFF00">${report.goodCount} [${(report.goodPercent)?string.percent}]</td>
+    <td class="score" style="background-color:#FFFF00">${report.goodCount}&nbsp;[${(report.goodPercent)?string.percent}]</td>
   </tr>
   <tr>
     <td class="metric">&nbsp;&nbsp;&nbsp;Needs work:</td>
-    <td class="score" style="background-color:#FF0000">${report.needsWorkCount} [${(report.needsWorkPercent)?string.percent}]</td>
+    <td class="score" style="background-color:#FF0000">${report.needsWorkCount}&nbsp;[${(report.needsWorkPercent)?string.percent}]</td>
   </tr>
   <tr>
     <td class="score">&nbsp;</td>

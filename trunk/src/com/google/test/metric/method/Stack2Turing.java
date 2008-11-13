@@ -34,6 +34,8 @@ import com.google.test.metric.method.op.turing.Operation;
 
 public class Stack2Turing {
 
+  public static final Object EMPTY = new Object();
+
   public static class VariableCompactor extends ValueCompactor<Variable> {
     @Override
     public List<List<Variable>> compact(List<List<Variable>> pushValues) {
@@ -41,11 +43,11 @@ public class Stack2Turing {
         return pushValues;
       }
       ArrayList<List<Variable>> compacted = new ArrayList<List<Variable>>();
-      Set<List<Object>> equivalent = new HashSet<List<Object>>();
+      Set<Object> equivalent = new HashSet<Object>();
       Iterator<List<Variable>> iter;
       for (iter = pushValues.iterator(); iter.hasNext();) {
         List<Variable> values = iter.next();
-        List<Object> key = computeKey(values);
+        Object key = computeKey(values);
         if (equivalent.add(key)) {
           compacted.add(values);
         }
@@ -53,15 +55,28 @@ public class Stack2Turing {
       return compacted;
     }
 
-    private List<Object> computeKey(List<Variable> variables) {
-      ArrayList<Object> key = new ArrayList<Object>();
-      for (Variable variable : variables) {
-        if (variable instanceof Constant) {
-          Constant constant = (Constant) variable;
-          key.add(constant.getType());
-        } else {
-          key.add(variable);
+    private Object computeKey(List<Variable> variables) {
+      int size = variables.size();
+      if (size == 0) {
+        return EMPTY;
+      } else if (size == 1) {
+        return computeKey(variables.get(0));
+      } else {
+        ArrayList<Object> keys = new ArrayList<Object>();
+        for (Variable variable : variables) {
+          keys.add(computeKey(variable));
         }
+        return keys;
+      }
+    }
+
+    private Object computeKey(Variable variable) {
+      Object key;
+      if (variable instanceof Constant) {
+        Constant constant = (Constant) variable;
+        key = constant.getType();
+      } else {
+        key = variable;
       }
       return key;
     }
