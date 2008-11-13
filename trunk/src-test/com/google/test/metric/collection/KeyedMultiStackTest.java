@@ -87,7 +87,7 @@ public class KeyedMultiStackTest extends TestCase {
   }
 
   KeyedMultiStack<String, Integer> stack = new KeyedMultiStack<String, Integer>(
-      "");
+      "", new KeyedMultiStack.ValueCompactor<Integer>());
 
   Set<String> log = new TreeSet<String>();
 

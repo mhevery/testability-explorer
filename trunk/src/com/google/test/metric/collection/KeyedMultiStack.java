@@ -17,6 +17,7 @@ package com.google.test.metric.collection;
 
 import static java.util.Arrays.asList;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -47,6 +48,12 @@ import java.util.Set;
  *            Value on stack.
  */
 public class KeyedMultiStack<KEY, VALUE> {
+
+  public static class ValueCompactor<VALUE> {
+    public List<List<VALUE>> compact(List<List<VALUE>> pushValues) {
+      return pushValues;
+    }
+  }
 
   public static class StackUnderflowException extends RuntimeException {
     private static final long serialVersionUID = 4649233306901482842L;
@@ -186,14 +193,18 @@ public class KeyedMultiStack<KEY, VALUE> {
 
   private final Map<KEY, Set<Entry<VALUE>>> head = new HashMap<KEY, Set<Entry<VALUE>>>();
 
+  private final ValueCompactor<VALUE> pathCompactor;
+
   /**
    * @param key Initial key for the primordial stack.
    */
-  public KeyedMultiStack(KEY key) {
+  public KeyedMultiStack(KEY key, ValueCompactor<VALUE> pathCompactor) {
+    this(pathCompactor);
     init(key);
   }
 
-  public KeyedMultiStack() {
+  public KeyedMultiStack(ValueCompactor<VALUE> pathCompactor) {
+    this.pathCompactor = pathCompactor;
   }
 
   public void init(KEY key) {
@@ -229,28 +240,27 @@ public class KeyedMultiStack<KEY, VALUE> {
    * @param key        key as stack selector
    * @param popClosure Closer which will be called once per each virtual stack.
    */
-  @SuppressWarnings("unchecked")
   public void apply(KEY key, PopClosure<KEY, VALUE> popClosure) {
     int popSize = popClosure.getSize();
     Set<Path<VALUE>> paths = fillPopPaths(getHead(key), popSize);
     popPaths(key, popSize);
-    VALUE[][] pushValues = (VALUE[][]) new Object[paths.size()][];
-    int i = 0;
+    List<List<VALUE>> pushValues = new ArrayList<List<VALUE>>(paths.size());
     int pushSize = -1;
     for (Path<VALUE> path : paths) {
-      VALUE[] pushSet = (VALUE[]) popClosure.pop(key, path.asList()).toArray();
+      List<VALUE> pushSet = popClosure.pop(key, path.asList());
       if (pushSize == -1) {
-        pushSize = pushSet.length;
-      } else if (pushSize != pushSet.length) {
+        pushSize = pushSet.size();
+      } else if (pushSize != pushSet.size()) {
         throw new IllegalStateException(
             "All push pushes must be of same size.");
       }
-      pushValues[i++] = pushSet;
+      pushValues.add(pushSet);
     }
+    pushValues = pathCompactor.compact(pushValues);
     if (pushSize > 0) {
       Set<Entry<VALUE>> parent = head.get(key);
       Set<Entry<VALUE>> newHead = new HashSet<Entry<VALUE>>();
-      for (VALUE[] values : pushValues) {
+      for (List<VALUE> values : pushValues) {
         Entry<VALUE> entry = null;
         for (VALUE value : values) {
           if (entry == null) {
