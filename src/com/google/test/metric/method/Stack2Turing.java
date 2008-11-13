@@ -18,8 +18,10 @@ package com.google.test.metric.method;
 import static java.util.Arrays.asList;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import com.google.test.metric.JavaType;
 import com.google.test.metric.Variable;
@@ -32,17 +34,44 @@ import com.google.test.metric.method.op.turing.Operation;
 
 public class Stack2Turing {
 
-  public static class VariableCompactor<T> extends ValueCompactor<Variable> {
+  public static class VariableCompactor extends ValueCompactor<Variable> {
     @Override
     public List<List<Variable>> compact(List<List<Variable>> pushValues) {
-      return pushValues;
+      if (pushValues.size() < 2) {
+        return pushValues;
+      }
+      ArrayList<List<Variable>> compacted = new ArrayList<List<Variable>>();
+      Set<List<Object>> equivalent = new HashSet<List<Object>>();
+      Iterator<List<Variable>> iter;
+      for (iter = pushValues.iterator(); iter.hasNext();) {
+        List<Variable> values = iter.next();
+        List<Object> key = computeKey(values);
+        if (equivalent.add(key)) {
+          compacted.add(values);
+        }
+      }
+      return compacted;
+    }
+
+    private List<Object> computeKey(List<Variable> variables) {
+      ArrayList<Object> key = new ArrayList<Object>();
+      for (Variable variable : variables) {
+        if (variable instanceof Constant) {
+          Constant constant = (Constant) variable;
+          key.add(constant.getType());
+        } else {
+          key.add(variable);
+        }
+      }
+      return key;
     }
   }
 
   private final Block rootBlock;
   private final List<Operation> operations = new ArrayList<Operation>();
-  private final ValueCompactor<Variable> pathCompactor = new VariableCompactor<Variable>();
-  public KeyedMultiStack<Block, Variable> stack = new KeyedMultiStack<Block, Variable>(pathCompactor);
+  private final ValueCompactor<Variable> pathCompactor = new VariableCompactor();
+  public KeyedMultiStack<Block, Variable> stack = new KeyedMultiStack<Block, Variable>(
+      pathCompactor);
 
   public Stack2Turing(Block block) {
     this.rootBlock = block;
@@ -72,8 +101,7 @@ public class Stack2Turing {
           processed.add(jsrBlock);
         }
       }
-      List<Block> nextBlocks = new ArrayList<Block>(block
-          .getNextBlocks());
+      List<Block> nextBlocks = new ArrayList<Block>(block.getNextBlocks());
       nextBlocks.removeAll(processed); // Don't visit already visited
       // blocks
       if (nextBlocks.size() > 0) {
@@ -96,7 +124,7 @@ public class Stack2Turing {
       public List<Variable> pop(Block key, List<Variable> input) {
         List<Variable> variables = operation.apply(input);
         // For performance reasons the line is commented out.
-        //assertValid(variables);
+        // assertValid(variables);
         Operation turingOp = operation.toOperation(input);
         if (turingOp != null) {
           operations.add(turingOp);
@@ -118,8 +146,8 @@ public class Stack2Turing {
       if (JavaType.isDoubleSlot(variable.getType())) {
         Variable varNext = iter.hasNext() ? iter.next() : null;
         if (variable != varNext) {
-          throw new IllegalStateException("Variable list '"
-              + variables + "' contanins variable '" + variable
+          throw new IllegalStateException("Variable list '" + variables
+              + "' contanins variable '" + variable
               + "' which is a double but the next "
               + "variable in the list is not a duplicate.");
         }

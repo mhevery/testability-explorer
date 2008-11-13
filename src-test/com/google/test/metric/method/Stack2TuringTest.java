@@ -15,6 +15,8 @@
  */
 package com.google.test.metric.method;
 
+import static java.util.Arrays.asList;
+
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -22,6 +24,7 @@ import junit.framework.TestCase;
 import com.google.test.metric.FieldInfo;
 import com.google.test.metric.JavaType;
 import com.google.test.metric.Variable;
+import com.google.test.metric.method.Stack2Turing.VariableCompactor;
 import com.google.test.metric.method.op.stack.JSR;
 import com.google.test.metric.method.op.stack.Load;
 import com.google.test.metric.method.op.stack.PutField;
@@ -72,6 +75,30 @@ public class Stack2TuringTest extends TestCase {
     sub.addNextBlock(main);
     Stack2Turing converter = new Stack2Turing(main);
     converter.translate(); // Assert no exceptions and that we don't get into infinite recursion
+  }
+
+  private List<List<Variable>> vv(List<Variable>...arrayOflistOfVars) {
+    return asList(arrayOflistOfVars);
+  }
+
+  private List<Variable> v(Variable...variables) {
+    return asList(variables);
+  }
+
+  @SuppressWarnings("unchecked")
+  public void testCompactionOfPrimitiveConstants() throws Exception {
+    VariableCompactor compactor = new VariableCompactor();
+    Constant c1 = new Constant("a", JavaType.INT);
+    Constant c2 = new Constant("a", JavaType.INT);
+    assertEquals(vv(v(c1)), compactor.compact(vv(v(c1), v(c2))));
+  }
+
+  @SuppressWarnings("unchecked")
+  public void testNonCompactionOfNonPrimitiveConstants() throws Exception {
+    VariableCompactor compactor = new VariableCompactor();
+    Constant c1 = new Constant("a", JavaType.OBJECT);
+    Constant c2 = new Constant("a", JavaType.fromClass(String.class));
+    assertEquals(vv(v(c1), v(c2)), compactor.compact(vv(v(c1), v(c2))));
   }
 
 }
