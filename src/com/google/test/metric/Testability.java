@@ -247,7 +247,8 @@ public class Testability {
       if (entry.equals(".")) {
         entry = "";
       }
-      classNames.addAll(asList(classpath.findResources(entry, resourceFilter)));
+      classNames.addAll(asList(classpath.findResources(entry.replace(".", "/"),
+          resourceFilter)));
     }
     report.printHeader();
     for (String resource : classNames) {
