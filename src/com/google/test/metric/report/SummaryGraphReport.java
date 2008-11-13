@@ -15,9 +15,10 @@
  */
 package com.google.test.metric.report;
 
+import static java.util.Collections.sort;
+
 import java.util.ArrayList;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.List;
 
 import com.google.test.metric.WeightedAverage;
 
@@ -47,7 +48,7 @@ public abstract class SummaryGraphReport<T extends SummaryGraphReport.Unit> {
 
   private final GradeCategories grades;
   private final ArrayList<Integer> costs = new ArrayList<Integer>();
-  private final SortedSet<Unit> unitCosts = new TreeSet<Unit>();
+  private final List<Unit> unitCosts = new ArrayList<Unit>();
   private int maxUnitCosts = Integer.MAX_VALUE;
   private final WeightedAverage average;
   private final String name;
@@ -81,13 +82,11 @@ public abstract class SummaryGraphReport<T extends SummaryGraphReport.Unit> {
     unitCosts.add(unit);
     costs.add(cost);
     average.addValue(cost);
-    if (unitCosts.size() > maxUnitCosts) {
-      unitCosts.remove(unitCosts.last());
-    }
+    sort(unitCosts);
   }
 
-  public SortedSet<Unit> getUnitCosts() {
-    return unitCosts;
+  public List<Unit> getUnitCosts() {
+    return unitCosts.subList(0, Math.min(maxUnitCosts, unitCosts.size()));
   }
 
   public int getOverallCost() {
@@ -103,11 +102,11 @@ public abstract class SummaryGraphReport<T extends SummaryGraphReport.Unit> {
   }
 
   public double getGoodPercent() {
-    return getCount() == 0 ? 0 : getExcellentCount() / getCount();
+    return getCount() == 0 ? 0 : getGoodCount() / getCount();
   }
 
   public double getNeedsWorkPercent() {
-    return getCount() == 0 ? 0 : getExcellentCount() / getCount();
+    return getCount() == 0 ? 0 : getNeedsWorkCount() / getCount();
   }
 
   public int getExcellentCount() {
