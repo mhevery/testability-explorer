@@ -17,12 +17,14 @@ package com.google.test.metric.cpp;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.apache.tools.ant.filters.StringInputStream;
 
 import com.google.test.metric.ClassInfo;
+import com.google.test.metric.LocalVariableInfo;
 import com.google.test.metric.MethodInfo;
 
 public class CppClassRepositoryTest extends TestCase {
@@ -66,5 +68,23 @@ public class CppClassRepositoryTest extends TestCase {
     MethodInfo methodInfo = it.next();
     assertEquals("foo", methodInfo.getName());
     assertEquals(2, methodInfo.getParameters().size());
+  }
+
+  public void testMethodWithLocalVariables() throws Exception {
+    CppClassRepository repository = new CppClassRepository();
+    repository.parse(new StringInputStream("class A{ void foo() { int a; int b; } };"));
+    ClassInfo classInfo = repository.getClass("A");
+    assertNotNull(classInfo);
+    assertFalse(classInfo.isInterface());
+    assertEquals(1, classInfo.getMethods().size());
+    Iterator<MethodInfo> it = classInfo.getMethods().iterator();
+    MethodInfo methodInfo = it.next();
+    assertEquals("foo", methodInfo.getName());
+    List<LocalVariableInfo> localVariables = methodInfo.getLocalVariables();
+    assertEquals(2, localVariables.size());
+    LocalVariableInfo variableA = localVariables.get(0);
+    assertEquals("a", variableA.getName());
+    LocalVariableInfo variableB = localVariables.get(1);
+    assertEquals("b", variableB.getName());
   }
 }

@@ -29,6 +29,7 @@ import com.google.test.metric.cpp.dom.FunctionDeclaration;
 import com.google.test.metric.cpp.dom.FunctionDefinition;
 import com.google.test.metric.cpp.dom.FunctionInvocation;
 import com.google.test.metric.cpp.dom.IfStatement;
+import com.google.test.metric.cpp.dom.LocalVariableDeclaration;
 import com.google.test.metric.cpp.dom.LoopStatement;
 import com.google.test.metric.cpp.dom.Namespace;
 import com.google.test.metric.cpp.dom.NodeList;
@@ -153,7 +154,7 @@ public class CppParserTest extends TestCase {
     TranslationUnit unit = parse("int foo() { int a = 0; a = a + 1; return a; }");
     FunctionDefinition functionFoo = unit.getChild(0);
     assertEquals("foo", functionFoo.getName());
-    ReturnStatement returnStatement = functionFoo.getChild(0);
+    ReturnStatement returnStatement = functionFoo.getChild(1);
     assertNotNull(returnStatement);
   }
 
@@ -295,7 +296,8 @@ public class CppParserTest extends TestCase {
   public void testNestedTernaryOperator() throws Exception {
     TranslationUnit unit = parse("int foo(int a, int b) { int c = a ? 0 : (b ? 1 : 2); }");
     FunctionDefinition functionFoo = unit.getChild(0);
-    TernaryOperation ternaryOperation = functionFoo.getChild(0);
+    LocalVariableDeclaration variableC = functionFoo.getChild(0);
+    TernaryOperation ternaryOperation = variableC.getChild(0);
     TernaryOperation nestedTernaryOperation = ternaryOperation.getChild(0);
     assertNotNull(nestedTernaryOperation);
   }
@@ -334,6 +336,17 @@ public class CppParserTest extends TestCase {
     FunctionInvocation callFoo = callBar.getChild(0);
     assertEquals("foo", callFoo.getName());
     assertEquals(0, callFoo.getChildren().size());
+  }
+
+  public void testLocalVariable() throws Exception {
+    TranslationUnit unit = parse(
+        "void main() { int a = 0, b = 0; a += 1; }");
+    FunctionDefinition functionMain = unit.getChild(0);
+    assertEquals("main", functionMain.getName());
+    LocalVariableDeclaration variableA = functionMain.getChild(0);
+    assertEquals("a", variableA.getName());
+    LocalVariableDeclaration variableB = functionMain.getChild(1);
+    assertEquals("b", variableB.getName());
   }
 
   public void testClassLoadCppVariables() throws Exception {

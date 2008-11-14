@@ -301,4 +301,7 @@ interface Builder {
 
   void beginMemberAccess();
   void endMemberAccess();
+
+  void beginInitDeclaratorList();
+  void endInitDeclaratorList();
 }

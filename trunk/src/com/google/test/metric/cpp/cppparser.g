@@ -925,7 +925,9 @@ typeID
   ;
 
 init_declarator_list
-  : init_declarator (COMMA init_declarator)*
+  : {b.beginInitDeclaratorList();}
+    init_declarator (COMMA init_declarator)*
+    {b.endInitDeclaratorList();}
   ;
 
 init_declarator

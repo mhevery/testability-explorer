@@ -300,6 +300,16 @@ class RootBuilder extends DefaultBuilder implements BuilderContext {
   }
 
   @Override
+  public void beginInitDeclaratorList() {
+    currentBuilder.beginInitDeclaratorList();
+  }
+
+  @Override
+  public void endInitDeclaratorList() {
+    currentBuilder.endInitDeclaratorList();
+  }
+
+  @Override
   public void accessSpecifier(String accessSpec) {
   }
 
