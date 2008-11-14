@@ -84,12 +84,18 @@ public class Testability {
       + "xml: print computer readable XML format.")
   String printer = "summary";
 
-  @Option(name = "-templates", usage = "templates for generating urls to a file in your web source code"
-      + " repository separated by a colon. Template for URL pointing to a line"
-      + " in the file followed by a template pointing to just the file."
-      + " Ex. http://code.repository/basepath{path}#{line}:http://code.repository/basepath{path}")
-  String templatesStr = File.pathSeparator;
-  private List<String> templates = new ArrayList<String>();
+  @Option(name = "-srcFileLineUrl",
+      usage = "template for urls linking to a specific LINE in a file in a web " +
+          "source code repository.\n" +
+          "Ex. -srcFileLineUrl http://code.repository/basepath/{path}&line={line}\n" +
+          "Ex. -srcFileLineUrl http://code.google.com/p/testability-explorer/source/browse/trunk/src/{path}#{line}")
+  String srcFileLineUrl = "";
+
+  @Option(name = "-srcFileUrl",
+      usage = "template for urls linking to a file in a web source code " +
+         "repository.\nEx. -srcFileUrl http://code.repository/basepath/{path}\n" +
+         "Ex. -srcFileUrl http://code.google.com/p/testability-explorer/source/browse/trunk/src/{path}")
+  String srcFileUrl = "";
 
   @Option(name = "-maxMethodCount", usage = "max number of methods to print in html summary")
   int maxMethodCount = 10;
@@ -162,7 +168,6 @@ public class Testability {
     ensureEntryListIsNotEmpty();
 
     whitelist = getWhiteList();
-    templates = getTemplates();
     classpath = getClassPath();
     report = getReportPrinter();
   }
@@ -173,7 +178,7 @@ public class Testability {
       report = new TextReport(out, costModel, maxExcellentCost,
           maxAcceptableCost, worstOffenderCount);
     } else if (printer.equals("html")) {
-      SourceLinker linker = new SourceLinker(templates.get(0), templates.get(1));
+      SourceLinker linker = new SourceLinker(srcFileLineUrl, srcFileUrl);
       DetailHtmlReport detailHtmlReport = new DetailHtmlReport(out, costModel,
           linker, maxMethodCount, maxLineCount);
       report = new HtmlReport(out, costModel, maxExcellentCost,
@@ -222,17 +227,6 @@ public class Testability {
 
   private ClassPath getClassPath() {
     return new ClassPathFactory().createFromPath(cp);
-  }
-
-  private List<String> getTemplates() {
-    List<String> templates = new ArrayList<String>(asList(templatesStr
-        .split(":")));
-    if (templates.isEmpty()) {
-      templates.add("");
-      templates.add("");
-    }
-
-    return templates;
   }
 
   public Report execute() throws CmdLineException {

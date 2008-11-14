@@ -143,6 +143,14 @@ public class TestabilityTest extends AutoFieldClearTestCase {
     assertTrue(err.toString().startsWith("WARNING: can not analyze class "));
   }
 
+  public void testParseSrcFileUrlFlags() throws Exception {
+    String lineUrl = "http://code.google.com/p/testability-explorer/source/browse/trunk/src/{path}#{line}";
+    String fileUrl = "http://code.google.com/p/testability-explorer/source/browse/trunk/src/{path}";
+    testability.parseArgs("", "-srcFileLineUrl", lineUrl, "-srcFileUrl", fileUrl);
+    assertEquals(lineUrl, testability.srcFileLineUrl);
+    assertEquals(fileUrl, testability.srcFileUrl);
+  }
+
   public static class WatchedOutputStream extends OutputStream {
     StringBuffer sb = new StringBuffer(5000);
 
