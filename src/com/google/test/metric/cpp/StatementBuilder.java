@@ -29,6 +29,7 @@ import com.google.test.metric.cpp.dom.SwitchStatement;
 
 class StatementBuilder extends DefaultBuilder {
   private final Node parent;
+  private List<String> typeSpecifier;
 
   public StatementBuilder(Node parent) {
     this.parent = parent;
@@ -166,7 +167,13 @@ class StatementBuilder extends DefaultBuilder {
   }
 
   @Override
+  public void beginInitDeclaratorList() {
+    pushBuilder(new LocalVariableBuilder(parent, typeSpecifier));
+  }
+
+  @Override
   public void simpleTypeSpecifier(List<String> sts) {
+    typeSpecifier = sts;
   }
 
   @Override

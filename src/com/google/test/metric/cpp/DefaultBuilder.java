@@ -324,4 +324,12 @@ class DefaultBuilder implements Builder {
   public void endMemberAccess() {
     throw new UnsupportedOperationException();
   }
+
+  public void beginInitDeclaratorList() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void endInitDeclaratorList() {
+    throw new UnsupportedOperationException();
+  }
 }

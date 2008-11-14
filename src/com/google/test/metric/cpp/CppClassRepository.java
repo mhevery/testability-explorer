@@ -18,6 +18,7 @@ package com.google.test.metric.cpp;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -27,6 +28,7 @@ import com.google.test.metric.LocalVariableInfo;
 import com.google.test.metric.MethodInfo;
 import com.google.test.metric.cpp.dom.ClassDeclaration;
 import com.google.test.metric.cpp.dom.FunctionDefinition;
+import com.google.test.metric.cpp.dom.LocalVariableDeclaration;
 import com.google.test.metric.cpp.dom.TranslationUnit;
 import com.google.test.metric.cpp.dom.Visitor;
 import com.google.test.metric.method.op.turing.Operation;
@@ -34,6 +36,21 @@ import com.google.test.metric.method.op.turing.Operation;
 public class CppClassRepository implements ClassRepository {
 
   private final Map<String, ClassInfo> classes = new HashMap<String, ClassInfo>();
+
+  private static class LocalVariableExtractor extends Visitor {
+
+    private final List<LocalVariableInfo> variables = new ArrayList<LocalVariableInfo>();
+
+    List<LocalVariableInfo> getResult() {
+      return variables;
+    }
+
+    @Override
+    public void visit(LocalVariableDeclaration localVariableDeclaration) {
+      variables.add(new LocalVariableInfo(localVariableDeclaration.getName(),
+          CppType.fromName(localVariableDeclaration.getName())));
+    }
+  }
 
   private class ClassInfoBuilder extends Visitor {
 
@@ -54,6 +71,9 @@ public class CppClassRepository implements ClassRepository {
 
     @Override
     public void beginVisit(FunctionDefinition functionDefinition) {
+      LocalVariableExtractor localVariablesExtractor = new LocalVariableExtractor();
+      functionDefinition.accept(localVariablesExtractor);
+
       ClassInfo classInfo = stack.peek();
       classInfo.addMethod(new MethodInfo(
           classInfo,
@@ -62,7 +82,7 @@ public class CppClassRepository implements ClassRepository {
           null,
           null,
           functionDefinition.getParameters(),
-          new ArrayList<LocalVariableInfo>(),
+          localVariablesExtractor.getResult(),
           null,
           new ArrayList<Integer>(),
           new ArrayList<Operation>(),

@@ -17,40 +17,41 @@ package com.google.test.metric.cpp;
 
 import java.util.List;
 
-import com.google.test.metric.cpp.dom.FunctionDeclaration;
+import com.google.test.metric.cpp.dom.LocalVariableDeclaration;
 import com.google.test.metric.cpp.dom.Node;
 
-/*
- * Ignoring function declarations for now because they don't contribute to
- * testability score.
- */
-class FunctionDeclarationBuilder extends DefaultBuilder {
+public class LocalVariableBuilder extends DefaultBuilder {
 
   private final Node parent;
+  private final String type;
+  private Node node;
 
-  public FunctionDeclarationBuilder(Node parent) {
+  public LocalVariableBuilder(Node parent, List<String> sts) {
     this.parent = parent;
+    this.type = sts.get(0);
+  }
+
+  @Override
+  public void beginAssignmentExpression() {
+    pushBuilder(new ExpressionBuilder(node));
+  }
+
+  @Override
+  public void beginPrimaryExpression() {
+  }
+
+  @Override
+  public void idExpression(String text) {
   }
 
   @Override
   public void directDeclarator(String id) {
-    parent.addChild(new FunctionDeclaration(id));
-  }
-
-  @Override
-  public void simpleTypeSpecifier(List<String> sts) {
-  }
-
-  @Override
-  public void endFunctionDeclaration() {
-    finished();
-  }
-
-  @Override
-  public void beginInitDeclaratorList() {
+    node = new LocalVariableDeclaration(type, id);
+    parent.addChild(node);
   }
 
   @Override
   public void endInitDeclaratorList() {
+    finished();
   }
 }
