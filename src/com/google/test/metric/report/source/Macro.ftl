@@ -4,11 +4,11 @@
 
 <#function color value>
   <#if (value <= maxExcellentCost) >
-    <#return "style='background-color:#00FF00'">
+    <#return "style='background-color:#DDF9CC'">
   <#elseif (value <= maxAcceptableCost)>
-    <#return "style='background-color:#FFFF00'">
+    <#return "style='background-color:#FFFF77'">
   <#else>
-    <#return "style='background-color:#FF0000'">
+    <#return "style='background-color:#FFBBBB'">
   </#if>  
 </#function>
 
@@ -36,15 +36,15 @@
   </tr>
   <tr>
     <td class="metric">&nbsp;&nbsp;&nbsp;Excellent:</td>
-    <td class="score" style="background-color:#00FF00">${report.excellentCount}&nbsp;[${(report.excellentPercent)?string.percent}]</td>
+    <td class="score" style="background-color:#DDF9CC">${report.excellentCount}&nbsp;[${(report.excellentPercent)?string.percent}]</td>
   </tr>
   <tr>
     <td class="metric">&nbsp;&nbsp;&nbsp;Good:</td>
-    <td class="score" style="background-color:#FFFF00">${report.goodCount}&nbsp;[${(report.goodPercent)?string.percent}]</td>
+    <td class="score" style="background-color:#FFFF77">${report.goodCount}&nbsp;[${(report.goodPercent)?string.percent}]</td>
   </tr>
   <tr>
     <td class="metric">&nbsp;&nbsp;&nbsp;Needs work:</td>
-    <td class="score" style="background-color:#FF0000">${report.needsWorkCount}&nbsp;[${(report.needsWorkPercent)?string.percent}]</td>
+    <td class="score" style="background-color:#FFBBBB">${report.needsWorkCount}&nbsp;[${(report.needsWorkPercent)?string.percent}]</td>
   </tr>
   <tr>
     <td class="score">&nbsp;</td>
