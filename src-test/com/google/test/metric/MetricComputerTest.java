@@ -520,4 +520,34 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
     assertEquals(1, cost.getTotalCost().getGlobalCost());
   }
 
+  public static class HasIrrelevantImplicitCost {
+    public HasIrrelevantImplicitCost() {
+      CostUtil.staticCost2();
+    }
+    public void setNoCost(int i) {
+      
+    }
+    public void setWithCost(int i) {
+      CostUtil.staticCost1();
+    }
+    public void execute() {
+
+    }
+  }
+
+  public void testZeroImplicitCostNotCounted() throws Exception {
+    MethodCost cost = computer.compute(HasIrrelevantImplicitCost.class, "execute()V");
+    List<? extends ViolationCost> implicitViolationCosts = cost.getImplicitViolationCosts();
+    
+    assertEquals(2, implicitViolationCosts.size());
+    MethodInvokationCost constructor = (MethodInvokationCost) implicitViolationCosts.get(0);
+
+    assertEquals("implicit cost from construction", constructor.getReason());
+    assertEquals(2, constructor.getCost().getCyclomaticComplexityCost());
+
+    MethodInvokationCost setter = (MethodInvokationCost) implicitViolationCosts.get(1);
+    assertEquals("implicit cost calling all setters", setter.getReason());
+    assertEquals("void setWithCost(int)", setter.getMethodCost().getMethodName());
+
+  }
 }

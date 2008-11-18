@@ -80,10 +80,12 @@ public class TestabilityVisitor {
     protected void addMethodInvocationCost(int lineNumber, MethodInfo to,
         Cost methodInvocationCost, Reason reason) {
       super.addMethodInvocationCost(lineNumber, to, methodInvocationCost, reason);
-      ViolationCost cost = new MethodInvokationCost(lineNumber,
-          getMethodCostCache(to), reason,
-          methodInvocationCost);
-      methodCost.addCostSource(cost);
+      if (!methodInvocationCost.isEmpty()) {
+        ViolationCost cost = new MethodInvokationCost(lineNumber,
+            getMethodCostCache(to), reason,
+            methodInvocationCost);
+        methodCost.addCostSource(cost);
+      }
     }
 
     public MethodCost getMethodCost() {

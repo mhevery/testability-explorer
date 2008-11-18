@@ -214,4 +214,7 @@ public class Cost {
     add(Cost.lod(distance));
   }
 
+  public boolean isEmpty() {
+    return lodDistribution.length == 0 && cyclomaticCost == 0 && globalCost == 0;
+  }
 }
