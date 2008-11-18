@@ -21,7 +21,7 @@ import java.util.List;
 
 import com.google.test.metric.TestabilityVisitor.CostRecordingFrame;
 import com.google.test.metric.TestabilityVisitor.Frame;
-import com.google.test.metric.ViolationCost.Reason;
+import static com.google.test.metric.MethodInvokationCost.Reason.*;
 
 public class MetricComputer {
 
@@ -89,7 +89,7 @@ public class MetricComputer {
    * to test the {@code baseMethod}'s class, you need to be able to call the setters for initialization.  */
   private void addSetterInjection(MethodInfo baseMethod, CostRecordingFrame frame) {
     for (MethodInfo setter : baseMethod.getSiblingSetters()) {
-      frame.applyImplicitCost(setter, Reason.IMPLICIT_SETTER);
+      frame.applyImplicitCost(setter, IMPLICIT_SETTER);
     }
   }
 
@@ -100,7 +100,7 @@ public class MetricComputer {
     if (!method.isStatic() && !method.isConstructor()) {
       MethodInfo constructor = method.getClassInfo().getConstructorWithMostNonPrimitiveParameters();
       if (constructor != null) {
-        frame.applyImplicitCost(constructor, Reason.IMPLICIT_CONSTRUCTOR);
+        frame.applyImplicitCost(constructor, IMPLICIT_CONSTRUCTOR);
       }
     }
   }
@@ -122,7 +122,7 @@ public class MetricComputer {
     }
     for (MethodInfo method : baseMethod.getClassInfo().getMethods()) {
       if (method.getName().startsWith("<clinit>")) {
-        frame.applyImplicitCost(method, Reason.IMPLICIT_STATIC_INIT);
+        frame.applyImplicitCost(method, IMPLICIT_STATIC_INIT);
       }
     }
   }

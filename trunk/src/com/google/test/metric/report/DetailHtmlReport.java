@@ -26,7 +26,6 @@ import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.ViolationCost;
-import com.google.test.metric.ViolationCost.Reason;
 
 public class DetailHtmlReport {
 
@@ -66,7 +65,7 @@ public class DetailHtmlReport {
   }
 
   public void write(ViolationCost cost, String classFilePath) {
-    Reason reason = cost.getCostSourceType();
+    String reason = cost.getReason();
     String text = "<div class=\"Line\">"
         + "<span class=\"lineNumber\">line&nbsp;{lineNumber}:</span>"
         + "{methodName} [&nbsp;{cost}&nbsp;] (source: " + reason + ")"

@@ -23,7 +23,7 @@ import com.google.test.metric.CyclomaticCost;
 import com.google.test.metric.GlobalCost;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvokationCost;
-import com.google.test.metric.ViolationCost.Reason;
+import static com.google.test.metric.MethodInvokationCost.Reason.IMPLICIT_STATIC_INIT;
 
 public class MethodCostTest extends TestCase {
 
@@ -35,11 +35,14 @@ public class MethodCostTest extends TestCase {
     cost3.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     cost3.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     cost3.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
-    cost.addCostSource(new MethodInvokationCost(0, cost3, Reason.NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(3)));
+    cost.addCostSource(new MethodInvokationCost(0, cost3,
+      IMPLICIT_STATIC_INIT, Cost.cyclomatic(3)));
     CostModel costModel = new CostModel(2, 10);
     cost.link();
 
     assertEquals((long) 2 * (3 + 1) + 10 * 1, costModel.computeOverall(cost.getTotalCost()));
+    assertEquals(2, cost.getExplicitViolationCosts().size());
+    assertEquals(1, cost.getImplicitViolationCosts().size());
   }
 
 }

@@ -76,7 +76,7 @@ public class MethodCost {
   }
   private List<? extends ViolationCost> filterViolationCosts(boolean implicit) {
     List<ViolationCost> result = new ArrayList<ViolationCost>();
-    for (ViolationCost cost : costSources) {
+    for (ViolationCost cost : getViolationCosts()) {
       if (cost.isImplicit() == implicit) {
         result.add(cost);
       }
