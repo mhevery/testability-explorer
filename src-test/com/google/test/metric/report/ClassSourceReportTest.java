@@ -33,7 +33,7 @@ import com.google.test.metric.WeightedAverage;
 
 public class ClassSourceReportTest extends TestCase {
 
-  private final ClassPath classPath = new DirectoryClassPath(new File("src"));
+  private final ClassPath classPath = new DirectoryClassPath(new File("src-test"));
   GradeCategories grades = new GradeCategories(50, 100);
   File out = new File("test-out");
   SourceReport report = new SourceReport(grades, new SourceLoader(classPath),
@@ -41,7 +41,7 @@ public class ClassSourceReportTest extends TestCase {
   ClassRepository repo = new JavaClassRepository();
   MetricComputer computer = new MetricComputer(repo, null, new RegExpWhiteList(
       "!com.google"), 1);
-  ClassCost classCost = computer.compute(repo.getClass(Testability.class
+  ClassCost classCost = computer.compute(repo.getClass(ClassSourceReportTestExample.class
       .getName()));
 
   @Override

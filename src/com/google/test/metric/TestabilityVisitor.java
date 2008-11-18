@@ -77,10 +77,10 @@ public class TestabilityVisitor {
 
     @Override
     protected void addMethodInvocationCost(int lineNumber, MethodInfo to,
-        Cost methodInvocationCost) {
-      super.addMethodInvocationCost(lineNumber, to, methodInvocationCost);
+        Cost methodInvocationCost, Reason reason) {
+      super.addMethodInvocationCost(lineNumber, to, methodInvocationCost, reason);
       ViolationCost cost = new MethodInvokationCost(lineNumber,
-          getMethodCostCache(to), Reason.NON_OVERRIDABLE_METHOD_CALL,
+          getMethodCostCache(to), reason,
           methodInvocationCost);
       methodCost.addCostSource(cost);
     }
@@ -138,7 +138,7 @@ public class TestabilityVisitor {
       setInjectable(implicitMethod.getParameters());
       Constant ret = new Constant("return", JavaType.OBJECT);
       int lineNumber = implicitMethod.getStartingLineNumber();
-      recordNonOveridableMethodCall(lineNumber, implicitMethod, implicitMethod
+      recordNonOveridableMethodCall(reason, lineNumber, implicitMethod, implicitMethod
           .getMethodThis(), implicitMethod.getParameters(), ret);
     }
 
@@ -229,7 +229,7 @@ public class TestabilityVisitor {
     }
 
     protected void addMethodInvocationCost(int lineNumber, MethodInfo to,
-        Cost methodInvocationCost) {
+        Cost methodInvocationCost, Reason reason) {
       indirect.add(methodInvocationCost);
     }
 
@@ -367,7 +367,7 @@ public class TestabilityVisitor {
         } else {
           // Method can not be intercepted we have to add the cost
           // recursively
-          recordNonOveridableMethodCall(lineNumber, toMethod, methodThis,
+          recordNonOveridableMethodCall(Reason.NON_OVERRIDABLE_METHOD_CALL, lineNumber, toMethod, methodThis,
               parameters, returnVariable);
         }
       } catch (ClassNotFoundException e) {
@@ -378,14 +378,14 @@ public class TestabilityVisitor {
       }
     }
 
-    protected void recordNonOveridableMethodCall(int lineNumber,
+    protected void recordNonOveridableMethodCall(Reason reason, int lineNumber,
         MethodInfo toMethod, Variable methodThis,
         List<? extends Variable> parameters, Variable returnVariable) {
       Frame childFrame = createChildFrame(toMethod);
       childFrame.recordMethodCall(lineNumber, toMethod, methodThis, parameters,
           returnVariable);
       addMethodInvocationCost(lineNumber, toMethod, childFrame.getTotalCost()
-          .copyNoLOD());
+          .copyNoLOD(), reason);
     }
 
     protected Frame createChildFrame(MethodInfo toMethod) {

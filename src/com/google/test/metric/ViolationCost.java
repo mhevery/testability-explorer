@@ -21,27 +21,31 @@ public abstract class ViolationCost {
 
   /** This attempts to answer "What is the source of each line's cost?" */
   public static enum Reason {
-    IMPLICIT_CONSTRUCTOR("implicit cost from construction"),
+    IMPLICIT_CONSTRUCTOR("implicit cost from construction", true),
     //
-    IMPLICIT_SETTER("implicit cost calling all setters"),
+    IMPLICIT_SETTER("implicit cost calling all setters", true),
     //
-    IMPLICIT_STATIC_INIT("implicit cost from static initialization"),
+    IMPLICIT_STATIC_INIT("implicit cost from static initialization", true),
     //
-    NON_OVERRIDABLE_METHOD_CALL("cost from calling non-overridable method"),
+    NON_OVERRIDABLE_METHOD_CALL("cost from calling non-overridable method", false),
     // TODO(jwolter): be able to tell people why this method could not be
     // overridden:
     // whether it is static, private or final.
     // SOMEDAY(jwolter): it would be nice to make static methods worse than
     // others. Because we don't
     // want to encourage people to subclass for tests.
-    LAW_OF_DEMETER("cost from breaking the Law of Demeter"),
+    LAW_OF_DEMETER("cost from breaking the Law of Demeter", false),
     //
-    GLOBAL("dependency on global mutable state");
+    GLOBAL("dependency on global mutable state", false),
 
-    private String description;
+    CYCLOMATIC_COMPLEXITY("cyclomatic complexity", false);
 
-    Reason(String description) {
+    private final String description;
+    private final boolean isImplicit;
+
+    Reason(String description, boolean implicit) {
       this.description = description;
+      isImplicit = implicit;
     }
 
     @Override
@@ -49,6 +53,9 @@ public abstract class ViolationCost {
       return description;
     }
 
+    public boolean isImplicit() {
+      return isImplicit;
+    }
   }
 
   private final int lineNumber;
@@ -59,7 +66,7 @@ public abstract class ViolationCost {
    * @param lineNumber
    *          that the {@code methodCost} was called on for the class that
    *          contains this cost.
-   * @param methodCost
+   * @param cost
    *          the cost of the method getting called from this {@code LineNumber}
    * @param costSourceType
    *          the type of cost, used to help guide people why they are getting
@@ -101,4 +108,7 @@ public abstract class ViolationCost {
     return atts;
   }
 
+  public boolean isImplicit() {
+    return reason.isImplicit();
+  }
 }

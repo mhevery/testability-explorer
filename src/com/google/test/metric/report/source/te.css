@@ -44,3 +44,7 @@
 .metric {
 	font-weight:bold;
 }
+
+.implicit {
+  font-style:italic;
+}

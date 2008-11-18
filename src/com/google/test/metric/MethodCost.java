@@ -64,8 +64,24 @@ public class MethodCost {
     return lineNumber;
   }
 
-  public List<ViolationCost> getViolationCosts() {
+  public List<? extends ViolationCost> getViolationCosts() {
     return costSources;
+  }
+
+  public List<? extends ViolationCost> getImplicitViolationCosts() {
+    return filterViolationCosts(true);
+  }
+  public List<? extends ViolationCost> getExplicitViolationCosts() {
+    return filterViolationCosts(false);
+  }
+  private List<? extends ViolationCost> filterViolationCosts(boolean implicit) {
+    List<ViolationCost> result = new ArrayList<ViolationCost>();
+    for (ViolationCost cost : costSources) {
+      if (cost.isImplicit() == implicit) {
+        result.add(cost);
+      }
+    }
+    return result;
   }
 
   public Cost getCost() {

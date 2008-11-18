@@ -188,7 +188,7 @@ public class TestabilityVisitorTest extends TestCase {
     assertTrue(violation.getDescription().contains("[distance=2]"));
   }
 
-  private List<LoDViolation> filterLoD(List<ViolationCost> violations) {
+  private List<LoDViolation> filterLoD(List<? extends ViolationCost> violations) {
     List<LoDViolation> lods = new ArrayList<LoDViolation>();
     for (ViolationCost violation : violations) {
       if (violation instanceof LoDViolation) {

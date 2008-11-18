@@ -30,7 +30,14 @@
           Total ${printCost(method.totalCost)}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           Direct ${printCost(method.cost)}&nbsp;
         </td>
-  </tr>
+      </tr>
+      <#list method.implicitViolationCosts as violation>
+        <tr>
+          <td class="ln"><a name="${line.lineNumber}"/>&nbsp;</td>
+          <td nowrap class="score implicit">${violation.cost.toHtmlReportString()}</td>
+          <td class="implicit code">${violation}</td>
+        </tr>
+      </#list>
     </#list>
     <tr>
       <td class="ln"><a name="${line.lineNumber}"/>${line.lineNumber}</td>

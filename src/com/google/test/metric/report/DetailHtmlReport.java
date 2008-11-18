@@ -85,7 +85,7 @@ public class DetailHtmlReport {
     text = text.replace("{cost}", "" + costModel.computeOverall(method.getTotalCost()));
     write(text);
 
-    List<ViolationCost> violations = method.getViolationCosts();
+    List<? extends ViolationCost> violations = method.getViolationCosts();
     Collections.sort(violations, new CostSourceComparator());
     for (ViolationCost violation : violations.subList(0, min(maxLineCount,
         violations.size()))) {
