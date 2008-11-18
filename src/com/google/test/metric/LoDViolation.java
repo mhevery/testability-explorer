@@ -23,7 +23,7 @@ public class LoDViolation extends ViolationCost {
   private final int distance;
 
   public LoDViolation(int lineNumber, String methodName, Cost lod, int distance) {
-    super(lineNumber, lod, Reason.LAW_OF_DEMETER);
+    super(lineNumber, lod);
     this.methodName = methodName;
     this.distance = distance;
   }
@@ -31,6 +31,10 @@ public class LoDViolation extends ViolationCost {
   @Override
   public String getDescription() {
     return methodName + "[distance=" + distance + "]";
+  }
+
+  public String getReason() {
+    return "cost from breaking the Law of Demeter";
   }
 
   @Override

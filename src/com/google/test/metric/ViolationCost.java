@@ -19,47 +19,7 @@ import java.util.Map;
 
 public abstract class ViolationCost {
 
-  /** This attempts to answer "What is the source of each line's cost?" */
-  public static enum Reason {
-    IMPLICIT_CONSTRUCTOR("implicit cost from construction", true),
-    //
-    IMPLICIT_SETTER("implicit cost calling all setters", true),
-    //
-    IMPLICIT_STATIC_INIT("implicit cost from static initialization", true),
-    //
-    NON_OVERRIDABLE_METHOD_CALL("cost from calling non-overridable method", false),
-    // TODO(jwolter): be able to tell people why this method could not be
-    // overridden:
-    // whether it is static, private or final.
-    // SOMEDAY(jwolter): it would be nice to make static methods worse than
-    // others. Because we don't
-    // want to encourage people to subclass for tests.
-    LAW_OF_DEMETER("cost from breaking the Law of Demeter", false),
-    //
-    GLOBAL("dependency on global mutable state", false),
-
-    CYCLOMATIC_COMPLEXITY("cyclomatic complexity", false);
-
-    private final String description;
-    private final boolean isImplicit;
-
-    Reason(String description, boolean implicit) {
-      this.description = description;
-      isImplicit = implicit;
-    }
-
-    @Override
-    public String toString() {
-      return description;
-    }
-
-    public boolean isImplicit() {
-      return isImplicit;
-    }
-  }
-
   private final int lineNumber;
-  protected final Reason reason;
   protected final Cost cost;
 
   /**
@@ -68,27 +28,21 @@ public abstract class ViolationCost {
    *          contains this cost.
    * @param cost
    *          the cost of the method getting called from this {@code LineNumber}
-   * @param costSourceType
-   *          the type of cost, used to help guide people why they are getting
-   *          charged for each different cost.
    */
-  public ViolationCost(int lineNumber, Cost cost, Reason costSourceType) {
+  public ViolationCost(int lineNumber, Cost cost) {
     this.lineNumber = lineNumber;
     this.cost = cost;
-    this.reason = costSourceType;
   }
 
   public int getLineNumber() {
     return lineNumber;
   }
 
-  public Reason getCostSourceType() {
-    return reason;
-  }
+  public abstract String getReason();
 
   @Override
   public String toString() {
-    return "Line " + lineNumber + ": " + getDescription() + " (" + reason + ")";
+    return "Line " + lineNumber + ": " + getDescription() + " (" + getReason() + ")";
   }
 
   // TODO: (misko) get rid of this method
@@ -103,12 +57,12 @@ public abstract class ViolationCost {
   public Map<String, Object> getAttributes() {
     Map<String, Object> atts = cost.getAttributes();
 
-    atts.put("reason", reason);
+    atts.put("reason", getReason());
     atts.put("line", getLineNumber());
     return atts;
   }
 
   public boolean isImplicit() {
-    return reason.isImplicit();
+    return false;
   }
 }

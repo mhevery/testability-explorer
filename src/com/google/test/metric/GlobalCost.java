@@ -23,8 +23,12 @@ public class GlobalCost extends ViolationCost {
   private final Variable variable;
 
   public GlobalCost(int lineNumber, Variable variable, Cost globalCost) {
-    super(lineNumber, globalCost, Reason.GLOBAL);
+    super(lineNumber, globalCost);
     this.variable = variable;
+  }
+
+  public String getReason() {
+    return "dependency on global mutable state";
   }
 
   @Override

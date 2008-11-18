@@ -22,7 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.test.metric.ViolationCost.Reason;
+import com.google.test.metric.MethodInvokationCost.Reason;
+import static com.google.test.metric.MethodInvokationCost.Reason.NON_OVERRIDABLE_METHOD_CALL;
 import com.google.test.metric.method.Constant;
 import com.google.test.metric.method.op.turing.Operation;
 
@@ -126,12 +127,12 @@ public class TestabilityVisitor {
      * @param implicitMethod
      *          the method that is getting called by {@code from} and
      *          contributes cost transitively.
-     * @param costSourceType
+     * @param reason
      *          the type of implicit cost to record, for giving the user
      *          information about why they have the costs they have.
      * @return
      */
-    public void applyImplicitCost(MethodInfo implicitMethod, Reason reason) {
+    public void applyImplicitCost(MethodInfo implicitMethod, MethodInvokationCost.Reason reason) {
       if (implicitMethod.getMethodThis() != null) {
         variableState.setInjectable(implicitMethod.getMethodThis());
       }
@@ -229,7 +230,7 @@ public class TestabilityVisitor {
     }
 
     protected void addMethodInvocationCost(int lineNumber, MethodInfo to,
-        Cost methodInvocationCost, Reason reason) {
+        Cost methodInvocationCost, MethodInvokationCost.Reason reason) {
       indirect.add(methodInvocationCost);
     }
 
@@ -367,8 +368,8 @@ public class TestabilityVisitor {
         } else {
           // Method can not be intercepted we have to add the cost
           // recursively
-          recordNonOveridableMethodCall(Reason.NON_OVERRIDABLE_METHOD_CALL, lineNumber, toMethod, methodThis,
-              parameters, returnVariable);
+          recordNonOveridableMethodCall(NON_OVERRIDABLE_METHOD_CALL, lineNumber, toMethod,
+            methodThis, parameters, returnVariable);
         }
       } catch (ClassNotFoundException e) {
         err.println("WARNING: class not found: " + clazzName);
@@ -378,7 +379,7 @@ public class TestabilityVisitor {
       }
     }
 
-    protected void recordNonOveridableMethodCall(Reason reason, int lineNumber,
+    protected void recordNonOveridableMethodCall(MethodInvokationCost.Reason reason, int lineNumber,
         MethodInfo toMethod, Variable methodThis,
         List<? extends Variable> parameters, Variable returnVariable) {
       Frame childFrame = createChildFrame(toMethod);
