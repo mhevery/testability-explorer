@@ -193,7 +193,7 @@ public class SourceReport implements Report {
           .getCost());
       Line line = source.getLine(method.getMethodLineNumber());
       line.addMethodCost(method);
-      for (ViolationCost violation : method.getViolationCosts()) {
+      for (ViolationCost violation : method.getExplicitViolationCosts()) {
         line = source.getLine(violation.getLineNumber());
         line.addCost(violation.getCost());
       }

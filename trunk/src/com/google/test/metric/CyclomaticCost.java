@@ -19,7 +19,7 @@ package com.google.test.metric;
 public class CyclomaticCost extends ViolationCost {
 
   public CyclomaticCost(int lineNumber, Cost cyclomaticCost) {
-    super(lineNumber, cyclomaticCost, null);
+    super(lineNumber, cyclomaticCost, Reason.CYCLOMATIC_COMPLEXITY);
   }
 
   @Override
