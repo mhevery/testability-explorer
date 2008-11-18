@@ -21,18 +21,22 @@ public abstract class ViolationCost {
 
   /** This attempts to answer "What is the source of each line's cost?" */
   public static enum Reason {
-    IMPLICIT_CONSTRUCTOR("implicit cost from construction"), IMPLICIT_SETTER(
-        "implicit cost calling all setters"), IMPLICIT_STATIC_INIT(
-        "implicit cost from static initialization"), NON_OVERRIDABLE_METHOD_CALL(
-        "cost from calling non-overridable method"),
+    IMPLICIT_CONSTRUCTOR("implicit cost from construction"),
+    //
+    IMPLICIT_SETTER("implicit cost calling all setters"),
+    //
+    IMPLICIT_STATIC_INIT("implicit cost from static initialization"),
+    //
+    NON_OVERRIDABLE_METHOD_CALL("cost from calling non-overridable method"),
     // TODO(jwolter): be able to tell people why this method could not be
     // overridden:
     // whether it is static, private or final.
     // SOMEDAY(jwolter): it would be nice to make static methods worse than
     // others. Because we don't
     // want to encourage people to subclass for tests.
-    LAW_OF_DEMETER("cost from breaking the Law of Demeter"), GLOBAL(
-        "dependency on global mutable state");
+    LAW_OF_DEMETER("cost from breaking the Law of Demeter"),
+    //
+    GLOBAL("dependency on global mutable state");
 
     private String description;
 
@@ -80,7 +84,7 @@ public abstract class ViolationCost {
     return "Line " + lineNumber + ": " + getDescription() + " (" + reason + ")";
   }
 
-  //TODO: (misko) get rid of this method
+  // TODO: (misko) get rid of this method
   public abstract void link(Cost directCost, Cost dependantCost);
 
   public Cost getCost() {
@@ -94,7 +98,7 @@ public abstract class ViolationCost {
 
     atts.put("reason", reason);
     atts.put("line", getLineNumber());
-  return atts;
+    return atts;
   }
 
 }
