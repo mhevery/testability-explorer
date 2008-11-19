@@ -21,7 +21,9 @@
   </tr>
   <tr>
     <td nowrap class="metric">${name} cost:</td>
-    <td class="score" ${color(report.overallCost)}>${report.overallCost}</td>
+    <td class="score" ${color(report.overallCost)}>${report.overallCost} 
+      <a href="http://code.google.com/p/testability-explorer/wiki/OverallCostsExplanation">[?]</a>
+    </td>
     <td rowspan="2" align="center" class="score" style="border-right:none">${report.overallCostChart}</td>
     <td class="score" rowspan="7">${report.histogramChart}</td>
   </tr>
