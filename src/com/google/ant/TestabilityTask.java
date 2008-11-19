@@ -113,8 +113,8 @@ public class TestabilityTask extends Task {
     Testability.main(
         model.getResultPrintStream(),
         model.getErrorPrintStream(),
-        "cyclomatic", Integer.toString(model.getCyclomatic()),
-        "global", Integer.toString(model.getGlobal()),
+        "-cyclomatic", Integer.toString(model.getCyclomatic()),
+        "-global", Integer.toString(model.getGlobal()),
         model.getFilter(),
         "-cp", model.getClassPath(),
         "-printDepth", Integer.toString(model.getPrintDepth()),
@@ -128,8 +128,8 @@ public class TestabilityTask extends Task {
   }
 
   private void logParameters() {
-    log("cyclomatic"+ " " +  Integer.toString(model.getCyclomatic()), Project.MSG_VERBOSE);
-    log("global"+ " " +  Integer.toString(model.getGlobal()), Project.MSG_VERBOSE);
+    log("-cyclomatic"+ " " +  Integer.toString(model.getCyclomatic()), Project.MSG_VERBOSE);
+    log("-global"+ " " +  Integer.toString(model.getGlobal()), Project.MSG_VERBOSE);
     log("-filter" + " " + model.getFilter(), Project.MSG_VERBOSE);
     log("-cp"+ " " +  model.getClassPath(), Project.MSG_VERBOSE);
     log("-printDepth"+ " " +   Integer.toString(model.getPrintDepth()), Project.MSG_VERBOSE);
