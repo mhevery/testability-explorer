@@ -20,6 +20,7 @@ import junit.framework.TestCase;
 import org.objectweb.asm.Opcodes;
 
 import com.google.test.metric.ClassInfo;
+import com.google.test.metric.Visibility;
 
 public class MethodVisitorBuilderTest extends TestCase {
 

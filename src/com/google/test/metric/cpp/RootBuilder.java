@@ -311,6 +311,7 @@ class RootBuilder extends DefaultBuilder implements BuilderContext {
 
   @Override
   public void accessSpecifier(String accessSpec) {
+    currentBuilder.accessSpecifier(accessSpec);
   }
 
   @Override

@@ -20,6 +20,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import com.google.test.metric.ParameterInfo;
+import com.google.test.metric.Visibility;
 import com.google.test.metric.cpp.dom.BreakStatement;
 import com.google.test.metric.cpp.dom.CaseStatement;
 import com.google.test.metric.cpp.dom.ClassDeclaration;
@@ -347,6 +348,27 @@ public class CppParserTest extends TestCase {
     assertEquals("a", variableA.getName());
     LocalVariableDeclaration variableB = functionMain.getChild(1);
     assertEquals("b", variableB.getName());
+  }
+
+  public void testPrivateAccessSpecifier() throws Exception {
+    TranslationUnit unit = parse(
+        "class A { private: void foo(); };");
+    ClassDeclaration classA = unit.getChild(0);
+    FunctionDeclaration functionFoo = classA.getChild(0);
+    Visibility visibility = functionFoo.getVisibility();
+    assertEquals(Visibility.PRIVATE, visibility);
+  }
+
+  public void testProtectedAccessSpecifier() throws Exception {
+    TranslationUnit unit = parse(
+        "class A { protected: void foo() {} void bar() {} };");
+    ClassDeclaration classA = unit.getChild(0);
+    FunctionDefinition functionFoo = classA.getChild(0);
+    Visibility visibilityFoo = functionFoo.getVisibility();
+    assertEquals(Visibility.PROTECTED, visibilityFoo);
+    FunctionDefinition functionBar = classA.getChild(1);
+    Visibility visibilityBar = functionBar.getVisibility();
+    assertEquals(Visibility.PROTECTED, visibilityBar);
   }
 
   public void testClassLoadCppVariables() throws Exception {

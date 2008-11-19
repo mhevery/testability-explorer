@@ -15,15 +15,28 @@
  */
 package com.google.test.metric.cpp.dom;
 
+import com.google.test.metric.Visibility;
+
 public class FunctionDeclaration extends Node {
 
   private final String name;
+  private final Visibility visibility;
 
   public FunctionDeclaration(String name) {
     this.name = name;
+    this.visibility = Visibility.PUBLIC;
+  }
+
+  public FunctionDeclaration(String name, Visibility visibility) {
+    this.name = name;
+    this.visibility = visibility;
   }
 
   public String getName() {
     return name;
+  }
+
+  public Visibility getVisibility() {
+    return visibility;
   }
 }

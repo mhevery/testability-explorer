@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.test.metric.ParameterInfo;
+import com.google.test.metric.Visibility;
 import com.google.test.metric.cpp.dom.FunctionDefinition;
 import com.google.test.metric.cpp.dom.Node;
 
@@ -28,15 +29,23 @@ class FunctionDefinitionBuilder extends DefaultBuilder {
   private Node node;
   private final int line;
   private final List<ParameterInfo> parameters = new ArrayList<ParameterInfo>();
+  private final Visibility visibility;
 
   public FunctionDefinitionBuilder(Node parent, int line) {
     this.parent = parent;
     this.line = line;
+    this.visibility = Visibility.PUBLIC;
+  }
+
+  public FunctionDefinitionBuilder(Node parent, int line, Visibility visibility) {
+    this.parent = parent;
+    this.line = line;
+    this.visibility = visibility;
   }
 
   @Override
   public void functionDirectDeclarator(String name) {
-    node = new FunctionDefinition(name, line, parameters);
+    node = new FunctionDefinition(name, line, parameters, visibility);
     parent.addChild(node);
   }
 
