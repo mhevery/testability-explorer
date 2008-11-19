@@ -103,12 +103,12 @@ public class Testability {
   @Option(name = "-maxLineCount", usage = "max number of lines in method to print in html summary")
   int maxLineCount = 10;
 
-  @Option(name = "cyclomatic", metaVar = "cyclomatic cost multiplier", usage = "When computing the overall cost of the method the "
+  @Option(name = "-cyclomatic", metaVar = "cyclomatic cost multiplier", usage = "When computing the overall cost of the method the "
       + "individual costs are added using weighted average. "
       + "This represents the weight of the cyclomatic cost.")
   double cyclomaticMultiplier = 1;
 
-  @Option(name = "global", metaVar = "global state cost multiplier", usage = "When computing the overall cost of the method the "
+  @Option(name = "-global", metaVar = "global state cost multiplier", usage = "When computing the overall cost of the method the "
       + "individual costs are added using weighted average. "
       + "This represents the weight of the global state cost.")
   double globalMultiplier = 10;
