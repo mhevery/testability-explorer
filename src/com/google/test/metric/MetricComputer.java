@@ -77,8 +77,10 @@ public class MetricComputer {
     TestabilityVisitor visitor = new TestabilityVisitor(classRepository, new VariableState(), err, whitelist);
     TestabilityVisitor.CostRecordingFrame frame = visitor.createFrame(method, recordingDepth);
     addStaticInitializationCost(method, frame);
-    addConstructorCost(method, frame);
-    addSetterInjection(method, frame);
+    if (!method.isStatic() && !method.isConstructor()) {
+      addConstructorCost(method, frame);
+      addSetterInjection(method, frame);
+    }
     addFieldCost(method, frame);
     return frame.applyMethodOperations();
   }
@@ -97,11 +99,9 @@ public class MetricComputer {
    * any instance method, you must be able to instantiate the class.) Also marks parameters
    * injectable for the constructor with the most non-primitive parameters. */
   private void addConstructorCost(MethodInfo method, CostRecordingFrame frame) {
-    if (!method.isStatic() && !method.isConstructor()) {
-      MethodInfo constructor = method.getClassInfo().getConstructorWithMostNonPrimitiveParameters();
-      if (constructor != null) {
-        frame.applyImplicitCost(constructor, IMPLICIT_CONSTRUCTOR);
-      }
+    MethodInfo constructor = method.getClassInfo().getConstructorWithMostNonPrimitiveParameters();
+    if (constructor != null) {
+      frame.applyImplicitCost(constructor, IMPLICIT_CONSTRUCTOR);
     }
   }
 
