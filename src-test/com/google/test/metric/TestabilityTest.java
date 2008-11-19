@@ -83,6 +83,58 @@ public class TestabilityTest extends AutoFieldClearTestCase {
     assertEquals(expectedArgs, testability.entryList);
   }
 
+  public void testParseMultipleClassesAndPackages() throws Exception {
+	    testability.parseArgs("-cp", "not/default/path", 
+	    		"com.google.FirstClass", 
+	    		"com.google.second.package", 
+	    		"com.google.third.package");
+
+	    assertEquals("", err.toString());
+	    assertEquals("not/default/path", testability.cp);
+	    List<String> expectedArgs = new ArrayList<String>();
+	    expectedArgs.add("com.google.FirstClass");
+	    expectedArgs.add("com.google.second.package");
+	    expectedArgs.add("com.google.third.package");
+	    assertNotNull(testability.entryList);
+	    assertEquals(expectedArgs, testability.entryList);
+	  }
+
+  /*
+   * If the main() method is called directly by another class,
+   * as in the case of the TestabilityTask for Ant,
+   * multiple classpaths may be passed as a single String arg
+   * separated by spaces (" ")
+   */
+  public void testParseMultipleClassesAndPackagesSingleArg() throws Exception {
+	    testability.parseArgs("-cp", "not/default/path", 
+	    		"com.google.FirstClass com.google.second.package com.google.third.package");
+
+	    assertEquals("", err.toString());
+	    assertEquals("not/default/path", testability.cp);
+	    List<String> expectedArgs = new ArrayList<String>();
+	    expectedArgs.add("com.google.FirstClass");
+	    expectedArgs.add("com.google.second.package");
+	    expectedArgs.add("com.google.third.package");
+	    assertNotNull(testability.entryList);
+	    assertEquals(expectedArgs, testability.entryList);
+	  }
+
+  public void testParseComplexityAndGlobal() throws Exception {
+	    testability.parseArgs("-cp", "not/default/path", 
+	    		"-cyclomatic", "10",
+	    		"-global", "1",
+	    		"com.google.TestClass");
+
+	    assertEquals("", err.toString());
+	    assertEquals("Classpath", "not/default/path", testability.cp);
+	    List<String> expectedArgs = new ArrayList<String>();
+	    expectedArgs.add("com.google.TestClass");
+	    assertNotNull(testability.entryList);
+	    assertEquals(expectedArgs, testability.entryList);
+	    assertEquals("Cyclomatic", 10.0, testability.cyclomaticMultiplier);
+	    assertEquals("Global", 1.0, testability.globalMultiplier);
+	  }
+
   public void testJarFileNoClasspath() throws Exception {
     Testability.main(new PrintStream(out), new PrintStream(err),
         "junit.runner", "-cp");
