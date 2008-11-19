@@ -151,9 +151,7 @@ public class Testability {
       if (entryList.isEmpty()) {
         throw new CmdLineException("No argument was given");
       } else {
-        for (int i = 0; i < entryList.size(); i++) {
-          entryList.set(i, entryList.get(i).replaceAll("/", "."));
-        }
+        convertEntryListValues();
       }
     } catch (CmdLineException e) {
       err.println(e.getMessage() + "\n");
@@ -162,6 +160,27 @@ public class Testability {
       throw new CmdLineException("Exiting...");
     }
   }
+
+  /*
+   * Converts entryList class and package values into paths
+   * by replacing any "." with a "/"
+   * Also checks for entries that contain multiple values separated by a space (" "),
+   * and splits them out into separate entries. This may happen when main() is called
+   * explicitly from another class, such as the {@link com.google.ant.TestabilityTask}
+   */
+  private void convertEntryListValues() {
+	for (int i = 0; i < entryList.size(); i++) {
+	  if (entryList.get(i).contains(" ")) {
+		String[] entries = entryList.get(i).split(" ");
+		entryList.set(i, entries[0].replaceAll("/", "."));
+		for (int j = 1; j < entries.length; j++) {
+		  entryList.add(entries[j].replaceAll("/", "."));
+		}
+	  } else {
+	    entryList.set(i, entryList.get(i).replaceAll("/", "."));
+	  }
+	}
+}
 
   private void postParse() throws CmdLineException {
 

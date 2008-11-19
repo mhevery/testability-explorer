@@ -1,1 +1,1 @@
-java -jar testability-explorer-1.2.0-r252.jar
+java -jar testability-explorer-1.2.0-r264.jar
