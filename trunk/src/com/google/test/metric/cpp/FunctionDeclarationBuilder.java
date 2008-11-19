@@ -17,6 +17,7 @@ package com.google.test.metric.cpp;
 
 import java.util.List;
 
+import com.google.test.metric.Visibility;
 import com.google.test.metric.cpp.dom.FunctionDeclaration;
 import com.google.test.metric.cpp.dom.Node;
 
@@ -27,14 +28,21 @@ import com.google.test.metric.cpp.dom.Node;
 class FunctionDeclarationBuilder extends DefaultBuilder {
 
   private final Node parent;
+  private final Visibility visibility;
 
   public FunctionDeclarationBuilder(Node parent) {
     this.parent = parent;
+    this.visibility = Visibility.PUBLIC;
+  }
+
+  public FunctionDeclarationBuilder(Node parent, Visibility visibility) {
+    this.parent = parent;
+    this.visibility = visibility;
   }
 
   @Override
   public void directDeclarator(String id) {
-    parent.addChild(new FunctionDeclaration(id));
+    parent.addChild(new FunctionDeclaration(id, visibility));
   }
 
   @Override

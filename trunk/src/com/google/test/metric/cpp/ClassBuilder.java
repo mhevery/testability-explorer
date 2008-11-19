@@ -15,15 +15,18 @@
  */
 package com.google.test.metric.cpp;
 
+import com.google.test.metric.Visibility;
 import com.google.test.metric.cpp.dom.ClassDeclaration;
 import com.google.test.metric.cpp.dom.Node;
 
 class ClassBuilder extends DefaultBuilder {
   private final Node node;
+  private Visibility currentVisibility;
 
   public ClassBuilder(Node parent, String identifier) {
     node = new ClassDeclaration(identifier);
     parent.addChild(node);
+    currentVisibility = Visibility.PRIVATE;
   }
 
   @Override
@@ -38,12 +41,17 @@ class ClassBuilder extends DefaultBuilder {
 
   @Override
   public void beginFunctionDefinition(int line) {
-    pushBuilder(new FunctionDefinitionBuilder(node, line));
+    pushBuilder(new FunctionDefinitionBuilder(node, line, currentVisibility));
   }
 
   @Override
   public void beginFunctionDeclaration() {
-    pushBuilder(new FunctionDeclarationBuilder(node));
+    pushBuilder(new FunctionDeclarationBuilder(node, currentVisibility));
+  }
+
+  @Override
+  public void accessSpecifier(String accessSpec) {
+    currentVisibility = visibilityFromCppString(accessSpec);
   }
 
   @Override
@@ -53,4 +61,16 @@ class ClassBuilder extends DefaultBuilder {
   @Override
   public void endMemberDeclaration() {
   }
+
+  private Visibility visibilityFromCppString(String access) {
+    if (access.equals("public")) {
+      return Visibility.PUBLIC;
+    } else if (access.equals("protected")) {
+      return Visibility.PROTECTED;
+    } else if (access.equals("private")) {
+      return Visibility.PRIVATE;
+    }
+    throw new IllegalArgumentException("invalid access specifier");
+  }
+
 }

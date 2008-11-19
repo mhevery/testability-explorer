@@ -38,6 +38,7 @@ import com.google.test.metric.MethodInfo;
 import com.google.test.metric.ParameterInfo;
 import com.google.test.metric.Type;
 import com.google.test.metric.Variable;
+import com.google.test.metric.Visibility;
 import com.google.test.metric.method.BlockDecomposer;
 import com.google.test.metric.method.Constant;
 import com.google.test.metric.method.op.stack.ArrayLoad;

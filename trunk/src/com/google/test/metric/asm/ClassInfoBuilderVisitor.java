@@ -55,7 +55,7 @@ public class ClassInfoBuilderVisitor extends NoopClassVisitor {
     boolean isStatic = (access & Opcodes.ACC_STATIC) == Opcodes.ACC_STATIC;
     boolean isFinal = (access & Opcodes.ACC_FINAL) == Opcodes.ACC_FINAL;
     return new MethodVisitorBuilder(repository, classInfo, name, desc, signature,
-        exceptions, isStatic, isFinal, Visibility.valueOf(access));
+        exceptions, isStatic, isFinal, JavaVisibility.valueFromJavaBytecode(access));
   }
 
   @Override

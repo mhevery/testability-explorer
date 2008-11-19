@@ -18,18 +18,21 @@ package com.google.test.metric.cpp.dom;
 import java.util.List;
 
 import com.google.test.metric.ParameterInfo;
+import com.google.test.metric.Visibility;
 
 public class FunctionDefinition extends Node {
 
   private final String name;
   private final int line;
   private final List<ParameterInfo> parameters;
+  private final Visibility visibility;
 
   public FunctionDefinition(String name, int line,
-      List<ParameterInfo> parameters) {
+      List<ParameterInfo> parameters, Visibility visibility) {
     this.name = name;
     this.line = line;
     this.parameters = parameters;
+    this.visibility = visibility;
   }
 
   public String getName() {
@@ -42,6 +45,10 @@ public class FunctionDefinition extends Node {
 
   public List<ParameterInfo> getParameters() {
     return parameters;
+  }
+
+  public Visibility getVisibility() {
+    return visibility;
   }
 
   @Override

@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.google.classpath.DirectoryClassPath;
-import com.google.test.metric.asm.Visibility;
 import com.google.test.metric.method.op.turing.Operation;
 
 public class ClassInfoTest extends AutoFieldClearTestCase {

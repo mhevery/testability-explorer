@@ -20,7 +20,6 @@ import static java.util.Collections.unmodifiableList;
 import java.util.Collection;
 import java.util.List;
 
-import com.google.test.metric.asm.Visibility;
 import com.google.test.metric.method.op.turing.Operation;
 
 public class MethodInfo implements Comparable<MethodInfo> {
