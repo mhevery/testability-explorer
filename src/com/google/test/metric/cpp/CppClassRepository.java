@@ -29,9 +29,11 @@ import com.google.test.metric.MethodInfo;
 import com.google.test.metric.cpp.dom.ClassDeclaration;
 import com.google.test.metric.cpp.dom.FunctionDefinition;
 import com.google.test.metric.cpp.dom.LocalVariableDeclaration;
+import com.google.test.metric.cpp.dom.ReturnStatement;
 import com.google.test.metric.cpp.dom.TranslationUnit;
 import com.google.test.metric.cpp.dom.Visitor;
 import com.google.test.metric.method.op.turing.Operation;
+import com.google.test.metric.method.op.turing.ReturnOperation;
 
 public class CppClassRepository implements ClassRepository {
 
@@ -49,6 +51,20 @@ public class CppClassRepository implements ClassRepository {
     public void visit(LocalVariableDeclaration localVariableDeclaration) {
       variables.add(new LocalVariableInfo(localVariableDeclaration.getName(),
           CppType.fromName(localVariableDeclaration.getName())));
+    }
+  }
+
+  private static class OperationBuilder extends Visitor {
+
+    private final List<Operation> operations = new ArrayList<Operation>();
+
+    List<Operation> getResult() {
+      return operations;
+    }
+
+    @Override
+    public void beginVisit(ReturnStatement returnStatement) {
+      operations.add(new ReturnOperation(returnStatement.getLineNumber(), null));
     }
   }
 
@@ -73,6 +89,8 @@ public class CppClassRepository implements ClassRepository {
     public void beginVisit(FunctionDefinition functionDefinition) {
       LocalVariableExtractor localVariablesExtractor = new LocalVariableExtractor();
       functionDefinition.accept(localVariablesExtractor);
+      OperationBuilder operationBuilder = new OperationBuilder();
+      functionDefinition.accept(operationBuilder);
 
       ClassInfo classInfo = stack.peek();
       classInfo.addMethod(new MethodInfo(
@@ -85,7 +103,7 @@ public class CppClassRepository implements ClassRepository {
           localVariablesExtractor.getResult(),
           functionDefinition.getVisibility(),
           new ArrayList<Integer>(),
-          new ArrayList<Operation>(),
+          operationBuilder.getResult(),
           false));
     }
   }

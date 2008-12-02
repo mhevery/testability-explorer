@@ -230,8 +230,8 @@ class RootBuilder extends DefaultBuilder implements BuilderContext {
   }
 
   @Override
-  public void beginReturnStatement() {
-    currentBuilder.beginReturnStatement();
+  public void beginReturnStatement(int line) {
+    currentBuilder.beginReturnStatement(line);
   }
 
   @Override

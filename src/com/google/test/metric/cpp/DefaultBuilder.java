@@ -277,7 +277,7 @@ class DefaultBuilder implements Builder {
     throw new UnsupportedOperationException();
   }
 
-  public void beginReturnStatement() {
+  public void beginReturnStatement(int lineNumber) {
     throw new UnsupportedOperationException();
   }
 
