@@ -282,7 +282,7 @@ interface Builder {
   void beginTernaryOperator();
   void endTernaryOperator();
 
-  void beginReturnStatement();
+  void beginReturnStatement(int lineNumber);
   void endReturnStatement();
 
   void idExpression(String text);

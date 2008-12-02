@@ -17,6 +17,16 @@ package com.google.test.metric.cpp.dom;
 
 public class ReturnStatement extends Node {
 
+  private final int lineNumber;
+
+  public ReturnStatement(int lineNumber) {
+    this.lineNumber = lineNumber;
+  }
+
+  public int getLineNumber() {
+    return lineNumber;
+  }
+
   @Override
   public void accept(Visitor visitor) {
     visitor.beginVisit(this);

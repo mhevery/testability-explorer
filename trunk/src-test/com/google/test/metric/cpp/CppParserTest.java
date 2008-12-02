@@ -152,11 +152,12 @@ public class CppParserTest extends TestCase {
   }
 
   public void testSimpleFunction() throws Exception {
-    TranslationUnit unit = parse("int foo() { int a = 0; a = a + 1; return a; }");
+    TranslationUnit unit = parse("int foo() { int a = 0; a = a + 1;\n return a; }");
     FunctionDefinition functionFoo = unit.getChild(0);
     assertEquals("foo", functionFoo.getName());
     ReturnStatement returnStatement = functionFoo.getChild(1);
     assertNotNull(returnStatement);
+    assertEquals(2, returnStatement.getLineNumber());
   }
 
   public void testFunctionWithParameters() throws Exception {

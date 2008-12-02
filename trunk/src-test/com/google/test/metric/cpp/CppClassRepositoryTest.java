@@ -27,6 +27,8 @@ import com.google.test.metric.ClassInfo;
 import com.google.test.metric.LocalVariableInfo;
 import com.google.test.metric.MethodInfo;
 import com.google.test.metric.Visibility;
+import com.google.test.metric.method.op.turing.Operation;
+import com.google.test.metric.method.op.turing.ReturnOperation;
 
 public class CppClassRepositoryTest extends TestCase {
 
@@ -91,5 +93,20 @@ public class CppClassRepositoryTest extends TestCase {
     LocalVariableInfo variableB = localVariables.get(1);
     assertEquals("b", variableB.getName());
     assertEquals(Visibility.PROTECTED, methodInfo.getVisibility());
+  }
+
+  public void testMethodReturnOperation() throws Exception {
+    CppClassRepository repository = new CppClassRepository();
+    repository.parse(new StringInputStream("class A{ protected: void foo() { return; } };"));
+    ClassInfo classInfo = repository.getClass("A");
+    assertNotNull(classInfo);
+    Iterator<MethodInfo> it = classInfo.getMethods().iterator();
+    MethodInfo methodInfo = it.next();
+    List<Operation> operations = methodInfo.getOperations();
+    assertEquals(1, operations.size());
+    Operation operation = operations.get(0);
+    assertTrue(operation instanceof ReturnOperation);
+    ReturnOperation returnOperation = (ReturnOperation) operation;
+    assertEquals(1, returnOperation.getLineNumber());
   }
 }

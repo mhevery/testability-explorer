@@ -1473,7 +1473,7 @@ jump_statement
   | "break" SEMICOLON
     {b.breakStatement();}
     // DW 16/05/03 May be problem here if return is followed by a cast expression
-  | {b.beginReturnStatement();}
+  | {b.beginReturnStatement(LT(1).getLine());}
     "return"
     ( options{warnWhenFollowAmbig = false;}:
       (LPAREN {(qualifiedItemIsOneOf(CPPvariables.QI_TYPE,0) )}? ID RPAREN)=>

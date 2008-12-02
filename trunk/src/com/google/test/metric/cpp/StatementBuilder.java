@@ -142,8 +142,8 @@ class StatementBuilder extends DefaultBuilder {
   }
 
   @Override
-  public void beginReturnStatement() {
-    Node node = new ReturnStatement();
+  public void beginReturnStatement(int line) {
+    Node node = new ReturnStatement(line);
     parent.addChild(node);
     pushBuilder(new StatementBuilder(node));
   }
