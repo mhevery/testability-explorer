@@ -11,7 +11,7 @@
 <h2>Class: <tt>${name}</tt></h2>
 <@util.overview report=self name="Class" listName="Method"/>
 <br>
-<@util.unitList list=unitCosts name="Class" keys=["totalCost", "directCost"] headers=["Total Cost", "Direct Cost"]; method>
+<@util.unitList list=unitCosts name="Method" keys=["totalCost", "directCost"] headers=["Total Cost", "Direct Cost"]; method>
 #${method.lineNumber}
 </@util.unitList>
 <br>
