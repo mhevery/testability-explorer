@@ -38,6 +38,7 @@
 		<mkdir dir="target/dist" />
 		<mkdir dir="target/reports/junit" />
 		<mkdir dir="target/reports/emma" />
+		<mkdir dir="target/reports/testability" />
 	</target>
 
 	<target name="revision">
