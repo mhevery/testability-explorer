@@ -136,6 +136,13 @@
 	<target name="report" depends="dist,ant">
 		<taskdef name="testability" classname="com.google.ant.TestabilityTask"
 			classpath="target/dist/${project-name}-${version}-r${revision}.jar;target/dist/ant-${project-name}-${version}-r${revision}.jar" />
+		<testability filter="com.google.test.metric" print="xml" resultFile="target/reports/testability/te.xml" 
+			whitelist="org,freemarker,com.google.test.org,com.google.test.freemarker,com.google.test.metric.cpp" >
+			<classpath>
+				<pathelement location="target/dist/${project-name}-${version}-r${revision}.jar"/>
+				<pathelement location="src" />
+			</classpath>
+		</testability>
 		<testability filter="com.google.test.metric" print="source" 
 			whitelist="org,freemarker,com.google.test.org,com.google.test.freemarker,com.google.test.metric.cpp" >
 			<classpath>
