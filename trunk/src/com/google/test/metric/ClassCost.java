@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ClassCost {
+  public static final String CLASS_NAME = "class";
 
   public static class CostComparator implements java.util.Comparator<ClassCost> {
     private final CostModel costModel;
@@ -112,7 +113,7 @@ public class ClassCost {
 
   public Map<String, Object> getAttributes() {
     HashMap<String, Object> map = new HashMap<String, Object>();
-    map.put("class", className);
+    map.put(CLASS_NAME, className);
     return map;
   }
 

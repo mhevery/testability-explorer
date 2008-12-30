@@ -15,32 +15,55 @@
  */
 package com.google.test.metric.report;
 
-import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
+import org.w3c.dom.Document;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 
 public class ReportDiffer {
 
-  @Argument(metaVar="oldFile", index=0, usage="name of the old file", required=true)
+  @Option(name="-oldFile", usage="name of the old XML report", required=true)
   private String oldFile;
 
-  @Argument(metaVar="newFile", index=1, usage="name of the new file", required=true)
+  @Option(name="-newFile", usage="name of the new XML report", required=true)
   private String newFile;
 
-  public static void main(String[] args) throws FileNotFoundException, CmdLineException {
+  @Option(name="-htmlReportFile", usage="name of the HTML result file", required=true)
+  private String htmlReportFile;
+
+  @Option(name="-oldLinkUrl", usage="a URL, to be used as a link on 'old' numbers (optional)\n" +
+      "  may link to anything, ie. source code, the annotated testability report\n" +
+      "  for example: http://myhost.com/oldReport/{path}.html", required=false)
+  private String oldLinkUrl;
+
+  @Option(name="-newLinkUrl", usage="a URL, to be used as a link on 'new' numbers (optional)\n" +
+      "  may link to anything, ie. source code, the annotated testability report\n" +
+      "  for example: http://myhost.com/newReport/{path}.html", required=false)
+  private String newLinkUrl;
+
+
+  public static void main(String[] args) throws Exception {
     ReportDiffer differ = new ReportDiffer();
     differ.parseArgs(args);
     differ.doDiff();
   }
 
-  private void doDiff() throws FileNotFoundException {
-    // Currently PropertiesReportDiffer is hardcoded, as it is the only one supported
-    Diff diff = new PropertiesReportDiffer(new FileInputStream(oldFile),
-        new FileInputStream(newFile)).diff();
-    diff.print(System.out);
+  private void doDiff() throws Exception {
+    XMLReportLoader reportLoader = new XMLReportLoader();
+    Document oldReport = reportLoader.loadXML(new FileReader(oldFile));
+    Document newReport = reportLoader.loadXML(new FileReader(newFile));
+    FileWriter out = new FileWriter(htmlReportFile);
+    Diff diff = new XMLReportDiffer().diff(oldReport, newReport);
+    DiffReport report = new DiffReport(diff);
+    if (oldLinkUrl != null && !oldLinkUrl.equals("")) {
+      report.setOldSourceUrl(oldLinkUrl);
+    }
+    if (newLinkUrl != null && !newLinkUrl.equals("")) {
+      report.setOldSourceUrl(newLinkUrl);
+    }
+    report.writeHtml(out);
   }
 
   private void parseArgs(String[] args) throws CmdLineException {

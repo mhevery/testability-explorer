@@ -26,6 +26,7 @@ public class MethodCost {
   private final List<ViolationCost> costSources = new ArrayList<ViolationCost>();
   private final Cost directCost = new Cost();
   private final Cost dependantCost = new Cost();
+  public static final String METHOD_NAME_ATTRIBUTE = "name";
 
   /**
    * @param methodName
@@ -91,7 +92,7 @@ public class MethodCost {
   public Map<String, Object> getAttributes() {
     Map<String, Object> map = getTotalCost().getAttributes();
     map.put("line", lineNumber);
-    map.put("name", methodName);
+    map.put(METHOD_NAME_ATTRIBUTE, methodName);
     return map;
   }
 
