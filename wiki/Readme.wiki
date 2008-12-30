@@ -19,19 +19,19 @@ Argument "classes and packages" is required
                                          Ex. lib/one.jar:lib/two.jar
  -maxAcceptableCost N                  : Maximum Total Class cost to be classify it as 'acceptable'.
  -maxEcellentCost N                    : Maximum Total Class cost to be classify it as 'excellent'.
- -minCost N                            : Minimum Total Class cost required to print that class' metrics.
+ -minCost N                            : Minimum Total Class cost required to print that classes metrics.
  -print VAL                            : summary: (default) print package summary information.
                                          detail: print detail drill down information for each method call.
- -printDepth N                         : Maximum depth to recurse and print costs of classes/methods that the classes un
-                                         der analysis depend on. Defaults to 0.
- -whitelist VAL                        : colon delimited whitelisted packages that will not count against you. Matches p
-                                         ackages/classes starting with given values. (Always whitelists java.*. RegExp O
-                                         K.)
+ -printDepth N                         : Maximum depth to recurse and print costs of classes/methods that the classes
+                                         under analysis depend on. Defaults to 0.
+ -whitelist VAL                        : colon delimited whitelisted packages that will not count against you. Matches
+                                         packages/classes starting with given values. (Always whitelists java.*. RegExp
+                                         OK.)
  -worstOffenderCount N                 : Print N number of worst offending classes.
- cyclomatic cyclomatic cost multiplier : When computing the overall cost of the method the individual costs are added us
-                                         ing weighted average. This represents the weight of the cyclomatic cost.
- global global state cost multiplier   : When computing the overall cost of the method the individual costs are added us
-                                         ing weighted average. This represents the weight of the global state cost.
+ cyclomatic cyclomatic cost multiplier : When computing the overall cost of the method the individual costs are added 
+                                         using a weighted average. This represents the weight of the cyclomatic cost.
+ global global state cost multiplier   : When computing the overall cost of the method the individual costs are added 
+                                         using a weighted average. This represents the weight of the global state cost.
 }}}
 
 
@@ -297,6 +297,7 @@ Testability cost for com.google.test.metric.example.SumOfPrimes2 [ 2 TCC, 0 TGC 
   com.google.test.metric.example.SumOfPrimes2.sum(I)I [2, 0 / 2, 0]
 
 -----------------------------------------
+
 Summary Statistics:
  TCC for all classes entered: 2
  TGC for all classes entered: 0
