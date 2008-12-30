@@ -32,6 +32,12 @@ public class XMLReport extends SummaryReport {
 
   private final ContentHandler out;
   private final CostModel costModel;
+  public static final String CLASS_NODE = "class";
+  public static final String CLASS_NAME_ATTRIBUTE = ClassCost.CLASS_NAME;
+  public static final String CLASS_COST_ATTRIBUTE = "cost";
+  public static final String METHOD_NODE = "method";
+  public static final String METHOD_NAME_ATTRIBUTE = MethodCost.METHOD_NAME_ATTRIBUTE;
+  public static final String METHOD_OVERALL_COST_ATTRIBUTE = "overall";
 
   public XMLReport(ContentHandler out, CostModel costModel, int maxExcellentCost,
       int maxAcceptableCost, int worstOffenderCount) {
@@ -90,22 +96,22 @@ public class XMLReport extends SummaryReport {
 
   void writeCost(MethodCost methodCost) throws SAXException {
     Map<String, Object> attributes = methodCost.getAttributes();
-    attributes.put("overall", costModel.computeOverall(methodCost.getTotalCost()));
-    startElement("method", attributes);
+    attributes.put(METHOD_OVERALL_COST_ATTRIBUTE, costModel.computeOverall(methodCost.getTotalCost()));
+    startElement(METHOD_NODE, attributes);
     for (ViolationCost violation : methodCost.getViolationCosts()) {
       writeCost(violation);
     }
-    endElement("method");
+    endElement(METHOD_NODE);
   }
 
   void writeCost(ClassCost classCost) throws SAXException {
     Map<String, Object> attributes = classCost.getAttributes();
-    attributes.put("cost", costModel.computeClass(classCost));
-    startElement("class", attributes);
+    attributes.put(CLASS_COST_ATTRIBUTE, costModel.computeClass(classCost));
+    startElement(CLASS_NODE, attributes);
     for (MethodCost cost : classCost.getMethods()) {
       writeCost(cost);
     }
-    endElement("class");
+    endElement(CLASS_NODE);
   }
 
 }

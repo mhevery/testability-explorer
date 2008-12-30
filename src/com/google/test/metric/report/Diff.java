@@ -15,9 +15,9 @@
  */
 package com.google.test.metric.report;
 
-import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Simple bean to store a difference between two testability reports.
@@ -26,82 +26,119 @@ import java.util.List;
  */
 public class Diff {
 
-  public class Change {
+  private final List<ClassDiff> classDiffs;
 
-    private final int oldMetric;
-    private final int newMetric;
+  public Diff(List<ClassDiff> classDiffs) {
+    this.classDiffs = classDiffs;
+  }
+
+  public List<ClassDiff> getClassDiffs() {
+    return classDiffs;
+  }
+
+  public void sort() {
+    Collections.sort(classDiffs, new ClassDeltaComparator());
+    for (ClassDiff classDiff : classDiffs) {
+      Collections.sort(classDiff.methodDiffs, new MethodDeltaComparator());
+    }
+  }
+
+  public static class ClassDiff {
+    private final Integer oldMetric;
+    private final Integer newMetric;
+    private final List<MethodDiff> methodDiffs;
     private final String className;
 
-    public Change(String className, int oldMetric, int newMetric) {
+    public ClassDiff(String className, Integer oldMetric, Integer newMetric) {
       this.className = className;
       this.oldMetric = oldMetric;
       this.newMetric = newMetric;
+      this.methodDiffs = Collections.EMPTY_LIST;
+    }
+
+    public ClassDiff(String className, Integer oldMetric, Integer newMetric, List<MethodDiff> methodDiffs) {
+      this.className = className;
+      this.oldMetric = oldMetric;
+      this.newMetric = newMetric;
+      this.methodDiffs = methodDiffs;
     }
 
     public String getClassName() {
       return className;
     }
-    public int getNewMetric() {
+    public Integer getNewMetric() {
       return newMetric;
     }
-    public int getOldMetric() {
+    public Integer getOldMetric() {
       return oldMetric;
     }
-  }
 
-  private final List<Change> addedClasses = new ArrayList<Change>();
-  private final List<Change> removedClasses = new ArrayList<Change>();
-  private final List<Change> changedClasses = new ArrayList<Change>();
-
-  public void addAddedClass(Change className) {
-    addedClasses.add(className);
-  }
-
-  public void addRemovedClass(Change className) {
-    removedClasses.add(className);
-  }
-
-  public List<Change> getAddedClasses() {
-    return addedClasses;
-  }
-
-  public List<Change> getRemovedClasses() {
-    return removedClasses;
-  }
-
-  public void addChangedClass(Change className) {
-    changedClasses.add(className);
-  }
-
-  public List<Change> getChangedClasses() {
-    return changedClasses;
-  }
-
-  public void addAddedClass(String className, int metric) {
-    addAddedClass(new Change(className, -1, metric));
-  }
-
-  public void addRemovedClass(String className, int metric) {
-    addRemovedClass(new Change(className, metric, -1));
-  }
-
-  public void addChangedClass(String className, int oldMetric, int newMetric) {
-    addChangedClass(new Change(className, oldMetric, newMetric));
-  }
-
-  public void print(PrintStream out) {
-    out.println("Added:");
-    for (Change change : addedClasses) {
-      out.println("  " + change.getClassName());
+    public List<MethodDiff> getMethodDiffs() {
+      return methodDiffs;
     }
-    out.println("Removed:");
-    for (Change change : removedClasses) {
-      out.println("  " + change.getClassName());
+
+    public Integer getDelta() {
+      if (newMetric == null) {
+        return -oldMetric;
+      }
+      if (oldMetric == null) {
+        return newMetric;
+      }
+      return (newMetric - oldMetric);
     }
-    out.println("Changed:");
-    for (Change change : changedClasses) {
-      out.printf("  %s (%+d)\n", change.getClassName(),
-          change.getNewMetric() - change.getOldMetric());
+  }
+
+  public static class MethodDiff {
+    private final Integer oldMetric;
+    private final Integer newMetric;
+    private final String methodName;
+
+    public MethodDiff(String methodName, Integer oldMetric, Integer newMetric) {
+      this.oldMetric = oldMetric;
+      this.newMetric = newMetric;
+      this.methodName = methodName;
+    }
+
+    public Integer getOldMetric() {
+      return oldMetric;
+    }
+
+    public Integer getNewMetric() {
+      return newMetric;
+    }
+
+    public String getMethodName() {
+      return methodName;
+    }
+
+    public Integer getDelta() {
+      if (newMetric == null) {
+        return -oldMetric;
+      }
+      if (oldMetric == null) {
+        return newMetric;
+      }
+      return (newMetric - oldMetric);
+    }
+  }
+
+  private static class ClassDeltaComparator implements Comparator<ClassDiff> {
+    public int compare(ClassDiff classDiff, ClassDiff classDiff1) {
+      int result = classDiff.getDelta().compareTo(classDiff1.getDelta());
+      if (result == 0) {
+        result = classDiff.getClassName().compareTo(classDiff1.getClassName());
+      }
+      return result;
+    }
+  }
+
+  private static class MethodDeltaComparator implements Comparator<MethodDiff> {
+    public int compare(MethodDiff methodDiff, MethodDiff methodDiff1) {
+      int result = methodDiff.getDelta().compareTo(methodDiff1.getDelta());
+      if (result == 0) {
+        result = methodDiff.getMethodName().compareTo(methodDiff.getMethodName());
+      }
+      return result;
     }
   }
 }
