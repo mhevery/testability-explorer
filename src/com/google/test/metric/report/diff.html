@@ -10,6 +10,8 @@
       <#else/>
         ${text}
     </#if>
+  <#else/>
+    &nbsp;
   </#if>
 </#macro>
 <#macro oldSourceLink url text="">
@@ -77,11 +79,10 @@
 
     <table class="summary">
       <thead><th colspan="2">Class Detail</th><th>Old</th><th>New</th><th>&Delta;</th></thead>
-      <#list classDiffs as classDiff>
-        <a name="${classDiff.className?html}"/>
+      <#list classDiffs as classDiff>  
         <tr class="${compare(classDiff.oldMetric!0,classDiff.newMetric!0)} header">
           <td colspan="2" class="class">
-            ${classDiff.className}
+            <a name="${classDiff.className?html}"/> ${classDiff.className}
           </td>
           <td><@oldSourceLink classDiff.className?html classDiff.oldMetric /></td>
           <td><@newSourceLink classDiff.className?html classDiff.newMetric /></td>
