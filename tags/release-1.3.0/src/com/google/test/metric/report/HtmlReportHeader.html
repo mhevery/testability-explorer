@@ -1,0 +1,79 @@
+<html>
+  <head>
+    <title>Testability Report</title>
+    <style type="text/css">
+    body {
+      font-family: Verdana;
+      padding: 16px 8px;
+    }
+
+    .Class {
+      font-family: monospace;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .Method {
+      padding-left: 20px;
+      font-size: 14px;
+      display: none;
+      cursor: pointer;
+    }
+    .Line {
+      padding-left: 20px;
+      font-size: 13px;
+      display: none;
+      cursor: text;
+    }
+    .lineNumber {
+      padding-right: 5px;
+    }
+    .expand {
+      font-family: monospace;
+      cursor: pointer;
+    }
+    #timestamp {
+      color: #666;
+      font-style: italic;
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      z-index: 100;
+    }
+
+    .overview_table {
+    }
+    .overview_table th {
+      font-weight: normal;
+      padding-bottom: 4px;
+    }
+    .overview_table td {
+      font-style: italic;
+    }
+    .overview_table .percent {
+      padding-left: 8px;
+      text-align: right;
+    }
+    .overview_table .value {
+      padding-left: 8px;
+      text-align: right;
+    }
+
+    .cost {
+      font-family: monospace;      
+      padding-left: 12px;
+      text-align: right;
+    }
+    .smaller {
+      font-size: 80%;
+    }
+    </style>
+    <script type="text/javascript">
+{{JSscript}}
+    </script>
+  </head>
+  <body>
+    <h1>Testability Report</h1>
+    <div id="timestamp">
+      Report generated on: {{Tstamp}}
+    </div>
+
