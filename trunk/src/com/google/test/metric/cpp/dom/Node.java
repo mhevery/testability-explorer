@@ -21,6 +21,8 @@ package com.google.test.metric.cpp.dom;
  */
 public class Node {
   private final NodeList children = new NodeList();
+  private final NodeList expressions = new NodeList();
+
 
   public NodeList getChildren() {
     return children;
@@ -33,6 +35,19 @@ public class Node {
 
   public void addChild(Node child) {
     children.add(child);
+  }
+
+  public NodeList getExpressions() {
+    return expressions;
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> T getExpression(int index) {
+    return (T) expressions.get(index);
+  }
+
+  public void addExpression(Node expression) {
+    expressions.add(expression);
   }
 
   public void accept(Visitor visitor) {

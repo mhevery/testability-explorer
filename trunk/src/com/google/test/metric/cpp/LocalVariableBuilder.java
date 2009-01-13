@@ -37,6 +37,11 @@ public class LocalVariableBuilder extends DefaultBuilder {
   }
 
   @Override
+  public void beginInitializer() {
+    pushBuilder(new ExpressionBuilder(node));
+  }
+
+  @Override
   public void beginPrimaryExpression() {
   }
 

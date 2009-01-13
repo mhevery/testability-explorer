@@ -21,6 +21,7 @@ import com.google.test.metric.cpp.dom.BreakStatement;
 import com.google.test.metric.cpp.dom.CaseStatement;
 import com.google.test.metric.cpp.dom.DefaultStatement;
 import com.google.test.metric.cpp.dom.ElseStatement;
+import com.google.test.metric.cpp.dom.ExpressionStatement;
 import com.google.test.metric.cpp.dom.IfStatement;
 import com.google.test.metric.cpp.dom.LoopStatement;
 import com.google.test.metric.cpp.dom.Node;
@@ -181,7 +182,14 @@ class StatementBuilder extends DefaultBuilder {
   }
 
   @Override
-  public void beginAssignmentExpression() {
+  public void beginExpression() {
     pushBuilder(new ExpressionBuilder(parent));
+  }
+
+  @Override
+  public void beginExpressionStatement() {
+    ExpressionStatement statement = new ExpressionStatement();
+    parent.addChild(statement);
+    pushBuilder(new ExpressionBuilder(statement));
   }
 }

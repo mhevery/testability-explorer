@@ -304,4 +304,10 @@ interface Builder {
 
   void beginInitDeclaratorList();
   void endInitDeclaratorList();
+
+  void beginExpression();
+  void endExpression();
+
+  void beginExpressionStatement();
+  void endExpressionStatement();
 }

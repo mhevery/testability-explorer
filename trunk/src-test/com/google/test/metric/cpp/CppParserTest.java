@@ -21,17 +21,21 @@ import junit.framework.TestCase;
 
 import com.google.test.metric.ParameterInfo;
 import com.google.test.metric.Visibility;
+import com.google.test.metric.cpp.dom.AssignmentExpression;
 import com.google.test.metric.cpp.dom.BreakStatement;
 import com.google.test.metric.cpp.dom.CaseStatement;
 import com.google.test.metric.cpp.dom.ClassDeclaration;
 import com.google.test.metric.cpp.dom.DefaultStatement;
 import com.google.test.metric.cpp.dom.ElseStatement;
+import com.google.test.metric.cpp.dom.Expression;
+import com.google.test.metric.cpp.dom.ExpressionStatement;
 import com.google.test.metric.cpp.dom.FunctionDeclaration;
 import com.google.test.metric.cpp.dom.FunctionDefinition;
 import com.google.test.metric.cpp.dom.FunctionInvocation;
 import com.google.test.metric.cpp.dom.IfStatement;
 import com.google.test.metric.cpp.dom.LocalVariableDeclaration;
 import com.google.test.metric.cpp.dom.LoopStatement;
+import com.google.test.metric.cpp.dom.Name;
 import com.google.test.metric.cpp.dom.Namespace;
 import com.google.test.metric.cpp.dom.NodeList;
 import com.google.test.metric.cpp.dom.ReturnStatement;
@@ -155,7 +159,7 @@ public class CppParserTest extends TestCase {
     TranslationUnit unit = parse("int foo() { int a = 0; a = a + 1;\n return a; }");
     FunctionDefinition functionFoo = unit.getChild(0);
     assertEquals("foo", functionFoo.getName());
-    ReturnStatement returnStatement = functionFoo.getChild(1);
+    ReturnStatement returnStatement = functionFoo.getChild(2);
     assertNotNull(returnStatement);
     assertEquals(2, returnStatement.getLineNumber());
   }
@@ -291,7 +295,7 @@ public class CppParserTest extends TestCase {
     TranslationUnit unit = parse("int foo(int a, int b) { return a ? 0 : b; }");
     FunctionDefinition functionFoo = unit.getChild(0);
     ReturnStatement returnStatement = functionFoo.getChild(0);
-    TernaryOperation ternaryOperation = returnStatement.getChild(0);
+    TernaryOperation ternaryOperation = returnStatement.getExpression(0);
     assertNotNull(ternaryOperation);
   }
 
@@ -299,15 +303,16 @@ public class CppParserTest extends TestCase {
     TranslationUnit unit = parse("int foo(int a, int b) { int c = a ? 0 : (b ? 1 : 2); }");
     FunctionDefinition functionFoo = unit.getChild(0);
     LocalVariableDeclaration variableC = functionFoo.getChild(0);
-    TernaryOperation ternaryOperation = variableC.getChild(0);
-    TernaryOperation nestedTernaryOperation = ternaryOperation.getChild(0);
+    TernaryOperation ternaryOperation = variableC.getExpression(0);
+    TernaryOperation nestedTernaryOperation = ternaryOperation.getExpression(1);
     assertNotNull(nestedTernaryOperation);
   }
 
   public void testFunctionCall() throws Exception {
     TranslationUnit unit = parse("void foo(int) {} void bar(int) { foo(5); }");
     FunctionDefinition functionBar = unit.getChild(1);
-    FunctionInvocation callFoo = functionBar.getChild(0);
+    ExpressionStatement expressionStatement = functionBar.getChild(0);
+    FunctionInvocation callFoo = expressionStatement.getExpression(0);
     assertEquals("foo", callFoo.getName());
   }
 
@@ -318,7 +323,7 @@ public class CppParserTest extends TestCase {
     FunctionDefinition functionBar = unit.getChild(1);
     assertEquals("bar", functionBar.getName());
     ReturnStatement returnStatement = functionBar.getChild(0);
-    FunctionInvocation callFoo = returnStatement.getChild(0);
+    FunctionInvocation callFoo = returnStatement.getExpression(0);
     assertEquals("foo", callFoo.getName());
     NodeList parameters = callFoo.getParameters();
     FunctionInvocation callFooAgain = parameters.get(0);
@@ -333,7 +338,8 @@ public class CppParserTest extends TestCase {
         "void main() { bar().foo(); }           ");
     FunctionDefinition functionMain = unit.getChild(2);
     assertEquals("main", functionMain.getName());
-    FunctionInvocation callBar = functionMain.getChild(0);
+    ExpressionStatement expressionStatement = functionMain.getChild(0);
+    FunctionInvocation callBar = expressionStatement.getExpression(0);
     assertEquals("bar", callBar.getName());
     FunctionInvocation callFoo = callBar.getChild(0);
     assertEquals("foo", callFoo.getName());
@@ -370,6 +376,24 @@ public class CppParserTest extends TestCase {
     FunctionDefinition functionBar = classA.getChild(1);
     Visibility visibilityBar = functionBar.getVisibility();
     assertEquals(Visibility.PROTECTED, visibilityBar);
+  }
+
+  public void testLocalAssgnment() throws Exception {
+    TranslationUnit unit = parse(
+        "void main() { int a = 0, b = 1; a = b; }");
+    FunctionDefinition functionMain = unit.getChild(0);
+    LocalVariableDeclaration variableA = functionMain.getChild(0);
+    assertEquals("a", variableA.getName());
+    LocalVariableDeclaration variableB = functionMain.getChild(1);
+    assertEquals("b", variableB.getName());
+    ExpressionStatement statement = functionMain.getChild(2);
+    Expression expression = statement.getExpression(0);
+    assertTrue(expression instanceof AssignmentExpression);
+    AssignmentExpression assignment = (AssignmentExpression) expression;
+    Name leftSide = assignment.getExpression(0);
+    Name rightSide = assignment.getExpression(1);
+    assertEquals("a", leftSide.getIdentifier());
+    assertEquals("b", rightSide.getIdentifier());
   }
 
   public void testClassLoadCppVariables() throws Exception {
