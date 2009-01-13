@@ -54,6 +54,9 @@ public class Node {
   }
 
   protected void visitChildren(Visitor visitor) {
+    for (Node child: expressions) {
+      child.accept(visitor);
+    }
     for (Node child : children) {
       child.accept(visitor);
     }
