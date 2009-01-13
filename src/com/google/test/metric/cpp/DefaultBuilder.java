@@ -332,4 +332,20 @@ class DefaultBuilder implements Builder {
   public void endInitDeclaratorList() {
     throw new UnsupportedOperationException();
   }
+
+  public void beginExpression() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void endExpression() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void beginExpressionStatement() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void endExpressionStatement() {
+    throw new UnsupportedOperationException();
+  }
 }

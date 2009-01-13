@@ -1387,7 +1387,10 @@ statement
   | labeled_statement
   | case_statement
   | default_statement
-  | expression SEMICOLON
+  |
+    {b.beginExpressionStatement();}
+    expression SEMICOLON
+    {b.endExpressionStatement();}
   | compound_statement
   | selection_statement
   | iteration_statement
@@ -1527,7 +1530,10 @@ asm_block
 ///////////////////////////////////////////////////////////////////////
 
 expression
-  : assignment_expression (COMMA assignment_expression)*
+  :
+    {b.beginExpression();}
+    assignment_expression (COMMA assignment_expression)*
+    {b.endExpression();}
   ;
 
 expression_list
@@ -1536,9 +1542,11 @@ expression_list
 
 /* right-to-left for assignment op */
 assignment_expression
-  : {b.beginAssignmentExpression();}
+  : 
     conditional_expression
-    ( (ASSIGNEQUAL
+    (
+      {b.beginAssignmentExpression();}
+      (ASSIGNEQUAL
       |TIMESEQUAL|DIVIDEEQUAL|MINUSEQUAL|PLUSEQUAL
       |MODEQUAL
       |SHIFTLEFTEQUAL
@@ -1548,8 +1556,8 @@ assignment_expression
       |BITWISEOREQUAL
       )
       remainder_expression
+      {b.endAssignmentExpression();}
     )?
-    {b.endAssignmentExpression();}
   ;
 
 remainder_expression

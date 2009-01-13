@@ -15,14 +15,16 @@
  */
 package com.google.test.metric.cpp;
 
+import com.google.test.metric.cpp.dom.AssignmentExpression;
+import com.google.test.metric.cpp.dom.Expression;
 import com.google.test.metric.cpp.dom.FunctionInvocation;
+import com.google.test.metric.cpp.dom.Name;
 import com.google.test.metric.cpp.dom.Node;
 import com.google.test.metric.cpp.dom.NodeList;
 import com.google.test.metric.cpp.dom.TernaryOperation;
 
 public class ExpressionBuilder extends DefaultBuilder {
 
-  private String name;
   private NodeList nodes;
 
   public ExpressionBuilder(NodeList nodes) {
@@ -30,7 +32,7 @@ public class ExpressionBuilder extends DefaultBuilder {
   }
 
   public ExpressionBuilder(Node parent) {
-    this(parent.getChildren());
+    this(parent.getExpressions());
   }
 
   @Override
@@ -43,12 +45,16 @@ public class ExpressionBuilder extends DefaultBuilder {
 
   @Override
   public void idExpression(String id) {
-    name = id;
+    nodes.add(new Name(id));
   }
 
   @Override
   public void beginParameterList() {
-    FunctionInvocation functionInvocation = new FunctionInvocation(name);
+    int index = nodes.size() - 1;
+    Name name = nodes.get(index);
+    nodes.remove(index);
+    FunctionInvocation functionInvocation =
+      new FunctionInvocation(name.getIdentifier());
     nodes.add(functionInvocation);
     pushBuilder(new ParameterListBuilder(functionInvocation.getParameters()));
     nodes = functionInvocation.getChildren();
@@ -66,7 +72,13 @@ public class ExpressionBuilder extends DefaultBuilder {
 
   @Override
   public void beginAssignmentExpression() {
-    pushBuilder(new ExpressionBuilder(nodes));
+    int index = nodes.size() - 1;
+    Expression leftSide = nodes.get(index);
+    nodes.remove(index);
+    AssignmentExpression assignment = new AssignmentExpression();
+    nodes.add(assignment);
+    assignment.addExpression(leftSide);
+    pushBuilder(new AssignmentExpressionBuilder(assignment));
   }
 
   @Override
@@ -76,8 +88,12 @@ public class ExpressionBuilder extends DefaultBuilder {
 
   @Override
   public void beginTernaryOperator() {
+    int index = nodes.size() - 1;
+    Expression name = nodes.get(index);
+    nodes.remove(index);
     Node node = new TernaryOperation();
     nodes.add(node);
+    node.addExpression(name);
     pushBuilder(new ExpressionBuilder(node));
   }
 
@@ -92,5 +108,25 @@ public class ExpressionBuilder extends DefaultBuilder {
 
   @Override
   public void endMemberAccess() {
+  }
+
+  @Override
+  public void endInitializer() {
+    finished();
+  }
+
+  @Override
+  public void beginExpression() {
+    pushBuilder(new ExpressionBuilder(nodes));
+  }
+
+  @Override
+  public void endExpression() {
+    finished();
+  }
+
+  @Override
+  public void endExpressionStatement() {
+    finished();
   }
 }

@@ -15,23 +15,44 @@
  */
 package com.google.test.metric.cpp;
 
+import com.google.test.metric.cpp.dom.Name;
+import com.google.test.metric.cpp.dom.Node;
 import com.google.test.metric.cpp.dom.NodeList;
 
-public class ParameterListBuilder extends DefaultBuilder {
+public class AssignmentExpressionBuilder extends ExpressionBuilder {
 
-  private final NodeList parameters;
+  private final NodeList nodes;
 
-  public ParameterListBuilder(NodeList parameters) {
-    this.parameters = parameters;
+  public AssignmentExpressionBuilder(Node parent) {
+    super(parent);
+    this.nodes = parent.getExpressions();
+  }
+
+  public AssignmentExpressionBuilder(NodeList nodes) {
+    super(nodes);
+    this.nodes = nodes;
   }
 
   @Override
-  public void endParameterList() {
+  public void idExpression(String id) {
+    nodes.add(new Name(id));
+  }
+
+  @Override
+  public void beginAssignmentExpression() {
+    pushBuilder(new AssignmentExpressionBuilder(nodes));
+  }
+
+  @Override
+  public void endAssignmentExpression() {
     finished();
   }
 
   @Override
   public void beginPostfixExpression() {
-    pushBuilder(new ExpressionBuilder(parameters));
+  }
+
+  @Override
+  public void endPostfixExpression() {
   }
 }

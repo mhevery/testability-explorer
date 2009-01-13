@@ -15,32 +15,14 @@
  */
 package com.google.test.metric.cpp.dom;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+public class Name extends Expression {
+  private final String identifier;
 
-public class NodeList implements Iterable<Node> {
-
-  private final List<Node> nodes = new ArrayList<Node>();
-
-  public void add(Node node) {
-    nodes.add(node);
+  public Name(String identifier) {
+    this.identifier = identifier;
   }
 
-  @SuppressWarnings("unchecked")
-  public <T> T get(int index) {
-    return (T) nodes.get(index);
-  }
-
-  public Iterator<Node> iterator() {
-    return nodes.iterator();
-  }
-
-  public int size() {
-    return nodes.size();
-  }
-
-  public void remove(int index) {
-    nodes.remove(index);
+  public String getIdentifier() {
+    return identifier;
   }
 }

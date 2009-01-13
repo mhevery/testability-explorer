@@ -203,10 +203,12 @@ class RootBuilder extends DefaultBuilder implements BuilderContext {
 
   @Override
   public void beginInitializer() {
+    currentBuilder.beginInitializer();
   }
 
   @Override
   public void endInitializer() {
+    currentBuilder.endInitializer();
   }
 
   @Override
@@ -312,6 +314,26 @@ class RootBuilder extends DefaultBuilder implements BuilderContext {
   @Override
   public void accessSpecifier(String accessSpec) {
     currentBuilder.accessSpecifier(accessSpec);
+  }
+
+  @Override
+  public void beginExpression() {
+    currentBuilder.beginExpression();
+  }
+
+  @Override
+  public void endExpression() {
+    currentBuilder.endExpression();
+  }
+
+  @Override
+  public void beginExpressionStatement() {
+    currentBuilder.beginExpressionStatement();
+  }
+
+  @Override
+  public void endExpressionStatement() {
+    currentBuilder.endExpressionStatement();
   }
 
   @Override

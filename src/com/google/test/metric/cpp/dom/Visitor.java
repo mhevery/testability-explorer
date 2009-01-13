@@ -88,4 +88,10 @@ public abstract class Visitor {
 
   public void visit(LocalVariableDeclaration localVariableDeclaration) {
   }
+
+  public void visit(ExpressionStatement expressionStatement) {
+  }
+
+  public void visit(AssignmentExpression assignmentExpression) {
+  }
 }
