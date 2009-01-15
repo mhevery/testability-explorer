@@ -24,6 +24,7 @@ public class LocalVariableBuilder extends DefaultBuilder {
 
   private final Node parent;
   private final String type;
+  private boolean pointer = false;
   private Node node;
 
   public LocalVariableBuilder(Node parent, List<String> sts) {
@@ -51,12 +52,26 @@ public class LocalVariableBuilder extends DefaultBuilder {
 
   @Override
   public void directDeclarator(String id) {
-    node = new LocalVariableDeclaration(type, id);
+    node = new LocalVariableDeclaration(type, id, pointer);
     parent.addChild(node);
+    pointer = false;
   }
 
   @Override
   public void endInitDeclaratorList() {
     finished();
+  }
+
+  @Override
+  public void beginPtrOperator() {
+    pointer = true;
+  }
+
+  @Override
+  public void ptrOperator(String ptrSymbol) {
+  }
+
+  @Override
+  public void endPtrOperator() {
   }
 }

@@ -19,10 +19,18 @@ public class LocalVariableDeclaration extends Node {
 
   private final String name;
   private final String type;
+  private final boolean pointer;
 
   public LocalVariableDeclaration(String type, String name) {
     this.type = type;
     this.name = name;
+    this.pointer = false;
+  }
+
+  public LocalVariableDeclaration(String type, String name, boolean pointer) {
+    this.type = type;
+    this.name = name;
+    this.pointer = pointer;
   }
 
   public String getName() {
@@ -31,6 +39,10 @@ public class LocalVariableDeclaration extends Node {
 
   public String getType() {
     return type;
+  }
+
+  public boolean isPointer() {
+    return pointer;
   }
 
   @Override
