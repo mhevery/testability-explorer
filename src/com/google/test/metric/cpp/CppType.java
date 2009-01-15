@@ -29,8 +29,19 @@ public class CppType extends Type {
   public static final Type DOUBLE = new CppType("double");
   public static final Type FLOAT = new CppType("float");
 
+  private boolean pointer = false;
+
   private CppType(String name) {
     super(name, "");
+  }
+
+  private CppType(String name, boolean pointer) {
+    super(name, "");
+    this.pointer = pointer;
+  }
+
+  public boolean isPointer() {
+    return pointer;
   }
 
   public static Type fromName(String name) {
@@ -53,6 +64,13 @@ public class CppType extends Type {
     } else if (name == FLOAT.toString()) {
       return FLOAT;
     }
-    return null;
+    return new CppType(name);
+  }
+
+  public static Type fromName(String name, boolean pointer) {
+    if (!pointer) {
+      return fromName(name);
+    }
+    return new CppType(name, true);
   }
 }

@@ -337,6 +337,21 @@ class RootBuilder extends DefaultBuilder implements BuilderContext {
   }
 
   @Override
+  public void beginPtrOperator() {
+    currentBuilder.beginPtrOperator();
+  }
+
+  @Override
+  public void ptrOperator(String ptrSymbol) {
+    currentBuilder.ptrOperator(ptrSymbol);
+  }
+
+  @Override
+  public void endPtrOperator() {
+    currentBuilder.endPtrOperator();
+  }
+
+  @Override
   public void beginTranslationUnit() {
   }
 

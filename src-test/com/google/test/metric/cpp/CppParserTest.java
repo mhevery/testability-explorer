@@ -396,6 +396,38 @@ public class CppParserTest extends TestCase {
     assertEquals("b", rightSide.getIdentifier());
   }
 
+  public void testPointerVariable() throws Exception {
+    TranslationUnit unit = parse(
+      "void main() { int *p = 0, a = 0, *pp = 0; }");
+    FunctionDefinition functionMain = unit.getChild(0);
+    LocalVariableDeclaration variableP = functionMain.getChild(0);
+    assertEquals("p", variableP.getName());
+    assertEquals("int", variableP.getType());
+    assertTrue(variableP.isPointer());
+    LocalVariableDeclaration variableA = functionMain.getChild(1);
+    assertEquals("a", variableA.getName());
+    assertEquals("int", variableA.getType());
+    assertFalse(variableA.isPointer());
+    LocalVariableDeclaration variablePP = functionMain.getChild(2);
+    assertEquals("pp", variablePP.getName());
+    assertEquals("int", variablePP.getType());
+    assertTrue(variablePP.isPointer());
+  }
+
+  public void testReferenceVariable() throws Exception {
+    TranslationUnit unit = parse(
+      "void main() { int a = 0; int& r = a; }");
+    FunctionDefinition functionMain = unit.getChild(0);
+    LocalVariableDeclaration variableA = functionMain.getChild(0);
+    assertEquals("a", variableA.getName());
+    assertEquals("int", variableA.getType());
+    assertFalse(variableA.isPointer());
+    LocalVariableDeclaration variableR = functionMain.getChild(1);
+    assertEquals("r", variableR.getName());
+    assertEquals("int", variableR.getType());
+    assertTrue(variableR.isPointer());
+  }
+
   public void testClassLoadCppVariables() throws Exception {
     assertEquals(64, CPPvariables.QI_TYPE.size());
   }
