@@ -43,4 +43,8 @@ public class NodeList implements Iterable<Node> {
   public void remove(int index) {
     nodes.remove(index);
   }
+
+  public int indexOf(Node node) {
+    return nodes.indexOf(node);
+  }
 }

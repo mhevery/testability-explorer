@@ -22,7 +22,11 @@ package com.google.test.metric.cpp.dom;
 public class Node {
   private final NodeList children = new NodeList();
   private final NodeList expressions = new NodeList();
+  private Node parent;
 
+  public Node getParent() {
+    return parent;
+  }
 
   public NodeList getChildren() {
     return children;
@@ -35,6 +39,7 @@ public class Node {
 
   public void addChild(Node child) {
     children.add(child);
+    child.parent = this;
   }
 
   public NodeList getExpressions() {
@@ -48,17 +53,60 @@ public class Node {
 
   public void addExpression(Node expression) {
     expressions.add(expression);
+    expression.parent = this;
   }
 
   public void accept(Visitor visitor) {
   }
 
   protected void visitChildren(Visitor visitor) {
-    for (Node child: expressions) {
+    for (Node child : expressions) {
       child.accept(visitor);
     }
     for (Node child : children) {
       child.accept(visitor);
     }
+  }
+
+  private static class VariableDeclarationFinder extends Visitor {
+    private final String name;
+    private final Node finish;
+    private boolean stop;
+    private LocalVariableDeclaration result;
+
+    public VariableDeclarationFinder(String name, Node finish) {
+      this.name = name;
+      this.finish = finish;
+    }
+
+    public LocalVariableDeclaration getResult() {
+      return result;
+    }
+
+    @Override
+    public void visit(LocalVariableDeclaration localVariableDeclaration) {
+      if (!stop &&
+          localVariableDeclaration.getParent() == finish.getParent() &&
+          localVariableDeclaration.getName().equals(name)) {
+        result = localVariableDeclaration;
+      }
+    }
+  }
+
+  public LocalVariableDeclaration lookupVariable(String name) {
+    LocalVariableDeclaration result = null;
+    if (parent != null) {
+      int index = parent.children.indexOf(this);
+      while (--index >= 0 && result == null) {
+        VariableDeclarationFinder visitor = new VariableDeclarationFinder(name, this);
+        Node child = parent.children.get(index);
+        child.accept(visitor);
+        result = visitor.getResult();
+      }
+      if (result == null) {
+        result = parent.lookupVariable(name);
+      }
+    }
+    return result;
   }
 }
