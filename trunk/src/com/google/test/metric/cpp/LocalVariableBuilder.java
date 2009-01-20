@@ -17,7 +17,7 @@ package com.google.test.metric.cpp;
 
 import java.util.List;
 
-import com.google.test.metric.cpp.dom.LocalVariableDeclaration;
+import com.google.test.metric.cpp.dom.VariableDeclaration;
 import com.google.test.metric.cpp.dom.Node;
 
 public class LocalVariableBuilder extends DefaultBuilder {
@@ -52,7 +52,7 @@ public class LocalVariableBuilder extends DefaultBuilder {
 
   @Override
   public void directDeclarator(String id) {
-    node = new LocalVariableDeclaration(type, id, pointer);
+    node = new VariableDeclaration(type, id, pointer);
     parent.addChild(node);
     pointer = false;
   }

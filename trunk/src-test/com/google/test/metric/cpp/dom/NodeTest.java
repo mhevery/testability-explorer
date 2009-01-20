@@ -28,8 +28,8 @@ public class NodeTest extends TestCase {
   public void testSimpleVariableLookup() throws Exception {
     TranslationUnit unit = parse("void foo() { int a = 0; int b = a; };");
     FunctionDefinition functionFoo = unit.getChild(0);
-    LocalVariableDeclaration variableB = functionFoo.getChild(1);
-    LocalVariableDeclaration variableA = variableB.lookupVariable("a");
+    VariableDeclaration variableB = functionFoo.getChild(1);
+    VariableDeclaration variableA = variableB.lookupVariable("a");
     assertNotNull(variableA);
     assertEquals(functionFoo.getChild(0), variableA);
   }
@@ -38,19 +38,29 @@ public class NodeTest extends TestCase {
     TranslationUnit unit = parse("void foo() { int a = 0; if (a == 0) { int b = a; } }");
     FunctionDefinition functionFoo = unit.getChild(0);
     IfStatement ifStatement = functionFoo.getChild(1);
-    LocalVariableDeclaration variableB = ifStatement.getChild(0);
+    VariableDeclaration variableB = ifStatement.getChild(0);
     // lookup variable a in the context of declaration of variable b
-    LocalVariableDeclaration variableA = variableB.lookupVariable("a");
+    VariableDeclaration variableA = variableB.lookupVariable("a");
     assertNotNull(variableA);
     assertEquals(functionFoo.getChild(0), variableA);
+  }
+
+  public void testGlobalVariableLookup() throws Exception {
+    TranslationUnit unit = parse("int a = 0; void foo() { int b = a; }");
+    FunctionDefinition functionFoo = unit.getChild(1);
+    VariableDeclaration variableB = functionFoo.getChild(0);
+    // lookup variable a in the context of declaration of variable b
+    VariableDeclaration variableA = variableB.lookupVariable("a");
+    assertNotNull(variableA);
+    assertEquals(unit.getChild(0), variableA);
   }
 
   public void testVariableLookupFailure() throws Exception {
     TranslationUnit unit = parse("void foo() { if (true) { int a = 0; } int b = 1; }");
     FunctionDefinition functionFoo = unit.getChild(0);
-    LocalVariableDeclaration variableB = functionFoo.getChild(1);
+    VariableDeclaration variableB = functionFoo.getChild(1);
     // lookup variable a in the context of declaration of variable b
-    LocalVariableDeclaration variableA = variableB.lookupVariable("a");
+    VariableDeclaration variableA = variableB.lookupVariable("a");
     assertNull(variableA);
   }
 }

@@ -33,7 +33,6 @@ import com.google.test.metric.cpp.dom.FunctionDeclaration;
 import com.google.test.metric.cpp.dom.FunctionDefinition;
 import com.google.test.metric.cpp.dom.FunctionInvocation;
 import com.google.test.metric.cpp.dom.IfStatement;
-import com.google.test.metric.cpp.dom.LocalVariableDeclaration;
 import com.google.test.metric.cpp.dom.LoopStatement;
 import com.google.test.metric.cpp.dom.Name;
 import com.google.test.metric.cpp.dom.Namespace;
@@ -42,6 +41,7 @@ import com.google.test.metric.cpp.dom.ReturnStatement;
 import com.google.test.metric.cpp.dom.SwitchStatement;
 import com.google.test.metric.cpp.dom.TernaryOperation;
 import com.google.test.metric.cpp.dom.TranslationUnit;
+import com.google.test.metric.cpp.dom.VariableDeclaration;
 
 public class CppParserTest extends TestCase {
 
@@ -105,6 +105,16 @@ public class CppParserTest extends TestCase {
     TranslationUnit unit = parse("void foo();");
     FunctionDeclaration functionFoo = unit.getChild(0);
     assertEquals("foo", functionFoo.getName());
+  }
+
+  public void testGlobalVarableDeclaration() throws Exception {
+    TranslationUnit unit = parse("int a = 0, b = 1, c;");
+    VariableDeclaration variableA = unit.getChild(0);
+    assertEquals("a", variableA.getName());
+    VariableDeclaration variableB = unit.getChild(1);
+    assertEquals("b", variableB.getName());
+    VariableDeclaration variableC = unit.getChild(2);
+    assertEquals("c", variableC.getName());
   }
 
   public void testFunctionDeclarationInNamespace() throws Exception {
@@ -302,7 +312,7 @@ public class CppParserTest extends TestCase {
   public void testNestedTernaryOperator() throws Exception {
     TranslationUnit unit = parse("int foo(int a, int b) { int c = a ? 0 : (b ? 1 : 2); }");
     FunctionDefinition functionFoo = unit.getChild(0);
-    LocalVariableDeclaration variableC = functionFoo.getChild(0);
+    VariableDeclaration variableC = functionFoo.getChild(0);
     TernaryOperation ternaryOperation = variableC.getExpression(0);
     TernaryOperation nestedTernaryOperation = ternaryOperation.getExpression(1);
     assertNotNull(nestedTernaryOperation);
@@ -351,9 +361,9 @@ public class CppParserTest extends TestCase {
         "void main() { int a = 0, b = 0; a += 1; }");
     FunctionDefinition functionMain = unit.getChild(0);
     assertEquals("main", functionMain.getName());
-    LocalVariableDeclaration variableA = functionMain.getChild(0);
+    VariableDeclaration variableA = functionMain.getChild(0);
     assertEquals("a", variableA.getName());
-    LocalVariableDeclaration variableB = functionMain.getChild(1);
+    VariableDeclaration variableB = functionMain.getChild(1);
     assertEquals("b", variableB.getName());
   }
 
@@ -382,9 +392,9 @@ public class CppParserTest extends TestCase {
     TranslationUnit unit = parse(
         "void main() { int a = 0, b = 1; a = b; }");
     FunctionDefinition functionMain = unit.getChild(0);
-    LocalVariableDeclaration variableA = functionMain.getChild(0);
+    VariableDeclaration variableA = functionMain.getChild(0);
     assertEquals("a", variableA.getName());
-    LocalVariableDeclaration variableB = functionMain.getChild(1);
+    VariableDeclaration variableB = functionMain.getChild(1);
     assertEquals("b", variableB.getName());
     ExpressionStatement statement = functionMain.getChild(2);
     Expression expression = statement.getExpression(0);
@@ -400,15 +410,15 @@ public class CppParserTest extends TestCase {
     TranslationUnit unit = parse(
       "void main() { int *p = 0, a = 0, *pp = 0; }");
     FunctionDefinition functionMain = unit.getChild(0);
-    LocalVariableDeclaration variableP = functionMain.getChild(0);
+    VariableDeclaration variableP = functionMain.getChild(0);
     assertEquals("p", variableP.getName());
     assertEquals("int", variableP.getType());
     assertTrue(variableP.isPointer());
-    LocalVariableDeclaration variableA = functionMain.getChild(1);
+    VariableDeclaration variableA = functionMain.getChild(1);
     assertEquals("a", variableA.getName());
     assertEquals("int", variableA.getType());
     assertFalse(variableA.isPointer());
-    LocalVariableDeclaration variablePP = functionMain.getChild(2);
+    VariableDeclaration variablePP = functionMain.getChild(2);
     assertEquals("pp", variablePP.getName());
     assertEquals("int", variablePP.getType());
     assertTrue(variablePP.isPointer());
@@ -418,11 +428,11 @@ public class CppParserTest extends TestCase {
     TranslationUnit unit = parse(
       "void main() { int a = 0; int& r = a; }");
     FunctionDefinition functionMain = unit.getChild(0);
-    LocalVariableDeclaration variableA = functionMain.getChild(0);
+    VariableDeclaration variableA = functionMain.getChild(0);
     assertEquals("a", variableA.getName());
     assertEquals("int", variableA.getType());
     assertFalse(variableA.isPointer());
-    LocalVariableDeclaration variableR = functionMain.getChild(1);
+    VariableDeclaration variableR = functionMain.getChild(1);
     assertEquals("r", variableR.getName());
     assertEquals("int", variableR.getType());
     assertTrue(variableR.isPointer());

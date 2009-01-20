@@ -72,19 +72,19 @@ public class Node {
     private final String name;
     private final Node finish;
     private boolean stop;
-    private LocalVariableDeclaration result;
+    private VariableDeclaration result;
 
     public VariableDeclarationFinder(String name, Node finish) {
       this.name = name;
       this.finish = finish;
     }
 
-    public LocalVariableDeclaration getResult() {
+    public VariableDeclaration getResult() {
       return result;
     }
 
     @Override
-    public void visit(LocalVariableDeclaration localVariableDeclaration) {
+    public void visit(VariableDeclaration localVariableDeclaration) {
       if (!stop &&
           localVariableDeclaration.getParent() == finish.getParent() &&
           localVariableDeclaration.getName().equals(name)) {
@@ -93,8 +93,8 @@ public class Node {
     }
   }
 
-  public LocalVariableDeclaration lookupVariable(String name) {
-    LocalVariableDeclaration result = null;
+  public VariableDeclaration lookupVariable(String name) {
+    VariableDeclaration result = null;
     if (parent != null) {
       int index = parent.children.indexOf(this);
       while (--index >= 0 && result == null) {
