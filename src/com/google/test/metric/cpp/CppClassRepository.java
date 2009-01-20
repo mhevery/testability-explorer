@@ -29,7 +29,7 @@ import com.google.test.metric.MethodInfo;
 import com.google.test.metric.Type;
 import com.google.test.metric.cpp.dom.ClassDeclaration;
 import com.google.test.metric.cpp.dom.FunctionDefinition;
-import com.google.test.metric.cpp.dom.LocalVariableDeclaration;
+import com.google.test.metric.cpp.dom.VariableDeclaration;
 import com.google.test.metric.cpp.dom.ReturnStatement;
 import com.google.test.metric.cpp.dom.TranslationUnit;
 import com.google.test.metric.cpp.dom.Visitor;
@@ -49,7 +49,7 @@ public class CppClassRepository implements ClassRepository {
     }
 
     @Override
-    public void visit(LocalVariableDeclaration localVariableDeclaration) {
+    public void visit(VariableDeclaration localVariableDeclaration) {
       Type variableType = CppType.fromName(localVariableDeclaration.getName(),
           localVariableDeclaration.isPointer());
       variables.add(new LocalVariableInfo(localVariableDeclaration.getName(),

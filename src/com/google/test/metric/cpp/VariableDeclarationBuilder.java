@@ -18,43 +18,41 @@ package com.google.test.metric.cpp;
 import java.util.List;
 
 import com.google.test.metric.cpp.dom.Node;
+import com.google.test.metric.cpp.dom.VariableDeclaration;
 
-class GlobalScopeBuilder extends DefaultBuilder {
+class VariableDeclarationBuilder extends DefaultBuilder {
 
   private final Node parent;
-  private List<String> sts;
+  private final List<String> sts;
 
-  GlobalScopeBuilder(Node parent) {
+  public VariableDeclarationBuilder(Node parent, List<String> sts) {
     this.parent = parent;
-  }
-
-  @Override
-  public void beginClassDefinition(String type, String identifier) {
-    pushBuilder(new ClassBuilder(parent, identifier));
-  }
-
-  @Override
-  public void enterNamespaceScope(String ns) {
-    pushBuilder(new NamespaceBuilder(parent, ns));
-  }
-
-  @Override
-  public void beginFunctionDefinition(int line) {
-    pushBuilder(new FunctionDefinitionBuilder(parent, line));
-  }
-
-  @Override
-  public void beginFunctionDeclaration() {
-    pushBuilder(new FunctionDeclarationBuilder(parent));
-  }
-
-  @Override
-  public void simpleTypeSpecifier(List<String> sts) {
     this.sts = sts;
   }
 
   @Override
-  public void beginInitDeclaratorList() {
-    pushBuilder(new VariableDeclarationBuilder(parent, sts));
+  public void directDeclarator(String id) {
+    parent.addChild(new VariableDeclaration(sts.get(0), id));
+  }
+
+  @Override
+  public void beginInitializer() {
+  }
+
+  @Override
+  public void endInitializer() {
+  }
+
+  @Override
+  public void beginPostfixExpression() {
+  }
+
+  @Override
+  public void endPostfixExpression() {
+  }
+
+  @Override
+  public void endInitDeclaratorList() {
+    finished();
   }
 }

@@ -15,19 +15,19 @@
  */
 package com.google.test.metric.cpp.dom;
 
-public class LocalVariableDeclaration extends Node {
+public class VariableDeclaration extends Node {
 
   private final String name;
   private final String type;
   private final boolean pointer;
 
-  public LocalVariableDeclaration(String type, String name) {
+  public VariableDeclaration(String type, String name) {
     this.type = type;
     this.name = name;
     this.pointer = false;
   }
 
-  public LocalVariableDeclaration(String type, String name, boolean pointer) {
+  public VariableDeclaration(String type, String name, boolean pointer) {
     this.type = type;
     this.name = name;
     this.pointer = pointer;

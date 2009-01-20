@@ -86,7 +86,7 @@ public abstract class Visitor {
   public void endVisit(TranslationUnit translationUnit) {
   }
 
-  public void visit(LocalVariableDeclaration localVariableDeclaration) {
+  public void visit(VariableDeclaration localVariableDeclaration) {
   }
 
   public void visit(ExpressionStatement expressionStatement) {
