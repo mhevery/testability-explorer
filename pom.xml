@@ -14,7 +14,9 @@
   <name>Testability Explorer</name>
   <version>1.3.0-r274</version>
   <description>A tool that looks at java bytecodes and helps you
-    identify hard to test code.</description>
+    identify hard to test code. This artifact uses jarjar
+    to embed all dependencies into this jar, so there are no
+    declared dependencies of this project.</description>
   <url>http://code.google.com/p/testability-explorer/</url>
   <scm>
     <url>http://code.google.com/p/testability-explorer/source/</url>
