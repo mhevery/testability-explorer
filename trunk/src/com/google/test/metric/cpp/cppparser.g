@@ -571,7 +571,8 @@ decl_namespace
       // Also see below
       //{if (strcmp((ns->getText()).data(),"xyz")==0) antlrTrace(true);}  // Used for diagnostic trigger
       LCURLY
-      {b.enterNamespaceScope(ns.getText());}
+      {if(ns == null) { b.enterNamespaceScope(null); }
+       else { b.enterNamespaceScope(ns.getText()); }}
       (external_declaration)*
       {b.exitNamespaceScope();}
       RCURLY

@@ -94,4 +94,10 @@ public abstract class Visitor {
 
   public void visit(AssignmentExpression assignmentExpression) {
   }
+
+  public void beginVisit(Namespace namespace) {
+  }
+
+  public void endVisit(Namespace namespace) {
+  }
 }
