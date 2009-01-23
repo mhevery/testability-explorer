@@ -15,11 +15,14 @@
  */
 package com.google.test.metric.cpp;
 
+import java.util.List;
+
 import com.google.test.metric.cpp.dom.Namespace;
 import com.google.test.metric.cpp.dom.Node;
 
 class NamespaceBuilder extends DefaultBuilder {
   private final Node node;
+  private List<String> sts;
 
   public NamespaceBuilder(Node parent, String name) {
     node = new Namespace(name);
@@ -49,5 +52,15 @@ class NamespaceBuilder extends DefaultBuilder {
   @Override
   public void beginFunctionDefinition(int line) {
     pushBuilder(new FunctionDefinitionBuilder(node, line));
+  }
+
+  @Override
+  public void simpleTypeSpecifier(List<String> sts) {
+    this.sts = sts;
+  }
+
+  @Override
+  public void beginInitDeclaratorList() {
+    pushBuilder(new VariableDeclarationBuilder(node, sts));
   }
 }

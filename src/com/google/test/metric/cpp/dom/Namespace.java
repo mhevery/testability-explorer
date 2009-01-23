@@ -25,4 +25,11 @@ public class Namespace extends Node {
   public String getName() {
     return name;
   }
+
+  @Override
+  public void accept(Visitor visitor) {
+    visitor.beginVisit(this);
+    visitChildren(visitor);
+    visitor.endVisit(this);
+  }
 }

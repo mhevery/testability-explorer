@@ -63,4 +63,60 @@ public class NodeTest extends TestCase {
     VariableDeclaration variableA = variableB.lookupVariable("a");
     assertNull(variableA);
   }
+
+  public void testUnnamedNamespaceVariableLookup() throws Exception {
+    TranslationUnit unit = parse("namespace { int a = 0; } void foo() { int b = a; }");
+    FunctionDefinition functionFoo = unit.getChild(1);
+    VariableDeclaration variableB = functionFoo.getChild(0);
+    // lookup variable a in the context of declaration of variable b
+    VariableDeclaration variableA = variableB.lookupVariable("a");
+    assertNotNull(variableA);
+    Namespace namespace = unit.getChild(0);
+    assertEquals(namespace.getChild(0), variableA);
+  }
+
+  public void testNamedNamespaceVariableLookup() throws Exception {
+    TranslationUnit unit = parse("namespace A { int a = 0; } void foo() { int b = A::a; }");
+    FunctionDefinition functionFoo = unit.getChild(1);
+    VariableDeclaration variableB = functionFoo.getChild(0);
+    // lookup variable a in the context of declaration of variable b
+    VariableDeclaration variableA = variableB.lookupVariable("A::a");
+    assertNotNull(variableA);
+    Namespace namespaceA = unit.getChild(0);
+    assertEquals(namespaceA.getChild(0), variableA);
+  }
+
+  public void testComplexNamespaceVariableLookup() throws Exception {
+    TranslationUnit unit = parse("namespace A { namespace B { int a = 0; } } void foo() { int b = A::B::a; }");
+    FunctionDefinition functionFoo = unit.getChild(1);
+    VariableDeclaration variableB = functionFoo.getChild(0);
+    // lookup variable a in the context of declaration of variable b
+    VariableDeclaration variableA = variableB.lookupVariable("A::B::a");
+    assertNotNull(variableA);
+    Namespace namespaceA = unit.getChild(0);
+    Namespace namespaceB = namespaceA.getChild(0);
+    assertEquals(namespaceB.getChild(0), variableA);
+  }
+
+  public void testNamespaceVariableLookup() throws Exception {
+    TranslationUnit unit = parse("namespace A { namespace B { int a = 0; } } namespace C { void foo() { int b = A::B::a; } }");
+    Namespace namespaceC = unit.getChild(1);
+    FunctionDefinition functionFoo = namespaceC.getChild(0);
+    VariableDeclaration variableB = functionFoo.getChild(0);
+    // lookup variable a in the context of declaration of variable b
+    VariableDeclaration variableA = variableB.lookupVariable("A::B::a");
+    assertNotNull(variableA);
+    Namespace namespaceA = unit.getChild(0);
+    Namespace namespaceB = namespaceA.getChild(0);
+    assertEquals(namespaceB.getChild(0), variableA);
+  }
+
+  public void testLateVariableLookup() throws Exception {
+    TranslationUnit unit = parse("void foo() { int b = a; } int a = 0;");
+    FunctionDefinition functionFoo = unit.getChild(0);
+    VariableDeclaration variableB = functionFoo.getChild(0);
+    // lookup variable a in the context of declaration of variable b
+    VariableDeclaration variableA = variableB.lookupVariable("a");
+    assertNull(variableA);
+  }
 }
