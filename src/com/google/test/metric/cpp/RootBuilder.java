@@ -282,8 +282,8 @@ class RootBuilder extends DefaultBuilder implements BuilderContext {
   }
 
   @Override
-  public void beginAssignmentExpression() {
-    currentBuilder.beginAssignmentExpression();
+  public void beginAssignmentExpression(int line) {
+    currentBuilder.beginAssignmentExpression(line);
   }
 
   @Override

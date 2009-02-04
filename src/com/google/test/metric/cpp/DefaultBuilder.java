@@ -313,7 +313,7 @@ class DefaultBuilder implements Builder {
     throw new UnsupportedOperationException();
   }
 
-  public void beginAssignmentExpression() {
+  public void beginAssignmentExpression(int line) {
     throw new UnsupportedOperationException();
   }
 

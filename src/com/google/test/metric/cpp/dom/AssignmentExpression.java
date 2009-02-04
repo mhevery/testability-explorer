@@ -17,6 +17,16 @@ package com.google.test.metric.cpp.dom;
 
 public class AssignmentExpression extends Expression {
 
+  private final int line;
+
+  public AssignmentExpression(int line) {
+    this.line = line;
+  }
+
+  public int getLineNumber() {
+    return line;
+  }
+
   @Override
   public void accept(Visitor visitor) {
     visitor.visit(this);

@@ -16,4 +16,9 @@
 package com.google.test.metric.cpp.dom;
 
 public class Expression extends Node {
+
+  @Override
+  public VariableDeclaration lookupVariable(String name) {
+    return getParent().lookupVariable(name);
+  }
 }

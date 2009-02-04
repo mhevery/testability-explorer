@@ -1546,7 +1546,7 @@ assignment_expression
   : 
     conditional_expression
     (
-      {b.beginAssignmentExpression();}
+      {b.beginAssignmentExpression(LT(1).getLine());}
       (ASSIGNEQUAL
       |TIMESEQUAL|DIVIDEEQUAL|MINUSEQUAL|PLUSEQUAL
       |MODEQUAL

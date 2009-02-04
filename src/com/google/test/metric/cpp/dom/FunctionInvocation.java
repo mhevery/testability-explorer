@@ -18,7 +18,7 @@ package com.google.test.metric.cpp.dom;
 public class FunctionInvocation extends Node {
 
   private final String name;
-  private final NodeList parameters = new NodeList();
+  private final NodeList parameters = new NodeList(this);
 
   public FunctionInvocation(String name) {
     this.name = name;

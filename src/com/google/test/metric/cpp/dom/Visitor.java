@@ -89,9 +89,6 @@ public abstract class Visitor {
   public void visit(VariableDeclaration localVariableDeclaration) {
   }
 
-  public void visit(ExpressionStatement expressionStatement) {
-  }
-
   public void visit(AssignmentExpression assignmentExpression) {
   }
 
@@ -99,5 +96,11 @@ public abstract class Visitor {
   }
 
   public void endVisit(Namespace namespace) {
+  }
+
+  public void beginVisit(ExpressionStatement expressionStatement) {
+  }
+
+  public void endVisit(ExpressionStatement expressionStatement) {
   }
 }

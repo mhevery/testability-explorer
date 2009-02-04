@@ -296,7 +296,7 @@ interface Builder {
   void beginParameterList();
   void endParameterList();
 
-  void beginAssignmentExpression();
+  void beginAssignmentExpression(int line);
   void endAssignmentExpression();
 
   void beginMemberAccess();
