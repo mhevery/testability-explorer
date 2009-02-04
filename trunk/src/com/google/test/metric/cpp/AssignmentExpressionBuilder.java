@@ -39,7 +39,7 @@ public class AssignmentExpressionBuilder extends ExpressionBuilder {
   }
 
   @Override
-  public void beginAssignmentExpression() {
+  public void beginAssignmentExpression(int line) {
     pushBuilder(new AssignmentExpressionBuilder(nodes));
   }
 

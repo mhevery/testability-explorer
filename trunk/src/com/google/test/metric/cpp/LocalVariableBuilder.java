@@ -17,8 +17,8 @@ package com.google.test.metric.cpp;
 
 import java.util.List;
 
-import com.google.test.metric.cpp.dom.VariableDeclaration;
 import com.google.test.metric.cpp.dom.Node;
+import com.google.test.metric.cpp.dom.VariableDeclaration;
 
 public class LocalVariableBuilder extends DefaultBuilder {
 
@@ -33,7 +33,7 @@ public class LocalVariableBuilder extends DefaultBuilder {
   }
 
   @Override
-  public void beginAssignmentExpression() {
+  public void beginAssignmentExpression(int line) {
     pushBuilder(new ExpressionBuilder(node));
   }
 

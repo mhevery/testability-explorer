@@ -19,6 +19,8 @@ public class ExpressionStatement extends Node {
 
   @Override
   public void accept(Visitor visitor) {
-    visitor.visit(this);
+    visitor.beginVisit(this);
+    visitChildren(visitor);
+    visitor.endVisit(this);
   }
 }

@@ -21,9 +21,14 @@ import java.util.Stack;
  * Base class for all C++ AST nodes.
  */
 public class Node {
-  private final NodeList children = new NodeList();
-  private final NodeList expressions = new NodeList();
+  private final NodeList children;
+  private final NodeList expressions;
   private Node parent;
+
+  protected Node() {
+    children = new NodeList(this);
+    expressions = new NodeList(this);
+  }
 
   public Node getRoot() {
     Node result = this;
@@ -37,6 +42,10 @@ public class Node {
     return parent;
   }
 
+  void setParent(Node parent) {
+    this.parent = parent;
+  }
+
   public NodeList getChildren() {
     return children;
   }
@@ -48,7 +57,6 @@ public class Node {
 
   public void addChild(Node child) {
     children.add(child);
-    child.parent = this;
   }
 
   public NodeList getExpressions() {
@@ -62,7 +70,6 @@ public class Node {
 
   public void addExpression(Node expression) {
     expressions.add(expression);
-    expression.parent = this;
   }
 
   public void accept(Visitor visitor) {

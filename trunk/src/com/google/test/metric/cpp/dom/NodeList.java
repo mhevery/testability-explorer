@@ -22,9 +22,15 @@ import java.util.List;
 public class NodeList implements Iterable<Node> {
 
   private final List<Node> nodes = new ArrayList<Node>();
+  private final Node parent;
+
+  public NodeList(Node parent) {
+    this.parent = parent;
+  }
 
   public void add(Node node) {
     nodes.add(node);
+    node.setParent(parent);
   }
 
   @SuppressWarnings("unchecked")

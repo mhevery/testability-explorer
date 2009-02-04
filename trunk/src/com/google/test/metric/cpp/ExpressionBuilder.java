@@ -71,11 +71,11 @@ public class ExpressionBuilder extends DefaultBuilder {
   }
 
   @Override
-  public void beginAssignmentExpression() {
+  public void beginAssignmentExpression(int line) {
     int index = nodes.size() - 1;
     Expression leftSide = nodes.get(index);
     nodes.remove(index);
-    AssignmentExpression assignment = new AssignmentExpression();
+    AssignmentExpression assignment = new AssignmentExpression(line);
     nodes.add(assignment);
     assignment.addExpression(leftSide);
     pushBuilder(new AssignmentExpressionBuilder(assignment));

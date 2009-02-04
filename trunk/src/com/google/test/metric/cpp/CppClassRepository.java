@@ -27,12 +27,17 @@ import com.google.test.metric.ClassRepository;
 import com.google.test.metric.LocalVariableInfo;
 import com.google.test.metric.MethodInfo;
 import com.google.test.metric.Type;
+import com.google.test.metric.Variable;
+import com.google.test.metric.cpp.dom.AssignmentExpression;
 import com.google.test.metric.cpp.dom.ClassDeclaration;
 import com.google.test.metric.cpp.dom.FunctionDefinition;
-import com.google.test.metric.cpp.dom.VariableDeclaration;
+import com.google.test.metric.cpp.dom.Name;
+import com.google.test.metric.cpp.dom.Node;
 import com.google.test.metric.cpp.dom.ReturnStatement;
 import com.google.test.metric.cpp.dom.TranslationUnit;
+import com.google.test.metric.cpp.dom.VariableDeclaration;
 import com.google.test.metric.cpp.dom.Visitor;
+import com.google.test.metric.method.op.turing.LocalAssignment;
 import com.google.test.metric.method.op.turing.Operation;
 import com.google.test.metric.method.op.turing.ReturnOperation;
 
@@ -63,6 +68,32 @@ public class CppClassRepository implements ClassRepository {
 
     List<Operation> getResult() {
       return operations;
+    }
+
+    @Override
+    public void visit(AssignmentExpression assignmentExpression) {
+      Node leftSide = assignmentExpression.getExpression(0);
+      Node rightSide = assignmentExpression.getExpression(1);
+      Variable leftVar = null;
+      Variable rightVar = null;
+      if (leftSide instanceof Name) {
+        Name leftName = (Name) leftSide;
+        VariableDeclaration declaration = leftName.lookupVariable(
+            leftName.getIdentifier());
+        leftVar = new Variable(declaration.getName(),
+            CppType.fromName(declaration.getType()), false, false);
+      }
+      if (rightSide instanceof Name) {
+        Name rightName = (Name) rightSide;
+        VariableDeclaration declaration = rightName.lookupVariable(
+            rightName.getIdentifier());
+        rightVar = new Variable(declaration.getName(),
+            CppType.fromName(declaration.getType()), false, false);
+      }
+      if (leftVar != null && rightVar != null) {
+        operations.add(new LocalAssignment(
+            assignmentExpression.getLineNumber(), leftVar, rightVar));
+      }
     }
 
     @Override
