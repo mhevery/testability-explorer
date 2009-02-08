@@ -286,6 +286,6 @@ public class KeyedMultiStackTest extends TestCase {
 
     stack.apply("L3", new NoopClosure(3));
     long duration = System.currentTimeMillis() - start;
-    assertTrue("Duration: " + duration, duration < 60);
+    assertTrue("Duration: " + duration, duration < 80);
   }
 }

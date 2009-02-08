@@ -23,7 +23,7 @@ import com.google.classpath.DirectoryClassPath;
 
 public class SourceLoaderTest extends TestCase {
 
-  private final DirectoryClassPath classPath = new DirectoryClassPath(new File("src-test"));
+  private final DirectoryClassPath classPath = new DirectoryClassPath(new File("src/test/java"));
 
   public void testReadSourceFile() throws Exception {
     SourceLoader loader = new SourceLoader(classPath);
