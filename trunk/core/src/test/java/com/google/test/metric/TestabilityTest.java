@@ -28,7 +28,7 @@ public class TestabilityTest extends AutoFieldClearTestCase {
    * These are included in subversion so that any checkout will have a consistent
    * environment for testing.
    */
-  public static final String CLASSES_FOR_TEST = "classes-for-test";
+  public static final String CLASSES_FOR_TEST = "src/test/classes";
 
   /**
    * Directory root that contains one class with no external

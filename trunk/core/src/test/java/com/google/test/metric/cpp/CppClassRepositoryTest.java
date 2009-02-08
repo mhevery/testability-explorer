@@ -21,8 +21,6 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.apache.tools.ant.filters.StringInputStream;
-
 import com.google.test.metric.ClassInfo;
 import com.google.test.metric.LocalVariableInfo;
 import com.google.test.metric.MethodInfo;
@@ -35,7 +33,7 @@ public class CppClassRepositoryTest extends TestCase {
 
   public void testSimpleClass() throws Exception {
     CppClassRepository repository = new CppClassRepository();
-    repository.parse(new StringInputStream("class A{};"));
+    repository.parse("class A{};");
     ClassInfo classInfo = repository.getClass("A");
     assertNotNull(classInfo);
     assertFalse(classInfo.isInterface());
@@ -52,7 +50,7 @@ public class CppClassRepositoryTest extends TestCase {
 
   public void testClassWithMethod() throws Exception {
     CppClassRepository repository = new CppClassRepository();
-    repository.parse(new StringInputStream("class A{ void foo() {} };"));
+    repository.parse("class A{ void foo() {} };");
     ClassInfo classInfo = repository.getClass("A");
     assertNotNull(classInfo);
     assertFalse(classInfo.isInterface());
@@ -65,7 +63,7 @@ public class CppClassRepositoryTest extends TestCase {
 
   public void testClassWithMethodWithParameters() throws Exception {
     CppClassRepository repository = new CppClassRepository();
-    repository.parse(new StringInputStream("class A{ public: void foo(int a, int b) {} };"));
+    repository.parse("class A{ public: void foo(int a, int b) {} };");
     ClassInfo classInfo = repository.getClass("A");
     assertNotNull(classInfo);
     assertFalse(classInfo.isInterface());
@@ -79,7 +77,7 @@ public class CppClassRepositoryTest extends TestCase {
 
   public void testMethodWithLocalVariables() throws Exception {
     CppClassRepository repository = new CppClassRepository();
-    repository.parse(new StringInputStream("class A{ protected: void foo() { int a; int b; } };"));
+    repository.parse("class A{ protected: void foo() { int a; int b; } };");
     ClassInfo classInfo = repository.getClass("A");
     assertNotNull(classInfo);
     assertFalse(classInfo.isInterface());
@@ -98,7 +96,7 @@ public class CppClassRepositoryTest extends TestCase {
 
   public void testMethodReturnOperation() throws Exception {
     CppClassRepository repository = new CppClassRepository();
-    repository.parse(new StringInputStream("class A{ protected: void foo() { return; } };"));
+    repository.parse("class A{ protected: void foo() { return; } };");
     ClassInfo classInfo = repository.getClass("A");
     assertNotNull(classInfo);
     Iterator<MethodInfo> it = classInfo.getMethods().iterator();
@@ -113,7 +111,7 @@ public class CppClassRepositoryTest extends TestCase {
 
   public void testLocalAssignmentOperation() throws Exception {
     CppClassRepository repository = new CppClassRepository();
-    repository.parse(new StringInputStream("class A{ protected: void foo() { int a = 0; int b = 1; b = a; } };"));
+    repository.parse("class A{ protected: void foo() { int a = 0; int b = 1; b = a; } };");
     ClassInfo classInfo = repository.getClass("A");
     assertNotNull(classInfo);
     Iterator<MethodInfo> it = classInfo.getMethods().iterator();

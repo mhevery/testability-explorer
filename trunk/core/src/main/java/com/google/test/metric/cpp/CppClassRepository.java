@@ -155,4 +155,10 @@ public class CppClassRepository implements ClassRepository {
     ClassInfoBuilder builder = new ClassInfoBuilder();
     unit.accept(builder);
   }
+  
+  public void parse(String in) throws Exception {
+    TranslationUnit unit = new Parser().parse(in);
+    ClassInfoBuilder builder = new ClassInfoBuilder();
+    unit.accept(builder);
+  }
 }

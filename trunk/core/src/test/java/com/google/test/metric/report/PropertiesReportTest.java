@@ -16,12 +16,13 @@
 package com.google.test.metric.report;
 
 import java.io.ByteArrayOutputStream;
+import java.io.StringReader;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.Properties;
 
 import junit.framework.TestCase;
-
-import org.apache.tools.ant.filters.StringInputStream;
 
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.Cost;
@@ -48,7 +49,7 @@ public class PropertiesReportTest extends TestCase {
     String output = out.toString();
     assertTrue(output.contains("Bar"));
     Properties props = new Properties();
-    props.load(new StringInputStream(output));
+    props.load(new ByteArrayInputStream(out.toByteArray()));
     assertEquals(1, Integer.parseInt(props.getProperty(CLASS_NAME)));
   }
 }
