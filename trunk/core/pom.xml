@@ -48,10 +48,6 @@
     </dependency>
   </dependencies>
   <build>
-    <!--
-    <sourceDirectory>src</sourceDirectory>
-    <testSourceDirectory>src-test</testSourceDirectory>
-    -->
     <resources>
       <resource>
         <directory>src/main/java</directory>
@@ -60,12 +56,7 @@
         </excludes>
       </resource>
     </resources>
-    <!--
-    <testResources>
-      <testResource>
-        <directory>
-          src/test/java</directory></testResource></testResources>
-       -->
+
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -95,12 +86,45 @@
           </execution>
         </executions>
         <configuration>
-          <shadedArtifactId>core-with-deps</shadedArtifactId>
+          <shadedClassifierName>with-deps</shadedClassifierName>
+          <shadedArtifactAttached>true</shadedArtifactAttached>
         </configuration>
       </plugin>
 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>com.google.test.metric.Testability</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
+  <reporting>
+    <plugins>
+      <!--
+      <plugin>
+        <groupId>emma</groupId>
+        <artifactId>maven-emma-plugin</artifactId>
+        <configuration>
+          <filter>
+            <excludes>
+              <exclude>com.google.test.metric.example.*</exclude>
+              <exclude>com.google.test.metric.cpp.InternalLexer</exclude>
+              <exclude>com.google.test.metric.cpp.InternalParser</exclude>
+            </excludes>
+          </filter>
+        </configuration>
+      </plugin>
+      -->
+    </plugins>
+  </reporting>
+
   <repositories>
     <repository>
       <id>java.net</id>
