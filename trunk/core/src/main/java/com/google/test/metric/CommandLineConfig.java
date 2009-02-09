@@ -43,7 +43,7 @@ import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 /**
  * Holds fields that Args4J sets by parsing the command line options. After the args are parsed, 
- * build a TestabilityConfiguration.
+ * build a TestabilityConfig.
  * 
  * @author Jonathan Andrew Wolter <jaw@jawspeak.com>
  */
