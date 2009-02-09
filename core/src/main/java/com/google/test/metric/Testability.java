@@ -17,7 +17,7 @@ package com.google.test.metric;
 
 /**
  * Has the responsibility of acting as the static main() entrypoint to the application. 
- * Delegates to CommandLineConfiguration for available command line options to parse. 
+ * Delegates to CommandLineConfig for available command line options to parse. 
  * Delegates to Args4J for the responsibility of parsing options. 
  * Delegates to TestabilityRunner to actually run the analysis.
  */
@@ -47,7 +47,7 @@ public class Testability {
     CmdLineParser parser = new CmdLineParser(commandLineConfig);
     try {
       parser.parseArgument(args);
-      new TestabilityRunner(commandLineConfig.buildTestabilityConfig()).execute();
+      new TestabilityRunner(commandLineConfig.buildTestabilityConfig()).run();
     } catch (CmdLineException e) {
       err.println(e.getMessage() + "\n");
       parser.setUsageWidth(120);

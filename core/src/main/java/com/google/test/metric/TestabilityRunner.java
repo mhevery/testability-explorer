@@ -19,9 +19,12 @@ import static com.google.classpath.RegExpResourceFilter.ANY;
 import static com.google.classpath.RegExpResourceFilter.ENDS_WITH_CLASS;
 import static java.util.Arrays.asList;
 
+import java.io.PrintStream;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import com.google.classpath.ClassPath;
 import com.google.classpath.RegExpResourceFilter;
 import com.google.test.metric.report.Report;
 
@@ -32,44 +35,48 @@ import com.google.test.metric.report.Report;
  * @author Jonathan Andrew Wolter <jaw@jawspeak.com>
  */
 public class TestabilityRunner {
-  
-  private final TestabilityConfig configuration;
 
-  TestabilityRunner(TestabilityConfig configuration) {
-    this.configuration = configuration;
+  private final List<String> entryList;
+  private final ClassPath classPath;
+  private final RegExpWhiteList whitelist;
+  private final Report report;
+  private final PrintStream err;
+  private final int printDepth;
+
+  public TestabilityRunner(TestabilityConfig config) {
+    this.entryList = config.getEntryList();
+    this.classPath = config.getClassPath();
+    this.whitelist = config.getWhitelist();
+    this.report = config.getReport();
+    this.err = config.getErr();
+    this.printDepth = config.getPrintDepth();
   }
 
-  public Report execute(){
-    ClassRepository classRepository = new JavaClassRepository(configuration.getClassPath());
-    Report report = configuration.getReport();
+  public Report run(){
+    ClassRepository classRepository = new JavaClassRepository(classPath);
     
-    MetricComputer computer = new MetricComputer(
-        classRepository,
-        configuration.getErr(), 
-        configuration.getWhitelist(), 
-        configuration.getPrintDepth());
-    
+    MetricComputer computer = new MetricComputer(classRepository, err, whitelist, printDepth);
     report.printHeader();
     
     SortedSet<String> classNames = new TreeSet<String>();
     RegExpResourceFilter resourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
-    for (String entry : configuration.getEntryList()) {
+    for (String entry : entryList) {
       if (entry.equals(".")) {
         entry = "";
       }
       // TODO(jonathan) seems too complicated, replacing "." with "/" using the resource filter, then right below replace all "/" with "."
-      classNames.addAll(asList(configuration.getClassPath().findResources(entry.replace(".", "/"), resourceFilter)));
+      classNames.addAll(asList(classPath.findResources(entry.replace(".", "/"), resourceFilter)));
     }
     for (String resource : classNames) {
       String className = resource.replace(".class", "").replace("/", ".");
       try {
-        if (!configuration.getWhitelist().isClassWhiteListed(className)) {
+        if (!whitelist.isClassWhiteListed(className)) {
           ClassInfo clazz = classRepository.getClass(className);
           ClassCost classCost = computer.compute(clazz);
           report.addClassCost(classCost);
         }
       } catch (ClassNotFoundException e) {
-        configuration.getErr().println("WARNING: can not analyze class '" + className
+        err.println("WARNING: can not analyze class '" + className
             + "' since class '" + e.getClassName() + "' was not found.");
       }
     }
