@@ -24,6 +24,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Path;
 
+import com.google.test.metric.CommandLineConfig;
 import com.google.test.metric.Testability;
 
 public class TestabilityTask extends Task {
@@ -110,20 +111,20 @@ public class TestabilityTask extends Task {
   }
 
   private void runTestabilityExplorer() {
-    Testability.main(
-        model.getResultPrintStream(),
-        model.getErrorPrintStream(),
-        "-cyclomatic", Integer.toString(model.getCyclomatic()),
-        "-global", Integer.toString(model.getGlobal()),
-        model.getFilter(),
-        "-cp", model.getClassPath(),
-        "-printDepth", Integer.toString(model.getPrintDepth()),
-        "-minCost", Integer.toString(model.getMinCost()),
-        "-maxExcellentCost", Integer.toString(model.getMaxExcellentCost()),
-        "-maxAcceptableCost", Integer.toString(model.getMaxAcceptableCost()),
-        "-worstOffenderCount", Integer.toString(model.getWorstOffenderCount()),
-        "-whitelist", model.getWhiteList(),
-        "-print", model.getPrint()
+    CommandLineConfig commandLineConfig = new CommandLineConfig(model.getResultPrintStream(), model.getErrorPrintStream());
+	Testability testability = new Testability(model.getErrorPrintStream(), commandLineConfig);
+	testability.run(
+	    "-cyclomatic", Integer.toString(model.getCyclomatic()),
+	    "-global", Integer.toString(model.getGlobal()),
+	    model.getFilter(),
+	    "-cp", model.getClassPath(),
+	    "-printDepth", Integer.toString(model.getPrintDepth()),
+	    "-minCost", Integer.toString(model.getMinCost()),
+	    "-maxExcellentCost", Integer.toString(model.getMaxExcellentCost()),
+	    "-maxAcceptableCost", Integer.toString(model.getMaxAcceptableCost()),
+	    "-worstOffenderCount", Integer.toString(model.getWorstOffenderCount()),
+	    "-whitelist", model.getWhiteList(),
+	    "-print", model.getPrint()
     );
   }
 
