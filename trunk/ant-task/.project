@@ -1,0 +1,13 @@
+<projectDescription>
+  <name>ant-task</name>
+  <comment>Provides an ant task to execute testability explorer.</comment>
+  <projects/>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>

@@ -50,6 +50,7 @@ public class XMLReportDiffer {
     return (oldCost == null && newCost != null) || (oldCost != null && (newCost == null || !oldCost.equals(newCost)));
   }
 
+  @SuppressWarnings("unchecked")
   private List<Diff.MethodDiff> diffMethods(Node oldClassNode, Node newClassNode) {
     List<Diff.MethodDiff> result = new LinkedList<Diff.MethodDiff>();
 

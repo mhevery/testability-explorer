@@ -8,7 +8,8 @@ import com.google.test.metric.CostUtil;
  * @author alexeagle@google.com (Alex Eagle)
  */
 public class ClassSourceReportTestExample {
-  private Integer foo = 1;
+  @SuppressWarnings("unused")
+private Integer foo = 1;
 
   static {
     CostUtil.staticCost1();

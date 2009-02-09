@@ -26,7 +26,8 @@ public class JavaClassRepositoryTest extends TestCase {
   }
 
   private static class DeeplyNestedIfStatements {
-    private static void nested(boolean x) {
+    @SuppressWarnings("unused")
+	private static void nested(boolean x) {
         int num =
           (x ? 1 : 0) +
           (x ? 1 : 0) +

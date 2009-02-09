@@ -1,12 +1,11 @@
 package com.google.test.metric.report;
 
-import junit.framework.TestCase;
-
-import java.io.*;
-import java.util.Collections;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Arrays;
+import java.util.Collections;
 
-import org.w3c.dom.Document;
+import junit.framework.TestCase;
 
 /**
  * Tests for HTML generation of the Diff report
@@ -22,7 +21,8 @@ public class DiffReportTest extends TestCase {
     out = new StringWriter();
   }
 
-  public void testNoDiffs() throws Exception {
+  @SuppressWarnings("unchecked")
+public void testNoDiffs() throws Exception {
     Diff diff = new Diff(Collections.EMPTY_LIST);
     DiffReport diffReport = new DiffReport(diff);
     diffReport.writeHtml(out);
