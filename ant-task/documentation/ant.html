@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Language" content="en-us">
 <link rel="stylesheet" type="text/css" href="../stylesheets/style.css">
-<title>Testabilityy Task</title>
+<title>Testability Task</title>
 </head>
 
 <body>
@@ -101,10 +101,10 @@ are used to get the list of jar files and/or class directories.
 
 <p><b>Integrate Testability-Explorer into Ant environment</b></p>
 <pre>
-&lt;taskdef name="testability" classname="com.google.ant.TestabilityTask"  classpath="<i>PATH</i>/ant-testability-explorer.jar;<i>PATH</i>/testability-explorer.jar"/&gt;
+&lt;taskdef name="testability" classname="com.google.ant.TestabilityTask"  classpath="<i>PATH_TO_TE</i>/ant-task-1.3.1.jar;<i>PATH_TO_TE</i>/core-1.3.1-with-deps.jar"/&gt;
 </pre>
 
-<p><b>Use Testability-Explore with default settings</b></p>
+<p><b>Use Testability-Explorer with default settings</b></p>
 <pre>
 &lt;target name="testability-simple"&gt;
    &lt;testability&gt;
@@ -115,7 +115,7 @@ are used to get the list of jar files and/or class directories.
 &lt;/target&gt;
 </pre>
 
-<p><b>Use Testability-Explore customized </b></p>
+<p><b>Use Testability-Explorer customized </b></p>
 This example shows all possible arguments of the ant task including the <i>failproperty</i>. Instead of breaking the build on the spot this property is set and the build continues. The second snippet shows how the property can be read and used to break the build at a well defined timing.
 <pre>
 &lt;target name="testability-complex"&gt;
