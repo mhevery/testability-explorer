@@ -38,6 +38,8 @@ public class TestabilityRunnerTest extends AutoFieldClearTestCase {
    */
   public static final String CLASSES_EXTERNAL_DEPS_NO_SUPERCLASSES =
     CLASSES_FOR_TEST + "/root3";
+
+private static final String NEW_LINE = System.getProperty("line.separator");
   
   private WatchedOutputStream out = new WatchedOutputStream();
   private WatchedOutputStream err = new WatchedOutputStream();
@@ -52,9 +54,9 @@ public class TestabilityRunnerTest extends AutoFieldClearTestCase {
     assertTrue(err.toString().length() > 0);
     assertTrue(err.toString().startsWith("WARNING: can not analyze class "));
     assertEquals("WARNING: can not analyze class 'com.google.test.metric.ClassInfoTest' " +
-        "since class 'com/google/test/metric/ClassRepositoryTestCase' was not found.\n" + 
+        "since class 'com/google/test/metric/ClassRepositoryTestCase' was not found." + NEW_LINE + 
         "WARNING: can not analyze class 'com.google.test.metric.x.SelfTest' " +
-        "since class 'com/google/test/metric/ClassRepositoryTestCase' was not found.\n",
+        "since class 'com/google/test/metric/ClassRepositoryTestCase' was not found." +  NEW_LINE,
         err.toString());
   }
 

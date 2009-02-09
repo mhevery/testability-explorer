@@ -15,10 +15,8 @@
  */
 package com.google.test.metric.report;
 
-import java.io.ByteArrayOutputStream;
-import java.io.StringReader;
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.Properties;
 

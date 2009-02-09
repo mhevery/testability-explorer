@@ -49,7 +49,8 @@ public class Diff {
     private final List<MethodDiff> methodDiffs;
     private final String className;
 
-    public ClassDiff(String className, Integer oldMetric, Integer newMetric) {
+    @SuppressWarnings("unchecked")
+	public ClassDiff(String className, Integer oldMetric, Integer newMetric) {
       this.className = className;
       this.oldMetric = oldMetric;
       this.newMetric = newMetric;

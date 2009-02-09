@@ -1,9 +1,9 @@
 <classpath>
   <classpathentry kind="src" path="src/main/java"/>
-  <classpathentry kind="src" path="src/test/java" output="target/test-classes"/>
-  <classpathentry kind="src" path="src/test/resources" output="target/test-classes" excluding="**/*.java"/>
+  <classpathentry kind="src" path="src/test/java" output="target-eclipse/test-classes"/>
+  <classpathentry kind="src" path="src/test/resources" output="target-eclipse/test-classes" excluding="**/*.java"/>
   <classpathentry kind="src" path="target/generated-sources/antlr"/>
-  <classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="output" path="target-eclipse/classes"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
   <classpathentry kind="var" path="M2_REPO/antlr/antlr/2.7.7/antlr-2.7.7.jar"/>
   <classpathentry kind="var" path="M2_REPO/args4j/args4j/2.0.8/args4j-2.0.8.jar"/>
