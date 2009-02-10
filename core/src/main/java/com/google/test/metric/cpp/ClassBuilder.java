@@ -15,13 +15,17 @@
  */
 package com.google.test.metric.cpp;
 
+import java.util.List;
+
 import com.google.test.metric.Visibility;
 import com.google.test.metric.cpp.dom.ClassDeclaration;
 import com.google.test.metric.cpp.dom.Node;
+import com.google.test.metric.cpp.dom.VariableDeclaration;
 
 class ClassBuilder extends DefaultBuilder {
   private final Node node;
   private Visibility currentVisibility;
+  private List<String> sts;
 
   public ClassBuilder(Node parent, String identifier) {
     node = new ClassDeclaration(identifier);
@@ -73,4 +77,14 @@ class ClassBuilder extends DefaultBuilder {
     throw new IllegalArgumentException("invalid access specifier");
   }
 
+  @Override
+  public void simpleTypeSpecifier(List<String> sts) {
+    this.sts = sts;
+  }
+
+  @Override
+  public void directDeclarator(String id) {
+    Node child = new VariableDeclaration(sts.get(0), id);
+    node.addChild(child);
+  }
 }
