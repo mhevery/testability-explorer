@@ -119,4 +119,26 @@ public class NodeTest extends TestCase {
     VariableDeclaration variableA = variableB.lookupVariable("a");
     assertNull(variableA);
   }
+
+  public void testFieldLookup() throws Exception {
+    TranslationUnit unit = parse("class A{ int a; void foo() { int b = a; } };");
+    ClassDeclaration classA = unit.getChild(0);
+    FunctionDefinition functionFoo = classA.getChild(1);
+    VariableDeclaration variableB = functionFoo.getChild(0);
+    // lookup variable a in the context of declaration of variable b
+    VariableDeclaration variableA = variableB.lookupVariable("a");
+    assertNotNull(variableA);
+    assertEquals("a", variableA.getName());
+  }
+
+  public void testFieldLookupPostDeclaration() throws Exception {
+    TranslationUnit unit = parse("class A{ void foo() { int b = a; } int a; };");
+    ClassDeclaration classA = unit.getChild(0);
+    FunctionDefinition functionFoo = classA.getChild(0);
+    VariableDeclaration variableB = functionFoo.getChild(0);
+    // lookup variable a in the context of declaration of variable b
+    VariableDeclaration variableA = variableB.lookupVariable("a");
+    assertNotNull(variableA);
+    assertEquals("a", variableA.getName());
+  }
 }

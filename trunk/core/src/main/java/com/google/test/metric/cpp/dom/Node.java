@@ -15,8 +15,6 @@
  */
 package com.google.test.metric.cpp.dom;
 
-import java.util.Stack;
-
 /*
  * Base class for all C++ AST nodes.
  */
@@ -84,59 +82,27 @@ public class Node {
     }
   }
 
-  private static class VariableDeclarationFinder extends Visitor {
-    private final Variable variable;
-    private final Stack<Node> parents = new Stack<Node>();
-    private VariableDeclaration result;
-
-    public VariableDeclarationFinder(Variable v, Node context) {
-      this.variable = v;
-      parents.push(context.getParent());
-    }
-
-    public VariableDeclaration getResult() {
-      return result;
-    }
-
-    @Override
-    public void visit(VariableDeclaration localVariableDeclaration) {
-      Variable var = new Variable(localVariableDeclaration.getName(),
-          localVariableDeclaration);
-      Node parent = parents.peek();
-      if (localVariableDeclaration.getParent() == parent &&
-          var.equals(variable)) {
-        result = localVariableDeclaration;
-      }
-    }
-
-    @Override
-    public void beginVisit(Namespace namespace) {
-      parents.push(namespace);
-    }
-
-    @Override
-    public void endVisit(Namespace namespace) {
-      if (parents.peek() == namespace) {
-        parents.pop();
-      }
-    }
-  }
-
   public VariableDeclaration lookupVariable(String name) {
     Variable var = new Variable(name);
     VariableDeclaration result = null;
     if (parent != null) {
       // very inefficient algorithm, we visit some nodes more than once
-      int index = parent.children.indexOf(this);
-      while (--index >= 0 && result == null) {
-        VariableDeclarationFinder visitor = new VariableDeclarationFinder(var, this);
-        Node child = parent.children.get(index);
-        child.accept(visitor);
-        result = visitor.getResult();
-      }
+      result = parent.findVariableDeclaration(var, this);
       if (result == null) {
         result = parent.lookupVariable(name);
       }
+    }
+    return result;
+  }
+
+  VariableDeclaration findVariableDeclaration(Variable var, Node context) {
+    VariableDeclaration result = null;
+    int index = children.indexOf(context);
+    while (--index >= 0 && result == null) {
+      VariableDeclarationFinder visitor = new VariableDeclarationFinder(var, context);
+      Node child = children.get(index);
+      child.accept(visitor);
+      result = visitor.getResult();
     }
     return result;
   }

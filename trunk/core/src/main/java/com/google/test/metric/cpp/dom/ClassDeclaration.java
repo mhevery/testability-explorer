@@ -32,4 +32,17 @@ public class ClassDeclaration extends Node {
     visitChildren(visitor);
     visitor.endVisit(this);
   }
+
+  @Override
+  VariableDeclaration findVariableDeclaration(Variable var, Node context) {
+    VariableDeclaration result = null;
+    NodeList children = getChildren();
+    for (int index = 0; index < children.size() && result == null; ++index) {
+      VariableDeclarationFinder visitor = new VariableDeclarationFinder(var, context);
+      Node child = children.get(index);
+      child.accept(visitor);
+      result = visitor.getResult();
+    }
+    return result;
+  }
 }
