@@ -25,6 +25,7 @@ import com.google.test.metric.ClassInfo;
 import com.google.test.metric.LocalVariableInfo;
 import com.google.test.metric.MethodInfo;
 import com.google.test.metric.Visibility;
+import com.google.test.metric.method.op.turing.FieldAssignment;
 import com.google.test.metric.method.op.turing.LocalAssignment;
 import com.google.test.metric.method.op.turing.Operation;
 import com.google.test.metric.method.op.turing.ReturnOperation;
@@ -124,5 +125,22 @@ public class CppClassRepositoryTest extends TestCase {
     assertEquals(1, localAssignment.getLineNumber());
     assertEquals("b", localAssignment.getVariable().getName());
     assertEquals("a", localAssignment.getValue().getName());
+  }
+
+  public void testFieldAssignmentOperation() throws Exception {
+    CppClassRepository repository = new CppClassRepository();
+    repository.parse("class A{ void foo() { int b = 1; a = b; } int a; };");
+    ClassInfo classInfo = repository.getClass("A");
+    assertNotNull(classInfo);
+    Iterator<MethodInfo> it = classInfo.getMethods().iterator();
+    MethodInfo methodInfo = it.next();
+    List<Operation> operations = methodInfo.getOperations();
+    assertEquals(1, operations.size());
+    Operation operation = operations.get(0);
+    assertTrue(operation instanceof FieldAssignment);
+    FieldAssignment fieldAssignment = (FieldAssignment) operation;
+    assertEquals(1, fieldAssignment.getLineNumber());
+    assertEquals("a", fieldAssignment.getFieldInstance().getName());
+    assertEquals("b", fieldAssignment.getValue().getName());
   }
 }
