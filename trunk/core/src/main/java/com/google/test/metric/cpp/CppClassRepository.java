@@ -24,6 +24,7 @@ import java.util.Stack;
 
 import com.google.test.metric.ClassInfo;
 import com.google.test.metric.ClassRepository;
+import com.google.test.metric.FieldInfo;
 import com.google.test.metric.LocalVariableInfo;
 import com.google.test.metric.MethodInfo;
 import com.google.test.metric.Type;
@@ -37,6 +38,7 @@ import com.google.test.metric.cpp.dom.ReturnStatement;
 import com.google.test.metric.cpp.dom.TranslationUnit;
 import com.google.test.metric.cpp.dom.VariableDeclaration;
 import com.google.test.metric.cpp.dom.Visitor;
+import com.google.test.metric.method.op.turing.FieldAssignment;
 import com.google.test.metric.method.op.turing.LocalAssignment;
 import com.google.test.metric.method.op.turing.Operation;
 import com.google.test.metric.method.op.turing.ReturnOperation;
@@ -65,6 +67,11 @@ public class CppClassRepository implements ClassRepository {
   private static class OperationBuilder extends Visitor {
 
     private final List<Operation> operations = new ArrayList<Operation>();
+    private final CppClassRepository repository;
+
+    public OperationBuilder(CppClassRepository repository) {
+      this.repository = repository;
+    }
 
     List<Operation> getResult() {
       return operations;
@@ -76,12 +83,12 @@ public class CppClassRepository implements ClassRepository {
       Node rightSide = assignmentExpression.getExpression(1);
       Variable leftVar = null;
       Variable rightVar = null;
+      VariableDeclaration leftDeclaration = null;
       if (leftSide instanceof Name) {
         Name leftName = (Name) leftSide;
-        VariableDeclaration declaration = leftName.lookupVariable(
-            leftName.getIdentifier());
-        leftVar = new Variable(declaration.getName(),
-            CppType.fromName(declaration.getType()), false, false);
+        leftDeclaration = leftName.lookupVariable(leftName.getIdentifier());
+        leftVar = new Variable(leftDeclaration.getName(),
+            CppType.fromName(leftDeclaration.getType()), false, false);
       }
       if (rightSide instanceof Name) {
         Name rightName = (Name) rightSide;
@@ -91,8 +98,18 @@ public class CppClassRepository implements ClassRepository {
             CppType.fromName(declaration.getType()), false, false);
       }
       if (leftVar != null && rightVar != null) {
-        operations.add(new LocalAssignment(
-            assignmentExpression.getLineNumber(), leftVar, rightVar));
+        Node leftParent = leftDeclaration.getParent();
+        if (leftParent instanceof ClassDeclaration) {
+          ClassInfo classInfo = repository.getClass(leftDeclaration.getName());
+          Type fieldType = CppType.fromName(leftDeclaration.getType());
+          FieldInfo fieldInfo = new FieldInfo(classInfo, leftDeclaration
+              .getName(), fieldType, false, false, false);
+          operations.add(new FieldAssignment(assignmentExpression
+              .getLineNumber(), leftVar, fieldInfo, rightVar));
+        } else {
+          operations.add(new LocalAssignment(assignmentExpression
+              .getLineNumber(), leftVar, rightVar));
+        }
       }
     }
 
@@ -105,6 +122,11 @@ public class CppClassRepository implements ClassRepository {
   private class ClassInfoBuilder extends Visitor {
 
     private final Stack<ClassInfo> stack = new Stack<ClassInfo>();
+    private final CppClassRepository repository;
+
+    public ClassInfoBuilder(CppClassRepository repository) {
+      this.repository = repository;
+    }
 
     @Override
     public void beginVisit(ClassDeclaration classDeclaration) {
@@ -123,7 +145,7 @@ public class CppClassRepository implements ClassRepository {
     public void beginVisit(FunctionDefinition functionDefinition) {
       LocalVariableExtractor localVariablesExtractor = new LocalVariableExtractor();
       functionDefinition.accept(localVariablesExtractor);
-      OperationBuilder operationBuilder = new OperationBuilder();
+      OperationBuilder operationBuilder = new OperationBuilder(repository);
       functionDefinition.accept(operationBuilder);
 
       ClassInfo classInfo = stack.peek();
@@ -152,13 +174,13 @@ public class CppClassRepository implements ClassRepository {
 
   void parse(InputStream in) throws Exception {
     TranslationUnit unit = new Parser().parse(in);
-    ClassInfoBuilder builder = new ClassInfoBuilder();
+    ClassInfoBuilder builder = new ClassInfoBuilder(this);
     unit.accept(builder);
   }
-  
+
   public void parse(String in) throws Exception {
     TranslationUnit unit = new Parser().parse(in);
-    ClassInfoBuilder builder = new ClassInfoBuilder();
+    ClassInfoBuilder builder = new ClassInfoBuilder(this);
     unit.accept(builder);
   }
 }

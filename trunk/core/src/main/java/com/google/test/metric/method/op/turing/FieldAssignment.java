@@ -33,6 +33,18 @@ public class FieldAssignment extends Operation {
     this.value = value;
   }
 
+  public Variable getFieldInstance() {
+    return fieldInstance;
+  }
+
+  public FieldInfo getField() {
+    return field;
+  }
+
+  public Variable getValue() {
+	return value;
+  }
+
   @Override
   public void visit(TestabilityVisitor.Frame visitor) {
     visitor.assignField(fieldInstance, field, value, getLineNumber());
