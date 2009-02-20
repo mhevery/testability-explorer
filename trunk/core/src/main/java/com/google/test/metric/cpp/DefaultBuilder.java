@@ -19,7 +19,7 @@ import java.util.List;
 
 class DefaultBuilder implements Builder {
 
-  private BuilderContext context;
+  protected BuilderContext context;
 
   void setContext(BuilderContext context) {
     this.context = context;

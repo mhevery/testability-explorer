@@ -15,8 +15,12 @@
  */
 package com.google.test.metric.cpp.dom;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ClassDeclaration extends Node {
   private final String name;
+  private final List<BaseClass> baseClasses = new ArrayList<BaseClass>();
 
   public ClassDeclaration(String name) {
     this.name = name;
@@ -33,12 +37,44 @@ public class ClassDeclaration extends Node {
     visitor.endVisit(this);
   }
 
+  public String getQualifiedName() {
+    String tmpname = this.getName();
+    Node anode = this.getParent();
+    while (!(anode instanceof TranslationUnit)
+        && (anode instanceof Namespace || anode instanceof ClassDeclaration)) {
+      if (anode instanceof Namespace) {
+        tmpname = ((Namespace) anode).getName() + "::" + tmpname;
+      } else {
+        tmpname = ((ClassDeclaration) anode).getName() + "::" + tmpname;
+      }
+      anode = anode.getParent();
+    }
+    return tmpname;
+  }
+
+  public void setBase(ClassDeclaration base) {
+    baseClasses.get(baseClasses.size() - 1).setDeclaration(base);
+  }
+
+  public void setAccessSpecifier(String access_specifier) {
+    baseClasses.add(new BaseClass(access_specifier));
+  }
+
+  public BaseClass getBaseClass(int index) {
+    return baseClasses.get(index);
+  }
+
+  public int getNumberOfBaseClasses() {
+    return baseClasses.size();
+  }
+
   @Override
   VariableDeclaration findVariableDeclaration(Variable var, Node context) {
     VariableDeclaration result = null;
     NodeList children = getChildren();
     for (int index = 0; index < children.size() && result == null; ++index) {
-      VariableDeclarationFinder visitor = new VariableDeclarationFinder(var, context);
+      VariableDeclarationFinder visitor = new VariableDeclarationFinder(var,
+          context);
       Node child = children.get(index);
       child.accept(visitor);
       result = visitor.getResult();

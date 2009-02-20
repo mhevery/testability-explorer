@@ -22,6 +22,7 @@ import junit.framework.TestCase;
 import com.google.test.metric.ParameterInfo;
 import com.google.test.metric.Visibility;
 import com.google.test.metric.cpp.dom.AssignmentExpression;
+import com.google.test.metric.cpp.dom.BaseClass;
 import com.google.test.metric.cpp.dom.BreakStatement;
 import com.google.test.metric.cpp.dom.CaseStatement;
 import com.google.test.metric.cpp.dom.ClassDeclaration;
@@ -42,8 +43,14 @@ import com.google.test.metric.cpp.dom.SwitchStatement;
 import com.google.test.metric.cpp.dom.TernaryOperation;
 import com.google.test.metric.cpp.dom.TranslationUnit;
 import com.google.test.metric.cpp.dom.VariableDeclaration;
+import com.google.test.metric.cpp.dom.BaseClass.AccessSpecifier;
 
 public class CppParserTest extends TestCase {
+
+  private TranslationUnit parse(String source, NodeDictionary dict)
+      throws Exception {
+    return new Parser().parse(source, dict);
+  }
 
   private TranslationUnit parse(String source) throws Exception {
     return new Parser().parse(source);
@@ -69,6 +76,12 @@ public class CppParserTest extends TestCase {
     assertEquals("A", classA.getName());
     ClassDeclaration classB = classA.getChild(0);
     assertEquals("B", classB.getName());
+  }
+
+  public void testUnnamedNamespace() throws Exception {
+    TranslationUnit unit = parse("namespace {}");
+    Namespace namespace = unit.getChild(0);
+    assertNull(namespace.getName());
   }
 
   public void testEmptyNamespace() throws Exception {
@@ -440,5 +453,68 @@ public class CppParserTest extends TestCase {
 
   public void testClassLoadCppVariables() throws Exception {
     assertEquals(64, CPPvariables.QI_TYPE.size());
+  }
+
+  public void testInheritance() throws Exception {
+    TranslationUnit unit = parse("class A{}; class B : public A {};");
+    ClassDeclaration classA = unit.getChild(0);
+    ClassDeclaration classB = unit.getChild(1);
+    assertEquals("A", classA.getName());
+    assertEquals("B", classB.getName());
+    ClassDeclaration baseB = classB.getBaseClass(0).getDeclaration();
+    assertEquals("A", baseB.getName());
+    assertEquals(AccessSpecifier.PUBLIC, classB.getBaseClass(0)
+        .getAccessSpecifier());
+  }
+
+  public void testMultipleInheritence() throws Exception {
+    TranslationUnit unit = parse(
+        "class A{}; class B{}; class C : public A, protected B {};");
+    ClassDeclaration classA = unit.getChild(0);
+    ClassDeclaration classB = unit.getChild(1);
+    ClassDeclaration classC = unit.getChild(2);
+    assertEquals("A", classA.getName());
+    assertEquals("B", classB.getName());
+    assertEquals("C", classC.getName());
+
+    BaseClass baseC0 = classC.getBaseClass(0);
+    BaseClass baseC1 = classC.getBaseClass(1);
+
+    assertEquals("A", baseC0.getDeclaration().getName());
+    assertEquals(AccessSpecifier.PUBLIC, baseC0.getAccessSpecifier());
+
+    assertEquals("B", baseC1.getDeclaration().getName());
+    assertEquals(AccessSpecifier.PROTECTED, baseC1.getAccessSpecifier());
+  }
+
+  public void testInheritedClassInSpecifiedNamespace() throws Exception {
+    TranslationUnit unit = parse(
+      "namespace Foo { class A {}; } " +
+      "class B : public Foo::A {};");
+    Namespace namespaceFoo = unit.getChild(0);
+    ClassDeclaration classA = namespaceFoo.getChild(0);
+    ClassDeclaration classB = unit.getChild(1);
+    assertEquals("Foo::A", classA.getQualifiedName());
+    assertEquals("B", classB.getName());
+    ClassDeclaration baseB = classB.getBaseClass(0).getDeclaration();
+    assertEquals("A", baseB.getName());
+    assertEquals(AccessSpecifier.PUBLIC, classB.getBaseClass(0)
+        .getAccessSpecifier());
+  }
+
+  public void testInheritedClassInOtherTranslationUnit() throws Exception {
+    // Build other tree with external declaration.
+    NodeDictionary knownSymbols = new NodeDictionary();
+    ClassDeclaration other = new ClassDeclaration("B");
+    other.setParent(new Namespace("Bar"));
+    knownSymbols.registerNode("Bar::B", other);
+
+    TranslationUnit unit = parse("class A : public Bar::B {};", knownSymbols);
+    ClassDeclaration classA = unit.getChild(0);
+    assertEquals("A", classA.getName());
+
+    ClassDeclaration baseA = classA.getBaseClass(0).getDeclaration();
+    assertEquals("B", baseA.getName());
+    assertEquals("Bar::B", baseA.getQualifiedName());
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Google Inc.
+ * Copyright 2009 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,15 +15,28 @@
  */
 package com.google.test.metric.cpp;
 
-import com.google.test.metric.cpp.dom.Node;
+import com.google.test.metric.cpp.dom.ClassDeclaration;
 
-public interface BuilderContext {
+public class BaseClassBuilder extends DefaultBuilder {
 
-  void pushBuilder(DefaultBuilder builder);
+  private final ClassDeclaration node;
 
-  void popBuilder();
+  public BaseClassBuilder(ClassDeclaration node) {
+    this.node = node;
+  }
 
-  void registerNode(String name, Node node);
+  @Override
+  public void accessSpecifier(String access) {
+    node.setAccessSpecifier(access);
+  }
 
-  Node lookupNode(String node);
+  @Override
+  public void baseSpecifier(String identifier, boolean isVirtual) {
+    node.setBase((ClassDeclaration) super.context.lookupNode(identifier));
+  }
+
+  @Override
+  public void endBaseSpecifier() {
+    finished();
+  }
 }

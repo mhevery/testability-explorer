@@ -18,20 +18,36 @@ package com.google.test.metric.cpp;
 import java.util.List;
 import java.util.Stack;
 
+import com.google.test.metric.cpp.dom.Node;
 import com.google.test.metric.cpp.dom.TranslationUnit;
 
 class RootBuilder extends DefaultBuilder implements BuilderContext {
 
   private final TranslationUnit root = new TranslationUnit();
   private final Stack<DefaultBuilder> builders = new Stack<DefaultBuilder>();
+  private final NodeDictionary knownNodes;
   private DefaultBuilder currentBuilder;
 
   public RootBuilder() {
     pushBuilder(new GlobalScopeBuilder(root));
+    knownNodes = new NodeDictionary();
+  }
+
+  public RootBuilder(NodeDictionary dict) {
+    pushBuilder(new GlobalScopeBuilder(root));
+    knownNodes = dict;
   }
 
   public TranslationUnit getNode() {
     return root;
+  }
+
+  public void registerNode(String name, Node node) {
+    knownNodes.registerNode(name, node);
+  }
+
+  public Node lookupNode(String name) {
+    return knownNodes.lookupNode(name);
   }
 
   @Override
@@ -349,6 +365,20 @@ class RootBuilder extends DefaultBuilder implements BuilderContext {
   @Override
   public void endPtrOperator() {
     currentBuilder.endPtrOperator();
+  }
+
+  @Override
+  public void beginBaseSpecifier() {
+    currentBuilder.beginBaseSpecifier();
+  }
+
+  @Override
+  public void endBaseSpecifier() {
+    currentBuilder.endBaseSpecifier();
+  }
+
+  public void baseSpecifier(String identifier, boolean isVirtual) {
+    currentBuilder.baseSpecifier(identifier, isVirtual);
   }
 
   @Override
