@@ -24,18 +24,23 @@ import com.google.test.metric.cpp.dom.TranslationUnit;
 
 public class Parser {
 
-  public TranslationUnit parse(String source) throws Exception {
+  public TranslationUnit parse(InputStream in) throws Exception {
     RootBuilder builder = new RootBuilder();
-    Reader reader = new CharArrayReader(source.toCharArray());
+    Reader reader = new InputStreamReader(in);
     InternalLexer lexer = new InternalLexer(reader);
     InternalParser parser = new InternalParser(lexer);
     parser.translation_unit(builder);
     return builder.getNode();
   }
 
-  public TranslationUnit parse(InputStream in) throws Exception {
-    RootBuilder builder = new RootBuilder();
-    Reader reader = new InputStreamReader(in);
+  public TranslationUnit parse(String source) throws Exception {
+    return this.parse(source, new NodeDictionary());
+  }
+
+  public TranslationUnit parse(String source, NodeDictionary dict)
+      throws Exception {
+    RootBuilder builder = new RootBuilder(dict);
+    Reader reader = new CharArrayReader(source.toCharArray());
     InternalLexer lexer = new InternalLexer(reader);
     InternalParser parser = new InternalParser(lexer);
     parser.translation_unit(builder);

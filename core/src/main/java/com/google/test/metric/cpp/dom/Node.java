@@ -40,7 +40,7 @@ public class Node {
     return parent;
   }
 
-  void setParent(Node parent) {
+  public void setParent(Node parent) {
     this.parent = parent;
   }
 

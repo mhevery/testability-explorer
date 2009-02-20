@@ -57,4 +57,12 @@ class GlobalScopeBuilder extends DefaultBuilder {
   public void beginInitDeclaratorList() {
     pushBuilder(new VariableDeclarationBuilder(parent, sts));
   }
+
+  @Override
+  public void beginBaseSpecifier() {
+  }
+
+  @Override
+  public void endBaseSpecifier() {
+  }
 }

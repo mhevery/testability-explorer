@@ -23,7 +23,7 @@ import com.google.test.metric.cpp.dom.Node;
 import com.google.test.metric.cpp.dom.VariableDeclaration;
 
 class ClassBuilder extends DefaultBuilder {
-  private final Node node;
+  private final ClassDeclaration node;
   private Visibility currentVisibility;
   private List<String> sts;
 
@@ -31,6 +31,17 @@ class ClassBuilder extends DefaultBuilder {
     node = new ClassDeclaration(identifier);
     parent.addChild(node);
     currentVisibility = Visibility.PRIVATE;
+  }
+
+  @Override
+  void setContext(BuilderContext context) {
+    super.setContext(context);
+    context.registerNode(node.getQualifiedName(), node);
+  }
+
+  @Override
+  public void beginBaseSpecifier() {
+    pushBuilder(new BaseClassBuilder(node));
   }
 
   @Override

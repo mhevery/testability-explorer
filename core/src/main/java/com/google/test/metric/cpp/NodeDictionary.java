@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Google Inc.
+ * Copyright 2009 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,15 +15,19 @@
  */
 package com.google.test.metric.cpp;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.test.metric.cpp.dom.Node;
 
-public interface BuilderContext {
+public class NodeDictionary {
+  private final Map<String, Node> symbols = new HashMap<String, Node>();
 
-  void pushBuilder(DefaultBuilder builder);
+  public void registerNode(String name, Node node) {
+    symbols.put(name, node);
+  }
 
-  void popBuilder();
-
-  void registerNode(String name, Node node);
-
-  Node lookupNode(String node);
+  public Node lookupNode(String name) {
+    return symbols.get(name);
+  }
 }
