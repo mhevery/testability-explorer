@@ -32,7 +32,7 @@ public class PropertiesReportTest extends TestCase {
 
   ByteArrayOutputStream out = new ByteArrayOutputStream();
   CostModel costModel = new CostModel(1, 1);
-  PropertiesReport report = new PropertiesReport(out, costModel, 0, 0, 0);
+  PropertiesReport report = new PropertiesReport(out, costModel);
 
   private static final String CLASS_NAME = "com.google.foo.Bar";
   public void testReport() throws Exception {

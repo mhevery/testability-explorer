@@ -29,6 +29,11 @@ public class TextReport extends SummaryReport {
     this.out = out;
   }
 
+  public TextReport(PrintStream out, CostModel costModel, ReportOptions options) {
+    this(out, costModel, options.getMaxExcellentCost(), options.getMaxAcceptableCost(),
+            options.getWorstOffenderCount());
+  }
+
   public void printSummary() {
     int total = costs.size();
     out.printf("      Analyzed classes: %5d%n", total);

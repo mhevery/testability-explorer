@@ -46,6 +46,11 @@ public class XMLReport extends SummaryReport {
     this.costModel = costModel;
   }
 
+  public XMLReport(ContentHandler out, CostModel costModel, ReportOptions options) {
+    this(out, costModel, options.getMaxExcellentCost(),
+        options.getMaxAcceptableCost(), options.getWorstOffenderCount());
+  }
+
   public void printHeader() {
   }
 
