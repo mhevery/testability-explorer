@@ -38,7 +38,7 @@ public class TestabilityRunner {
 
   private final List<String> entryList;
   private final ClassPath classPath;
-  private final RegExpWhiteList whitelist;
+  private final WhiteList whitelist;
   private final Report report;
   private final PrintStream err;
   private final int printDepth;

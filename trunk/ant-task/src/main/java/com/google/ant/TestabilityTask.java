@@ -18,14 +18,18 @@ package com.google.ant;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Path;
-
-import com.google.test.metric.CommandLineConfig;
-import com.google.test.metric.Testability;
+import com.google.test.metric.*;
+import com.google.test.metric.ReportPrinterBuilder.ReportFormat;
+import com.google.test.metric.report.Report;
+import com.google.test.metric.report.ReportOptions;
+import com.google.classpath.ClassPath;
+import com.google.classpath.ClassPathFactory;
 
 public class TestabilityTask extends Task {
 
@@ -111,21 +115,27 @@ public class TestabilityTask extends Task {
   }
 
   private void runTestabilityExplorer() {
-    CommandLineConfig commandLineConfig = new CommandLineConfig(model.getResultPrintStream(), model.getErrorPrintStream());
-	Testability testability = new Testability(model.getErrorPrintStream(), commandLineConfig);
-	testability.run(
-	    "-cyclomatic", Integer.toString(model.getCyclomatic()),
-	    "-global", Integer.toString(model.getGlobal()),
-	    model.getFilter(),
-	    "-cp", model.getClassPath(),
-	    "-printDepth", Integer.toString(model.getPrintDepth()),
-	    "-minCost", Integer.toString(model.getMinCost()),
-	    "-maxExcellentCost", Integer.toString(model.getMaxExcellentCost()),
-	    "-maxAcceptableCost", Integer.toString(model.getMaxAcceptableCost()),
-	    "-worstOffenderCount", Integer.toString(model.getWorstOffenderCount()),
-	    "-whitelist", model.getWhiteList(),
-	    "-print", model.getPrint()
-    );
+    List<String> entries = Arrays.asList(model.getFilter());
+    WhiteList packageWhiteList = new RegExpWhiteList(model.getWhiteList());
+    ReportOptions options = setOptions();
+    ClassPath classPath = new ClassPathFactory().createFromPath(model.getClassPath());
+    Report report = new ReportPrinterBuilder(classPath, options,
+        ReportFormat.valueOf(model.getPrint()), model.getResultPrintStream(), entries).build();
+    TestabilityConfig config = new TestabilityConfig(entries, classPath, packageWhiteList,
+        report, model.getErrorPrintStream(), model.getPrintDepth());
+    new TestabilityRunner(config).run();
+  }
+
+  private ReportOptions setOptions() {
+    ReportOptions options = new ReportOptions();
+    options.setPrintDepth(model.getPrintDepth());
+    options.setMinCost(model.getMinCost());
+    options.setMaxAcceptableCost(model.getMaxAcceptableCost());
+    options.setMaxExcellentCost(model.getMaxExcellentCost());
+    options.setCyclomaticMultiplier(model.getCyclomatic());
+    options.setGlobalMultiplier(model.getGlobal());
+    options.setWorstOffenderCount(model.getWorstOffenderCount());
+    return options;
   }
 
   private void logParameters() {

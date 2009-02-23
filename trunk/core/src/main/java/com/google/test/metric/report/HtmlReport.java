@@ -51,6 +51,13 @@ public class HtmlReport extends SummaryReport {
     this.detailHtmlReport = detailHtmlReport;
   }
 
+  public HtmlReport(PrintStream out, CostModel costModel, ReportOptions options,
+                    DetailHtmlReport detailHtmlReport) {
+    this(out, costModel, options.getMaxExcellentCost(), options.getMaxAcceptableCost(),
+            options.getWorstOffenderCount(), detailHtmlReport);
+
+  }
+
   public void printSummary() {
     ByteArrayOutputStream bodyStream = new ByteArrayOutputStream();
     stream(bodyStream, getClass().getResourceAsStream("HtmlReportBody.html"));

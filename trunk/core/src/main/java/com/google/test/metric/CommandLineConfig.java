@@ -15,10 +15,8 @@
  */
 package com.google.test.metric;
 
-import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.kohsuke.args4j.Argument;
@@ -27,19 +25,9 @@ import org.kohsuke.args4j.Option;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
-import com.google.test.metric.report.DetailHtmlReport;
-import com.google.test.metric.report.DrillDownReport;
-import com.google.test.metric.report.GradeCategories;
-import com.google.test.metric.report.HtmlReport;
-import com.google.test.metric.report.PropertiesReport;
 import com.google.test.metric.report.Report;
-import com.google.test.metric.report.SourceLinker;
-import com.google.test.metric.report.SourceLoader;
-import com.google.test.metric.report.SourceReport;
-import com.google.test.metric.report.TextReport;
-import com.google.test.metric.report.XMLReport;
-import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
+import com.google.test.metric.report.ReportOptions;
+import com.google.test.metric.ReportPrinterBuilder.ReportFormat;
 
 /**
  * Holds fields that Args4J sets by parsing the command line options. After the args are parsed, 
@@ -126,50 +114,22 @@ public class CommandLineConfig {
     // This responsibility might belong in a new class.
     convertEntryListValues();
     ClassPath classPath = new ClassPathFactory().createFromPath(cp);
-    Report report = createReportPrinter(classPath);
+    ReportOptions options = new ReportOptions(cyclomaticMultiplier, globalMultiplier,
+        maxExcellentCost, maxAcceptableCost, worstOffenderCount, maxMethodCount, maxLineCount,
+        printDepth,  minCost, srcFileLineUrl, srcFileUrl);
+    ReportFormat format;
+    try {
+      format = ReportFormat.valueOf(printer);
+    } catch (Exception e) {
+      throw new CmdLineException("Don't understand '-print' option '" + printer + "'");
+    }
+    Report report = new ReportPrinterBuilder(classPath, options, format, out, entryList).build();
     RegExpWhiteList whitelist = new RegExpWhiteList("java.");
     for (String packageName : wl == null ? new String[] {} : wl.split("[,:]")) {
       whitelist.addPackage(packageName);
     }
     return new TestabilityConfig(entryList, classPath, whitelist, report, err, printDepth);
   }
-  
-  private Report createReportPrinter(ClassPath classPath) throws CmdLineException {
-    Report report;
-    CostModel costModel = new CostModel(cyclomaticMultiplier, globalMultiplier);
-    if (printer.equals("summary")) {
-      report = new TextReport(out, costModel, maxExcellentCost, maxAcceptableCost,
-          worstOffenderCount);
-    } else if (printer.equals("html")) {
-      SourceLinker linker = new SourceLinker(srcFileLineUrl, srcFileUrl);
-      DetailHtmlReport detailHtmlReport = new DetailHtmlReport(out, costModel, linker,
-          maxMethodCount, maxLineCount);
-      report = new HtmlReport(out, costModel, maxExcellentCost, maxAcceptableCost,
-          worstOffenderCount, detailHtmlReport);
-    } else if (printer.equals("detail")) {
-      report = new DrillDownReport(out, costModel, entryList, printDepth, minCost);
-    } else if (printer.equals("props")) {
-      report = new PropertiesReport(out, costModel, maxExcellentCost, maxAcceptableCost,
-          worstOffenderCount);
-    } else if (printer.equals("source")) {
-      GradeCategories gradeCategories = new GradeCategories(maxExcellentCost, maxAcceptableCost);
-      SourceLoader sourceLoader = new SourceLoader(classPath);
-      report = new SourceReport(gradeCategories, sourceLoader, new File("te-report"), costModel,
-          new Date(), worstOffenderCount);
-    } else if (printer.equals("xml")) {
-      XMLSerializer xmlSerializer = new XMLSerializer();
-      xmlSerializer.setOutputByteStream(out);
-      OutputFormat format = new OutputFormat();
-      format.setIndenting(true);
-      xmlSerializer.setOutputFormat(format);
-      report = new XMLReport(xmlSerializer, costModel, maxExcellentCost, maxAcceptableCost,
-          worstOffenderCount);
-    } else {
-      throw new CmdLineException("Don't understand '-print' option '" + printer + "'");
-    }
-    return report;
-  }
-
 
   /*
    * Converts entryList class and package values into paths by replacing any "." with a "/" Also

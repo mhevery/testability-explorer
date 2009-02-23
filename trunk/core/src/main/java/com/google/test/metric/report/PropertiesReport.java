@@ -35,12 +35,8 @@ public class PropertiesReport implements Report {
 
   /**
    * @param out where the report should be written
-   * @param maxExcellentCost  unused
-   * @param maxAcceptableCost  unused
-   * @param worstOffenderCount  unused
    */
-  public PropertiesReport(OutputStream out, CostModel costModel, int maxExcellentCost,
-      int maxAcceptableCost, int worstOffenderCount) {
+  public PropertiesReport(OutputStream out, CostModel costModel) {
     this.out = out;
     this.costModel = costModel;
   }

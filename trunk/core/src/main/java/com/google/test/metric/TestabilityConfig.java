@@ -34,7 +34,7 @@ public class TestabilityConfig {
   // TODO I could be persuaded to make all fields public, since this is just a data holder.
   private final List<String> entryList;
   private final ClassPath classPath;
-  private final RegExpWhiteList whitelist;
+  private final WhiteList whitelist;
   private final Report report;
   private final PrintStream err;
   private final int printDepth;
@@ -42,7 +42,7 @@ public class TestabilityConfig {
   public TestabilityConfig(
       List<String> entryList, 
       ClassPath classPath,
-      RegExpWhiteList whitelist, 
+      WhiteList whitelist,
       Report report, 
       PrintStream err, 
       int printDepth) {
@@ -62,7 +62,7 @@ public class TestabilityConfig {
     return classPath;
   }
 
-  public RegExpWhiteList getWhitelist() {
+  public WhiteList getWhitelist() {
     return whitelist;
   }
 
