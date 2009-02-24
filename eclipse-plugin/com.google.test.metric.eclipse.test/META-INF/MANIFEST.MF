@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Testability Test Plugin
+Bundle-SymbolicName: com.google.test.metric.eclipse.test
+Bundle-Version: 1.0.0
+Bundle-Activator: com.google.test.metric.eclipse.test.plugin.Activator
+Bundle-Vendor: Google, Inc.
+Require-Bundle: org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-ActivationPolicy: lazy

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.debug.ui.launchGroups">
+      <launchGroup
+            bannerImage="icons/blank.jpg"
+            id="com.google.test.metric.eclipse.ui.launchGroup.testability"
+            image="icons/blank.jpg"
+            label="Testability"
+            mode="testability">
+      </launchGroup>
+   </extension>
+
+
+  <extension point="org.eclipse.ui.actionSets">
+      <actionSet
+                id="com.google.test.metric.eclipse.ui.TestabilityActionSet"
+                label="Testability"
+                visible="true">
+             <menu
+                   id="org.eclipse.ui.run"
+                   label="Run"
+                  path="additions">
+               <separator name="relaunchGroup"/>
+               <separator name="emptyLaunchGroup"/>
+               </menu>
+                <action
+                      class="com.google.test.metric.eclipse.ui.actions.TestabilityConfigurationsAction"
+                      id="com.google.test.metric.eclipse.ui.actions.testability.configurations"
+                      label="Testability Configurations..."
+                      menubarPath="org.eclipse.ui.run/emptyLaunchGroup">
+                </action>
+             <action
+                   class="com.google.test.metric.eclipse.ui.actions.TestabilityHistoryAction"
+                   id="com.google.test.metric.eclipse.ui.actions.testability.history"
+                   label="Testability History"
+                   menubarPath="org.eclipse.ui.run/emptyLaunchGroup">
+             </action>
+</actionSet>
+</extension>
+  <extension
+        point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+     <launchConfigurationTabGroup
+           class="com.google.test.metric.eclipse.ui.TestabilityLaunchConfigurationTabGroup"
+           id="com.google.test.metric.eclipse.ui.testabilityLaunchConfigurationTabGroup"
+           type="com.google.test.metric.eclipse.core.launchTestabilityConfigurationType">
+        <launchMode
+              mode="testability">
+        </launchMode>
+     </launchConfigurationTabGroup>
+  </extension>
+  <extension
+        point="org.eclipse.debug.ui.launchConfigurationTabs">
+     <tab
+           class="com.google.test.metric.eclipse.ui.TestabilityLaunchConfigurationTab"
+           group="com.google.test.metric.eclipse.ui.testabilityLaunchConfigurationTabGroup"
+           id="com.google.test.metric.eclipse.ui.testabilityTab"
+           name="Testability">
+     </tab>
+  </extension>
+  <extension
+        point="org.eclipse.ui.views">
+     <view
+           class="com.google.test.metric.eclipse.ui.TestabilityReportView"
+           id="com.google.test.metric.eclipse.ui.browserview"
+           name="Testability Report"
+           restorable="true">
+     </view>
+  </extension>
+  <extension
+        point="com.google.test.metric.eclipse.core.testabilityLaunchListener">
+     <testabilityLaunchListener
+           class="com.google.test.metric.eclipse.ui.internal.TestabilityReportLaunchListener">
+     </testabilityLaunchListener>
+  </extension>
+
+
+</plugin>
