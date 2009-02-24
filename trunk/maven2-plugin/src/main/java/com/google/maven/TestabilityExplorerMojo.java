@@ -22,7 +22,7 @@ import java.util.List;
  * Executes the Testability Explorer with the specified parameters.
  *
  * @requiresDependencyResolution
- * @goal explore
+ * @goal run
  * @phase test
  */
 public class TestabilityExplorerMojo extends AbstractMojo {
@@ -38,7 +38,7 @@ public class TestabilityExplorerMojo extends AbstractMojo {
   /**
    * Location where generated reports will be created.
    *
-   * @parameter expression="${project.reporting.outputDirectory}/testability"
+   * @parameter default-value="${project.build.directory}/testability"
    * @required
    */
   private File outputDirectory;
@@ -109,7 +109,7 @@ public class TestabilityExplorerMojo extends AbstractMojo {
   /**
    * Colon-delimited packages to whitelist
    *
-   * @parameter default-value=""
+   * @parameter default-value=" "
    */
   private String whiteList;
 
@@ -121,7 +121,7 @@ public class TestabilityExplorerMojo extends AbstractMojo {
   private String print;
 
   /**
-   * @parameter expression="${project}"
+   * @parameter default-value="${project}"
    * @required
    * @readonly
    */
@@ -129,7 +129,8 @@ public class TestabilityExplorerMojo extends AbstractMojo {
 
   public void execute() throws MojoExecutionException, MojoFailureException {
     try {
-      String[] paths = (String[]) mavenProject.getRuntimeClasspathElements().toArray();
+      List<String> pathElements = mavenProject.getRuntimeClasspathElements();
+      String[] paths = pathElements.toArray(new String[pathElements.size()]);
       ClassPath classPath = new ClassPathFactory().createFromPaths(paths);
       WhiteList packageWhiteList = new RegExpWhiteList(whiteList);
       List<String> entries = Arrays.asList(filter);
@@ -137,6 +138,7 @@ public class TestabilityExplorerMojo extends AbstractMojo {
           getResultPrintStream(), entries).build();
       TestabilityConfig config = new TestabilityConfig(entries, classPath, packageWhiteList,
           report, getErrorPrintStream(), printDepth);
+      getLog().info("Running testability explorer");
       new TestabilityRunner(config).run();
     } catch (DependencyResolutionRequiredException e) {
       e.printStackTrace();
