@@ -18,6 +18,7 @@
   <modules>
     <module>core</module>
     <module>ant-task</module>
+    <module>maven2-plugin</module>
   </modules>
 
   <build>
