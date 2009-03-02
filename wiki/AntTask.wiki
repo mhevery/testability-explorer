@@ -66,9 +66,7 @@ This example shows all possible arguments of the ant task including the failprop
       <fileset dir="lib">
          <include name="*.jar"/>
       </fileset>
-      <fileset dir="build/classes">
-         <include name="com/ownstuff/**"/>
-      </fileset>
+      <pathelement location="build/classes"/>
     </classpath>
   </testability>
 </target>
