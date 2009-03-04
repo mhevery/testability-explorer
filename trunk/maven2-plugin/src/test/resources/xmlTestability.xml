@@ -7,7 +7,6 @@
 
         <configuration>
           <filter>com.google</filter>
-          <resultfile>report.xml</resultfile>
           <mavenProject implementation="com.google.maven.ProjectStub"/>
           <!-- TODO: we shouldn't need all these options populated.
                There are defaults in the Mojo, but they don't get filled in.
@@ -20,16 +19,9 @@
           <worstOffenderCount>20</worstOffenderCount>
           <maxAcceptableCost>100</maxAcceptableCost>
           <maxExcellentCost>50</maxExcellentCost>
-          <print>summary</print>
           <outputDirectory>target/testability</outputDirectory>
+          <targetDirectory>target</targetDirectory>
         </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>

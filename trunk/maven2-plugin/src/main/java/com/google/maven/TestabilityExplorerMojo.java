@@ -6,10 +6,10 @@ import com.google.test.metric.report.*;
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.reporting.AbstractMavenReport;
+import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.doxia.site.renderer.SiteRenderer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,15 +17,19 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * Executes the Testability Explorer with the specified parameters.
  *
- * @requiresDependencyResolution
- * @goal run
- * @phase test
+ * @goal testability
+ * @description Generates a Testability Report when the site plugin is run.
+ * @execute phase="compile"
+ * @requiresDependencyResolution compile
+ * @requiresProject
  */
-public class TestabilityExplorerMojo extends AbstractMojo {
+public class TestabilityExplorerMojo extends AbstractMavenReport {
 
   /**
    * The root package to inspect.
@@ -36,19 +40,29 @@ public class TestabilityExplorerMojo extends AbstractMojo {
   private String filter;
 
   /**
-   * Location where generated reports will be created.
+   * The output directory for the intermediate XML report.
    *
-   * @parameter default-value="${project.build.directory}/testability"
+   * @parameter expression="${project.build.directory}"
+   * @required
+   */
+  private File targetDirectory;
+
+  /**
+   * The output directory for the final HTML report. Note that this parameter is only evaluated if the goal is run
+   * directly from the command line or during the default lifecycle. If the goal is run indirectly as part of a site
+   * generation, the output directory configured in the Maven Site Plugin is used instead.
+   *
+   * @parameter expression="${project.reporting.outputDirectory}"
    * @required
    */
   private File outputDirectory;
 
   /**
-   * Filename of the output file
+   * Filename of the output file, without the extension
    *
-   * @parameter
+   * @parameter default-value="testability"
    */
-  private String resultfile;
+  private String resultfile = "testability";
 
   /**
    * Where to write errors from execution
@@ -114,31 +128,68 @@ public class TestabilityExplorerMojo extends AbstractMojo {
   private String whiteList;
 
   /**
-   * The type of report to create
+   * Set the output format type, in addition to the HTML report.  Must be one of: "xml",
+   * "summary", "source", "detail".
+   * XML is required if the testability:check goal is being used.
    *
-   * @parameter default-value="xml"
+   * @parameter expression="${format}" default-value="xml"
    */
-  private String print;
+  private String format = "xml";
 
   /**
-   * @parameter default-value="${project}"
+   * Directory containing the class files to analyze.
+   *
+   * @parameter default-value="${project.build.outputDirectory}"
+   * @required
+   */
+  private File classFilesDirectory;
+
+  /**
+   * @parameter expression="${project}"
    * @required
    * @readonly
    */
   private MavenProject mavenProject;
 
-  public void execute() throws MojoExecutionException, MojoFailureException {
+  /**
+   * @component
+   */
+  private SiteRenderer siteRenderer;
+
+  private static final String BUNDLE_NAME = "testability";
+  private static final String NAME_KEY = "report.testability.name";
+  private static final String DESCRIPTION_KEY = "report.testability.description";
+
+  protected SiteRenderer getSiteRenderer() {
+    return siteRenderer;
+  }
+
+  protected String getOutputDirectory() {
+    return outputDirectory.getAbsolutePath();
+  }
+
+  protected MavenProject getProject() {
+    return mavenProject;
+  }
+
+  protected void executeReport(Locale locale) throws MavenReportException {
     try {
       List<String> pathElements = mavenProject.getRuntimeClasspathElements();
       String[] paths = pathElements.toArray(new String[pathElements.size()]);
       ClassPath classPath = new ClassPathFactory().createFromPaths(paths);
       WhiteList packageWhiteList = new RegExpWhiteList(whiteList);
       List<String> entries = Arrays.asList(filter);
-      Report report = new ReportPrinterBuilder(classPath, setOptions(), ReportFormat.valueOf(print),
-          getResultPrintStream(), entries).build();
+      ReportOptions reportOptions = setOptions();
+      Report report = new ReportPrinterBuilder(classPath, reportOptions, ReportFormat.html,
+          getResultPrintStream(ReportFormat.html), entries).build();
+      if (!"html".equals(format)) {
+        PrintStream resultPrintStream = getResultPrintStream(ReportFormat.valueOf(format));
+        Report otherReport = new ReportPrinterBuilder(classPath, reportOptions,
+            ReportFormat.valueOf(format), resultPrintStream, entries).build();
+        report = new MultiReport(null, report, otherReport);
+      }
       TestabilityConfig config = new TestabilityConfig(entries, classPath, packageWhiteList,
           report, getErrorPrintStream(), printDepth);
-      getLog().info("Running testability explorer");
       new TestabilityRunner(config).run();
     } catch (DependencyResolutionRequiredException e) {
       e.printStackTrace();
@@ -157,18 +208,17 @@ public class TestabilityExplorerMojo extends AbstractMojo {
     return options;
   }
 
-  PrintStream getResultPrintStream() {
-    if (resultfile != null) {
-      try {
-        if (!outputDirectory.exists()) {
-          outputDirectory.mkdir();
-        }
-        return new PrintStream(new FileOutputStream(new File(outputDirectory, resultfile)));
-      } catch (FileNotFoundException e) {
-        throw new RuntimeException(e);
-      }
+  PrintStream getResultPrintStream(ReportFormat format) {
+    File directory = (format == ReportFormat.html ? outputDirectory : targetDirectory);
+    if (!directory.exists()) {
+      directory.mkdirs();
     }
-    return System.out;
+    try {
+      String outFile = resultfile + "." + format.toString();
+      return new PrintStream(new FileOutputStream(new File(directory, outFile)));
+    } catch (FileNotFoundException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   PrintStream getErrorPrintStream() {
@@ -180,5 +230,21 @@ public class TestabilityExplorerMojo extends AbstractMojo {
       }
     }
     return System.err;
+  }
+
+  public String getOutputName() {
+    return resultfile;
+  }
+
+  public String getName(Locale locale) {
+    return getProperty(locale, NAME_KEY);
+  }
+
+  private String getProperty(Locale locale, String key) {
+    return ResourceBundle.getBundle(BUNDLE_NAME, locale).getString(key);
+  }
+
+  public String getDescription(Locale locale) {
+    return getProperty(locale, DESCRIPTION_KEY);
   }
 }
