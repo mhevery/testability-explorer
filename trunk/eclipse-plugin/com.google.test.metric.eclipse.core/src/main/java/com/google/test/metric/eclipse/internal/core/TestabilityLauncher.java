@@ -1,12 +1,12 @@
 /*
  * Copyright 2009 Google Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -102,7 +102,7 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
 
     String[] classPaths = getClassPaths(javaProject, projectLocation);
 
-    List<String> allJavaClasses = getAllJavaClasses(javaProject);
+    List<String> allJavaPackages = getAllJavaPackages(javaProject);
 
     ClassPathFactory classPathFactory = new ClassPathFactory();
     ClassPath classPath = classPathFactory.createFromPaths(classPaths);
@@ -129,7 +129,7 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
             globalCost);
     try {
       PrintStream printStream = new PrintStream(new File(reportDirectory, "error-log"));
-      // TODO(klundberg) get whitelist from configuration 
+      // TODO(klundberg) get whitelist from configuration
       RegExpWhiteList whitelist = new RegExpWhiteList() {
         @Override
         public boolean isClassWhiteListed(String arg0) {
@@ -141,7 +141,7 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
               TestabilityConstants.RECORDING_DEPTH);
 
       TestabilityConfig testabilityConfig =
-          new TestabilityConfig(allJavaClasses, classPath, whitelist, report, printStream,
+          new TestabilityConfig(allJavaPackages, classPath, whitelist, report, printStream,
               recordingDepth);
       TestabilityRunner testabilityRunner = new TestabilityRunner(testabilityConfig);
       testabilityRunner.run();
@@ -171,18 +171,18 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
     }
   }
 
-  private List<String> getAllJavaClasses(IJavaProject javaProject) throws JavaModelException,
+  private List<String> getAllJavaPackages(IJavaProject javaProject) throws JavaModelException,
       CoreException {
-    List<String> allJavaClasses = new ArrayList<String>();
+    List<String> allJavaPackages = new ArrayList<String>();
     IPackageFragmentRoot[] roots = javaProject.getPackageFragmentRoots();
     for (IPackageFragmentRoot root : roots) {
       if (!root.isArchive()) {
         IResource rootResource = root.getCorrespondingResource();
-        rootResource.accept(new ClassNameVisitor(allJavaClasses, rootResource.getFullPath()
-            .toOSString()), IContainer.NONE);
+        String rootURL = rootResource.getFullPath().toOSString();
+        rootResource.accept(new PackageVisitor(allJavaPackages, rootURL), IContainer.NONE);
       }
     }
-    return allJavaClasses;
+    return allJavaPackages;
   }
 
   private String[] getClassPaths(IJavaProject javaProject, String projectLocation)
@@ -220,28 +220,28 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
     return report;
   }
 
-  private class ClassNameVisitor implements IResourceProxyVisitor {
-    private List<String> javaClasses;
+  private class PackageVisitor implements IResourceProxyVisitor {
+    private List<String> javaPackages;
     private String parentFolderPath;
 
-    private ClassNameVisitor(List<String> javaClasses, String parentFolderPath) {
-      this.javaClasses = javaClasses;
+    private PackageVisitor(List<String> javaPackages, String parentFolderPath) {
+      this.javaPackages = javaPackages;
       this.parentFolderPath = parentFolderPath;
     }
 
     public boolean visit(IResourceProxy proxy) {
-      if (proxy.getType() == IResource.FILE) {
+      if (proxy.getType() == IResource.FOLDER) {
         String name = proxy.getName();
-        if (name.endsWith(".java")) {
-          IPath path = proxy.requestFullPath();
-          String pathString = path.toOSString();
-          pathString = pathString.substring(parentFolderPath.length() + 1, pathString.length() - 5);
+        IPath path = proxy.requestFullPath();
+        String pathString = path.toOSString();
+        if (!parentFolderPath.equals(pathString)) {
+          pathString = pathString.substring(parentFolderPath.length() + 1, pathString.length());
           pathString = pathString.replace("/", ".");
-          javaClasses.add(pathString);
+          javaPackages.add(pathString);
         }
-        return false;
-      } else {
         return true;
+      } else {
+        return false;
       }
     }
   }
