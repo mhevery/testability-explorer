@@ -30,8 +30,8 @@ public class ReportOptions {
   private int maxLineCount;
   private int printDepth;
   private int minCost;
-  private String srcFileLineUrl;
-  private String srcFileUrl;
+  private String srcFileLineUrl = "";
+  private String srcFileUrl = "";
 
   public ReportOptions(double cyclomaticMultiplier, double globalMultiplier, int maxExcellentCost,
                        int maxAcceptableCost, int worstOffenderCount, int maxMethodCount,
