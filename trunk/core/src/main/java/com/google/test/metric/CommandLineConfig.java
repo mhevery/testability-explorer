@@ -30,16 +30,16 @@ import com.google.test.metric.report.ReportOptions;
 import com.google.test.metric.ReportPrinterBuilder.ReportFormat;
 
 /**
- * Holds fields that Args4J sets by parsing the command line options. After the args are parsed, 
+ * Holds fields that Args4J sets by parsing the command line options. After the args are parsed,
  * build a TestabilityConfig.
- * 
+ *
  * @author Jonathan Andrew Wolter <jaw@jawspeak.com>
  */
 public class CommandLineConfig {
 
   @Option(name = "-cp", usage = "colon delimited classpath to analyze (jars or directories)"
       + "\nEx. lib/one.jar:lib/two.jar")
-  protected String cp = System.getProperty("java.class.path", ".");
+  protected String cp;
 
   @Option(name = "-printDepth", usage = "Maximum depth to recurse and print costs of classes/methods "
       + "that the classes under analysis depend on. Defaults to 0.")
@@ -98,10 +98,10 @@ public class CommandLineConfig {
 
   @Argument(metaVar = "classes and packages to analyze", usage = "Classes or packages to analyze. "
       + "Matches any class starting with these.\n"
-      + "Ex. com.example.analyze.these com.google.and.these.packages " + "com.google.AClass", required = true)
+      + "Ex. com.example.analyze.these com.google.and.these.packages " + "com.google.AClass")
   List<String> entryList = new ArrayList<String>();
 
-  
+
   private PrintStream out;
   private PrintStream err;
 
@@ -112,6 +112,10 @@ public class CommandLineConfig {
 
   public TestabilityConfig buildTestabilityConfig() throws CmdLineException {
     // This responsibility might belong in a new class.
+    cp = (cp != null ? cp : System.getProperty("java.class.path", "."));
+    if (entryList.isEmpty()) {
+      entryList.add(".");
+    }
     convertEntryListValues();
     ClassPath classPath = new ClassPathFactory().createFromPath(cp);
     ReportOptions options = new ReportOptions(cyclomaticMultiplier, globalMultiplier,
@@ -149,6 +153,13 @@ public class CommandLineConfig {
       } else {
         entryList.set(i, entryList.get(i).replaceAll("/", "."));
       }
+    }
+  }
+
+  public void validate() throws CmdLineException {
+    if (cp == null && entryList.isEmpty()) {
+      throw new CmdLineException("You must supply either the -cp flag, " +
+          "or the argument \"classes and packages to analyze\".");
     }
   }
 }
