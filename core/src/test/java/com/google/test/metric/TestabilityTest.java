@@ -35,7 +35,7 @@ public class TestabilityTest extends AutoFieldClearTestCase {
 
   public void testParseNoArgs() {
     testability.run();
-    String expectedStartOfError = "Argument \"classes and packages to analyze\" is required";
+    String expectedStartOfError = "You must supply";
     assertEquals(expectedStartOfError, err.toString().substring(0, expectedStartOfError.length()));
     assertTrue(err.toString().indexOf("Exiting...") > -1);
   }
@@ -52,9 +52,9 @@ public class TestabilityTest extends AutoFieldClearTestCase {
   }
 
   public void testParseMultipleClassesAndPackages() throws Exception {
-	    testability.run("-cp", "not/default/path", 
-	    		"com.google.FirstClass", 
-	    		"com.google.second.package", 
+	    testability.run("-cp", "not/default/path",
+	    		"com.google.FirstClass",
+	    		"com.google.second.package",
 	    		"com.google.third.package");
 
 	    assertEquals("", err.toString());
@@ -74,7 +74,7 @@ public class TestabilityTest extends AutoFieldClearTestCase {
    * separated by spaces (" ")
    */
   public void testParseMultipleClassesAndPackagesSingleArg() throws Exception {
-	    testability.run("-cp", "not/default/path", 
+	    testability.run("-cp", "not/default/path",
 	    		"com.google.FirstClass com.google.second.package com.google.third.package");
 
 	    assertEquals("", err.toString());
@@ -88,7 +88,7 @@ public class TestabilityTest extends AutoFieldClearTestCase {
 	  }
 
   public void testParseComplexityAndGlobal() throws Exception {
-	    testability.run("-cp", "not/default/path", 
+	    testability.run("-cp", "not/default/path",
 	    		"-cyclomatic", "10",
 	    		"-global", "1",
 	    		"com.google.TestClass");
