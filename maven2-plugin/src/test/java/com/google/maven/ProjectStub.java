@@ -2,6 +2,7 @@ package com.google.maven;
 
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
+import org.apache.maven.model.Build;
 
 import java.util.List;
 import java.util.Arrays;
@@ -11,7 +12,17 @@ import java.util.Arrays;
  */
 public class ProjectStub extends MavenProjectStub {
   @Override
-  public List getRuntimeClasspathElements() throws DependencyResolutionRequiredException {
-    return Arrays.asList("target/classes");
+  public String getPackaging() {
+    return "jar";
+  }
+
+  @Override
+  public Build getBuild() {
+    return new Build() {
+      @Override
+      public String getOutputDirectory() {
+        return "target/classes";
+      }
+    };
   }
 }

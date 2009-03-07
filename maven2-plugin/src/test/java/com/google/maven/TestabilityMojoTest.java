@@ -42,6 +42,11 @@ public class TestabilityMojoTest extends AbstractMojoTestCase {
     results.delete();
   }
 
+  public void testNonJarProject() throws Exception {
+    mojo = lookupMojoFromPom("nonJarProject.xml");
+    mojo.execute();
+  }
+
   private TestabilityExplorerMojo lookupMojoFromPom(String pom) throws Exception {
     return (TestabilityExplorerMojo) lookupMojo("testability",
         getTestFile("src/test/resources/" + pom));
