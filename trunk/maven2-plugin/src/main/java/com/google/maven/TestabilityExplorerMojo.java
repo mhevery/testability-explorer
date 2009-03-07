@@ -35,7 +35,6 @@ public class TestabilityExplorerMojo extends AbstractMavenReport {
    * The root package to inspect.
    *
    * @parameter
-   * @required
    */
   private String filter;
 
@@ -137,14 +136,6 @@ public class TestabilityExplorerMojo extends AbstractMavenReport {
   private String format = "xml";
 
   /**
-   * Directory containing the class files to analyze.
-   *
-   * @parameter default-value="${project.build.outputDirectory}"
-   * @required
-   */
-  private File classFilesDirectory;
-
-  /**
    * @parameter expression="${project}"
    * @required
    * @readonly
@@ -173,27 +164,28 @@ public class TestabilityExplorerMojo extends AbstractMavenReport {
   }
 
   protected void executeReport(Locale locale) throws MavenReportException {
-    try {
-      List<String> pathElements = mavenProject.getRuntimeClasspathElements();
-      String[] paths = pathElements.toArray(new String[pathElements.size()]);
-      ClassPath classPath = new ClassPathFactory().createFromPaths(paths);
-      WhiteList packageWhiteList = new RegExpWhiteList(whiteList);
-      List<String> entries = Arrays.asList(filter);
-      ReportOptions reportOptions = setOptions();
-      Report report = new ReportPrinterBuilder(classPath, reportOptions, ReportFormat.html,
-          getResultPrintStream(ReportFormat.html), entries).build();
-      if (!"html".equals(format)) {
-        PrintStream resultPrintStream = getResultPrintStream(ReportFormat.valueOf(format));
-        Report otherReport = new ReportPrinterBuilder(classPath, reportOptions,
-            ReportFormat.valueOf(format), resultPrintStream, entries).build();
-        report = new MultiReport(null, report, otherReport);
-      }
-      TestabilityConfig config = new TestabilityConfig(entries, classPath, packageWhiteList,
-          report, getErrorPrintStream(), printDepth);
-      new TestabilityRunner(config).run();
-    } catch (DependencyResolutionRequiredException e) {
-      e.printStackTrace();
+    if (!"jar".equals(mavenProject.getPackaging())) {
+      getLog().info(String.format("Not running testability explorer for project %s " +
+          "because it is not a \"jar\" packaging", mavenProject.getName()));
+      return;
     }
+
+    ClassPath classPath = new ClassPathFactory().createFromPath(
+        mavenProject.getBuild().getOutputDirectory());
+    WhiteList packageWhiteList = new RegExpWhiteList(whiteList);
+    List<String> entries = Arrays.asList(filter);
+    ReportOptions reportOptions = setOptions();
+    Report report = new ReportPrinterBuilder(classPath, reportOptions, ReportFormat.html,
+        getResultPrintStream(ReportFormat.html), entries).build();
+    if (!"html".equals(format)) {
+      PrintStream resultPrintStream = getResultPrintStream(ReportFormat.valueOf(format));
+      Report otherReport = new ReportPrinterBuilder(classPath, reportOptions,
+          ReportFormat.valueOf(format), resultPrintStream, entries).build();
+      report = new MultiReport(null, report, otherReport);
+    }
+    TestabilityConfig config = new TestabilityConfig(entries, classPath, packageWhiteList,
+        report, getErrorPrintStream(), printDepth);
+    new TestabilityRunner(config).run();
   }
 
   private ReportOptions setOptions() {
