@@ -23,6 +23,7 @@ import com.google.test.metric.TestabilityConfig;
 import com.google.test.metric.TestabilityRunner;
 import com.google.test.metric.eclipse.core.TestabilityLaunchListener;
 import com.google.test.metric.eclipse.core.plugin.Activator;
+import com.google.test.metric.eclipse.internal.util.JavaPackageVisitor;
 import com.google.test.metric.eclipse.internal.util.JavaProjectHelper;
 import com.google.test.metric.eclipse.internal.util.Logger;
 import com.google.test.metric.eclipse.internal.util.TestabilityConstants;
@@ -33,8 +34,6 @@ import com.google.test.metric.report.SourceReport;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceProxy;
-import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IPath;
@@ -55,6 +54,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Launcher for testability configurations.
+ * 
+ * @author klundberg@google.com (Karin Lundberg)
+ *
+ */
 public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
 
   private static final String TESTABILITY = "testability";
@@ -171,7 +176,7 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
     }
   }
 
-  private List<String> getAllJavaPackages(IJavaProject javaProject) throws JavaModelException,
+  public List<String> getAllJavaPackages(IJavaProject javaProject) throws JavaModelException,
       CoreException {
     List<String> allJavaPackages = new ArrayList<String>();
     IPackageFragmentRoot[] roots = javaProject.getPackageFragmentRoots();
@@ -179,13 +184,13 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
       if (!root.isArchive()) {
         IResource rootResource = root.getCorrespondingResource();
         String rootURL = rootResource.getFullPath().toOSString();
-        rootResource.accept(new PackageVisitor(allJavaPackages, rootURL), IContainer.NONE);
+        rootResource.accept(new JavaPackageVisitor(allJavaPackages, rootURL), IContainer.NONE);
       }
     }
     return allJavaPackages;
   }
 
-  private String[] getClassPaths(IJavaProject javaProject, String projectLocation)
+  protected String[] getClassPaths(IJavaProject javaProject, String projectLocation)
       throws JavaModelException {
     IClasspathEntry[] classPathEntries = javaProject.getRawClasspath();
     String[] classPaths = new String[classPathEntries.length + 1];
@@ -220,29 +225,5 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
     return report;
   }
 
-  private class PackageVisitor implements IResourceProxyVisitor {
-    private List<String> javaPackages;
-    private String parentFolderPath;
-
-    private PackageVisitor(List<String> javaPackages, String parentFolderPath) {
-      this.javaPackages = javaPackages;
-      this.parentFolderPath = parentFolderPath;
-    }
-
-    public boolean visit(IResourceProxy proxy) {
-      if (proxy.getType() == IResource.FOLDER) {
-        String name = proxy.getName();
-        IPath path = proxy.requestFullPath();
-        String pathString = path.toOSString();
-        if (!parentFolderPath.equals(pathString)) {
-          pathString = pathString.substring(parentFolderPath.length() + 1, pathString.length());
-          pathString = pathString.replace("/", ".");
-          javaPackages.add(pathString);
-        }
-        return true;
-      } else {
-        return false;
-      }
-    }
-  }
+  
 }
