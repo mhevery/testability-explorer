@@ -17,6 +17,8 @@ package com.google.test.metric;
 
 import com.google.classpath.ClassPath;
 import com.google.test.metric.report.*;
+import com.google.test.metric.report.html.HtmlReport;
+import com.google.test.metric.report.html.DetailHtmlReport;
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
@@ -67,7 +69,7 @@ public class ReportPrinterBuilder {
       case html:
         SourceLinker linker = new SourceLinker(
             options.getSrcFileLineUrl(), options.getSrcFileUrl());
-        DetailHtmlReport detailHtmlReport = new DetailHtmlReport(out, costModel, linker,
+        DetailHtmlReport detailHtmlReport = new DetailHtmlReport(costModel, linker,
             options.getMaxMethodCount(), options.getMaxLineCount());
         report = new HtmlReport(out, costModel, options, detailHtmlReport);
         break;

@@ -8,7 +8,7 @@ import org.kohsuke.args4j.CmdLineException;
 
 import com.google.test.metric.TestabilityTest.WatchedOutputStream;
 import com.google.test.metric.report.DrillDownReport;
-import com.google.test.metric.report.HtmlReport;
+import com.google.test.metric.report.html.HtmlReport;
 import com.google.test.metric.report.PropertiesReport;
 import com.google.test.metric.report.SourceReport;
 import com.google.test.metric.report.TextReport;

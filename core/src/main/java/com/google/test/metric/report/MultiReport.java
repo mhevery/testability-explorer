@@ -7,6 +7,7 @@ import com.google.test.metric.ClassCost;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.io.IOException;
 
 /**
  * A report that directs metric recording into several delegated reports.
@@ -41,7 +42,7 @@ public class MultiReport implements Report {
   /**
    * @see com.google.test.metric.report.Report#printFooter()
    */
-  public void printFooter() {
+  public void printFooter() throws IOException {
     for (Report report : reports) {
       report.printFooter();
     }
@@ -50,7 +51,7 @@ public class MultiReport implements Report {
   /**
    * @see com.google.test.metric.report.Report#printHeader()
    */
-  public void printHeader() {
+  public void printHeader() throws IOException {
     for (Report report : reports) {
       report.printHeader();
     }

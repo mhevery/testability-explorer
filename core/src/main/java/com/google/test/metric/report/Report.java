@@ -17,13 +17,15 @@ package com.google.test.metric.report;
 
 import com.google.test.metric.ClassCost;
 
+import java.io.IOException;
+
 public interface Report {
 
-  void printHeader();
+  void printHeader() throws IOException;
 
   void addClassCost(ClassCost classCost);
 
-  void printFooter();
+  void printFooter() throws IOException;
 
 
 }

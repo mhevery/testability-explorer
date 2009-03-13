@@ -13,9 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.test.metric.report;
+package com.google.test.metric.report.html;
 
-import static com.google.test.metric.report.Constants.NEW_LINE;
+import com.google.test.metric.report.SourceLinker;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -35,8 +35,6 @@ import static com.google.test.metric.MethodInvokationCost.Reason.*;
 
 public class DetailHtmlReportTest extends TestCase {
 
-  ByteArrayOutputStream out = new ByteArrayOutputStream();
-  PrintStream stream = new PrintStream(out, true);
   CostModel costModel = new CostModel(1, 1);
 
   String emptyLineTemplate = "";
@@ -51,16 +49,16 @@ public class DetailHtmlReportTest extends TestCase {
       NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(64));
     cost.link(new Cost(), new Cost());
 
-    DetailHtmlReport report = new DetailHtmlReport(stream, costModel, new SourceLinker(
+    DetailHtmlReport report = new DetailHtmlReport(costModel, new SourceLinker(
             emptyLineTemplate, emptyClassTemplate), 10, 10);
     report.write(cost, "");
-    String text = out.toString();
+    String text = report.getOutput();
 
     assertTrue(text, text.contains("<div class=\"Line\""));
     assertTrue(text, text.contains("123"));
     assertTrue(text, text.contains("methodName"));
     assertTrue(text, text.contains("64"));
-    assertTrue(text, text.endsWith("</div>" + NEW_LINE));
+    assertTrue(text, text.endsWith("</div>"));
   }
 
   public void testLinkedLineCost() throws Exception {
@@ -69,17 +67,17 @@ public class DetailHtmlReportTest extends TestCase {
       NON_OVERRIDABLE_METHOD_CALL, new Cost());
     methodCost.link();
 
-    DetailHtmlReport report = new DetailHtmlReport(stream, costModel, new SourceLinker(
+    DetailHtmlReport report = new DetailHtmlReport(costModel, new SourceLinker(
             lineTemplate, classTemplate), 10, 10);
     report.write(lineCost, "com/google/ant/TaskModel.java");
-    String text = out.toString();
+    String text = report.getOutput();
 
     assertTrue(text,
         text.contains("<a href=\"http://code.google.com/p/testability-explorer/source/browse/trunk/src/com/google/ant/TaskModel.java#123"));
   }
 
   public void testWriteMethodCost() throws Exception {
-    DetailHtmlReport report = new DetailHtmlReport(stream, costModel, new SourceLinker(
+    DetailHtmlReport report = new DetailHtmlReport(costModel, new SourceLinker(
             emptyLineTemplate, emptyClassTemplate), 10, 10) {
       @Override
       public void write(ViolationCost cost, String classFilePath) {
@@ -96,18 +94,18 @@ public class DetailHtmlReportTest extends TestCase {
       NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(789)));
     methodCost.link();
     report.write(methodCost, "");
-    String text = out.toString();
+    String text = report.getOutput();
     assertTrue(text, text.contains("<div class=\"Method\""));
     assertTrue(text, text.contains("<span class='expand'>[+]</span>"));
     assertTrue(text, text.contains("methodX"));
     assertTrue(text, text.contains("[&nbsp;" + (567 + 789) + "&nbsp;]"));
     assertTrue(text, text.contains("MARKER:123"));
     assertTrue(text, text.contains("MARKER:543"));
-    assertTrue(text, text.endsWith("</div>" + NEW_LINE));
+    assertTrue(text, text.endsWith("</div>"));
   }
 
   public void testWriteClassCost() throws Exception {
-    DetailHtmlReport report = new DetailHtmlReport(stream, costModel, new SourceLinker(
+    DetailHtmlReport report = new DetailHtmlReport(costModel, new SourceLinker(
             emptyLineTemplate, emptyClassTemplate), 10, 10) {
       @Override
       public void write(MethodCost methodCost, String classFilePath) {
@@ -124,7 +122,7 @@ public class DetailHtmlReportTest extends TestCase {
     methods.add(m2);
     ClassCost classCost = new ClassCost("classFoo", methods);
     report.write(classCost);
-    String text = out.toString();
+    String text = report.getOutput();
 
     assertTrue(text, text.contains("<div class=\"Class\""));
     assertTrue(text, text.contains("<span class='expand'>[+]</span>"));
@@ -132,17 +130,17 @@ public class DetailHtmlReportTest extends TestCase {
     assertTrue(text, text.contains("[&nbsp;" + 475 + "&nbsp;]"));
     assertTrue(text, text.contains("MARKER:methodX"));
     assertTrue(text, text.contains("MARKER:methodY"));
-    assertTrue(text, text.endsWith("</div>" + NEW_LINE));
+    assertTrue(text, text.endsWith("</div>"));
   }
 
   public void testLinkedClassCost() throws Exception {
-    DetailHtmlReport report = new DetailHtmlReport(stream, costModel, new SourceLinker(
+    DetailHtmlReport report = new DetailHtmlReport(costModel, new SourceLinker(
          lineTemplate , classTemplate), 10, 10) ;
 
     List<MethodCost> methods = new ArrayList<MethodCost>();
     ClassCost classCost = new ClassCost("com.google.ant.TaskModel", methods);
     report.write(classCost);
-    String text = out.toString();
+    String text = report.getOutput();
 
     assertTrue(
         text,
