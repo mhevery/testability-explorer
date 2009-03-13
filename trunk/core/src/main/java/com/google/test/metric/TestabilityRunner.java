@@ -20,6 +20,7 @@ import static com.google.classpath.RegExpResourceFilter.ENDS_WITH_CLASS;
 import static java.util.Arrays.asList;
 
 import java.io.PrintStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -56,31 +57,35 @@ public class TestabilityRunner {
     ClassRepository classRepository = new JavaClassRepository(classPath);
     
     MetricComputer computer = new MetricComputer(classRepository, err, whitelist, printDepth);
-    report.printHeader();
-    
-    SortedSet<String> classNames = new TreeSet<String>();
-    RegExpResourceFilter resourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
-    for (String entry : entryList) {
-      if (entry.equals(".")) {
-        entry = "";
-      }
-      // TODO(jonathan) seems too complicated, replacing "." with "/" using the resource filter, then right below replace all "/" with "."
-      classNames.addAll(asList(classPath.findResources(entry.replace(".", "/"), resourceFilter)));
-    }
-    for (String resource : classNames) {
-      String className = resource.replace(".class", "").replace("/", ".");
-      try {
-        if (!whitelist.isClassWhiteListed(className)) {
-          ClassInfo clazz = classRepository.getClass(className);
-          ClassCost classCost = computer.compute(clazz);
-          report.addClassCost(classCost);
+    try {
+      report.printHeader();
+
+      SortedSet<String> classNames = new TreeSet<String>();
+      RegExpResourceFilter resourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
+      for (String entry : entryList) {
+        if (entry.equals(".")) {
+          entry = "";
         }
-      } catch (ClassNotFoundException e) {
-        err.println("WARNING: can not analyze class '" + className
-            + "' since class '" + e.getClassName() + "' was not found.");
+        // TODO(jonathan) seems too complicated, replacing "." with "/" using the resource filter, then right below replace all "/" with "."
+        classNames.addAll(asList(classPath.findResources(entry.replace(".", "/"), resourceFilter)));
       }
+      for (String resource : classNames) {
+        String className = resource.replace(".class", "").replace("/", ".");
+        try {
+          if (!whitelist.isClassWhiteListed(className)) {
+            ClassInfo clazz = classRepository.getClass(className);
+            ClassCost classCost = computer.compute(clazz);
+            report.addClassCost(classCost);
+          }
+        } catch (ClassNotFoundException e) {
+          err.println("WARNING: can not analyze class '" + className
+              + "' since class '" + e.getClassName() + "' was not found.");
+        }
+      }
+      report.printFooter();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
-    report.printFooter();
     return report;
   }  
 

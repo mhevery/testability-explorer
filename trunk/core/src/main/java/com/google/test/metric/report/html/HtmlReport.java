@@ -13,27 +13,29 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.test.metric.report;
+package com.google.test.metric.report.html;
 
 import static com.google.test.metric.report.GoogleChartAPI.GREEN;
 import static com.google.test.metric.report.GoogleChartAPI.RED;
 import static com.google.test.metric.report.GoogleChartAPI.YELLOW;
+import com.google.test.metric.report.*;
+
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.ceil;
 import static java.lang.Math.log;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
+import org.apache.commons.io.IOUtils;
+import freemarker.template.*;
 
 public class HtmlReport extends SummaryReport {
 
@@ -42,6 +44,7 @@ public class HtmlReport extends SummaryReport {
   private static final int HISTOGRAM_LEGEND_WIDTH = 130;
   protected final PrintStream out;
   private final DetailHtmlReport detailHtmlReport;
+  private final String PREFIX = "com/google/test/metric/report/html/";
 
   public HtmlReport(PrintStream out, CostModel costModel, int maxExcellentCount,
       int maxAcceptableCost, int worstOffenderCount,
@@ -58,31 +61,31 @@ public class HtmlReport extends SummaryReport {
 
   }
 
-  public void printSummary() {
-    ByteArrayOutputStream bodyStream = new ByteArrayOutputStream();
-    stream(bodyStream, getClass().getResourceAsStream("HtmlReportBody.html"));
-    String bodyHtml = bodyStream.toString();
-    bodyHtml = bodyHtml.replace("{{OverallScore}}", "" + getOverall());
-    int total = costs.size();
-    bodyHtml = bodyHtml.replace("{{Total}}", String.valueOf(total));
-    bodyHtml = bodyHtml.replace("{{Excellent}}", "" + excellentCount);
-    bodyHtml = bodyHtml.replace("{{ExcellentPercent}}", String.format("%5.1f",
-        (100f * excellentCount / total)));
-    bodyHtml = bodyHtml.replace("{{Good}}", "" + goodCount);
-    bodyHtml = bodyHtml.replace("{{GoodPercent}}", String.format("%5.1f",
-        (100f * goodCount / total)));
-    bodyHtml = bodyHtml
-        .replace("{{NeedsWork}}", "" + needsWorkCount);
-    bodyHtml = bodyHtml.replace("{{NeedsWorkPercent}}", String.format("%5.1f",
-        (100f * needsWorkCount / total)));
-    bodyHtml = bodyHtml.replace("{{HistogramURL}}", getHistogram());
-    bodyHtml = bodyHtml.replace("{{OverallChart}}", getOverallChart());
-    bodyHtml = bodyHtml.replace("{{PieChartUrl}}", getPieChart());
+  public void printFooter() throws IOException {
+    Configuration cfg = new Configuration();
+    cfg.setTemplateLoader(new ClassPathTemplateLoader(PREFIX));
 
-    out.print(bodyHtml);
+    Template template = cfg.getTemplate("Report.html");
+    try {
+      template.process(this, new PrintWriter(out));
+    } catch (TemplateException e) {
+      throw new RuntimeException(e);
+    }
   }
 
-  private String getHistogram() {
+  public int getTotal() {
+    return costs.size();
+  }
+
+  public String getCss() throws IOException {
+    return IOUtils.toString(getClass().getResourceAsStream("te.css"));
+  }
+
+  public String getJSscript() throws IOException {
+    return IOUtils.toString(getClass().getResourceAsStream("report.js"));
+  }
+
+  public String getHistogram() {
     int binCount = min(MAX_HISTOGRAM_BINS, 10 * (int) log(costs.size()) + 1);
     int binWidth = (int) ceil((double) worstCost / binCount);
     Histogram excellentHistogram = new Histogram(0, binWidth, binCount);
@@ -118,7 +121,7 @@ public class HtmlReport extends SummaryReport {
     return chart.getHtml();
   }
 
-  private String getOverallChart() {
+  public String getOverallChart() {
     GoodnessChart chart = new GoodnessChart(maxExcellentCost,
         maxAcceptableCost, 10 * maxAcceptableCost, 100 * maxAcceptableCost);
     chart.setSize(200, 100);
@@ -126,7 +129,7 @@ public class HtmlReport extends SummaryReport {
     return chart.getHtml();
   }
 
-  private String getPieChart() {
+  public String getPieChart() {
     PieChartUrl chart = new PieChartUrl();
     chart.setSize(400, 100);
     chart.setItemLabel("Excellent", "Good", "Needs Work");
@@ -135,52 +138,25 @@ public class HtmlReport extends SummaryReport {
     return chart.getHtml();
   }
 
-  public void printWorstOffenders(int worstOffenderCount) {
-    out.println();
-    out
-        .println("<h2 style=\"margin-bottom: 12px;\">Least Testable Classes</h2>");
-    out.println("<div onclick='clickHandler(event)'>");
+  public String getWorstOffenders() {
+    if (detailHtmlReport == null) {
+      return "No details available, check configuration";
+    }
+    StringBuilder out = new StringBuilder();
+    out.append("<h2 style=\"margin-bottom: 12px;\">Least Testable Classes</h2>");
+    out.append("<div onclick='clickHandler(event)'>");
     for (ClassCost cost : worstOffenders) {
       detailHtmlReport.write(cost);
     }
-    out.println("</div>");
+    out.append(detailHtmlReport.getOutput());
+    out.append("</div>");
+    return out.toString();
   }
 
-  /**
-   * Reads preformatted html header file into a string. Replaces the javascript
-   * placeholder with actual javascript code. Prints result to out stream.
-   */
-  public void printHeader() {
-    ByteArrayOutputStream dummy = new ByteArrayOutputStream();
-    stream(dummy, getClass().getResourceAsStream("HtmlReportHeader.html"));
-    String origHeader = dummy.toString();
-    dummy = new ByteArrayOutputStream();
-    stream(dummy, getClass().getResourceAsStream("report.js"));
-    String jsCode = dummy.toString();
-    origHeader = origHeader.replace("{{JSscript}}", jsCode);
-    origHeader = origHeader.replace("{{Tstamp}}", now());
-
-    out.print(origHeader);
+  public void printHeader() throws IOException {
   }
 
-  public void printFooter() {
-    printSummary();
-    printWorstOffenders(worstOffenderCount);
-    stream(out, getClass().getResourceAsStream("HtmlReportFooter.html"));
-  }
-
-  protected void stream(OutputStream out, InputStream in) {
-    try {
-      int ch;
-      while ((ch = in.read()) != -1) {
-        out.write(ch);
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  public String now() {
+  public String getNow() {
     Calendar cal = Calendar.getInstance();
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     return sdf.format(cal.getTime());

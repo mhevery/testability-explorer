@@ -1,0 +1,66 @@
+<html>
+<head>
+  <title>Testability Report</title>
+  <link href="te.css" rel="stylesheet" type="text/css">
+  <style type="text/css">
+    ${css}
+  </style>
+  <script type="text/javascript">
+    ${JSscript}
+  </script>
+</head>
+<body>
+<h1>Testability Report</h1>
+
+<div id="timestamp">
+  Report generated on: ${now}
+</div>
+
+<div style="margin-top: 32px;">
+  <div style="padding-bottom: 24px; font-weight: bold; font-size: 120%">Overall score:
+         <span style="font-weight: normal">${overall}<span class="smaller">
+             (<a href="TODO">what is this?</a>)</span></span></div>
+  <div style="float: left;">
+    ${pieChart}
+  </div>
+  <div style="float: left;">
+    ${overallChart}
+  </div>
+  <div style="border: 1px solid #cc6; background: #ffd; padding: 8px; margin-left: 16px; float: left;">
+    <table class="overview_table">
+      <tr>
+        <th>Analyzed classes</th>
+        <th class="value">${total}</th>
+        <th class="percent">&nbsp;</th>
+      </tr>
+      <tr>
+        <td> - Excellent</td>
+        <td class="value">${excellentCount}</td>
+        <td class="percent">${(excellentCount / total)?string.percent}</td>
+      </tr>
+
+      <tr>
+        <td> - Good</td>
+        <td class="value">${goodCount}</td>
+        <td class="percent">${(goodCount / total)?string.percent}</td>
+      </tr>
+      <tr>
+        <td> - Needs work</td>
+        <td class="value">${needsWorkCount}</td>
+        <td class="percent">${(needsWorkCount / total)?string.percent}</td>
+      </tr>
+    </table>
+  </div>
+
+  <div style="clear:both; width: 0">&nbsp;</div>
+</div>
+
+<div style="margin-bottom: 32px; margin-left: 32px; margin-top: 16px;">
+  ${histogram}
+</div>
+${worstOffenders}
+
+<div style="text-align: center; margin-top: 32px;">
+  <a href="http://testabilityexplorer.org">http://testabilityexplorer.org</a></div>
+</body>
+</html>

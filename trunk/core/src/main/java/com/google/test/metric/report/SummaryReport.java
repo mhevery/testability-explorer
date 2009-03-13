@@ -29,6 +29,19 @@ public abstract class SummaryReport implements Report {
   protected final WeightedAverage weightedAverage = new WeightedAverage();
   protected SortedSet<ClassCost> worstOffenders;
   protected final List<Integer> costs = new ArrayList<Integer>();
+
+  public int getExcellentCount() {
+    return excellentCount;
+  }
+
+  public int getGoodCount() {
+    return goodCount;
+  }
+
+  public int getNeedsWorkCount() {
+    return needsWorkCount;
+  }
+
   protected final int maxExcellentCost;
   protected final int maxAcceptableCost;
   protected final int worstOffenderCount;

@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.test.metric.report;
+package com.google.test.metric.report.html;
 
 import static java.lang.Math.min;
 
@@ -26,6 +26,7 @@ import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.ViolationCost;
+import com.google.test.metric.report.SourceLinkGenerator;
 
 public class DetailHtmlReport {
 
@@ -45,23 +46,25 @@ public class DetailHtmlReport {
     }
   }
 
-  private final PrintStream out;
   private final int maxLineCount;
   private final int maxMethodCount;
   private final SourceLinkGenerator linkGenerator;
   private final CostModel costModel;
 
-  public DetailHtmlReport(PrintStream out, CostModel costModel,
+  public DetailHtmlReport(CostModel costModel,
       SourceLinkGenerator linkGenerator, int maxMethodCount, int maxLineCount) {
-    this.out = out;
     this.linkGenerator = linkGenerator;
     this.costModel = costModel;
     this.maxMethodCount = maxMethodCount;
     this.maxLineCount = maxLineCount;
   }
-
+  private final StringBuilder buffer = new StringBuilder();
   protected void write(String text) {
-    out.println(text);
+    buffer.append(text);
+  }
+
+  public String getOutput() {
+    return buffer.toString();
   }
 
   public void write(ViolationCost cost, String classFilePath) {
