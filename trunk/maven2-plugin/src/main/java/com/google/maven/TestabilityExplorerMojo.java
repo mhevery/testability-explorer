@@ -183,9 +183,9 @@ public class TestabilityExplorerMojo extends AbstractMavenReport {
           ReportFormat.valueOf(format), resultPrintStream, entries).build();
       report = new MultiReport(null, report, otherReport);
     }
-    TestabilityConfig config = new TestabilityConfig(entries, classPath, packageWhiteList,
+    JavaTestabilityConfig config = new JavaTestabilityConfig(entries, classPath, packageWhiteList,
         report, getErrorPrintStream(), printDepth);
-    new TestabilityRunner(config).run();
+    new JavaTestabilityRunner(config).run();
   }
 
   private ReportOptions setOptions() {
