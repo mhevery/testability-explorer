@@ -121,9 +121,9 @@ public class TestabilityTask extends Task {
     ClassPath classPath = new ClassPathFactory().createFromPath(model.getClassPath());
     Report report = new ReportPrinterBuilder(classPath, options,
         ReportFormat.valueOf(model.getPrint()), model.getResultPrintStream(), entries).build();
-    TestabilityConfig config = new TestabilityConfig(entries, classPath, packageWhiteList,
+    JavaTestabilityConfig config = new JavaTestabilityConfig(entries, classPath, packageWhiteList,
         report, model.getErrorPrintStream(), model.getPrintDepth());
-    new TestabilityRunner(config).run();
+    new JavaTestabilityRunner(config).run();
   }
 
   private ReportOptions setOptions() {
