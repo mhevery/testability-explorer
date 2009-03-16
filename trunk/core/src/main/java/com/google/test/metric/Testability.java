@@ -48,7 +48,9 @@ public class Testability {
     try {
       parser.parseArgument(args);
       commandLineConfig.validate();
-      new TestabilityRunner(commandLineConfig.buildTestabilityConfig()).run();
+      TestabilityFactory factory = new TestabilityFactory();
+      Runnable runner = factory.createRunner(commandLineConfig);
+      runner.run();
     } catch (CmdLineException e) {
       err.println(e.getMessage() + "\n");
       parser.setUsageWidth(120);

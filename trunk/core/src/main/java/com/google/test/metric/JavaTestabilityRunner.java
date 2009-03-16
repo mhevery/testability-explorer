@@ -19,8 +19,8 @@ import static com.google.classpath.RegExpResourceFilter.ANY;
 import static com.google.classpath.RegExpResourceFilter.ENDS_WITH_CLASS;
 import static java.util.Arrays.asList;
 
-import java.io.PrintStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -35,7 +35,7 @@ import com.google.test.metric.report.Report;
  * 
  * @author Jonathan Andrew Wolter <jaw@jawspeak.com>
  */
-public class TestabilityRunner {
+public class JavaTestabilityRunner implements Runnable {
 
   private final List<String> entryList;
   private final ClassPath classPath;
@@ -44,7 +44,7 @@ public class TestabilityRunner {
   private final PrintStream err;
   private final int printDepth;
 
-  public TestabilityRunner(TestabilityConfig config) {
+  public JavaTestabilityRunner(JavaTestabilityConfig config) {
     this.entryList = config.getEntryList();
     this.classPath = config.getClassPath();
     this.whitelist = config.getWhitelist();
@@ -53,7 +53,7 @@ public class TestabilityRunner {
     this.printDepth = config.getPrintDepth();
   }
 
-  public Report run(){
+  public void run(){
     ClassRepository classRepository = new JavaClassRepository(classPath);
     
     MetricComputer computer = new MetricComputer(classRepository, err, whitelist, printDepth);
@@ -86,7 +86,6 @@ public class TestabilityRunner {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    return report;
   }  
 
 }
