@@ -48,8 +48,8 @@ private static final String NEW_LINE = System.getProperty("line.separator");
   private RegExpWhiteList whiteList = new RegExpWhiteList("java.");
 
   public void testClassesNotInClasspath() throws Exception {
-    TestabilityConfig testabilityConfig = configFor(CLASSES_EXTERNAL_DEPS_AND_SUPERCLASSES);
-    new TestabilityRunner(testabilityConfig).run();
+    JavaTestabilityConfig testabilityConfig = configFor(CLASSES_EXTERNAL_DEPS_AND_SUPERCLASSES);
+    new JavaTestabilityRunner(testabilityConfig).run();
     assertTrue(out.toString().length() > 0);
     assertTrue(err.toString().length() > 0);
     assertTrue(err.toString().startsWith("WARNING: can not analyze class "));
@@ -68,8 +68,8 @@ private static final String NEW_LINE = System.getProperty("line.separator");
    * classes that it <em>does</em> find.
    */
   public void testIncompleteClasspath() throws Exception {
-    TestabilityConfig testabilityConfig = configFor(CLASSES_EXTERNAL_DEPS_AND_SUPERCLASSES);
-    new TestabilityRunner(testabilityConfig).run();
+    JavaTestabilityConfig testabilityConfig = configFor(CLASSES_EXTERNAL_DEPS_AND_SUPERCLASSES);
+    new JavaTestabilityRunner(testabilityConfig).run();
     assertTrue(out.toString(), out.toString().length() > 0);
     assertTrue(err.toString(), err.toString().length() > 0);
   }
@@ -80,8 +80,8 @@ private static final String NEW_LINE = System.getProperty("line.separator");
    */
   public void testForWarningWhenClassesRecurseToIncludeClassesOutOfClasspath()
       throws Exception {
-    TestabilityConfig testabilityConfig = configFor(CLASSES_EXTERNAL_DEPS_NO_SUPERCLASSES);
-    new TestabilityRunner(testabilityConfig).run();
+    JavaTestabilityConfig testabilityConfig = configFor(CLASSES_EXTERNAL_DEPS_NO_SUPERCLASSES);
+    new JavaTestabilityRunner(testabilityConfig).run();
 
     assertTrue(out.toString(), out.toString().length() > 0);
     assertTrue(err.toString(), err.toString().length() > 0);
@@ -94,8 +94,8 @@ private static final String NEW_LINE = System.getProperty("line.separator");
    */
   public void testForWarningWhenClassExtendsFromClassOutOfClasspath()
       throws Exception {
-    TestabilityConfig testabilityConfig = configFor(CLASSES_EXTERNAL_DEPS_AND_SUPERCLASSES);
-    new TestabilityRunner(testabilityConfig).run();
+    JavaTestabilityConfig testabilityConfig = configFor(CLASSES_EXTERNAL_DEPS_AND_SUPERCLASSES);
+    new JavaTestabilityRunner(testabilityConfig).run();
 
     assertTrue(out.toString().length() > 0);
     assertTrue(err.toString().length() > 0);
@@ -103,9 +103,9 @@ private static final String NEW_LINE = System.getProperty("line.separator");
   }
 
 
-  private TestabilityConfig configFor(String path) {
+  private JavaTestabilityConfig configFor(String path) {
     ClassPath classPath = new ClassPathFactory().createFromPath(path);
-    TestabilityConfig testabilityConfig = new TestabilityConfig(
+    JavaTestabilityConfig testabilityConfig = new JavaTestabilityConfig(
         allEntryList, classPath, whiteList, report, new PrintStream(err), 1);
     return testabilityConfig;
   }

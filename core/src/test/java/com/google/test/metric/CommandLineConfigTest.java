@@ -26,37 +26,37 @@ public class CommandLineConfigTest extends AutoFieldClearTestCase {
 
   public void testCreateSummaryReport2() throws Exception {
     commandLineConfig.printer = "summary"; 
-    TestabilityConfig config = commandLineConfig.buildTestabilityConfig();
+    JavaTestabilityConfig config = commandLineConfig.buildTestabilityConfig();
     assertEquals(TextReport.class, config.getReport().getClass());
   }
 
   public void testCreateHtmlReport() throws Exception {
     commandLineConfig.printer = "html"; 
-    TestabilityConfig config = commandLineConfig.buildTestabilityConfig();
+    JavaTestabilityConfig config = commandLineConfig.buildTestabilityConfig();
     assertEquals(HtmlReport.class, config.getReport().getClass());
   }
 
   public void testCreateDetailReport() throws Exception {
     commandLineConfig.printer = "detail"; 
-    TestabilityConfig config = commandLineConfig.buildTestabilityConfig();
+    JavaTestabilityConfig config = commandLineConfig.buildTestabilityConfig();
     assertEquals(DrillDownReport.class, config.getReport().getClass());
   }
   
   public void testCreatePropertiesReport() throws Exception {
     commandLineConfig.printer = "props"; 
-    TestabilityConfig config = commandLineConfig.buildTestabilityConfig();
+    JavaTestabilityConfig config = commandLineConfig.buildTestabilityConfig();
     assertEquals(PropertiesReport.class, config.getReport().getClass());
   }
 
   public void testCreateSourceReport() throws Exception {
     commandLineConfig.printer = "source"; 
-    TestabilityConfig config = commandLineConfig.buildTestabilityConfig();
+    JavaTestabilityConfig config = commandLineConfig.buildTestabilityConfig();
     assertEquals(SourceReport.class, config.getReport().getClass());
   }
 
   public void testCreateXmlReport() throws Exception {
     commandLineConfig.printer = "xml"; 
-    TestabilityConfig config = commandLineConfig.buildTestabilityConfig();
+    JavaTestabilityConfig config = commandLineConfig.buildTestabilityConfig();
     assertEquals(XMLReport.class, config.getReport().getClass());
   }
 
@@ -79,7 +79,7 @@ public class CommandLineConfigTest extends AutoFieldClearTestCase {
     commandLineConfig.printDepth = 3;
     commandLineConfig.printer = "summary";
     commandLineConfig.wl = "com.foo:org.bar";
-    TestabilityConfig testabilityConfig = commandLineConfig.buildTestabilityConfig();
+    JavaTestabilityConfig testabilityConfig = commandLineConfig.buildTestabilityConfig();
     assertEquals(2, testabilityConfig.getEntryList().size());
     
     assertTrue(testabilityConfig.getWhitelist().isClassWhiteListed("com.foo.Hash"));
@@ -100,7 +100,7 @@ public class CommandLineConfigTest extends AutoFieldClearTestCase {
   public void testConvertEntryListValues() throws Exception {
     commandLineConfig.entryList = 
         new ArrayList<String>() {{ add("com/example/one com/example/two"); }};
-    TestabilityConfig config = commandLineConfig.buildTestabilityConfig();
+    JavaTestabilityConfig config = commandLineConfig.buildTestabilityConfig();
     assertEquals(Arrays.<String>asList("com.example.one", "com.example.two"), config.getEntryList());
   }
    

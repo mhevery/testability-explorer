@@ -23,12 +23,6 @@ import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.Option;
 
-import com.google.classpath.ClassPath;
-import com.google.classpath.ClassPathFactory;
-import com.google.test.metric.report.Report;
-import com.google.test.metric.report.ReportOptions;
-import com.google.test.metric.ReportPrinterBuilder.ReportFormat;
-
 /**
  * Holds fields that Args4J sets by parsing the command line options. After the args are parsed,
  * build a TestabilityConfig.
@@ -101,59 +95,21 @@ public class CommandLineConfig {
       + "Ex. com.example.analyze.these com.google.and.these.packages " + "com.google.AClass")
   List<String> entryList = new ArrayList<String>();
 
-
-  private PrintStream out;
-  private PrintStream err;
+  PrintStream out;
+  PrintStream err;
 
   public CommandLineConfig(PrintStream out, PrintStream err) {
     this.out = out;
     this.err = err;
   }
 
-  public TestabilityConfig buildTestabilityConfig() throws CmdLineException {
+  public JavaTestabilityConfig buildTestabilityConfig() throws CmdLineException {
     // This responsibility might belong in a new class.
     cp = (cp != null ? cp : System.getProperty("java.class.path", "."));
     if (entryList.isEmpty()) {
       entryList.add(".");
     }
-    convertEntryListValues();
-    ClassPath classPath = new ClassPathFactory().createFromPath(cp);
-    ReportOptions options = new ReportOptions(cyclomaticMultiplier, globalMultiplier,
-        maxExcellentCost, maxAcceptableCost, worstOffenderCount, maxMethodCount, maxLineCount,
-        printDepth,  minCost, srcFileLineUrl, srcFileUrl);
-    ReportFormat format;
-    try {
-      format = ReportFormat.valueOf(printer);
-    } catch (Exception e) {
-      throw new CmdLineException("Don't understand '-print' option '" + printer + "'");
-    }
-    Report report = new ReportPrinterBuilder(classPath, options, format, out, entryList).build();
-    RegExpWhiteList whitelist = new RegExpWhiteList("java.");
-    for (String packageName : wl == null ? new String[] {} : wl.split("[,:]")) {
-      whitelist.addPackage(packageName);
-    }
-    return new TestabilityConfig(entryList, classPath, whitelist, report, err, printDepth);
-  }
-
-  /*
-   * Converts entryList class and package values into paths by replacing any "." with a "/" Also
-   * checks for entries that contain multiple values separated by a space (" "), and splits them out
-   * into separate entries. This may happen when main() is called explicitly from another class,
-   * such as the {@link com.google.ant.TestabilityTask}
-   */
-  // TODO(jwolter) can we remove this now that there is a convenient programmatic API.
-  private void convertEntryListValues() {
-    for (int i = 0; i < entryList.size(); i++) {
-      if (entryList.get(i).contains(" ")) {
-        String[] entries = entryList.get(i).split(" ");
-        entryList.set(i, entries[0].replaceAll("/", "."));
-        for (int j = 1; j < entries.length; j++) {
-          entryList.add(entries[j].replaceAll("/", "."));
-        }
-      } else {
-        entryList.set(i, entryList.get(i).replaceAll("/", "."));
-      }
-    }
+    return new JavaTestabilityConfig(this);
   }
 
   public void validate() throws CmdLineException {
