@@ -20,6 +20,11 @@ import java.util.Map;
 
 public class MethodInvokationCost extends ViolationCost {
   private final MethodCost methodCost;
+
+  public Reason getCostSourceType() {
+    return costSourceType;
+  }
+
   private Reason costSourceType;
 
   /** This attempts to answer "What is the source of each line's cost?" */

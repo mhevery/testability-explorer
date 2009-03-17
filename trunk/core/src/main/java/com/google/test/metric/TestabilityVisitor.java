@@ -96,7 +96,7 @@ public class TestabilityVisitor {
       MethodCost methodCost = methodCosts.get(method);
       if (methodCost == null) {
         methodCost = new MethodCost(method.getFullName(), method
-            .getStartingLineNumber());
+            .getStartingLineNumber(), method.isConstructor(), method.isStatic());
         methodCosts.put(method, methodCost);
       }
       return methodCost;

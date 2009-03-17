@@ -17,8 +17,6 @@ package com.google.test.metric.report.html;
 
 import com.google.test.metric.report.SourceLinker;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -150,7 +148,7 @@ public class DetailHtmlReportTest extends TestCase {
 
   private MethodCost createMethodCallWithOverallCost(String methodName,
       int overallCost) {
-    MethodCost methodCost = new MethodCost(methodName, -1);
+    MethodCost methodCost = new MethodCost(methodName, -1, false, false);
     for (int i = 0; i < overallCost; i++) {
       methodCost.addCostSource(new CyclomaticCost(i, Cost.cyclomatic(1)));
     }

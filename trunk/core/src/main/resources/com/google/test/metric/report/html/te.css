@@ -62,3 +62,7 @@ body {
 .smaller {
   font-size: 80%;
 }
+
+.odd {
+  background-color: lightgray;
+}

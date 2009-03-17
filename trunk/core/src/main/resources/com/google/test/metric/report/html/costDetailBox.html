@@ -1,0 +1,38 @@
+<#macro costDetailBox issues classFilePath>
+  <#list issues.types as issueType>
+    <#assign typeIssues = issues.getIssuesOfType(issueType) />
+    <#if typeIssues?size gt 0>
+      <#assign messagePrefix = "report.explain.class." +
+              issues.name?lower_case + "." +
+              issueType?lower_case />
+      <table style="border: 1px dotted grey; margin: 1em;">
+        <tr>
+          <td colspan="2">
+            <strong>${message(messagePrefix)}</strong>
+            <sup><a href="#">${message("report.explain.linkToWiki")}</a></sup>
+          </td>
+          <th style="font-size: 0.8em">${message("report.explain.contribution")}</th>
+        </tr>
+        <#list typeIssues as issue>
+          <#assign rowStyle><#if issue_index % 2 == 0>even<#else/>odd</#if></#assign>
+          <tr class="${rowStyle}">
+            <td style="padding-left: 1em">${message("report.explain.onLine")}
+              ${sourceLink(classFilePath, issue.lineNumber?c, issue.lineNumber)}
+            </td>
+            <td>
+              ${issue.elementName}
+              <#-- ${message(messagePrefix + ".method", "UIUtils#archiveThread", "high", "high")} -->
+            </td>
+            <td>${issue.contributionToClassCost?string.percent}</td>
+          </tr>
+        </#list>
+        <tr>
+          <td colspan="4">
+            <em>${message(messagePrefix + ".suggest")}</em>
+          </td>
+        </tr>
+      </table>
+
+    </#if>
+  </#list>
+</#macro>

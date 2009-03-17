@@ -25,9 +25,9 @@ import junit.framework.TestCase;
 
 public class ClassCostTest extends TestCase {
 
-  private final  MethodCost methodCost0 = new MethodCost("c.g.t.A.method0()V", 0);
-  private final  MethodCost methodCost1 = new MethodCost("c.g.t.A.method1()V", 0);
-  private final  MethodCost methodCost2 = new MethodCost("c.g.t.A.method2()V", 0);
+  private final  MethodCost methodCost0 = new MethodCost("c.g.t.A.method0()V", 0, false, false);
+  private final  MethodCost methodCost1 = new MethodCost("c.g.t.A.method1()V", 0, false, false);
+  private final  MethodCost methodCost2 = new MethodCost("c.g.t.A.method2()V", 0, false, false);
 
   private ClassCost classCost0;
   private ClassCost classCost1;
