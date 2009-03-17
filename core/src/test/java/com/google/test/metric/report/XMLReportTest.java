@@ -65,7 +65,7 @@ public class XMLReportTest extends TestCase {
   public void testPrintCost() throws Exception {
     XMLReport report = new XMLReport(handler, costModel, 0, 0, 0);
 
-    MethodCost methodCost = new MethodCost("methodName", 1);
+    MethodCost methodCost = new MethodCost("methodName", 1, false, false);
     methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     ViolationCost violation = new MethodInvokationCost(123, methodCost,
@@ -80,7 +80,7 @@ public class XMLReportTest extends TestCase {
   public void testPrintCostNullReason() throws Exception {
     XMLReport report = new XMLReport(handler, costModel, 0, 0, 0);
 
-    MethodCost methodCost = new MethodCost("methodName", 1);
+    MethodCost methodCost = new MethodCost("methodName", 1, false, false);
     methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     ViolationCost violation = new MethodInvokationCost(123, methodCost,
@@ -99,7 +99,7 @@ public class XMLReportTest extends TestCase {
       }
 
     };
-    MethodCost methodCost = new MethodCost("methodName", 123);
+    MethodCost methodCost = new MethodCost("methodName", 123, false, false);
     methodCost.addCostSource(new GlobalCost(123, null, Cost.global(1)));
     methodCost.addCostSource(new CyclomaticCost(234, Cost.cyclomatic(1)));
     methodCost.addCostSource(new CyclomaticCost(345, Cost.cyclomatic(1)));
@@ -117,10 +117,10 @@ public class XMLReportTest extends TestCase {
         write(methodCost.getMethodName() + "()");
       }
     };
-    MethodCost m1 = new MethodCost("M1", -1);
+    MethodCost m1 = new MethodCost("M1", -1, false, false);
     m1.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     m1.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
-    MethodCost m2 = new MethodCost("M2", -1);
+    MethodCost m2 = new MethodCost("M2", -1, false, false);
     m2.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     m1.link();
     m2.link();
@@ -137,7 +137,7 @@ public class XMLReportTest extends TestCase {
       }
     };
     report.printHeader();
-    MethodCost m1 = new MethodCost("M1", -1);
+    MethodCost m1 = new MethodCost("M1", -1, false, false);
     m1.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     m1.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     m1.link();

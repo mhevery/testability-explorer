@@ -17,8 +17,9 @@ package com.google.test.metric;
 
 import com.google.classpath.ClassPath;
 import com.google.test.metric.report.*;
+import com.google.test.metric.report.issues.IssuesReporter;
+import com.google.test.metric.report.issues.TriageIssuesQueue;
 import com.google.test.metric.report.html.HtmlReport;
-import com.google.test.metric.report.html.DetailHtmlReport;
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
@@ -67,11 +68,11 @@ public class ReportPrinterBuilder {
         report = new TextReport(out, costModel, options);
         break;
       case html:
-        SourceLinker linker = new SourceLinker(
+         SourceLinker linker = new SourceLinker(
             options.getSrcFileLineUrl(), options.getSrcFileUrl());
-        DetailHtmlReport detailHtmlReport = new DetailHtmlReport(costModel, linker,
-            options.getMaxMethodCount(), options.getMaxLineCount());
-        report = new HtmlReport(out, costModel, options, detailHtmlReport);
+        IssuesReporter issuesReporter =
+            new IssuesReporter(new TriageIssuesQueue(options), costModel);
+        report = new HtmlReport(out, costModel, issuesReporter, options, linker);
         break;
       case detail:
         report = new DrillDownReport(out, costModel, entryList,

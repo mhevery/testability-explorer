@@ -18,7 +18,6 @@ package com.google.test.metric.example;
 import com.google.test.metric.AutoFieldClearTestCase;
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.ClassRepository;
-import com.google.test.metric.CostUtil;
 import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MetricComputer;
 import com.google.test.metric.testing.MetricComputerBuilder;
@@ -57,37 +56,6 @@ public class WorkInTheConstructorTest extends AutoFieldClearTestCase {
     assertEquals(0, classCost.getHighestMethodGlobalCost());
     assertEquals(0, classCost.getTotalGlobalCost());
     assertEquals(2, classCost.getTotalComplexityCost());
-  }
-
-  static class Cost2ToConstruct {
-    @SuppressWarnings("unused")
-    private static Cost2ToConstruct instance;
-
-    Cost2ToConstruct() {
-      int a = 0;
-      @SuppressWarnings("unused")
-      int b = a > 5 ? 3 : 5;
-      b = a < 4 ? 4 : 3;
-    }
-  }
-
-  static class StaticWorkInTheConstructor {
-    // Should this have a global state cost? It does not now, yet it abuses global state.
-    public StaticWorkInTheConstructor() {
-      CostUtil.staticCost2();
-    }
-  }
-
-  static class ObjectInstantiationWorkInTheConstructor {
-    @SuppressWarnings("unused")
-    private final Cost2ToConstruct nonInjectable1;
-    @SuppressWarnings("unused")
-    private final Cost2ToConstruct nonInjectable2;
-
-    public ObjectInstantiationWorkInTheConstructor() {
-      nonInjectable1 = new Cost2ToConstruct();
-      nonInjectable2 = new Cost2ToConstruct();
-    }
   }
 
 }

@@ -37,7 +37,7 @@ public class PropertiesReportTest extends TestCase {
   private static final String CLASS_NAME = "com.google.foo.Bar";
   public void testReport() throws Exception {
 
-    MethodCost methodCost = new MethodCost("doThing", 3);
+    MethodCost methodCost = new MethodCost("doThing", 3, false, false);
     methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     methodCost.link();
     final ClassCost classCost = new ClassCost(CLASS_NAME, Arrays.asList(methodCost));

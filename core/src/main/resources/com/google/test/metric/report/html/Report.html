@@ -1,19 +1,20 @@
+<#include "costDetailBox.html" />
 <html>
 <head>
-  <title>Testability Report</title>
+  <title>${message("report.title")}</title>
   <link href="te.css" rel="stylesheet" type="text/css">
   <style type="text/css">
-    ${css}
+    <#include "te.css"/>
   </style>
   <script type="text/javascript">
-    ${JSscript}
+    <#include "report.js"/>
   </script>
 </head>
 <body>
-<h1>Testability Report</h1>
+<h1>${message("report.title")}</h1>
 
 <div id="timestamp">
-  Report generated on: ${now}
+  ${message("report.timestamp", now)}
 </div>
 
 <div style="margin-top: 32px;">
@@ -58,8 +59,35 @@
 <div style="margin-bottom: 32px; margin-left: 32px; margin-top: 16px;">
   ${histogram}
 </div>
-${worstOffenders}
 
+<h2 style="margin-bottom: 12px;">Least Testable Classes</h2>
+
+<#list worstOffenders as classIssues>
+  <table style="border: 1px solid black">
+    <tr><td>
+      ${classIssues.totalCost}
+      <strong>${message("report.explain.class.hardToTest", "<tt>", classIssues.className, "</tt>")}</strong>
+      <br/>
+      <#if !classIssues.constructionIssues.empty>
+        <em>${message("report.explain.class.construction")}</em>
+        <@costDetailBox classIssues.constructionIssues classIssues.path/>
+      </#if>
+
+      <#if !classIssues.collaboratorIssues.empty>
+        <em>${message("report.explain.class.collaborators")}</em>
+        <@costDetailBox classIssues.collaboratorIssues classIssues.path/>
+      </#if>
+
+      <#if !classIssues.directCostIssues.empty>
+        <em>${message("report.explain.class.directCost")}</em>
+        <@costDetailBox classIssues.directCostIssues classIssues.path/>
+      </#if>
+
+      <input type="button" value="Show more suggestions"/><br/>
+      <p>${message("report.explain.class.benefits", "<b>", 0.38, "</b>")}</p>
+    </td></tr>
+  </table>
+</#list>
 <div style="text-align: center; margin-top: 32px;">
   <a href="http://testabilityexplorer.org">http://testabilityexplorer.org</a></div>
 </body>

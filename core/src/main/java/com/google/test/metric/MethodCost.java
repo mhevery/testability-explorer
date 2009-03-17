@@ -23,7 +23,27 @@ public class MethodCost {
 
   private final String methodName;
   private final int lineNumber;
+  private final boolean constructor;
+  private final boolean aStatic;
+
   private final List<ViolationCost> costSources = new ArrayList<ViolationCost>();
+
+  public boolean isConstructor() {
+    return constructor;
+  }
+
+  public boolean isStatic() {
+    return aStatic;
+  }
+
+  public Cost getDirectCost() {
+    return directCost;
+  }
+
+  public Cost getDependantCost() {
+    return dependantCost;
+  }
+
   private final Cost directCost = new Cost();
   private final Cost dependantCost = new Cost();
   public static final String METHOD_NAME_ATTRIBUTE = "name";
@@ -34,9 +54,11 @@ public class MethodCost {
    * @param lineNumber
    *          line number
    */
-  public MethodCost(String methodName, int lineNumber) {
+  public MethodCost(String methodName, int lineNumber, boolean isConstructor, boolean isStatic) {
     this.methodName = methodName;
     this.lineNumber = lineNumber;
+    constructor = isConstructor;
+    aStatic = isStatic;
   }
 
   public Cost getTotalCost() {

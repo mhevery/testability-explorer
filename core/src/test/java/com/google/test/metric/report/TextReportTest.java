@@ -47,7 +47,7 @@ public class TextReportTest extends TestCase {
 
   private ClassCost classCost(String name, int cost) {
     List<MethodCost> methods = new ArrayList<MethodCost>();
-    MethodCost methodCost = new MethodCost("method_" + cost, 1);
+    MethodCost methodCost = new MethodCost("method_" + cost, 1, false, false);
     for (int i = 0; i < cost; i++) {
       methodCost.addCostSource(new CyclomaticCost(i, Cost.cyclomatic(1)));
     }

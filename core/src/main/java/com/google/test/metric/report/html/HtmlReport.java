@@ -19,6 +19,7 @@ import static com.google.test.metric.report.GoogleChartAPI.GREEN;
 import static com.google.test.metric.report.GoogleChartAPI.RED;
 import static com.google.test.metric.report.GoogleChartAPI.YELLOW;
 import com.google.test.metric.report.*;
+import com.google.test.metric.report.issues.*;
 
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.ceil;
@@ -29,13 +30,13 @@ import static java.lang.Math.min;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.*;
 
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
-import org.apache.commons.io.IOUtils;
 import freemarker.template.*;
+import freemarker.ext.beans.ResourceBundleModel;
+import freemarker.ext.beans.BeansWrapper;
 
 public class HtmlReport extends SummaryReport {
 
@@ -43,28 +44,32 @@ public class HtmlReport extends SummaryReport {
   private static final int HISTOGRAM_WIDTH = 700;
   private static final int HISTOGRAM_LEGEND_WIDTH = 130;
   protected final PrintStream out;
-  private final DetailHtmlReport detailHtmlReport;
-  private final String PREFIX = "com/google/test/metric/report/html/";
+  static final String PREFIX = "com/google/test/metric/report/html/";
+  private ResourceBundleModel messageBundleModel;
+  private final IssuesReporter issuesReporter;
+  private final TemplateMethodModel linker;
 
-  public HtmlReport(PrintStream out, CostModel costModel, int maxExcellentCount,
-      int maxAcceptableCost, int worstOffenderCount,
-      DetailHtmlReport detailHtmlReport) {
-    super(costModel, maxExcellentCount, maxAcceptableCost, worstOffenderCount);
+
+  public HtmlReport(PrintStream out, CostModel costModel, IssuesReporter issuesReporter,
+                    ReportOptions options, SourceLinker linker) {
+    super(costModel, options.getMaxExcellentCost(), options.getMaxAcceptableCost(), options.getWorstOffenderCount());
     this.out = out;
-    this.detailHtmlReport = detailHtmlReport;
+    this.issuesReporter = issuesReporter;
+    this.linker = new SourceLinkerModel(linker);
   }
 
-  public HtmlReport(PrintStream out, CostModel costModel, ReportOptions options,
-                    DetailHtmlReport detailHtmlReport) {
-    this(out, costModel, options.getMaxExcellentCost(), options.getMaxAcceptableCost(),
-            options.getWorstOffenderCount(), detailHtmlReport);
-
+  @Override
+  public void addClassCost(ClassCost classCost) {
+    super.addClassCost(classCost);
+    issuesReporter.inspectClass(classCost);
   }
 
   public void printFooter() throws IOException {
     Configuration cfg = new Configuration();
     cfg.setTemplateLoader(new ClassPathTemplateLoader(PREFIX));
-
+    BeansWrapper objectWrapper = new DefaultObjectWrapper();
+    cfg.setObjectWrapper(objectWrapper);
+    messageBundleModel = new ResourceBundleModel(ResourceBundle.getBundle("messages"), objectWrapper);
     Template template = cfg.getTemplate("Report.html");
     try {
       template.process(this, new PrintWriter(out));
@@ -73,16 +78,16 @@ public class HtmlReport extends SummaryReport {
     }
   }
 
+  public TemplateMethodModel getMessage() {
+    return messageBundleModel;
+  }
+
+  public TemplateMethodModel getSourceLink() {
+    return linker;
+  }
+
   public int getTotal() {
     return costs.size();
-  }
-
-  public String getCss() throws IOException {
-    return IOUtils.toString(getClass().getResourceAsStream("te.css"));
-  }
-
-  public String getJSscript() throws IOException {
-    return IOUtils.toString(getClass().getResourceAsStream("report.js"));
   }
 
   public String getHistogram() {
@@ -138,28 +143,15 @@ public class HtmlReport extends SummaryReport {
     return chart.getHtml();
   }
 
-  public String getWorstOffenders() {
-    if (detailHtmlReport == null) {
-      return "No details available, check configuration";
-    }
-    StringBuilder out = new StringBuilder();
-    out.append("<h2 style=\"margin-bottom: 12px;\">Least Testable Classes</h2>");
-    out.append("<div onclick='clickHandler(event)'>");
-    for (ClassCost cost : worstOffenders) {
-      detailHtmlReport.write(cost);
-    }
-    out.append(detailHtmlReport.getOutput());
-    out.append("</div>");
-    return out.toString();
+  public List<ClassIssues> getWorstOffenders() {
+    return issuesReporter.getMostImportantIssues();
   }
 
   public void printHeader() throws IOException {
   }
 
-  public String getNow() {
-    Calendar cal = Calendar.getInstance();
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    return sdf.format(cal.getTime());
+  public Date getNow() {
+    return new Date();
   }
 
 }
