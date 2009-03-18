@@ -18,7 +18,7 @@
   <modules>
     <module>core</module>
     <module>ant-task</module>
-    <module>maven2-plugin</module>
+    <module>maven2-testability-plugin</module>
   </modules>
 
   <build>
