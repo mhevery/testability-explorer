@@ -34,7 +34,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.jdt.core.IAccessRule;
 import org.eclipse.jdt.core.IBuffer;
+import org.eclipse.jdt.core.IClasspathAttribute;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaModel;
@@ -91,7 +93,46 @@ public class TestabilityLauncherTest extends TestCase {
     assertTrue("Resource's Package visitor not the right type",
         resource.visitor instanceof JavaPackageVisitor);
   }
+  
+  public void testGetClassPathsReturnsDefaultOutputPath() throws Exception {
+    javaProject.classpathEntries = new TestableClassPathEntry[0];
+    javaProject.outputLocation = "/expected";
+    
+    String[] results = launcher.getClassPaths(javaProject, "whatever");
+    assertEquals(1, results.length);
+    assertEquals("whatever/expected", results[0]);
+  }
+  
+  public void testGetClassPathsReturnsAbsoluePathWhenOutputPathNull() throws Exception {
+    javaProject.classpathEntries = new TestableClassPathEntry[1];
+    javaProject.classpathEntries[0] = new TestableClassPathEntry();
+    javaProject.classpathEntries[0].outputLocation = null;
+    javaProject.classpathEntries[0].path = "/expectedpath";
+    
+    javaProject.outputLocation = "/expected2";
+    String projectLocation = "location";
+    
+    String[] results = launcher.getClassPaths(javaProject, projectLocation);
+    
+    assertEquals(2, results.length);
+    assertEquals(projectLocation + "/expectedpath", results[0]);
+    assertEquals(projectLocation + "/expected2", results[1]);
+  }
 
+  public void testGetClassPathsReturnsAbsoluePathWhenOutputPathNotNull() throws Exception {
+    javaProject.classpathEntries = new TestableClassPathEntry[1];
+    javaProject.classpathEntries[0] = new TestableClassPathEntry();
+    javaProject.classpathEntries[0].outputLocation = "/expected";
+    javaProject.outputLocation = "/expected2";
+    String projectLocation = "location";
+    
+    String[] results = launcher.getClassPaths(javaProject, projectLocation);
+    
+    assertEquals(2, results.length);
+    assertEquals(projectLocation + "/expected", results[0]);
+    assertEquals(projectLocation + "/expected2", results[1]);
+  }
+  
   private class ListeningResource implements IResource {
 
     public boolean isAcceptCalled = false;
@@ -358,6 +399,8 @@ public class TestabilityLauncherTest extends TestCase {
   private class TestableJavaProject implements IJavaProject {
 
     public IPackageFragmentRoot[] roots;
+    public TestableClassPathEntry[] classpathEntries;
+    public String outputLocation;
 
     public IClasspathEntry decodeClasspathEntry(String encodedEntry) {
       return null;
@@ -444,7 +487,7 @@ public class TestabilityLauncherTest extends TestCase {
     }
 
     public IPath getOutputLocation() {
-      return null;
+      return new Path(outputLocation);
     }
 
     public IPackageFragmentRoot getPackageFragmentRoot(String externalLibraryPath) {
@@ -473,7 +516,7 @@ public class TestabilityLauncherTest extends TestCase {
     }
 
     public IClasspathEntry[] getRawClasspath() {
-      return null;
+      return classpathEntries;
     }
 
     public String[] getRequiredProjectNames() {
@@ -843,6 +886,65 @@ public class TestabilityLauncherTest extends TestCase {
     }
 
     public void save(IProgressMonitor progress, boolean force) {
+    }
+  }
+
+  private class TestableClassPathEntry implements IClasspathEntry {
+
+    public String outputLocation;
+    public String path;
+
+    public boolean combineAccessRules() {
+      return false;
+    }
+
+    public IAccessRule[] getAccessRules() {
+      return null;
+    }
+
+    public int getContentKind() {
+      return 0;
+    }
+
+    public int getEntryKind() {
+      return 0;
+    }
+
+    public IPath[] getExclusionPatterns() {
+      return null;
+    }
+
+    public IClasspathAttribute[] getExtraAttributes() {
+      return null;
+    }
+
+    public IPath[] getInclusionPatterns() {
+      return null;
+    }
+
+    public IPath getOutputLocation() {
+      return outputLocation == null ? null : new Path(outputLocation);
+    }
+
+    public IPath getPath() {
+      return new Path(path);
+    }
+
+    @Deprecated
+    public IClasspathEntry getResolvedEntry() {
+      return null;
+    }
+
+    public IPath getSourceAttachmentPath() {
+      return null;
+    }
+
+    public IPath getSourceAttachmentRootPath() {
+      return null;
+    }
+
+    public boolean isExported() {
+      return false;
     }
   }
 }
