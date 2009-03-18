@@ -15,14 +15,17 @@
  */
 package com.google.test.metric.report.issues;
 
-import junit.framework.TestCase;
-import com.google.test.metric.*;
+import com.google.test.metric.ClassRepository;
+import com.google.test.metric.CostModel;
+import com.google.test.metric.JavaClassRepository;
+import com.google.test.metric.MetricComputer;
 import com.google.test.metric.example.*;
-import com.google.test.metric.testing.MetricComputerJavaDecorator;
 import com.google.test.metric.testing.MetricComputerBuilder;
+import com.google.test.metric.testing.MetricComputerJavaDecorator;
+import junit.framework.TestCase;
 
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Tests for {@link com.google.test.metric.report.issues.IssuesReporterTest}
@@ -81,9 +84,11 @@ public class IssuesReporterTest extends TestCase {
     Issue complexity = classIssues.getConstructionIssues().getComplexityIssues().get(0);
     Issue staticCall = classIssues.getConstructionIssues().getStaticMethodIssues().get(0);
     Issue collaborator = classIssues.getConstructionIssues().getNewOperatorIssues().get(0);
-    assertEquals(2/7f, complexity.getContributionToClassCost());
-    assertEquals(3/7f, staticCall.getContributionToClassCost());
-    assertEquals(2/7f, collaborator.getContributionToClassCost());
+    assertEquals(2/9f, complexity.getContributionToClassCost());
+    // should be 3/9
+    assertEquals(2/9f, staticCall.getContributionToClassCost());
+    // should be 4/9
+    assertEquals(2/9f, collaborator.getContributionToClassCost());
   }
 
   public void testNonMockableMethodCalled() throws Exception {
@@ -99,10 +104,14 @@ public class IssuesReporterTest extends TestCase {
 
   public void testStaticMethodCalled() throws Exception {
     ClassIssues classIssues = issuesReporter.determineIssues(
-        decoratedComputer.compute(MutableGlobalExample.class));
+        decoratedComputer.compute(StaticMethodCalled.class));
     List<Issue> issues = classIssues.getCollaboratorIssues().getStaticMethodIssues();
-    // TODO(alexeagle)
-    // assertEquals(2, issues.size());
+
+    assertEquals(1, issues.size());
+    assertEquals(46, issues.get(0).getLineNumber());
+    // assertEquals("HasStaticMethod.isGreat()", issues.get(0).getElementName());
+    assertEquals(1.0f, issues.get(0).getContributionToClassCost());
+    assertTrue(classIssues.getConstructionIssues().isEmpty());
   }
 
   public void testContributionFromMultipleCollaboratorIssues() throws Exception {

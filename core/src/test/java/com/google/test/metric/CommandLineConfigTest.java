@@ -1,18 +1,29 @@
+/*
+ * Copyright 2009 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.google.test.metric;
+
+import com.google.test.metric.TestabilityTest.WatchedOutputStream;
+import com.google.test.metric.report.*;
+import com.google.test.metric.report.html.HtmlReportGenerator;
+
+import org.kohsuke.args4j.CmdLineException;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import org.kohsuke.args4j.CmdLineException;
-
-import com.google.test.metric.TestabilityTest.WatchedOutputStream;
-import com.google.test.metric.report.DrillDownReport;
-import com.google.test.metric.report.html.HtmlReport;
-import com.google.test.metric.report.PropertiesReport;
-import com.google.test.metric.report.SourceReport;
-import com.google.test.metric.report.TextReport;
-import com.google.test.metric.report.XMLReport;
 
 public class CommandLineConfigTest extends AutoFieldClearTestCase {
 
@@ -33,7 +44,7 @@ public class CommandLineConfigTest extends AutoFieldClearTestCase {
   public void testCreateHtmlReport() throws Exception {
     commandLineConfig.printer = "html"; 
     JavaTestabilityConfig config = commandLineConfig.buildTestabilityConfig();
-    assertEquals(HtmlReport.class, config.getReport().getClass());
+    assertEquals(HtmlReportGenerator.class, config.getReport().getClass());
   }
 
   public void testCreateDetailReport() throws Exception {

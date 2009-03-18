@@ -23,11 +23,20 @@ package com.google.test.metric.report.issues;
 public class Issue {
   private final int lineNumber;
   private final String elementName;
-  private final float contributionToClassCost;
+  private float contributionToClassCost;
 
   public Issue(int lineNumber, String elementName, float contributionToClassCost) {
     this.lineNumber = lineNumber;
     this.elementName = elementName;
+    this.contributionToClassCost = contributionToClassCost;
+  }
+
+  public Issue(int lineNumber, String elementName) {
+    this.lineNumber = lineNumber;
+    this.elementName = elementName;
+  }
+
+  public void setContributionToClassCost(float contributionToClassCost) {
     this.contributionToClassCost = contributionToClassCost;
   }
 

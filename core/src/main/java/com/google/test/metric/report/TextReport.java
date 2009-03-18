@@ -15,13 +15,14 @@
  */
 
 package com.google.test.metric.report;
-import java.io.PrintStream;
 
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
 
+import java.io.PrintStream;
 
-public class TextReport extends SummaryReport {
+
+public class TextReport extends SummaryReport implements Report {
 
   private final PrintStream out;
   public TextReport(PrintStream out, CostModel costModel, int maxExcellentCost, int maxAcceptableCost, int worstOffenderCount) {

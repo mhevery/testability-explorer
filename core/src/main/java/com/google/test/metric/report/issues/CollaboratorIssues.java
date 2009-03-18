@@ -15,15 +15,16 @@
  */
 package com.google.test.metric.report.issues;
 
-import com.google.test.metric.report.issues.Issue.CollaboratorType;
-import static com.google.test.metric.collection.LazyHashMap.newLazyHashMap;
-import static com.google.test.metric.report.issues.Issue.CollaboratorType.*;
 import com.google.test.metric.MethodCost;
+import static com.google.test.metric.collection.LazyHashMap.newLazyHashMap;
+import com.google.test.metric.report.issues.Issue.CollaboratorType;
+import static com.google.test.metric.report.issues.Issue.CollaboratorType.NEW_OPERATOR;
+import static com.google.test.metric.report.issues.Issue.CollaboratorType.STATIC_METHOD;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
 
 /**
  * Issues that arise from non-mockable use of collaborators.
@@ -70,9 +71,15 @@ public class CollaboratorIssues implements IssuesCategory {
     return issues.get(STATIC_METHOD);
   }
 
-  public void nonMockableMethodCalled(MethodCost methodCost, long totalComplexityCost, long totalGlobalCost) {
-    float contributionToClassCost = methodCost.getDependantCost().getCyclomaticComplexityCost() / (float) totalComplexityCost;
-    Issue issue = new Issue(methodCost.getMethodLineNumber(), methodCost.getMethodName(), contributionToClassCost);
+  public void nonMockableMethodCalled(MethodCost methodCost, Issue issue, long totalComplexityCost, long totalGlobalCost) {
+    issue.setContributionToClassCost(
+            methodCost.getDependantCost().getCyclomaticComplexityCost() / (float) totalComplexityCost);
     issues.get(NEW_OPERATOR).add(issue);
+  }
+
+  public void staticMethodCalled(MethodCost methodCost, Issue issue, long totalComplexityCost, long totalGlobalCost) {
+    issue.setContributionToClassCost(
+            methodCost.getDependantCost().getCyclomaticComplexityCost() / (float) totalComplexityCost);
+    issues.get(STATIC_METHOD).add(issue);
   }
 }

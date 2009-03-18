@@ -15,24 +15,25 @@
  */
 package com.google.test.metric.report.html;
 
+import com.google.test.metric.ClassCost;
+import com.google.test.metric.CostModel;
+import com.google.test.metric.MethodCost;
+import com.google.test.metric.report.ReportOptions;
+import com.google.test.metric.report.SourceLinker;
+import com.google.test.metric.report.issues.ClassIssues;
+import com.google.test.metric.report.issues.IssuesReporter;
+import junit.framework.TestCase;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import static java.text.MessageFormat.format;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.ResourceBundle;
-import java.text.MessageFormat;
-import static java.text.MessageFormat.format;
-
-import junit.framework.TestCase;
-
-import com.google.test.metric.*;
-import com.google.test.metric.report.issues.ClassIssues;
-import com.google.test.metric.report.issues.IssuesReporter;
-import com.google.test.metric.report.ReportOptions;
-import com.google.test.metric.report.SourceLinker;
 
 public class HtmlReportTest extends TestCase {
   private HtmlReport report;
+  private HtmlReportGenerator generator;
   private ByteArrayOutputStream out;
 
   @Override
@@ -44,13 +45,14 @@ public class HtmlReportTest extends TestCase {
     ReportOptions options = new ReportOptions(1, 10, 10, 20, 5, 100, 100, 1, 10, "", "");
     SourceLinker linker = new SourceLinker("http://code.repository/basepath/{path}&line={line}",
         "http://code.repository/basepath/{path}");
-    report = new HtmlReport(new PrintStream(out), costModel, issuesReporter, options, linker);
+    report = new HtmlReport(costModel, issuesReporter, options);
+    generator = new HtmlReportGenerator(report, new PrintStream(out), issuesReporter, linker);
   }
 
   public void testPrintReport() throws Exception {
-    report.printHeader();
-    report.addClassCost(new ClassCost("com.google.FooClass", Arrays.asList(new MethodCost("methodFoo", 1, false, false))));
-    report.printFooter();
+    generator.printHeader();
+    generator.addClassCost(new ClassCost("com.google.FooClass", Arrays.asList(new MethodCost("methodFoo", 1, false, false))));
+    generator.printFooter();
     String text = out.toString();
 
     assertTrue(text, text.contains("<script type=\"text/javascript\""));
@@ -61,14 +63,14 @@ public class HtmlReportTest extends TestCase {
   }
 
   public void testConstructorCosts() throws Exception {
-    report.printHeader();
+    generator.printHeader();
     ClassCost cost = new ClassCost("classFoo", Arrays.asList(new MethodCost("methodFoo", 1, false, false)));
-    report.addClassCost(cost);
+    generator.addClassCost(cost);
     ClassIssues classIssues = new ClassIssues(cost.getClassName(), 0);
     classIssues.getConstructionIssues().workInConstructor(new MethodCost("foo()", 10, true, false),
-        cost.getTotalComplexityCost(), cost.getTotalGlobalCost());
+        null, cost.getTotalComplexityCost(), cost.getTotalGlobalCost());
     report.getWorstOffenders().add(classIssues);
-    report.printFooter();
+    generator.printFooter();
     String text = out.toString();
     ResourceBundle bundle = ResourceBundle.getBundle("messages");
     String expected = format(bundle.getString("report.explain.class.hardToTest"),
