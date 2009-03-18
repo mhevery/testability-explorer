@@ -3,7 +3,7 @@
     <plugins>
       <plugin>
         <groupId>com.google.testability-explorer</groupId>
-        <artifactId>maven2-plugin</artifactId>
+        <artifactId>maven2-testability-plugin</artifactId>
 
         <configuration>
           <filter>com.google</filter>
