@@ -4,10 +4,10 @@ package com.google.test.metric.report;
 
 import com.google.test.metric.ClassCost;
 
-import java.util.List;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.io.IOException;
+import java.util.List;
 
 /**
  * A report that directs metric recording into several delegated reports.
@@ -16,16 +16,16 @@ import java.io.IOException;
  */
 public class MultiReport implements Report {
 
-  private SummaryReport summaryReport;
+  private Report summaryReport;
   private List<Report> reports = new ArrayList<Report>();
 
   public MultiReport() {}
 
-  public MultiReport(SummaryReport summaryReport) {
+  public MultiReport(Report summaryReport) {
     this.summaryReport = summaryReport;
   }
 
-  public MultiReport(SummaryReport summaryReport, Report... reports) {
+  public MultiReport(Report summaryReport, Report... reports) {
     this(summaryReport);
     this.reports.addAll(Arrays.asList(reports));
   }
@@ -64,7 +64,9 @@ public class MultiReport implements Report {
    */
   public int getOverall() {
     if (summaryReport != null) {
-      return summaryReport.getOverall();
+      // TODO(alexeagle)
+      throw new UnsupportedOperationException("This still needs some refactoring to work...");
+      //return summaryReport.getOverall();
     }
     return 0;
   }
@@ -73,7 +75,7 @@ public class MultiReport implements Report {
    * One report may be the summary report.
    * @param summaryReport the summaryReport to set
    */
-  public void setSummaryReport(SummaryReport summaryReport) {
+  public void setSummaryReport(Report summaryReport) {
     this.summaryReport = summaryReport;
     add(summaryReport);
   }

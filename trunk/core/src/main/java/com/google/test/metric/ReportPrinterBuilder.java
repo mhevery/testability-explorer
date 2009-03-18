@@ -17,9 +17,11 @@ package com.google.test.metric;
 
 import com.google.classpath.ClassPath;
 import com.google.test.metric.report.*;
+import com.google.test.metric.report.about.AboutTestabilityReport;
+import com.google.test.metric.report.html.HtmlReport;
+import com.google.test.metric.report.html.HtmlReportGenerator;
 import com.google.test.metric.report.issues.IssuesReporter;
 import com.google.test.metric.report.issues.TriageIssuesQueue;
-import com.google.test.metric.report.html.HtmlReport;
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
@@ -55,24 +57,26 @@ public class ReportPrinterBuilder {
     xml,
     props,
     source,
-    html
+    html,
+    about
   }
 
   public Report build() {
     Report report;
     CostModel costModel = new CostModel(options.getCyclomaticMultiplier(),
         options.getGlobalMultiplier());
-
+    SourceLinker linker = new SourceLinker(
+        options.getSrcFileLineUrl(), options.getSrcFileUrl());
+    IssuesReporter issuesReporter =
+        new IssuesReporter(new TriageIssuesQueue(options), costModel);
+    SourceLoader sourceLoader = new SourceLoader(classPath);
     switch (printer) {
       case summary:
         report = new TextReport(out, costModel, options);
         break;
       case html:
-         SourceLinker linker = new SourceLinker(
-            options.getSrcFileLineUrl(), options.getSrcFileUrl());
-        IssuesReporter issuesReporter =
-            new IssuesReporter(new TriageIssuesQueue(options), costModel);
-        report = new HtmlReport(out, costModel, issuesReporter, options, linker);
+        HtmlReport model = new HtmlReport(costModel, issuesReporter, options);
+        report = new HtmlReportGenerator(model, out, issuesReporter, linker);
         break;
       case detail:
         report = new DrillDownReport(out, costModel, entryList,
@@ -84,7 +88,6 @@ public class ReportPrinterBuilder {
       case source:
         GradeCategories gradeCategories = new GradeCategories(options.getMaxExcellentCost(),
             options.getMaxAcceptableCost());
-        SourceLoader sourceLoader = new SourceLoader(classPath);
         report = new SourceReport(gradeCategories, sourceLoader, new File("te-report"), costModel,
             new Date(), options.getWorstOffenderCount());
         break;
@@ -95,6 +98,10 @@ public class ReportPrinterBuilder {
         format.setIndenting(true);
         xmlSerializer.setOutputFormat(format);
         report = new XMLReport(xmlSerializer, costModel, options);
+        break;
+      case about:
+        ReportModel aboutModel = new AboutTestabilityReport(issuesReporter, sourceLoader);
+        report = new FreemarkerReportGenerator(aboutModel, out, linker, "about/Report.html");
         break;
       default:
         throw new IllegalStateException("Unknown report format " + printer);

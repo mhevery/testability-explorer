@@ -15,20 +15,19 @@
  */
 package com.google.test.metric.report;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeSet;
-
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.AttributesImpl;
-
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.ViolationCost;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 
-public class XMLReport extends SummaryReport {
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeSet;
+
+public class XMLReport extends SummaryReport implements Report {
 
   private final ContentHandler out;
   private final CostModel costModel;

@@ -15,75 +15,32 @@
  */
 package com.google.test.metric.report.html;
 
-import static com.google.test.metric.report.GoogleChartAPI.GREEN;
-import static com.google.test.metric.report.GoogleChartAPI.RED;
-import static com.google.test.metric.report.GoogleChartAPI.YELLOW;
+import com.google.test.metric.CostModel;
 import com.google.test.metric.report.*;
-import com.google.test.metric.report.issues.*;
+import static com.google.test.metric.report.GoogleChartAPI.*;
+import com.google.test.metric.report.issues.ClassIssues;
+import com.google.test.metric.report.issues.IssuesReporter;
 
 import static java.lang.Integer.MAX_VALUE;
-import static java.lang.Math.ceil;
-import static java.lang.Math.log;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
+import static java.lang.Math.*;
+import java.util.Date;
+import java.util.List;
 
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.util.*;
-
-import com.google.test.metric.ClassCost;
-import com.google.test.metric.CostModel;
-import freemarker.template.*;
-import freemarker.ext.beans.ResourceBundleModel;
-import freemarker.ext.beans.BeansWrapper;
-
+/**
+ * This model provides the data that backs the HTML report.
+ *
+ * @author alexeagle@google.com (Alex Eagle)
+ */
 public class HtmlReport extends SummaryReport {
 
   private static final int MAX_HISTOGRAM_BINS = 200;
   private static final int HISTOGRAM_WIDTH = 700;
   private static final int HISTOGRAM_LEGEND_WIDTH = 130;
-  protected final PrintStream out;
-  static final String PREFIX = "com/google/test/metric/report/html/";
-  private ResourceBundleModel messageBundleModel;
   private final IssuesReporter issuesReporter;
-  private final TemplateMethodModel linker;
 
-
-  public HtmlReport(PrintStream out, CostModel costModel, IssuesReporter issuesReporter,
-                    ReportOptions options, SourceLinker linker) {
+  public HtmlReport(CostModel costModel, IssuesReporter issuesReporter, ReportOptions options) {
     super(costModel, options.getMaxExcellentCost(), options.getMaxAcceptableCost(), options.getWorstOffenderCount());
-    this.out = out;
     this.issuesReporter = issuesReporter;
-    this.linker = new SourceLinkerModel(linker);
-  }
-
-  @Override
-  public void addClassCost(ClassCost classCost) {
-    super.addClassCost(classCost);
-    issuesReporter.inspectClass(classCost);
-  }
-
-  public void printFooter() throws IOException {
-    Configuration cfg = new Configuration();
-    cfg.setTemplateLoader(new ClassPathTemplateLoader(PREFIX));
-    BeansWrapper objectWrapper = new DefaultObjectWrapper();
-    cfg.setObjectWrapper(objectWrapper);
-    messageBundleModel = new ResourceBundleModel(ResourceBundle.getBundle("messages"), objectWrapper);
-    Template template = cfg.getTemplate("Report.html");
-    try {
-      template.process(this, new PrintWriter(out));
-    } catch (TemplateException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  public TemplateMethodModel getMessage() {
-    return messageBundleModel;
-  }
-
-  public TemplateMethodModel getSourceLink() {
-    return linker;
   }
 
   public int getTotal() {
@@ -145,9 +102,6 @@ public class HtmlReport extends SummaryReport {
 
   public List<ClassIssues> getWorstOffenders() {
     return issuesReporter.getMostImportantIssues();
-  }
-
-  public void printHeader() throws IOException {
   }
 
   public Date getNow() {

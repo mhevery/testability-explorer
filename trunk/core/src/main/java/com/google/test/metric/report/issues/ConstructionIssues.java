@@ -15,18 +15,18 @@
  */
 package com.google.test.metric.report.issues;
 
+import com.google.test.metric.CyclomaticCost;
+import com.google.test.metric.MethodCost;
+import com.google.test.metric.MethodInvokationCost;
+import com.google.test.metric.ViolationCost;
+import static com.google.test.metric.collection.LazyHashMap.newLazyHashMap;
 import com.google.test.metric.report.issues.Issue.ConstructionType;
 import static com.google.test.metric.report.issues.Issue.ConstructionType.*;
-import static com.google.test.metric.collection.LazyHashMap.newLazyHashMap;
-import com.google.test.metric.MethodCost;
-import com.google.test.metric.ViolationCost;
-import com.google.test.metric.CyclomaticCost;
-import com.google.test.metric.MethodInvokationCost;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
 
 /**
  * Issues that arise from expensive constructors.
@@ -45,7 +45,7 @@ public class ConstructionIssues implements IssuesCategory {
     this.issues = issues;
   }
 
-  public void workInConstructor(MethodCost methodCost, long totalComplexityCost, long totalGlobalCost) {
+  public void workInConstructor(MethodCost methodCost, Issue issue, long totalComplexityCost, long totalGlobalCost) {
     long complexityCost = 0, staticCost = 0, nonMockableCost = 0;
     for (ViolationCost costSource : methodCost.getViolationCosts()) {
       if (costSource instanceof CyclomaticCost) {
@@ -60,18 +60,15 @@ public class ConstructionIssues implements IssuesCategory {
       }
     }
     if (staticCost > 0) {
-      float contribution = staticCost / (float)totalComplexityCost;
-      Issue issue = new Issue(methodCost.getMethodLineNumber(), methodCost.getMethodName(), contribution);
+      issue.setContributionToClassCost(staticCost / (float)totalComplexityCost);
       issues.get(STATIC_METHOD).add(issue);
     }
     if (nonMockableCost > 0) {
-      float contribution = nonMockableCost / (float)totalComplexityCost;
-      Issue issue = new Issue(methodCost.getMethodLineNumber(), methodCost.getMethodName(), contribution);
+      issue.setContributionToClassCost(nonMockableCost / (float)totalComplexityCost);
       issues.get(NEW_OPERATOR).add(issue);
     }
     if (complexityCost > 0) {
-      float contribution = complexityCost / (float)totalComplexityCost;
-      Issue issue = new Issue(methodCost.getMethodLineNumber(), methodCost.getMethodName(), contribution);
+      issue.setContributionToClassCost(complexityCost / (float)totalComplexityCost);
       issues.get(COMPLEXITY).add(issue);
     }
   }

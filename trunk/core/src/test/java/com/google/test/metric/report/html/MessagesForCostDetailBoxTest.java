@@ -17,6 +17,7 @@ package com.google.test.metric.report.html;
 
 import com.google.test.metric.report.ClassPathTemplateLoader;
 import com.google.test.metric.report.SourceLinker;
+import com.google.test.metric.report.FreemarkerReportGenerator;
 import com.google.test.metric.report.issues.ConstructionIssues;
 import com.google.test.metric.report.issues.Issue;
 import com.google.test.metric.report.issues.CollaboratorIssues;
@@ -61,7 +62,7 @@ public class MessagesForCostDetailBoxTest extends TestCase {
   protected void setUp() throws Exception {
     super.setUp();
     Configuration cfg = new Configuration();
-    cfg.setTemplateLoader(new ClassPathTemplateLoader(HtmlReport.PREFIX));
+    cfg.setTemplateLoader(new ClassPathTemplateLoader(FreemarkerReportGenerator.PREFIX));
     BeansWrapper objectWrapper = new DefaultObjectWrapper();
     cfg.setObjectWrapper(objectWrapper);
     ResourceBundleModel messageBundleModel =

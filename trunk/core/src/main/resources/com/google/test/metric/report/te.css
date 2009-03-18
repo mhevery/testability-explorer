@@ -63,6 +63,7 @@ tt {
 .classExplanation {
   border: 1px solid gray;
   padding: 7px;
+  margin-left: 1em;
 }
 
 .issuesExplanation {

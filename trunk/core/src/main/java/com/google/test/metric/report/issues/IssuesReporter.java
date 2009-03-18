@@ -15,11 +15,14 @@
  */
 package com.google.test.metric.report.issues;
 
-import com.google.test.metric.*;
+import com.google.test.metric.ClassCost;
+import com.google.test.metric.CostModel;
+import com.google.test.metric.MethodCost;
+import com.google.test.metric.MethodInvokationCost;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
-import java.util.ArrayList;
 
 /**
  * Looks at ClassCost models and infers the coding issue that incurred the cost.
@@ -46,16 +49,34 @@ public class IssuesReporter {
         costModel.computeClass(classCost));
     for (MethodCost methodCost : classCost.getMethods()) {
       if (methodCost.isConstructor()) {
-        classIssues.getConstructionIssues().workInConstructor(methodCost,
+        Issue issue = new Issue(methodCost.getMethodLineNumber(), methodCost.getMethodName());
+        classIssues.getConstructionIssues().workInConstructor(methodCost, issue,
             classCost.getTotalComplexityCost(), classCost.getTotalGlobalCost());
-      } else if (methodCost.isStatic()) {
-        // TODO(alexeagle)
+      } else if (hasStaticMethodSource(methodCost) ) {
+        Issue issue = new Issue(methodCost.getMethodLineNumber(), methodCost.getMethodName());
+        classIssues.getCollaboratorIssues().staticMethodCalled(methodCost, issue,
+            classCost.getTotalComplexityCost(), classCost.getTotalGlobalCost());
       } else {
-        classIssues.getCollaboratorIssues().nonMockableMethodCalled(methodCost,
+        Issue issue = new Issue(methodCost.getMethodLineNumber(), methodCost.getMethodName());
+        classIssues.getCollaboratorIssues().nonMockableMethodCalled(methodCost, issue,
             classCost.getTotalComplexityCost(), classCost.getTotalGlobalCost());
       }
     }
     return classIssues;
+  }
+
+  /**
+   * Is this methodCost a result of calling a static method?
+   */
+  boolean hasStaticMethodSource(MethodCost methodCost) {
+    if (methodCost.getViolationCosts() == null || methodCost.getViolationCosts().isEmpty()) {
+      return false;
+    }
+    if (methodCost.getViolationCosts().get(0) instanceof MethodInvokationCost) {
+      MethodInvokationCost invokationCost = (MethodInvokationCost) methodCost.getViolationCosts().get(0);
+      return invokationCost.getMethodCost().isStatic();
+    }
+    return false;
   }
 
 

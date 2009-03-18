@@ -15,16 +15,16 @@
  */
 package com.google.test.metric.report;
 
+import com.google.test.metric.ClassCost;
+import com.google.test.metric.CostModel;
+import com.google.test.metric.WeightedAverage;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import com.google.test.metric.ClassCost;
-import com.google.test.metric.CostModel;
-import com.google.test.metric.WeightedAverage;
-
-public abstract class SummaryReport implements Report {
+public abstract class SummaryReport extends ReportModel {
 
   protected final WeightedAverage weightedAverage = new WeightedAverage();
   protected SortedSet<ClassCost> worstOffenders;
