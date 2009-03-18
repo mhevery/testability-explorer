@@ -5,13 +5,13 @@
       <#assign messagePrefix = "report.explain.class." +
               issues.name?lower_case + "." +
               issueType?lower_case />
-      <table style="border: 1px dotted grey; margin: 1em;">
+      <table class="issuesExplanation">
         <tr>
           <td colspan="2">
-            <strong>${message(messagePrefix)}</strong>
+            ${message(messagePrefix)}
             <sup><a href="#">${message("report.explain.linkToWiki")}</a></sup>
           </td>
-          <th style="font-size: 0.8em">${message("report.explain.contribution")}</th>
+          <th class="contribution">${message("report.explain.contribution")}</th>
         </tr>
         <#list typeIssues as issue>
           <#assign rowStyle><#if issue_index % 2 == 0>even<#else/>odd</#if></#assign>
@@ -23,7 +23,7 @@
               ${issue.elementName}
               <#-- ${message(messagePrefix + ".method", "UIUtils#archiveThread", "high", "high")} -->
             </td>
-            <td>${issue.contributionToClassCost?string.percent}</td>
+            <td class="percent">${issue.contributionToClassCost?string.percent}</td>
           </tr>
         </#list>
         <tr>
