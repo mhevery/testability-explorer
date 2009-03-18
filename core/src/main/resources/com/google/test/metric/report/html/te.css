@@ -1,32 +1,11 @@
 body {
-  font-family: Verdana;
-  padding: 16px 8px;
+  font-family: sans-serif;
 }
 
-.Class {
-  font-family: monospace;
-  font-size: 15px;
-  cursor: pointer;
+p {
+  margin-bottom: 0;
 }
-.Method {
-  padding-left: 20px;
-  font-size: 14px;
-  display: none;
-  cursor: pointer;
-}
-.Line {
-  padding-left: 20px;
-  font-size: 13px;
-  display: none;
-  cursor: text;
-}
-.lineNumber {
-  padding-right: 5px;
-}
-.expand {
-  font-family: monospace;
-  cursor: pointer;
-}
+
 #timestamp {
   color: #666;
   font-style: italic;
@@ -36,8 +15,14 @@ body {
   z-index: 100;
 }
 
-.overview_table {
+.overview {
+  border: 1px solid #cc6;
+  background: #ffd;
+  padding: 8px;
+  margin-left: 16px;
+  float: left;"
 }
+
 .overview_table th {
   font-weight: normal;
   padding-bottom: 4px;
@@ -45,7 +30,7 @@ body {
 .overview_table td {
   font-style: italic;
 }
-.overview_table .percent {
+.percent {
   padding-left: 8px;
   text-align: right;
 }
@@ -56,13 +41,42 @@ body {
 
 .cost {
   font-family: monospace;
-  padding-left: 12px;
-  text-align: right;
-}
-.smaller {
-  font-size: 80%;
+  padding: 2px 5px;
+  display: block;
+  float: right;
+  border: 1px dotted red;
+  background-color: pink;
 }
 
 .odd {
   background-color: lightgray;
+}
+
+.header {
+  font-weight: bold;
+}
+
+tt {
+  font-size: larger;
+}
+
+.classExplanation {
+  border: 1px solid gray;
+  padding: 7px;
+}
+
+.issuesExplanation {
+  border: 1px dotted gray;
+  margin: 0.5em;
+  padding: 0.5em;
+}
+
+.contribution {
+  font-size: 0.8em;
+  text-align: right;
+}
+
+.copyright {
+  text-align: center;
+  margin-top: 32px;
 }
