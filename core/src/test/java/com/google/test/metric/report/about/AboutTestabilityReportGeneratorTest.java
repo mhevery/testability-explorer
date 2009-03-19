@@ -46,20 +46,26 @@ public class AboutTestabilityReportGeneratorTest extends TestCase {
         return new Source(asList(
             new Line(1, "Copyright garbage!"),
             new Line(2, "package com.google.test.metric.example;"),
-            new Line(3, "class SumOfPrimes {"),
-            new Line(4, "  public void sum() {}"),
-            new Line(5, "}")));
+            new Line(3, "import java.util.List;"),
+            new Line(4, "  "),
+            new Line(5, "class SumOfPrimes {"),
+            new Line(6, "  public void sum() {}"),
+            new Line(7, "}")));
       }
     });
     generator = new FreemarkerReportGenerator(model, new PrintStream(out), new SourceLinker("", ""), "about/Report.html");
     generator.printHeader();
-    generator.addClassCost(new ClassCost("com.google.test.metric.example.SumOfPrimes1",
+    generator.addClassCost(new ClassCost("com.google.test.metric.example.Lessons.SumOfPrimes1",
         asList(new MethodCost("foo()", 1, false, false))));
     generator.printFooter();
 
     String text = out.toString();
     assertTrue(text, text.contains(">SumOfPrimes1<"));
+    assertTrue(text, text.contains(">Lessons<"));
     assertTrue(text, text.contains("sum"));
     assertFalse(text, text.contains("Copyright"));
+    assertFalse(text, text.contains("package com.google"));
+    assertFalse(text, text.contains("import java.util"));
+    assertFalse(text, text.contains("<span class=\"nocode\">4:"));
   }
 }

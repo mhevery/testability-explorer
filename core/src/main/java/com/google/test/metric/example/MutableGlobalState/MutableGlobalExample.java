@@ -13,13 +13,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.test.metric.example;
+package com.google.test.metric.example.MutableGlobalState;
 
 /**
  * This class illustrates globally mutable state through a <em>non-final</em>
  * {@code public static} instance.
  *
- * <p>See also the documentation on {@link FinalGlobalExample}.
+ * <p>See also the documentation on {@link com.google.test.metric.example.MutableGlobalState.FinalGlobalExample}.
  */
 public class MutableGlobalExample {
 

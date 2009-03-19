@@ -37,7 +37,7 @@ public class ConstructionIssues implements IssuesCategory {
   private final Map<ConstructionType, List<Issue>> issues;
 
   public ConstructionIssues() {
-    this(newLazyHashMap(new HashMap<ConstructionType, List<Issue>>(), new IssuesListFactory()));
+    this.issues = newLazyHashMap(new IssuesListFactory());
   }
 
   /* For Testing */

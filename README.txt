@@ -108,16 +108,16 @@ com.google.test.metric.asm.MethodVisitorBuilder$7 10
 To get a more in depth view of view a particular class has a high cost use the detail output format.
 
 {{{
-$ testability.sh -print detail com.google.test.metric.example.Primeness
+$ testability.sh -print detail com.google.test.metric.example.Lessons.Primeness
 -----------------------------------------
 Packages/Classes To Enter: 
-  com.google.test.metric.example.Primeness*
+  com.google.test.metric.example.Lessons.Primeness*
 Max Method Print Depth: 1
 Min Class Cost: 1
 -----------------------------------------
 
-Testability cost for com.google.test.metric.example.Primeness [ cost = 2 ] [ 2 TCC, 0 TGC ]
-  com.google.test.metric.example.Primeness.isPrime(I)Z [2, 0 / 2, 0]
+Testability cost for com.google.test.metric.example.Lessons.Primeness [ cost = 2 ] [ 2 TCC, 0 TGC ]
+  com.google.test.metric.example.Lessons.Primeness.isPrime(I)Z [2, 0 / 2, 0]
 }}}
 
 An example score for a method is:
@@ -146,18 +146,18 @@ public class Primeness {
 }
 }}}
 *TRY IT:
-   `testability.sh -printDepth 10 com.google.test.metric.example.Primeness`
+   `testability.sh -printDepth 10 com.google.test.metric.example.Lessons.Primeness`
 
 *OUTPUT:*
 {{{
 -----------------------------------------
 Packages/Classes To Enter: 
- com.google.test.metric.example.Primeness*
+ com.google.test.metric.example.Lessons.Primeness*
 -----------------------------------------
 
 
-Testability cost for com.google.test.metric.example.Primeness [ 2 TCC, 0 TGC ]
-  com.google.test.metric.example.Primeness.isPrime(I)Z [2, 0 / 2, 0]
+Testability cost for com.google.test.metric.example.Lessons.Primeness [ 2 TCC, 0 TGC ]
+  com.google.test.metric.example.Lessons.Primeness.isPrime(I)Z [2, 0 / 2, 0]
 
 -----------------------------------------
 Summary Statistics:
@@ -216,19 +216,19 @@ public class SumOfPrimes1 {
 }}}
 
 *TRY IT:*
-   `testability.sh -printDepth 10 com.google.test.metric.example.SumOfPrimes1`
+   `testability.sh -printDepth 10 com.google.test.metric.example.Lessons.SumOfPrimes1`
 
 *OUTPUT:*
 {{{
 -----------------------------------------
 Packages/Classes To Enter: 
- com.google.test.metric.example.SumOfPrimes1*
+ com.google.test.metric.example.Lessons.SumOfPrimes1*
 -----------------------------------------
 
 
-Testability cost for com.google.test.metric.example.SumOfPrimes1 [ 4 TCC, 0 TGC ]
-  com.google.test.metric.example.SumOfPrimes1.sum(I)I [2, 0 / 4, 0]
-    line 25: com.google.test.metric.example.Primeness.isPrime(I)Z [2, 0 / 2, 0]
+Testability cost for com.google.test.metric.example.Lessons.SumOfPrimes1 [ 4 TCC, 0 TGC ]
+  com.google.test.metric.example.Lessons.SumOfPrimes1.sum(I)I [2, 0 / 4, 0]
+    line 25: com.google.test.metric.example.Lessons.Primeness.isPrime(I)Z [2, 0 / 2, 0]
 
 -----------------------------------------
 Summary Statistics:
@@ -282,18 +282,18 @@ public class SumOfPrimes2 {
 }}}
 
 *TRY IT:*
-   `testability.sh -printDepth 10 com.google.test.metric.example.SumOfPrimes2`
+   `testability.sh -printDepth 10 com.google.test.metric.example.Lessons.SumOfPrimes2`
 
 *OUTPUT:*
 {{{ 
 -----------------------------------------
 Packages/Classes To Enter: 
- com.google.test.metric.example.SumOfPrimes2*
+ com.google.test.metric.example.Lessons.SumOfPrimes2*
 -----------------------------------------
 
 
-Testability cost for com.google.test.metric.example.SumOfPrimes2 [ 2 TCC, 0 TGC ]
-  com.google.test.metric.example.SumOfPrimes2.sum(I)I [2, 0 / 2, 0]
+Testability cost for com.google.test.metric.example.Lessons.SumOfPrimes2 [ 2 TCC, 0 TGC ]
+  com.google.test.metric.example.Lessons.SumOfPrimes2.sum(I)I [2, 0 / 2, 0]
 
 -----------------------------------------
 Summary Statistics:

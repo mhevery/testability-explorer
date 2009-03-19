@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.test.metric.example;
+package com.google.test.metric.example.Lessons;
 
 public class Primeness {
 

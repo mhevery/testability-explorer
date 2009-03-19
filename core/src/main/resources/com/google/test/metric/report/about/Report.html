@@ -23,45 +23,60 @@
 <p>${message("report.about.description")}</p>
 
 <ul>Index of examples
-  <#list classes as clazz>
-    <li><a href="#example_${clazz_index}">${clazz.name}</a></li>
+  <#list classesByPackage?keys as package>
+    <li>${package}
+      <ul>
+        <#assign classes = classesByPackage[package] />
+        <#list classes as clazz>
+          <li><a href="#example_${package_index}_${clazz_index}">${clazz.name}</a></li>
+        </#list>
+      </ul>
+    </li>
   </#list>
 </ul>
 
-<#list classes as clazz>
-  <a name="example_${clazz_index}"/>
-  <p class="header">${message("report.about.class", "<tt>", clazz.name, "</tt>")}</p>
-  <#assign pastPackageDeclaration = false />
-  <code class="prettyprint">
-    <#list clazz.source.lines as line>
-      <#if line.text?starts_with("package com.google.test.metric") >
-        <#assign pastPackageDeclaration = true />
+<#list classesByPackage?keys as package>
+  <h2>${package}</h2>
+  <#assign classes = classesByPackage[package] />
+  <#list classes as clazz>
+    <a name="example_${package_index}_${clazz_index}"/>
+    <p class="header">${message("report.about.class", "<tt>", clazz.name, "</tt>")}</p>
+    <#assign pastPackageDeclaration = false />
+    <code class="prettyprint">
+      <#list clazz.source.lines as line>
+        <#if line.text?starts_with("package com.google.test.metric") >
+          <#assign pastPackageDeclaration = true />
+        </#if>
+        <#if pastPackageDeclaration &&
+             !line.text?matches("\\s*") &&
+             !line.text?starts_with("package") &&
+             !line.text?starts_with("import") >
+          <span class="nocode">${line.lineNumber}: </span>${line.text?html}
+        </#if>
+      </#list>
+    </code>
+    <#assign classIssues = clazz.issues />
+    <div class="classExplanation">
+      <div class="cost">${classIssues.totalCost}</div>
+      <#if !classIssues.constructionIssues.empty>
+        <em>${message("report.explain.class.construction")}</em>
+        <@costDetailBox classIssues.constructionIssues classIssues.path/>
       </#if>
-      <#if pastPackageDeclaration>
-        <span class="nocode">${line.lineNumber}: </span>${line.text?html}
+
+      <#if !classIssues.collaboratorIssues.empty>
+        <em>${message("report.explain.class.collaborators")}</em>
+        <@costDetailBox classIssues.collaboratorIssues classIssues.path/>
       </#if>
-    </#list>
-  </code>
-  <#assign classIssues = clazz.issues />
-  <div class="classExplanation">
-    <div class="cost">${classIssues.totalCost}</div>
-    <#if !classIssues.constructionIssues.empty>
-      <em>${message("report.explain.class.construction")}</em>
-      <@costDetailBox classIssues.constructionIssues classIssues.path/>
-    </#if>
 
-    <#if !classIssues.collaboratorIssues.empty>
-      <em>${message("report.explain.class.collaborators")}</em>
-      <@costDetailBox classIssues.collaboratorIssues classIssues.path/>
-    </#if>
+      <#if !classIssues.directCostIssues.empty>
+        <em>${message("report.explain.class.directCost")}</em>
+        <@costDetailBox classIssues.directCostIssues classIssues.path/>
+      </#if>
 
-    <#if !classIssues.directCostIssues.empty>
-      <em>${message("report.explain.class.directCost")}</em>
-      <@costDetailBox classIssues.directCostIssues classIssues.path/>
-    </#if>
-
-    <p>${message("report.explain.class.benefits", "<b>", 0.00, "</b>")}</p>
-  </div>
+      <p>${message("report.explain.class.benefits", "<b>", 0.00, "</b>")}</p>
+    </div>
+    <p>&nbsp;</p>
+  </#list>
 </#list>
 </body>
 </html>

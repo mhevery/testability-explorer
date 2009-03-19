@@ -20,6 +20,9 @@ import com.google.test.metric.ClassCost;
 import com.google.test.metric.ClassRepository;
 import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MetricComputer;
+import com.google.test.metric.example.ExpensiveConstructor.ObjectInstantiationWorkInTheConstructor;
+import com.google.test.metric.example.ExpensiveConstructor.StaticWorkInTheConstructor;
+import com.google.test.metric.example.ExpensiveConstructor.Cost2ToConstruct;
 import com.google.test.metric.testing.MetricComputerBuilder;
 import com.google.test.metric.testing.MetricComputerJavaDecorator;
 

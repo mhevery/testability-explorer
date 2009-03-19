@@ -21,8 +21,9 @@ import com.google.test.metric.ClassRepository;
 import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MetricComputer;
-import com.google.test.metric.example.FinalGlobalExample.Gadget;
-import com.google.test.metric.example.MutableGlobalExample.MutableGlobal;
+import com.google.test.metric.example.MutableGlobalState.FinalGlobalExample.Gadget;
+import com.google.test.metric.example.MutableGlobalState.MutableGlobalExample;
+import com.google.test.metric.example.MutableGlobalState.MutableGlobalExample.MutableGlobal;
 import com.google.test.metric.testing.MetricComputerBuilder;
 import com.google.test.metric.testing.MetricComputerJavaDecorator;
 
@@ -45,7 +46,7 @@ public class MutableGlobalExampleTest extends AutoFieldClearTestCase {
 
   public void testAccessingMutableStaticItselfDirectlyDoesntCountAgainstYou() throws Exception {
     MethodCost methodCost = decoratedComputer.compute(MutableGlobalExample.class,
-        "getInstance()Lcom/google/test/metric/example/MutableGlobalExample$Gadget;");
+        "getInstance()Lcom/google/test/metric/example/MutableGlobalState/MutableGlobalExample$Gadget;");
     assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
 
     // Noteworthy: code which exposes global state to others does not have the cost itself.

@@ -22,8 +22,9 @@ import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInfo;
 import com.google.test.metric.MetricComputer;
-import com.google.test.metric.example.FinalGlobalExample.FinalGlobal;
-import com.google.test.metric.example.FinalGlobalExample.Gadget;
+import com.google.test.metric.example.MutableGlobalState.FinalGlobalExample.FinalGlobal;
+import com.google.test.metric.example.MutableGlobalState.FinalGlobalExample.Gadget;
+import com.google.test.metric.example.MutableGlobalState.FinalGlobalExample;
 import com.google.test.metric.testing.MetricComputerBuilder;
 import com.google.test.metric.testing.MetricComputerJavaDecorator;
 
@@ -48,7 +49,7 @@ public class FinalGlobalExampleTest extends AutoFieldClearTestCase {
 
   public void testAccessingAFinalStaticIsOK() throws Exception {
     MethodCost methodCost = decoratedComputer.compute(FinalGlobalExample.class,
-        "getInstance()Lcom/google/test/metric/example/FinalGlobalExample$Gadget;");
+        "getInstance()Lcom/google/test/metric/example/MutableGlobalState/FinalGlobalExample$Gadget;");
     assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
     assertEquals(0, methodCost.getCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getCyclomaticComplexityCost());

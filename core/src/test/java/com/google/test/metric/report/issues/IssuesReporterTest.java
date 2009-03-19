@@ -19,7 +19,11 @@ import com.google.test.metric.ClassRepository;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MetricComputer;
-import com.google.test.metric.example.*;
+import com.google.test.metric.example.ExpensiveConstructor.ObjectInstantiationWorkInTheConstructor;
+import com.google.test.metric.example.ExpensiveConstructor.StaticWorkInTheConstructor;
+import com.google.test.metric.example.ExpensiveConstructor.Cost2ToConstruct;
+import com.google.test.metric.example.Lessons.SumOfPrimes1;
+import com.google.test.metric.example.NonMockableCollaborator.StaticMethodCalled;
 import com.google.test.metric.testing.MetricComputerBuilder;
 import com.google.test.metric.testing.MetricComputerJavaDecorator;
 import junit.framework.TestCase;
@@ -52,8 +56,8 @@ public class IssuesReporterTest extends TestCase {
         decoratedComputer.compute(Cost2ToConstruct.class));
     List<Issue> issues = classIssues.getConstructionIssues().getComplexityIssues();
     assertEquals(1, issues.size());
-    assertEquals(25, issues.get(0).getLineNumber());
-    assertEquals("com.google.test.metric.example.Cost2ToConstruct()", issues.get(0).getElementName());
+    assertEquals(22, issues.get(0).getLineNumber());
+    assertEquals("com.google.test.metric.example.ExpensiveConstructor.Cost2ToConstruct()", issues.get(0).getElementName());
     assertEquals(1.0f, issues.get(0).getContributionToClassCost());
   }
 
@@ -62,8 +66,8 @@ public class IssuesReporterTest extends TestCase {
         decoratedComputer.compute(StaticWorkInTheConstructor.class));
     List<Issue> issues = classIssues.getConstructionIssues().getStaticMethodIssues();
     assertEquals(1, issues.size());
-    assertEquals(25, issues.get(0).getLineNumber());
-    assertEquals("com.google.test.metric.example.StaticWorkInTheConstructor()", issues.get(0).getElementName());
+    assertEquals(30, issues.get(0).getLineNumber());
+    assertEquals("com.google.test.metric.example.ExpensiveConstructor.StaticWorkInTheConstructor()", issues.get(0).getElementName());
     assertEquals(1.0f, issues.get(0).getContributionToClassCost());
   }
 
@@ -73,7 +77,7 @@ public class IssuesReporterTest extends TestCase {
     List<Issue> issues = classIssues.getConstructionIssues().getNewOperatorIssues();
     assertEquals(1, issues.size());
     assertEquals(27, issues.get(0).getLineNumber());
-    assertEquals("com.google.test.metric.example.ObjectInstantiationWorkInTheConstructor()",
+    assertEquals("com.google.test.metric.example.ExpensiveConstructor.ObjectInstantiationWorkInTheConstructor()",
         issues.get(0).getElementName());
     assertEquals(1.0f, issues.get(0).getContributionToClassCost());
   }

@@ -16,14 +16,17 @@
 package com.google.test.metric.report.about;
 
 import com.google.test.metric.ClassCost;
+import com.google.test.metric.collection.LazyHashMap;
 import com.google.test.metric.report.ReportModel;
 import com.google.test.metric.report.Source;
 import com.google.test.metric.report.SourceLoader;
 import com.google.test.metric.report.issues.ClassIssues;
 import com.google.test.metric.report.issues.IssuesReporter;
+import com.google.common.base.Supplier;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A report which shows classes issues, their name, and their source code.
@@ -31,9 +34,15 @@ import java.util.List;
  * @author alexeagle@google.com (Alex Eagle)
  */
 public class AboutTestabilityReport extends ReportModel {
-  private List<ClassModel> classes = new LinkedList<ClassModel>();
   private final IssuesReporter issuesReporter;
   private final SourceLoader sourceLoader;
+  private final String PACKAGE_PREFIX = "com.google.test.metric.example.";
+  private final Map<String, List<ClassModel>> classesByPackage =
+      LazyHashMap.newLazyHashMap(new Supplier<List<ClassModel>>() {
+        public List<ClassModel> get() {
+          return new LinkedList<ClassModel>();
+        }
+      });
 
   public AboutTestabilityReport(IssuesReporter issuesReporter, SourceLoader sourceLoader) {
     this.issuesReporter = issuesReporter;
@@ -52,16 +61,22 @@ public class AboutTestabilityReport extends ReportModel {
       throw new IllegalStateException("Failed to load source for class " + className);
     }
     ClassIssues issues = issuesReporter.determineIssues(classCost);
-    String displayName = className.substring(className.lastIndexOf(".") + 1);
-    classes.add(new ClassModel(issues, source, displayName));
+    String displayName = className;
+    if (displayName.startsWith(PACKAGE_PREFIX)) {
+      displayName = displayName.substring(PACKAGE_PREFIX.length());
+    }
+    int indexOfLastPackageSeparator = displayName.lastIndexOf(".");
+    String packageName = displayName.substring(0, indexOfLastPackageSeparator);
+    String displayClassName = displayName.substring(indexOfLastPackageSeparator + 1);
+    classesByPackage.get(packageName).add(new ClassModel(issues, source, displayClassName));
   }
 
   private boolean isInnerClass(String className) {
     return className.contains("$");
   }
 
-  public List<ClassModel> getClasses() {
-    return classes;
+  public Map<String, List<ClassModel>> getClassesByPackage() {
+    return classesByPackage;
   }
 
   public class ClassModel {

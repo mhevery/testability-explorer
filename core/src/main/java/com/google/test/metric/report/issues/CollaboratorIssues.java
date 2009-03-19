@@ -35,7 +35,7 @@ public class CollaboratorIssues implements IssuesCategory {
   final Map<CollaboratorType, List<Issue>> issues;
 
   public CollaboratorIssues() {
-    this(newLazyHashMap(new HashMap<CollaboratorType, List<Issue>>(), new IssuesListFactory()));
+    this.issues = newLazyHashMap(new IssuesListFactory());
   }
 
   public CollaboratorIssues(Map<CollaboratorType, List<Issue>> issues) {
