@@ -32,8 +32,7 @@ public class LazyHashMapTest extends TestCase {
         return 3;
       }
     };
-    HashMap<String, Number> delegate = new HashMap<String, Number>();
-    Map<String, Number> map = new LazyHashMap<String, Number>(delegate, numberSupplier);
+    Map<String, Number> map = new LazyHashMap<String, Number>(numberSupplier);
     map.get("hello");
     assertEquals(3, map.get("hello"));
   }

@@ -13,18 +13,18 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.test.metric.example;
+package com.google.test.metric.example.NonMockableCollaborator;
 
 /**
- * This is an example of how a private method cannot be overridden,
- * so it prevents a seam between that class and a collaborator.
+ * This class demonstrates that if a method is final, it cannot be
+ * overridden to make a seam.
  */
-public class PrivateMethodCantBeOverridden {
+public class FinalMethodCantBeOverridden {
   /**
-   * This class has a private method with a cyclomatic complexity of 2.
+   * This class has a final method with a cyclomatic complexity of 2.
    */
-  public static class HasPrivateMethod {
-    private String computeString() {
+  public static class HasFinalMethod {
+    final String computeString() {
       boolean x = true;
       boolean a = x ? false : true;
       String b = a ? "hello" : "goodbye";
@@ -32,11 +32,10 @@ public class PrivateMethodCantBeOverridden {
     }
   }
 
-  private HasPrivateMethod collaborator;
-  /**
-   * Even though the collaborator is injected into the constructor...
-   */
-  public PrivateMethodCantBeOverridden(HasPrivateMethod collaborator) {
+  private HasFinalMethod collaborator;
+
+  // Even though the collaborator is injected into the constructor...
+  public FinalMethodCantBeOverridden(HasFinalMethod collaborator) {
     this.collaborator = collaborator;
   }
 

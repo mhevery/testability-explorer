@@ -28,8 +28,7 @@ import java.util.HashMap;
  */
 public class DirectCostIssues implements IssuesCategory {
 
-  private Map<DirectCostType, List<Issue>> issues =
-      newLazyHashMap(new HashMap<DirectCostType, List<Issue>>(), new IssuesListFactory());
+  private Map<DirectCostType, List<Issue>> issues = newLazyHashMap(new IssuesListFactory());
 
   public boolean isEmpty() {
     return true;

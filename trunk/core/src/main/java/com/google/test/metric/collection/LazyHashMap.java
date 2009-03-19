@@ -28,8 +28,8 @@ public class LazyHashMap<K, V> extends ForwardingMap<K,V> {
   private final Map<K, V> delegate;
   private final Supplier<V> supplier;
 
-  public LazyHashMap(Map<K, V> delegate, Supplier<V> supplier) {
-    this.delegate = delegate;
+  public LazyHashMap(Supplier<V> supplier) {
+    this.delegate = new HashMap<K,V>();
     this.supplier = supplier;
   }
 
@@ -47,8 +47,8 @@ public class LazyHashMap<K, V> extends ForwardingMap<K,V> {
     return value;
   }
 
-  public static <K,V> Map<K, V> newLazyHashMap(Map<K, V> delegate, Supplier<V> supplier) {
-    return new LazyHashMap<K,V>(delegate, supplier);
+  public static <K,V> Map<K, V> newLazyHashMap(Supplier<V> supplier) {
+    return new LazyHashMap<K,V>(supplier);
   }
 
 }
