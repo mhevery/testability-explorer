@@ -15,8 +15,8 @@
  */
 package com.google.test.metric.report.issues;
 
-import static com.google.test.metric.collection.LazyHashMap.newLazyHashMap;
 import com.google.test.metric.report.issues.DirectCostIssues.DirectCostType;
+import static com.google.test.metric.report.issues.DirectCostIssues.DirectCostType.CYCLOMATIC;
 
 import java.util.List;
 import java.util.Map;
@@ -26,6 +26,13 @@ import java.util.Map;
  * @author alexeagle@google.com (Alex Eagle)
  */
 public class DirectCostIssues extends IssuesCategory<DirectCostType> {
+  public DirectCostIssues(Map<DirectCostType, List<Issue>> issues) {
+    super(issues);
+  }
+
+  public DirectCostIssues() {
+    super();
+  }
 
   @Override
   Class<DirectCostType> getTypeLiteral() {
@@ -35,6 +42,14 @@ public class DirectCostIssues extends IssuesCategory<DirectCostType> {
   @Override
   public String getName() {
     return "DirectCost";
+  }
+
+  public List<Issue> getComplexityIssues() {
+    return issues.get(CYCLOMATIC);
+  }
+
+  public void add(Issue issue) {
+    issues.get(CYCLOMATIC).add(issue);
   }
 
   public enum DirectCostType {

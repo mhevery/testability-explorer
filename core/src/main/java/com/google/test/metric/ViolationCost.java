@@ -46,7 +46,7 @@ public abstract class ViolationCost {
   }
 
   // TODO: (misko) get rid of this method
-  public abstract void link(Cost directCost, Cost dependantCost);
+  public abstract void link(Cost directCost, Cost dependentCost);
 
   public Cost getCost() {
     return cost;

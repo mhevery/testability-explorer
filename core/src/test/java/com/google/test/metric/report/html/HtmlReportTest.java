@@ -15,9 +15,8 @@
  */
 package com.google.test.metric.report.html;
 
-import com.google.test.metric.ClassCost;
-import com.google.test.metric.CostModel;
-import com.google.test.metric.MethodCost;
+import com.google.test.metric.*;
+import com.google.test.metric.MethodInvokationCost.Reason;
 import com.google.test.metric.report.ReportOptions;
 import com.google.test.metric.report.SourceLinker;
 import com.google.test.metric.report.issues.ClassIssues;
@@ -35,6 +34,8 @@ public class HtmlReportTest extends TestCase {
   private HtmlReport report;
   private HtmlReportGenerator generator;
   private ByteArrayOutputStream out;
+  private ClassCost cost;
+  private SourceLinker linker;
 
   @Override
   protected void setUp() throws Exception {
@@ -43,15 +44,18 @@ public class HtmlReportTest extends TestCase {
     CostModel costModel = new CostModel();
     IssuesReporter issuesReporter = new IssuesReporter(new LinkedList<ClassIssues>(), costModel);
     ReportOptions options = new ReportOptions(1, 10, 10, 20, 5, 100, 100, 1, 10, "", "");
-    SourceLinker linker = new SourceLinker("http://code.repository/basepath/{path}&line={line}",
+    linker = new SourceLinker("http://code.repository/basepath/{path}&line={line}",
         "http://code.repository/basepath/{path}");
+    MethodCost methodCost = new MethodCost("methodFoo", 1, false, false);
+    methodCost.addCostSource(new MethodInvokationCost(1, methodCost, Reason.IMPLICIT_SETTER, new Cost(100, 1, new int[0])));
+    cost = new ClassCost("com.google.FooClass", Arrays.asList(methodCost));
     report = new HtmlReport(costModel, issuesReporter, options);
     generator = new HtmlReportGenerator(report, new PrintStream(out), issuesReporter, linker);
   }
 
   public void testPrintReport() throws Exception {
     generator.printHeader();
-    generator.addClassCost(new ClassCost("com.google.FooClass", Arrays.asList(new MethodCost("methodFoo", 1, false, false))));
+    generator.addClassCost(cost);
     generator.printFooter();
     String text = out.toString();
 
@@ -67,8 +71,7 @@ public class HtmlReportTest extends TestCase {
     ClassCost cost = new ClassCost("classFoo", Arrays.asList(new MethodCost("methodFoo", 1, false, false)));
     generator.addClassCost(cost);
     ClassIssues classIssues = new ClassIssues(cost.getClassName(), 0);
-    classIssues.getConstructionIssues().workInConstructor(new MethodCost("foo()", 10, true, false),
-        null, cost.getTotalComplexityCost(), cost.getTotalGlobalCost());
+    classIssues.getConstructionIssues().add(null, true);
     report.getWorstOffenders().add(classIssues);
     generator.printFooter();
     String text = out.toString();

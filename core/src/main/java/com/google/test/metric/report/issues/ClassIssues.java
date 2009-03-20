@@ -86,4 +86,12 @@ public class ClassIssues {
       return class1Issues.getTotalCost().compareTo(class2Issues.getTotalCost());
     }
   }
+
+  @Override
+  public String toString() {
+    return String.format("ClassIssues for %s [\n " +
+        "construction[%s]\n collaborator[%s]\n directCost[%s]\n] Total Cost: %d\n",
+        className, constructionIssues, collaboratorIssues, directCostIssues, totalCost);
+
+  }
 }

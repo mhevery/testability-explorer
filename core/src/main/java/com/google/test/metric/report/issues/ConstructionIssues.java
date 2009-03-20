@@ -41,32 +41,16 @@ public class ConstructionIssues extends IssuesCategory<ConstructionType> {
     super();
   }
 
-  public void workInConstructor(MethodCost methodCost, Issue issue, long totalComplexityCost, long totalGlobalCost) {
-    long complexityCost = 0, staticCost = 0, nonMockableCost = 0;
-    for (ViolationCost costSource : methodCost.getViolationCosts()) {
-      if (costSource instanceof CyclomaticCost) {
-        complexityCost += costSource.getCost().getCyclomaticComplexityCost();
-      }
-      if (costSource instanceof MethodInvokationCost) {
-        if (((MethodInvokationCost)costSource).getMethodCost().isStatic()) {
-          staticCost += costSource.getCost().getCyclomaticComplexityCost();
-        } else {
-          nonMockableCost += costSource.getCost().getCyclomaticComplexityCost();
-        }
-      }
-    }
-    if (staticCost > 0) {
-      issue.setContributionToClassCost(staticCost / (float)totalComplexityCost);
+  public void add(Issue issue, boolean isStatic) {
+    if (isStatic) {
       issues.get(STATIC_METHOD).add(issue);
-    }
-    if (nonMockableCost > 0) {
-      issue.setContributionToClassCost(nonMockableCost / (float)totalComplexityCost);
+    } else {
       issues.get(NEW_OPERATOR).add(issue);
     }
-    if (complexityCost > 0) {
-      issue.setContributionToClassCost(complexityCost / (float)totalComplexityCost);
-      issues.get(COMPLEXITY).add(issue);
-    }
+  }
+
+  public void addComplexity(Issue issue) {
+    issues.get(COMPLEXITY).add(issue);
   }
 
   @Override
