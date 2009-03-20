@@ -99,6 +99,10 @@
           </archive>
         </configuration>
       </plugin>
+    </plugins>
+  </build>
+  <reporting>
+    <plugins>
 
       <!-- TODO: enable once the testability maven plugin is available
       <plugin>
@@ -118,10 +122,7 @@
         </executions>
       </plugin>
       -->
-    </plugins>
-  </build>
-  <reporting>
-    <plugins>
+      
       <!--
       <plugin>
         <groupId>emma</groupId>

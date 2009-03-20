@@ -20,11 +20,10 @@ import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvokationCost;
 import com.google.test.metric.ViolationCost;
 import static com.google.test.metric.collection.LazyHashMap.newLazyHashMap;
-import com.google.test.metric.report.issues.Issue.ConstructionType;
-import static com.google.test.metric.report.issues.Issue.ConstructionType.*;
+import static com.google.test.metric.report.issues.ConstructionIssues.ConstructionType.*;
+import com.google.test.metric.report.issues.ConstructionIssues.ConstructionType;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,16 +32,13 @@ import java.util.Map;
  *
  * @author alexeagle@google.com (Alex Eagle)
  */
-public class ConstructionIssues implements IssuesCategory {
-  private final Map<ConstructionType, List<Issue>> issues;
-
-  public ConstructionIssues() {
-    this.issues = newLazyHashMap(new IssuesListFactory());
+public class ConstructionIssues extends IssuesCategory<ConstructionType> {
+  public ConstructionIssues(Map<ConstructionType, List<Issue>> issues) {
+    super(issues);
   }
 
-  /* For Testing */
-  public ConstructionIssues(Map<ConstructionType, List<Issue>> issues) {
-    this.issues = issues;
+  public ConstructionIssues() {
+    super();
   }
 
   public void workInConstructor(MethodCost methodCost, Issue issue, long totalComplexityCost, long totalGlobalCost) {
@@ -73,27 +69,14 @@ public class ConstructionIssues implements IssuesCategory {
     }
   }
 
-  public Enum[] getTypes() {
-    return ConstructionType.values();
+  @Override
+  Class<ConstructionType> getTypeLiteral() {
+    return ConstructionType.class;
   }
 
-  public List<Issue> getIssuesOfType(String type) {
-    ConstructionType key = ConstructionType.valueOf(type);
-    if (issues.containsKey(key)) {
-      return issues.get(key);
-    }
-    return Collections.emptyList();
-  }
-
+  @Override
   public String getName() {
     return "Construction";
-  }
-
-  public boolean isEmpty() {
-    return (!issues.containsKey(COMPLEXITY) || issues.get(COMPLEXITY).isEmpty()) &&
-        (!issues.containsKey(STATIC_METHOD) || issues.get(STATIC_METHOD).isEmpty()) &&
-        (!issues.containsKey(NEW_OPERATOR) || issues.get(NEW_OPERATOR).isEmpty());
-
   }
 
   public List<Issue> getComplexityIssues() {
@@ -106,5 +89,13 @@ public class ConstructionIssues implements IssuesCategory {
 
   public List<Issue> getNewOperatorIssues() {
     return issues.get(NEW_OPERATOR);
+  }
+
+  public enum ConstructionType {
+    STATIC_INIT,
+    COMPLEXITY,
+    STATIC_METHOD,
+    NEW_OPERATOR,
+    SETTER
   }
 }

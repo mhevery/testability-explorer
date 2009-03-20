@@ -51,21 +51,4 @@ public class Issue {
   public float getContributionToClassCost() {
     return contributionToClassCost;
   }
-
-  public enum ConstructionType {
-    STATIC_INIT,
-    COMPLEXITY,
-    STATIC_METHOD,
-    NEW_OPERATOR,
-    SETTER
-  }
-
-  public enum DirectCostType {
-    CYCLOMATIC
-  }
-
-  public enum CollaboratorType {
-    STATIC_METHOD,
-    NEW_OPERATOR
-  }
 }

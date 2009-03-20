@@ -24,6 +24,7 @@ import com.google.test.metric.example.ExpensiveConstructor.StaticWorkInTheConstr
 import com.google.test.metric.example.ExpensiveConstructor.Cost2ToConstruct;
 import com.google.test.metric.example.Lessons.SumOfPrimes1;
 import com.google.test.metric.example.NonMockableCollaborator.StaticMethodCalled;
+import com.google.test.metric.example.NonMockableCollaborator.FinalMethodCantBeOverridden;
 import com.google.test.metric.testing.MetricComputerBuilder;
 import com.google.test.metric.testing.MetricComputerJavaDecorator;
 import junit.framework.TestCase;
@@ -51,7 +52,7 @@ public class IssuesReporterTest extends TestCase {
     issuesReporter = new IssuesReporter(new LinkedList<ClassIssues>(), new CostModel());
   }
 
-  public void testCostToConstructIssue() throws Exception {
+  public void testCost2ToConstructIssues() throws Exception {
     ClassIssues classIssues = issuesReporter.determineIssues(
         decoratedComputer.compute(Cost2ToConstruct.class));
     List<Issue> issues = classIssues.getConstructionIssues().getComplexityIssues();
@@ -61,28 +62,30 @@ public class IssuesReporterTest extends TestCase {
     assertEquals(1.0f, issues.get(0).getContributionToClassCost());
   }
 
-  public void testStaticWorkInConstructorIssue() throws Exception {
+  public void testStaticWorkInConstructorIssues() throws Exception {
     ClassIssues classIssues = issuesReporter.determineIssues(
         decoratedComputer.compute(StaticWorkInTheConstructor.class));
     List<Issue> issues = classIssues.getConstructionIssues().getStaticMethodIssues();
     assertEquals(1, issues.size());
-    assertEquals(30, issues.get(0).getLineNumber());
-    assertEquals("com.google.test.metric.example.ExpensiveConstructor.StaticWorkInTheConstructor()", issues.get(0).getElementName());
+    assertEquals(31, issues.get(0).getLineNumber());
+    assertEquals("boolean staticCost2()", issues.get(0).getElementName());
     assertEquals(1.0f, issues.get(0).getContributionToClassCost());
   }
 
-  public void testCollaboratorWorkInConstructorIssue() throws Exception {
+  public void testObjectInstantiationWorkInTheConstructorIssues() throws Exception {
     ClassIssues classIssues = issuesReporter.determineIssues(
         decoratedComputer.compute(ObjectInstantiationWorkInTheConstructor.class));
+    // TODO
+    // assertEquals(2, classIssues.getCollaboratorIssues().);
     List<Issue> issues = classIssues.getConstructionIssues().getNewOperatorIssues();
     assertEquals(1, issues.size());
-    assertEquals(27, issues.get(0).getLineNumber());
-    assertEquals("com.google.test.metric.example.ExpensiveConstructor.ObjectInstantiationWorkInTheConstructor()",
-        issues.get(0).getElementName());
-    assertEquals(1.0f, issues.get(0).getContributionToClassCost());
+    assertEquals(25, issues.get(0).getLineNumber());
+    assertEquals("com.google.test.metric.example.ExpensiveConstructor.Cost2ToConstruct()", issues.get(0).getElementName());
+    assertEquals(1f, issues.get(0).getContributionToClassCost());
+
   }
 
-  public void testContributionFromMultipleConstructorIssues() throws Exception {
+  public void testSeveralConstructionIssues() throws Exception {
     ClassIssues classIssues = issuesReporter.determineIssues(
         decoratedComputer.compute(SeveralConstructionIssues.class));
     Issue complexity = classIssues.getConstructionIssues().getComplexityIssues().get(0);
@@ -95,7 +98,17 @@ public class IssuesReporterTest extends TestCase {
     assertEquals(2/9f, collaborator.getContributionToClassCost());
   }
 
-  public void testNonMockableMethodCalled() throws Exception {
+  public void testFinalMethodCantBeOverriddenIssues() throws Exception {
+    ClassIssues classIssues = issuesReporter.determineIssues(
+        decoratedComputer.compute(FinalMethodCantBeOverridden.class));
+    assertTrue(classIssues.getConstructionIssues().isEmpty());
+    assertTrue(classIssues.getDirectCostIssues().isEmpty());
+    List<Issue> issues = classIssues.getCollaboratorIssues().getFinalMethodIssues();
+    //TODO
+    //assertEquals(1, issues.size());
+  }
+
+  public void testSumOfPrimes1Issues() throws Exception {
     ClassIssues classIssues = issuesReporter.determineIssues(
         decoratedComputer.compute(SumOfPrimes1.class));
     List<Issue> issues = classIssues.getCollaboratorIssues().getNewOperatorIssues();
@@ -106,20 +119,16 @@ public class IssuesReporterTest extends TestCase {
     assertEquals(0.5f, issues.get(0).getContributionToClassCost());
   }
 
-  public void testStaticMethodCalled() throws Exception {
+  public void testStaticMethodCalledIssues() throws Exception {
     ClassIssues classIssues = issuesReporter.determineIssues(
         decoratedComputer.compute(StaticMethodCalled.class));
     List<Issue> issues = classIssues.getCollaboratorIssues().getStaticMethodIssues();
 
     assertEquals(1, issues.size());
     assertEquals(46, issues.get(0).getLineNumber());
-    // assertEquals("HasStaticMethod.isGreat()", issues.get(0).getElementName());
+    assertEquals("boolean isGreat()", issues.get(0).getElementName());
     assertEquals(1.0f, issues.get(0).getContributionToClassCost());
     assertTrue(classIssues.getConstructionIssues().isEmpty());
-  }
-
-  public void testContributionFromMultipleCollaboratorIssues() throws Exception {
-    // TODO(alexeagle)
   }
 
 }

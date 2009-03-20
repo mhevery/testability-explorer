@@ -75,6 +75,12 @@ public class ClassIssues {
         getDirectCostIssues().isEmpty();
   }
 
+  public int getSize() {
+    return getCollaboratorIssues().getSize() +
+        getConstructionIssues().getSize() +
+        getDirectCostIssues().getSize();
+  }
+
   public static class TotalCostComparator implements Comparator<ClassIssues> {
     public int compare(ClassIssues class1Issues, ClassIssues class2Issues) {
       return class1Issues.getTotalCost().compareTo(class2Issues.getTotalCost());

@@ -17,12 +17,10 @@ package com.google.test.metric.report.issues;
 
 import com.google.test.metric.MethodCost;
 import static com.google.test.metric.collection.LazyHashMap.newLazyHashMap;
-import com.google.test.metric.report.issues.Issue.CollaboratorType;
-import static com.google.test.metric.report.issues.Issue.CollaboratorType.NEW_OPERATOR;
-import static com.google.test.metric.report.issues.Issue.CollaboratorType.STATIC_METHOD;
+import static com.google.test.metric.report.issues.CollaboratorIssues.CollaboratorType.*;
+import com.google.test.metric.report.issues.CollaboratorIssues.CollaboratorType;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,34 +29,21 @@ import java.util.Map;
  *
  * @author alexeagle@google.com (Alex Eagle)
  */
-public class CollaboratorIssues implements IssuesCategory {
-  final Map<CollaboratorType, List<Issue>> issues;
+public class CollaboratorIssues extends IssuesCategory<CollaboratorType> {
+  public CollaboratorIssues(Map<CollaboratorType, List<Issue>> issues) {
+    super(issues);
+  }
 
   public CollaboratorIssues() {
-    this.issues = newLazyHashMap(new IssuesListFactory());
+    super();
   }
 
-  public CollaboratorIssues(Map<CollaboratorType, List<Issue>> issues) {
-    this.issues = issues;
+  @Override
+  Class<CollaboratorType> getTypeLiteral() {
+    return CollaboratorType.class;
   }
 
-  public boolean isEmpty() {
-    return (!issues.containsKey(NEW_OPERATOR) || issues.get(NEW_OPERATOR).isEmpty()) &&
-        (!issues.containsKey(STATIC_METHOD) || issues.get(STATIC_METHOD).isEmpty());
-  }
-
-  public Enum[] getTypes() {
-    return CollaboratorType.values();
-  }
-
-  public List<Issue> getIssuesOfType(String type) {
-    CollaboratorType key = CollaboratorType.valueOf(type);
-    if (issues.containsKey(key)) {
-      return issues.get(key);
-    }
-    return Collections.emptyList();
-  }
-
+  @Override
   public String getName() {
     return "Collaborators";
   }
@@ -71,6 +56,10 @@ public class CollaboratorIssues implements IssuesCategory {
     return issues.get(STATIC_METHOD);
   }
 
+  public List<Issue> getFinalMethodIssues() {
+    return issues.get(FINAL_METHOD);
+  }
+
   public void nonMockableMethodCalled(MethodCost methodCost, Issue issue, long totalComplexityCost, long totalGlobalCost) {
     issue.setContributionToClassCost(
             methodCost.getDependantCost().getCyclomaticComplexityCost() / (float) totalComplexityCost);
@@ -81,5 +70,12 @@ public class CollaboratorIssues implements IssuesCategory {
     issue.setContributionToClassCost(
             methodCost.getDependantCost().getCyclomaticComplexityCost() / (float) totalComplexityCost);
     issues.get(STATIC_METHOD).add(issue);
+  }
+
+  public enum CollaboratorType {
+    STATIC_METHOD,
+    NEW_OPERATOR,
+    FINAL_METHOD,
+    PRIVATE_METHOD
   }
 }

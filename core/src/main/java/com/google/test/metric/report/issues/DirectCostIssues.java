@@ -15,34 +15,29 @@
  */
 package com.google.test.metric.report.issues;
 
-import com.google.test.metric.report.issues.Issue.DirectCostType;
 import static com.google.test.metric.collection.LazyHashMap.newLazyHashMap;
+import com.google.test.metric.report.issues.DirectCostIssues.DirectCostType;
 
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 /**
  * Issues that arise from high complexity in the class under analysis.
  * @author alexeagle@google.com (Alex Eagle)
  */
-public class DirectCostIssues implements IssuesCategory {
+public class DirectCostIssues extends IssuesCategory<DirectCostType> {
 
-  private Map<DirectCostType, List<Issue>> issues = newLazyHashMap(new IssuesListFactory());
-
-  public boolean isEmpty() {
-    return true;
+  @Override
+  Class<DirectCostType> getTypeLiteral() {
+    return DirectCostType.class;
   }
 
-  public Enum[] getTypes() {
-    return DirectCostType.values();
-  }
-
-  public List<Issue> getIssuesOfType(String type) {
-    return issues.get(DirectCostType.valueOf(type));
-  }
-
+  @Override
   public String getName() {
     return "DirectCost";
+  }
+
+  public enum DirectCostType {
+    CYCLOMATIC
   }
 }
