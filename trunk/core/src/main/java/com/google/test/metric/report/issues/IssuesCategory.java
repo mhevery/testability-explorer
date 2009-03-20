@@ -15,32 +15,84 @@
  */
 package com.google.test.metric.report.issues;
 
+import static com.google.test.metric.collection.LazyHashMap.newLazyHashMap;
+
 import java.util.List;
+import java.util.Map;
+import java.util.Collections;
 
 /**
+ * A decorator around a map from issue types to a list of issues of that type.
+ *
  * @author alexeagle@google.com (Alex Eagle)
  */
-public interface IssuesCategory {
+public abstract class IssuesCategory<E> {
+
+  protected final Map<E, List<Issue>> issues;
+
+  public IssuesCategory() {
+    this.issues = newLazyHashMap(new IssuesListFactory());
+  }
+
+  public IssuesCategory(Map<E, List<Issue>> issues) {
+    this.issues = issues;
+  }
 
   /**
    * @return true iff there are no issue of any type
    */
-  boolean isEmpty();
+  public boolean isEmpty() {
+    boolean empty = true;
+    for (E type : getTypes()) {
+      if (issues.containsKey(type) && !issues.get(type).isEmpty()) {
+        empty = false;
+      }
+    }
+    return empty;
+  }
+
+  public int getSize() {
+    int size = 0;
+    for (E type : getTypes()) {
+      if (issues.containsKey(type)) {
+        size += issues.get(type).size();
+      }
+    }
+    return size;
+  }
 
   /**
    * @return the types of issues reported by the issues container.
    */
-  Enum[] getTypes();
+  public E[] getTypes() {
+    return getTypeLiteral().getEnumConstants();
+  }
+
+  abstract Class<E> getTypeLiteral();
 
   /**
    * @param type the string representation of an issue type
    * @return the list of issues of this type
    */
-  List<Issue> getIssuesOfType(String type);
+  public List<Issue> getIssuesOfType(String type) {
+    E typeEnum = null;
+    for (E anEnum : getTypes()) {
+      if (anEnum.toString().equals(type)) {
+        typeEnum = anEnum;
+      }
+    }
+    if (typeEnum == null) {
+      throw new IllegalArgumentException("Unknown issue type " + type);
+    }
+    if (issues.containsKey(typeEnum)) {
+      return issues.get(typeEnum);
+    }
+    return Collections.emptyList();
+  }
 
   /**
    * The name of this issues category.
    * @return
    */
-  String getName();
+  abstract String getName();
 }

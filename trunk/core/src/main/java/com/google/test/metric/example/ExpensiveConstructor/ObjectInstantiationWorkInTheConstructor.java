@@ -15,9 +15,6 @@
  */
 package com.google.test.metric.example.ExpensiveConstructor;
 
-/**
- * @author alexeagle@google.com (Alex Eagle)
-*/
 public class ObjectInstantiationWorkInTheConstructor {
   @SuppressWarnings("unused")
   private final Cost2ToConstruct nonInjectable1;

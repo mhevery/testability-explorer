@@ -15,14 +15,9 @@
  */
 package com.google.test.metric.report.issues;
 
-import com.google.test.metric.ClassCost;
-import com.google.test.metric.CostModel;
-import com.google.test.metric.MethodCost;
-import com.google.test.metric.MethodInvokationCost;
+import com.google.test.metric.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * Looks at ClassCost models and infers the coding issue that incurred the cost.
@@ -49,13 +44,15 @@ public class IssuesReporter {
         costModel.computeClass(classCost));
     for (MethodCost methodCost : classCost.getMethods()) {
       if (methodCost.isConstructor()) {
-        Issue issue = new Issue(methodCost.getMethodLineNumber(), methodCost.getMethodName());
-        classIssues.getConstructionIssues().workInConstructor(methodCost, issue,
-            classCost.getTotalComplexityCost(), classCost.getTotalGlobalCost());
+        for (Issue issue : getUnderlyingIssues(methodCost)) {
+          classIssues.getConstructionIssues().workInConstructor(methodCost, issue,
+              classCost.getTotalComplexityCost(), classCost.getTotalGlobalCost());
+        }
       } else if (hasStaticMethodSource(methodCost) ) {
-        Issue issue = new Issue(methodCost.getMethodLineNumber(), methodCost.getMethodName());
-        classIssues.getCollaboratorIssues().staticMethodCalled(methodCost, issue,
-            classCost.getTotalComplexityCost(), classCost.getTotalGlobalCost());
+        for (Issue issue : getUnderlyingIssues(methodCost)) {
+          classIssues.getCollaboratorIssues().staticMethodCalled(methodCost, issue,
+              classCost.getTotalComplexityCost(), classCost.getTotalGlobalCost());
+        }
       } else {
         Issue issue = new Issue(methodCost.getMethodLineNumber(), methodCost.getMethodName());
         classIssues.getCollaboratorIssues().nonMockableMethodCalled(methodCost, issue,
@@ -63,6 +60,25 @@ public class IssuesReporter {
       }
     }
     return classIssues;
+  }
+
+  private List<Issue> getUnderlyingIssues(MethodCost methodCost) {
+    List<Issue> issues = new LinkedList<Issue>();
+    if (methodCost.getViolationCosts() == null || methodCost.getViolationCosts().isEmpty()) {
+      return Collections.emptyList();
+    }
+    for (ViolationCost violationCost : methodCost.getViolationCosts()) {
+      if (violationCost instanceof MethodInvokationCost) {
+        MethodInvokationCost invokationCost = (MethodInvokationCost) violationCost;
+        issues.add(new Issue(invokationCost.getLineNumber(), invokationCost.getDescription()));
+      }
+    }
+    if (issues.isEmpty()) {
+      if (methodCost.getDirectCost().getCyclomaticComplexityCost() > 0) {
+        issues.add(new Issue(methodCost.getMethodLineNumber(), methodCost.getMethodName()));
+      }
+    }
+    return issues;
   }
 
   /**

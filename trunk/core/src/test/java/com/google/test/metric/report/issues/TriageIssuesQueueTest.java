@@ -16,7 +16,7 @@
 package com.google.test.metric.report.issues;
 
 import junit.framework.TestCase;
-import static com.google.test.metric.report.issues.Issue.ConstructionType.*;
+import static com.google.test.metric.report.issues.ConstructionIssues.ConstructionType.*;
 import com.google.test.metric.report.ReportOptions;
 import static com.google.common.collect.ImmutableMap.*;
 
