@@ -154,4 +154,17 @@ public class IssuesReporterTest extends TestCase {
     assertTrue(classIssues.getConstructionIssues().isEmpty());
   }
 
+
+  public void testSeveralNonMockableMethodIssues() throws Exception {
+    ClassIssues classIssues = issuesReporter.determineIssues(
+        decoratedComputer.compute(SeveralNonMockableMethodIssues.class));
+    assertEquals(2, classIssues.getSize());
+    List<Issue> issues = classIssues.getCollaboratorIssues().getStaticMethodIssues();
+    Issue issue0 = issues.get(0);
+    Issue issue1 = issues.get(1);
+
+    assertEquals(2/6f, issue0.getContributionToClassCost());
+    assertEquals(4/6f, issue1.getContributionToClassCost());
+
+  }
 }
