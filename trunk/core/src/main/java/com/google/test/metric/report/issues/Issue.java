@@ -24,6 +24,7 @@ public class Issue {
   private final int lineNumber;
   private final String elementName;
   private float contributionToClassCost;
+  private boolean isLineNumberApproximate;
 
   public Issue(int lineNumber, String elementName, float contributionToClassCost) {
     this.lineNumber = lineNumber;
@@ -50,5 +51,19 @@ public class Issue {
 
   public float getContributionToClassCost() {
     return contributionToClassCost;
+  }
+
+  public boolean isLineNumberApproximate() {
+    return isLineNumberApproximate;
+  }
+
+  public void setLineNumberIsApproximate(boolean isApprox) {
+    this.isLineNumberApproximate = isApprox;
+  }
+
+  @Override
+  public String toString() {
+    return String.format("On line %d, element %s with contribution %f",
+        lineNumber, elementName, contributionToClassCost);
   }
 }

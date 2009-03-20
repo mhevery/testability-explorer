@@ -23,6 +23,7 @@ import com.google.test.metric.example.ExpensiveConstructor.ObjectInstantiationWo
 import com.google.test.metric.example.ExpensiveConstructor.StaticWorkInTheConstructor;
 import com.google.test.metric.example.ExpensiveConstructor.Cost2ToConstruct;
 import com.google.test.metric.example.Lessons.SumOfPrimes1;
+import com.google.test.metric.example.Lessons.Primeness;
 import com.google.test.metric.example.NonMockableCollaborator.StaticMethodCalled;
 import com.google.test.metric.example.NonMockableCollaborator.FinalMethodCantBeOverridden;
 import com.google.test.metric.testing.MetricComputerBuilder;
@@ -57,9 +58,11 @@ public class IssuesReporterTest extends TestCase {
         decoratedComputer.compute(Cost2ToConstruct.class));
     List<Issue> issues = classIssues.getConstructionIssues().getComplexityIssues();
     assertEquals(1, issues.size());
-    assertEquals(22, issues.get(0).getLineNumber());
-    assertEquals("com.google.test.metric.example.ExpensiveConstructor.Cost2ToConstruct()", issues.get(0).getElementName());
-    assertEquals(1.0f, issues.get(0).getContributionToClassCost());
+    Issue issue = issues.get(0);
+    assertEquals(22, issue.getLineNumber());
+    assertFalse(issue.isLineNumberApproximate());
+    assertEquals("com.google.test.metric.example.ExpensiveConstructor.Cost2ToConstruct()", issue.getElementName());
+    assertEquals(1.0f, issue.getContributionToClassCost());
   }
 
   public void testStaticWorkInConstructorIssues() throws Exception {
@@ -67,9 +70,11 @@ public class IssuesReporterTest extends TestCase {
         decoratedComputer.compute(StaticWorkInTheConstructor.class));
     List<Issue> issues = classIssues.getConstructionIssues().getStaticMethodIssues();
     assertEquals(1, issues.size());
-    assertEquals(31, issues.get(0).getLineNumber());
-    assertEquals("boolean staticCost2()", issues.get(0).getElementName());
-    assertEquals(1.0f, issues.get(0).getContributionToClassCost());
+    Issue issue = issues.get(0);
+    assertEquals(31, issue.getLineNumber());
+    assertFalse(issue.isLineNumberApproximate());
+    assertEquals("boolean staticCost2()", issue.getElementName());
+    assertEquals(1.0f, issue.getContributionToClassCost());
   }
 
   public void testObjectInstantiationWorkInTheConstructorIssues() throws Exception {
@@ -79,23 +84,24 @@ public class IssuesReporterTest extends TestCase {
     // assertEquals(2, classIssues.getCollaboratorIssues().);
     List<Issue> issues = classIssues.getConstructionIssues().getNewOperatorIssues();
     assertEquals(1, issues.size());
-    assertEquals(25, issues.get(0).getLineNumber());
-    assertEquals("com.google.test.metric.example.ExpensiveConstructor.Cost2ToConstruct()", issues.get(0).getElementName());
-    assertEquals(1f, issues.get(0).getContributionToClassCost());
+    Issue issue = issues.get(0);
+    assertEquals(25, issue.getLineNumber());
+    assertFalse(issue.isLineNumberApproximate());
+    assertEquals("com.google.test.metric.example.ExpensiveConstructor.Cost2ToConstruct()", issue.getElementName());
+    assertEquals(1f, issue.getContributionToClassCost());
 
   }
 
   public void testSeveralConstructionIssues() throws Exception {
     ClassIssues classIssues = issuesReporter.determineIssues(
         decoratedComputer.compute(SeveralConstructionIssues.class));
+    assertEquals(classIssues.toString(), 3, classIssues.getSize());
     Issue complexity = classIssues.getConstructionIssues().getComplexityIssues().get(0);
     Issue staticCall = classIssues.getConstructionIssues().getStaticMethodIssues().get(0);
     Issue collaborator = classIssues.getConstructionIssues().getNewOperatorIssues().get(0);
     assertEquals(2/9f, complexity.getContributionToClassCost());
-    // should be 3/9
-    assertEquals(2/9f, staticCall.getContributionToClassCost());
-    // should be 4/9
-    assertEquals(2/9f, collaborator.getContributionToClassCost());
+    assertEquals(3/9f, staticCall.getContributionToClassCost());
+    assertEquals(4/9f, collaborator.getContributionToClassCost());
   }
 
   public void testFinalMethodCantBeOverriddenIssues() throws Exception {
@@ -108,15 +114,30 @@ public class IssuesReporterTest extends TestCase {
     //assertEquals(1, issues.size());
   }
 
+  public void testPrimenessIssues() throws Exception {
+    ClassIssues classIssues = issuesReporter.determineIssues(decoratedComputer.compute(Primeness.class));
+    assertEquals(1, classIssues.getSize());
+    assertEquals(1, classIssues.getDirectCostIssues().getSize());
+    Issue issue = classIssues.getDirectCostIssues().getComplexityIssues().get(0);
+    // FIXME(alexeagle): the method really starts on line 20, but it's not available in the bytecode.
+    // run this: javap -classpath target/core-1.3.1-SNAPSHOT.jar -c -l com.google.test.metric.example.Lessons.Primeness
+    // Only answer is to look at the source... :(
+    assertEquals(21, issue.getLineNumber());
+    assertTrue(issue.isLineNumberApproximate());
+    assertEquals(1.0f, issue.getContributionToClassCost());
+    assertEquals("boolean isPrime(int)", issue.getElementName());
+  }
+
   public void testSumOfPrimes1Issues() throws Exception {
     ClassIssues classIssues = issuesReporter.determineIssues(
         decoratedComputer.compute(SumOfPrimes1.class));
     List<Issue> issues = classIssues.getCollaboratorIssues().getNewOperatorIssues();
     assertEquals(1, issues.size());
-    //TODO(alexeagle): these don't seem right.
-    assertEquals(23, issues.get(0).getLineNumber());
-    assertEquals("int sum(int)", issues.get(0).getElementName());
-    assertEquals(0.5f, issues.get(0).getContributionToClassCost());
+    Issue issue = issues.get(0);
+    assertEquals(25, issue.getLineNumber());
+    assertFalse(issue.isLineNumberApproximate());
+    assertEquals("boolean isPrime(int)", issue.getElementName());
+    assertEquals(0.5f, issue.getContributionToClassCost());
   }
 
   public void testStaticMethodCalledIssues() throws Exception {
@@ -125,9 +146,11 @@ public class IssuesReporterTest extends TestCase {
     List<Issue> issues = classIssues.getCollaboratorIssues().getStaticMethodIssues();
 
     assertEquals(1, issues.size());
-    assertEquals(46, issues.get(0).getLineNumber());
-    assertEquals("boolean isGreat()", issues.get(0).getElementName());
-    assertEquals(1.0f, issues.get(0).getContributionToClassCost());
+    Issue issue = issues.get(0);
+    assertEquals(46, issue.getLineNumber());
+    assertFalse(issue.isLineNumberApproximate());
+    assertEquals("boolean isGreat()", issue.getElementName());
+    assertEquals(1.0f, issue.getContributionToClassCost());
     assertTrue(classIssues.getConstructionIssues().isEmpty());
   }
 

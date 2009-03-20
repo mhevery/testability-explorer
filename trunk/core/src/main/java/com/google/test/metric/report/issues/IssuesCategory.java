@@ -95,4 +95,9 @@ public abstract class IssuesCategory<E> {
    * @return
    */
   abstract String getName();
+
+  @Override
+  public String toString() {
+    return issues.toString();
+  }
 }

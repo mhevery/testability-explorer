@@ -76,7 +76,7 @@ public class Cost {
     return this;
   }
 
-  public void addDependant(Cost cost) {
+  public void addDependent(Cost cost) {
     cyclomaticCost += cost.cyclomaticCost;
     globalCost += cost.globalCost;
   }

@@ -43,42 +43,64 @@ public class IssuesReporter {
     ClassIssues classIssues = new ClassIssues(classCost.getClassName(),
         costModel.computeClass(classCost));
     for (MethodCost methodCost : classCost.getMethods()) {
-      if (methodCost.isConstructor()) {
-        for (Issue issue : getUnderlyingIssues(methodCost)) {
-          classIssues.getConstructionIssues().workInConstructor(methodCost, issue,
-              classCost.getTotalComplexityCost(), classCost.getTotalGlobalCost());
-        }
-      } else if (hasStaticMethodSource(methodCost) ) {
-        for (Issue issue : getUnderlyingIssues(methodCost)) {
-          classIssues.getCollaboratorIssues().staticMethodCalled(methodCost, issue,
-              classCost.getTotalComplexityCost(), classCost.getTotalGlobalCost());
-        }
-      } else {
-        Issue issue = new Issue(methodCost.getMethodLineNumber(), methodCost.getMethodName());
-        classIssues.getCollaboratorIssues().nonMockableMethodCalled(methodCost, issue,
-            classCost.getTotalComplexityCost(), classCost.getTotalGlobalCost());
-      }
+      addIssuesInMethod(classIssues, methodCost, classCost);
     }
     return classIssues;
   }
 
-  private List<Issue> getUnderlyingIssues(MethodCost methodCost) {
-    List<Issue> issues = new LinkedList<Issue>();
+  void addIssuesInMethod(ClassIssues classIssues, MethodCost methodCost, ClassCost classCost) {
     if (methodCost.getViolationCosts() == null || methodCost.getViolationCosts().isEmpty()) {
-      return Collections.emptyList();
+      // no issues to add
+      return;
     }
+    boolean issuesFound = false;
+
     for (ViolationCost violationCost : methodCost.getViolationCosts()) {
       if (violationCost instanceof MethodInvokationCost) {
         MethodInvokationCost invokationCost = (MethodInvokationCost) violationCost;
-        issues.add(new Issue(invokationCost.getLineNumber(), invokationCost.getDescription()));
+        Issue issue = new Issue(invokationCost.getLineNumber(), invokationCost.getDescription());
+        if (methodCost.isConstructor()) {
+          addMethodInvocationInConstructor(classIssues, classCost, invokationCost, issue);
+        } else {
+          issuesFound = true;
+          addMethodInvocationInMethod(classIssues, methodCost, classCost, issue);
+        }
       }
     }
-    if (issues.isEmpty()) {
+    if (!issuesFound) {
       if (methodCost.getDirectCost().getCyclomaticComplexityCost() > 0) {
-        issues.add(new Issue(methodCost.getMethodLineNumber(), methodCost.getMethodName()));
+        Issue issue = new Issue(methodCost.getMethodLineNumber(), methodCost.getMethodName());
+        float contributionToClassCost = methodCost.getDirectCost().getCyclomaticComplexityCost() /
+            (float) classCost.getTotalComplexityCost();
+        if (methodCost.isConstructor()) {
+          issue.setContributionToClassCost(contributionToClassCost);
+          classIssues.getConstructionIssues().addComplexity(issue);
+        } else {
+          issue.setLineNumberIsApproximate(true);
+          issue.setContributionToClassCost(contributionToClassCost);
+          classIssues.getDirectCostIssues().add(issue);
+        }
       }
     }
-    return issues;
+  }
+
+  private void addMethodInvocationInMethod(ClassIssues classIssues, MethodCost methodCost,
+                                           ClassCost classCost, Issue issue) {
+    boolean isStatic = hasStaticMethodSource(methodCost);
+    issue.setContributionToClassCost(
+        methodCost.getDependentCost().getCyclomaticComplexityCost() /
+            (float) classCost.getTotalComplexityCost());
+    classIssues.getCollaboratorIssues().add(issue, isStatic);
+  }
+
+  private void addMethodInvocationInConstructor(ClassIssues classIssues, ClassCost classCost,
+                                                MethodInvokationCost invokationCost, Issue issue) {
+    boolean isStatic = invokationCost.getMethodCost().isStatic();
+    float contributionToCost =
+        invokationCost.getMethodCost().getTotalCost().getCyclomaticComplexityCost() /
+        (float) classCost.getTotalComplexityCost();
+    issue.setContributionToClassCost(contributionToCost);
+    classIssues.getConstructionIssues().add(issue, isStatic);
   }
 
   /**
@@ -89,7 +111,8 @@ public class IssuesReporter {
       return false;
     }
     if (methodCost.getViolationCosts().get(0) instanceof MethodInvokationCost) {
-      MethodInvokationCost invokationCost = (MethodInvokationCost) methodCost.getViolationCosts().get(0);
+      MethodInvokationCost invokationCost =
+          (MethodInvokationCost) methodCost.getViolationCosts().get(0);
       return invokationCost.getMethodCost().isStatic();
     }
     return false;
@@ -100,6 +123,6 @@ public class IssuesReporter {
     if (mostImportantIssues instanceof TriageIssuesQueue) {
       return ((TriageIssuesQueue)mostImportantIssues).asList();
     }
-    return new ArrayList(mostImportantIssues);
+    return new ArrayList<ClassIssues>(mostImportantIssues);
   }
 }

@@ -40,12 +40,12 @@ public class MethodCost {
     return directCost;
   }
 
-  public Cost getDependantCost() {
-    return dependantCost;
+  public Cost getDependentCost() {
+    return dependentCost;
   }
 
   private final Cost directCost = new Cost();
-  private final Cost dependantCost = new Cost();
+  private final Cost dependentCost = new Cost();
   public static final String METHOD_NAME_ATTRIBUTE = "name";
 
   /**
@@ -62,7 +62,7 @@ public class MethodCost {
   }
 
   public Cost getTotalCost() {
-    return new Cost().add(directCost).add(dependantCost);
+    return new Cost().add(directCost).add(dependentCost);
   }
 
   public String getMethodName() {
@@ -70,7 +70,7 @@ public class MethodCost {
   }
 
   public void addCostSource(ViolationCost costSource) {
-    costSource.link(directCost, dependantCost);
+    costSource.link(directCost, dependentCost);
     costSources.add(costSource);
   }
 
@@ -87,17 +87,17 @@ public class MethodCost {
     return lineNumber;
   }
 
-  public List<? extends ViolationCost> getViolationCosts() {
+  public List<ViolationCost> getViolationCosts() {
     return costSources;
   }
 
-  public List<? extends ViolationCost> getImplicitViolationCosts() {
+  public List<ViolationCost> getImplicitViolationCosts() {
     return filterViolationCosts(true);
   }
-  public List<? extends ViolationCost> getExplicitViolationCosts() {
+  public List<ViolationCost> getExplicitViolationCosts() {
     return filterViolationCosts(false);
   }
-  private List<? extends ViolationCost> filterViolationCosts(boolean implicit) {
+  private List<ViolationCost> filterViolationCosts(boolean implicit) {
     List<ViolationCost> result = new ArrayList<ViolationCost>();
     for (ViolationCost cost : getViolationCosts()) {
       if (cost.isImplicit() == implicit) {

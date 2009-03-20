@@ -21,6 +21,8 @@ import com.google.test.metric.report.FreemarkerReportGenerator;
 import com.google.test.metric.report.issues.ConstructionIssues;
 import com.google.test.metric.report.issues.Issue;
 import com.google.test.metric.report.issues.CollaboratorIssues;
+import com.google.test.metric.report.issues.DirectCostIssues;
+import com.google.test.metric.report.issues.DirectCostIssues.DirectCostType;
 import com.google.test.metric.report.issues.ConstructionIssues.ConstructionType;
 import com.google.test.metric.report.issues.CollaboratorIssues.CollaboratorType;
 import static com.google.test.metric.report.issues.ConstructionIssues.ConstructionType.*;
@@ -120,7 +122,7 @@ public class MessagesForCostDetailBoxTest extends TestCase {
 
   public void testCollaboratorNewOperatorMessages() throws Exception {
     Map<CollaboratorType, List<Issue>> issues =
-        of(CollaboratorIssues.CollaboratorType.NEW_OPERATOR, asList(new Issue(12, "new Foo()", 1.0f)));
+        of(CollaboratorType.NEW_OPERATOR, asList(new Issue(12, "new Foo()", 1.0f)));
     CollaboratorIssues collaboratorIssues = new CollaboratorIssues(issues);
     model.put("issues", collaboratorIssues);
 
@@ -129,9 +131,17 @@ public class MessagesForCostDetailBoxTest extends TestCase {
 
   public void testCollaboratorStaticMethodCallMessages() throws Exception {
     Map<CollaboratorType, List<Issue>> issues =
-        of(CollaboratorIssues.CollaboratorType.STATIC_METHOD, asList(new Issue(12, "new Foo()", 1.0f)));
+        of(CollaboratorType.STATIC_METHOD, asList(new Issue(12, "new Foo()", 1.0f)));
     CollaboratorIssues collaboratorIssues = new CollaboratorIssues(issues);
     model.put("issues", collaboratorIssues);
+
+    template.process(model, devNull);
+  }
+
+  public void testDirectCostMessages() throws Exception {
+    Map<DirectCostType, List<Issue>> issues = of(DirectCostType.CYCLOMATIC, asList(new Issue(12, "new Foo()", 1f)));
+    DirectCostIssues directCostIssues = new DirectCostIssues(issues);
+    model.put("issues", directCostIssues);
 
     template.process(model, devNull);
   }

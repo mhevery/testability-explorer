@@ -60,16 +60,12 @@ public class CollaboratorIssues extends IssuesCategory<CollaboratorType> {
     return issues.get(FINAL_METHOD);
   }
 
-  public void nonMockableMethodCalled(MethodCost methodCost, Issue issue, long totalComplexityCost, long totalGlobalCost) {
-    issue.setContributionToClassCost(
-            methodCost.getDependantCost().getCyclomaticComplexityCost() / (float) totalComplexityCost);
-    issues.get(NEW_OPERATOR).add(issue);
-  }
-
-  public void staticMethodCalled(MethodCost methodCost, Issue issue, long totalComplexityCost, long totalGlobalCost) {
-    issue.setContributionToClassCost(
-            methodCost.getDependantCost().getCyclomaticComplexityCost() / (float) totalComplexityCost);
-    issues.get(STATIC_METHOD).add(issue);
+  public void add(Issue issue, boolean isStatic) {
+    if (isStatic) {
+      issues.get(STATIC_METHOD).add(issue);
+    } else {
+      issues.get(NEW_OPERATOR).add(issue);
+    }
   }
 
   public enum CollaboratorType {

@@ -18,9 +18,10 @@
           <tr class="${rowStyle}">
             <td style="padding-left: 1em">${message("report.explain.onLine")}
               ${sourceLink(classFilePath, issue.lineNumber?c, issue.lineNumber)}
+              <#if issue.lineNumberApproximate>?</#if>
             </td>
             <td>
-              ${issue.elementName}
+              <tt>${issue.elementName}</tt>
               <#-- ${message(messagePrefix + ".method", "UIUtils#archiveThread", "high", "high")} -->
             </td>
             <td class="percent">${issue.contributionToClassCost?string.percent}</td>
