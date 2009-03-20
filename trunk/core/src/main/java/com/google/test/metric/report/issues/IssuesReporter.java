@@ -59,11 +59,16 @@ public class IssuesReporter {
       if (violationCost instanceof MethodInvokationCost) {
         MethodInvokationCost invokationCost = (MethodInvokationCost) violationCost;
         Issue issue = new Issue(invokationCost.getLineNumber(), invokationCost.getDescription());
+        boolean isStatic = invokationCost.getMethodCost().isStatic();
+        float contributionToCost =
+            invokationCost.getMethodCost().getTotalCost().getCyclomaticComplexityCost() /
+            (float) classCost.getTotalComplexityCost();
+        issue.setContributionToClassCost(contributionToCost);
         if (methodCost.isConstructor()) {
-          addMethodInvocationInConstructor(classIssues, classCost, invokationCost, issue);
+          classIssues.getConstructionIssues().add(issue, isStatic);
         } else {
           issuesFound = true;
-          addMethodInvocationInMethod(classIssues, methodCost, classCost, issue);
+          classIssues.getCollaboratorIssues().add(issue, isStatic);
         }
       }
     }
@@ -82,25 +87,6 @@ public class IssuesReporter {
         }
       }
     }
-  }
-
-  private void addMethodInvocationInMethod(ClassIssues classIssues, MethodCost methodCost,
-                                           ClassCost classCost, Issue issue) {
-    boolean isStatic = hasStaticMethodSource(methodCost);
-    issue.setContributionToClassCost(
-        methodCost.getDependentCost().getCyclomaticComplexityCost() /
-            (float) classCost.getTotalComplexityCost());
-    classIssues.getCollaboratorIssues().add(issue, isStatic);
-  }
-
-  private void addMethodInvocationInConstructor(ClassIssues classIssues, ClassCost classCost,
-                                                MethodInvokationCost invokationCost, Issue issue) {
-    boolean isStatic = invokationCost.getMethodCost().isStatic();
-    float contributionToCost =
-        invokationCost.getMethodCost().getTotalCost().getCyclomaticComplexityCost() /
-        (float) classCost.getTotalComplexityCost();
-    issue.setContributionToClassCost(contributionToCost);
-    classIssues.getConstructionIssues().add(issue, isStatic);
   }
 
   /**
