@@ -1,17 +1,19 @@
-#summary Readme first
+#summary Getting Started
 #labels Featured
-=Testability Metric Explained=
+=Find out the testability cost for your project=
 
-==Basic Idea==
+==The basic Idea==
 The testability score represents the difficulty of testing a particular
 piece of code. The difficulty is a measure of:
   # how hard it will be to construct this object
   # how hard will it be to execute the method in order to be able to assert something in a test.
 
-==How to run it==
+Higher testability costs means it will be more frustrating to test classes in isolation, and the tests will take longer to run. When the cost gets too high, developers often avoid writing unit tests because it requires too much effort.
+
+==Running on the Command Line==
 {{{
-$ testability.sh 
-Argument "classes and packages" is required
+$ testability.sh [classes_and_packages] [-cp classpath] [options]
+At least one of classes_and_packages or -cp is required.
 
  classes and packages                  : Classes or packages to analyze. Matches any class starting with these.
                                          Ex. com.example.analyze.these com.google.and.these.packages com.google.AClass
@@ -34,10 +36,41 @@ Argument "classes and packages" is required
                                          using a weighted average. This represents the weight of the global state cost.
 }}}
 
+==Running with Maven==
+The Maven plugin is not yet released to the Maven central repository. To use it, you'll need to build it from source:
+
+{{{
+$ svn checkout http://testability-explorer.googlecode.com/svn/trunk/ testability-explorer
+$ cd testability-explorer
+$ mvn install
+}}}
+
+Now you can add it to your Maven pom.xml:
+{{{
+<project>
+  ...
+  <reporting>
+    <plugins>
+      ...
+      <plugin>
+        <groupId>com.google.testability-explorer</groupId>
+        <artifactId>maven2-testability-plugin</artifactId>
+        <version>1.3.1-SNAPSHOT</version>
+      </plugin>
+    </plugins>
+  </reporting>
+</project>
+}}}
+
+and when you run `mvn site`, you should have a `testability.html` file under `target/site/`.
+See the available options by running `mvn help:describe -Dplugin=com.google.testability-explorer:maven2-testability-plugin -Ddetail`
+
+== Running with Ant ==
+See AntTask
 
 ==Output Format==
 
-There are two kinds of output format: summary and detail
+There are several formats available from testability explorer.
 
 === Output Format: summary ===
 
