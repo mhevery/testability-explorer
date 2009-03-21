@@ -34,7 +34,7 @@ public class TestabilityExplorerMojo extends AbstractMavenReport {
   /**
    * The root package to inspect.
    *
-   * @parameter
+   * @parameter expression="."
    */
   private String filter;
 
