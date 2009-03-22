@@ -15,83 +15,127 @@
  */
 package com.google.test.metric.report.issues;
 
-import java.util.Comparator;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Iterables.filter;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import static com.google.test.metric.report.issues.Issue.isType;
+
+import java.util.*;
 
 /**
  * Data model for the issues we want to explain in a class.
  *
  * @author alexeagle@google.com (Alex Eagle)
  */
-public class ClassIssues {
-  private final ConstructionIssues constructionIssues;
-  private final DirectCostIssues directCostIssues;
-  private final CollaboratorIssues collaboratorIssues;
+public class ClassIssues implements IssueHolder {
+  private final Queue<Issue> issues;
   private final String className;
   private final Integer totalCost;
+  private static final float MIN_PERCENT_TO_DISPLAY = 0.05f;
+  private static final int MAX_ISSUES_TO_DISPLAY_PER_CLASS = 20;
 
   public ClassIssues(String className, Integer totalCost) {
     this(className, totalCost,
-        new ConstructionIssues(), new DirectCostIssues(), new CollaboratorIssues());
+        new TriageIssuesQueue<Issue>(MIN_PERCENT_TO_DISPLAY, MAX_ISSUES_TO_DISPLAY_PER_CLASS,
+            new Issue.TotalCostComparator()));
   }
 
-  public Integer getTotalCost() {
-    return totalCost;
-  }
-
-  public ClassIssues(String className, Integer totalCost,
-                     ConstructionIssues constructionIssues, DirectCostIssues directCostIssues,
-                     CollaboratorIssues collaboratorIssues) {
+  public ClassIssues(String className, Integer totalCost, Queue<Issue> issues) {
     this.className = className;
     this.totalCost = totalCost;
-    this.constructionIssues = constructionIssues;
-    this.directCostIssues = directCostIssues;
-    this.collaboratorIssues = collaboratorIssues;
+    this.issues = issues;
   }
 
+  public float getTotalCost() {
+    return totalCost;
+  }
 
   public String getClassName() {
     return className;
   }
 
   public String getPath() {
-    return className.replaceAll("\\.", "/");
+    String outerClass = className;
+    if (outerClass.contains("$")) {
+      outerClass = outerClass.substring(0, outerClass.indexOf("$"));
+    }
+    return outerClass.replaceAll("\\.", "/");
   }
 
-  public ConstructionIssues getConstructionIssues() {
-    return constructionIssues;
+  Map<String, List<Issue>> bucketize(IssueType issueType) {
+    List<Issue> mostImportantIssues = getMostImportantIssues();
+    Map<String, List<Issue>> theseIssues = Maps.newHashMap();
+    for (IssueSubType subType : IssueSubType.values()) {
+      ArrayList<Issue> issuesOfType =
+          newArrayList(filter(mostImportantIssues, isType(issueType, subType)));
+      if (!issuesOfType.isEmpty()) {
+        theseIssues.put(subType.toString(), issuesOfType);
+      }
+    }
+    return theseIssues;
   }
 
-  public DirectCostIssues getDirectCostIssues() {
-    return directCostIssues;
+  public Map<String, List<Issue>> getConstructionIssues() {
+    return bucketize(IssueType.CONSTRUCTION);
   }
 
-  public CollaboratorIssues getCollaboratorIssues() {
-    return collaboratorIssues;
+  public Map<String, List<Issue>> getDirectCostIssues() {
+    return bucketize(IssueType.DIRECT_COST);
+  }
+
+  public Map<String, List<Issue>> getCollaboratorIssues() {
+    return bucketize(IssueType.COLLABORATOR);
   }
 
   public boolean isEmpty() {
-    return getCollaboratorIssues().isEmpty() &&
-        getConstructionIssues().isEmpty() &&
-        getDirectCostIssues().isEmpty();
+    return issues.isEmpty();
   }
 
   public int getSize() {
-    return getCollaboratorIssues().getSize() +
-        getConstructionIssues().getSize() +
-        getDirectCostIssues().getSize();
+    return issues.size();
+  }
+
+  public void add(Issue issue) {
+    issues.offer(issue);
   }
 
   public static class TotalCostComparator implements Comparator<ClassIssues> {
     public int compare(ClassIssues class1Issues, ClassIssues class2Issues) {
-      return class1Issues.getTotalCost().compareTo(class2Issues.getTotalCost());
+      return Float.compare(class1Issues.getTotalCost(), class2Issues.getTotalCost());
     }
   }
 
   @Override
   public String toString() {
-    return String.format("ClassIssues for %s [\n " +
-        "construction[%s]\n collaborator[%s]\n directCost[%s]\n] Total Cost: %d\n",
-        className, constructionIssues, collaboratorIssues, directCostIssues, totalCost);
+    return String.format("ClassIssues for %s: %s  Total Cost: %d\n",
+        className, issues, totalCost);
+  }
 
+  /**
+   * For freemarker to call (it doesn't understand enum keys in a hash
+   * @return
+   */
+  public List<String> getTypes() {
+    List<String> types = Lists.newArrayList();
+    for (Enum enumVal : IssueType.values()) {
+      types.add(enumVal.toString());
+    }
+    return types;
+  }
+
+  public List<String> getSubTypes() {
+    List<String> types = Lists.newArrayList();
+    for (Enum enumVal : IssueSubType.values()) {
+      types.add(enumVal.toString());
+    }
+    return types;
+  }
+
+  public List<Issue> getMostImportantIssues() {
+    if (issues instanceof TriageIssuesQueue) {
+      return ((TriageIssuesQueue<Issue>)issues).asList();
+    }
+    return new ArrayList<Issue>(issues);
   }
 }

@@ -1,10 +1,10 @@
-<#macro costDetailBox issues classFilePath>
-  <#list issues.types as issueType>
-    <#assign typeIssues = issues.getIssuesOfType(issueType) />
+<#macro costDetailBox issues classFilePath issueType>
+  <#list issues?keys as issueSubType>
+    <#assign typeIssues = issues[issueSubType] />
     <#if typeIssues?size gt 0>
       <#assign messagePrefix = "report.explain.class." +
-              issues.name?lower_case + "." +
-              issueType?lower_case />
+              issueType?lower_case + "." +
+              issueSubType?lower_case />
       <table class="issuesExplanation">
         <tr>
           <td colspan="2">
@@ -16,9 +16,14 @@
         <#list typeIssues as issue>
           <#assign rowStyle><#if issue_index % 2 == 0>even<#else/>odd</#if></#assign>
           <tr class="${rowStyle}">
-            <td style="padding-left: 1em">${message("report.explain.onLine")}
+            <td style="padding-left: 1em">
+              <#if issue.lineNumberApproximate>
+                ${message("report.explain.aroundLine")}
+                <#else/>
+                ${message("report.explain.onLine")}
+              </#if>
               ${sourceLink(classFilePath, issue.lineNumber?c, issue.lineNumber)}
-              <#if issue.lineNumberApproximate>?</#if>
+
             </td>
             <td>
               <tt>${issue.elementName}</tt>

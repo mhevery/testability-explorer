@@ -56,7 +56,7 @@ public class IssuesReporterTest extends TestCase {
   public void testCost2ToConstructIssues() throws Exception {
     ClassIssues classIssues = issuesReporter.determineIssues(
         decoratedComputer.compute(Cost2ToConstruct.class));
-    List<Issue> issues = classIssues.getConstructionIssues().getComplexityIssues();
+    List<Issue> issues = classIssues.getConstructionIssues().get(IssueSubType.COMPLEXITY.toString());
     assertEquals(1, issues.size());
     Issue issue = issues.get(0);
     assertEquals(22, issue.getLineNumber());
@@ -68,7 +68,7 @@ public class IssuesReporterTest extends TestCase {
   public void testStaticWorkInConstructorIssues() throws Exception {
     ClassIssues classIssues = issuesReporter.determineIssues(
         decoratedComputer.compute(StaticWorkInTheConstructor.class));
-    List<Issue> issues = classIssues.getConstructionIssues().getStaticMethodIssues();
+    List<Issue> issues = classIssues.getConstructionIssues().get(IssueSubType.STATIC_METHOD.toString());
     assertEquals(1, issues.size());
     Issue issue = issues.get(0);
     assertEquals(31, issue.getLineNumber());
@@ -82,7 +82,7 @@ public class IssuesReporterTest extends TestCase {
         decoratedComputer.compute(ObjectInstantiationWorkInTheConstructor.class));
     // TODO
     // assertEquals(2, classIssues.getCollaboratorIssues().);
-    List<Issue> issues = classIssues.getConstructionIssues().getNewOperatorIssues();
+    List<Issue> issues = classIssues.getConstructionIssues().get(IssueSubType.NEW_OPERATOR.toString());
     assertEquals(1, issues.size());
     Issue issue = issues.get(0);
     assertEquals(25, issue.getLineNumber());
@@ -96,9 +96,9 @@ public class IssuesReporterTest extends TestCase {
     ClassIssues classIssues = issuesReporter.determineIssues(
         decoratedComputer.compute(SeveralConstructionIssues.class));
     assertEquals(classIssues.toString(), 3, classIssues.getSize());
-    Issue complexity = classIssues.getConstructionIssues().getComplexityIssues().get(0);
-    Issue staticCall = classIssues.getConstructionIssues().getStaticMethodIssues().get(0);
-    Issue collaborator = classIssues.getConstructionIssues().getNewOperatorIssues().get(0);
+    Issue complexity = classIssues.getConstructionIssues().get(IssueSubType.COMPLEXITY.toString()).get(0);
+    Issue staticCall = classIssues.getConstructionIssues().get(IssueSubType.STATIC_METHOD.toString()).get(0);
+    Issue collaborator = classIssues.getConstructionIssues().get(IssueSubType.NEW_OPERATOR.toString()).get(0);
     assertEquals(2/9f, complexity.getContributionToClassCost());
     assertEquals(3/9f, staticCall.getContributionToClassCost());
     assertEquals(4/9f, collaborator.getContributionToClassCost());
@@ -109,7 +109,7 @@ public class IssuesReporterTest extends TestCase {
         decoratedComputer.compute(FinalMethodCantBeOverridden.class));
     assertTrue(classIssues.getConstructionIssues().isEmpty());
     assertTrue(classIssues.getDirectCostIssues().isEmpty());
-    List<Issue> issues = classIssues.getCollaboratorIssues().getFinalMethodIssues();
+    List<Issue> issues = classIssues.getCollaboratorIssues().get(IssueSubType.FINAL_METHOD.toString());
     //TODO
     //assertEquals(1, issues.size());
   }
@@ -117,8 +117,7 @@ public class IssuesReporterTest extends TestCase {
   public void testPrimenessIssues() throws Exception {
     ClassIssues classIssues = issuesReporter.determineIssues(decoratedComputer.compute(Primeness.class));
     assertEquals(1, classIssues.getSize());
-    assertEquals(1, classIssues.getDirectCostIssues().getSize());
-    Issue issue = classIssues.getDirectCostIssues().getComplexityIssues().get(0);
+    Issue issue = classIssues.getDirectCostIssues().get(IssueSubType.COMPLEXITY.toString()).get(0);
     // FIXME(alexeagle): the method really starts on line 20, but it's not available in the bytecode.
     // run this: javap -classpath target/core-1.3.1-SNAPSHOT.jar -c -l com.google.test.metric.example.Lessons.Primeness
     // Only answer is to look at the source... :(
@@ -131,7 +130,7 @@ public class IssuesReporterTest extends TestCase {
   public void testSumOfPrimes1Issues() throws Exception {
     ClassIssues classIssues = issuesReporter.determineIssues(
         decoratedComputer.compute(SumOfPrimes1.class));
-    List<Issue> issues = classIssues.getCollaboratorIssues().getNewOperatorIssues();
+    List<Issue> issues = classIssues.getCollaboratorIssues().get(IssueSubType.NEW_OPERATOR.toString());
     assertEquals(1, issues.size());
     Issue issue = issues.get(0);
     assertEquals(25, issue.getLineNumber());
@@ -143,7 +142,7 @@ public class IssuesReporterTest extends TestCase {
   public void testStaticMethodCalledIssues() throws Exception {
     ClassIssues classIssues = issuesReporter.determineIssues(
         decoratedComputer.compute(StaticMethodCalled.class));
-    List<Issue> issues = classIssues.getCollaboratorIssues().getStaticMethodIssues();
+    List<Issue> issues = classIssues.getCollaboratorIssues().get(IssueSubType.STATIC_METHOD.toString());
 
     assertEquals(1, issues.size());
     Issue issue = issues.get(0);
@@ -159,12 +158,12 @@ public class IssuesReporterTest extends TestCase {
     ClassIssues classIssues = issuesReporter.determineIssues(
         decoratedComputer.compute(SeveralNonMockableMethodIssues.class));
     assertEquals(2, classIssues.getSize());
-    List<Issue> issues = classIssues.getCollaboratorIssues().getStaticMethodIssues();
+    List<Issue> issues = classIssues.getCollaboratorIssues().get(IssueSubType.STATIC_METHOD.toString());
     Issue issue0 = issues.get(0);
     Issue issue1 = issues.get(1);
 
-    assertEquals(2/6f, issue0.getContributionToClassCost());
-    assertEquals(4/6f, issue1.getContributionToClassCost());
+    assertEquals(4/6f, issue0.getContributionToClassCost());
+    assertEquals(2/6f, issue1.getContributionToClassCost());
 
   }
 }

@@ -21,6 +21,7 @@ import com.google.test.metric.report.ReportOptions;
 import com.google.test.metric.report.SourceLinker;
 import com.google.test.metric.report.issues.ClassIssues;
 import com.google.test.metric.report.issues.IssuesReporter;
+import com.google.test.metric.report.issues.Issue;
 import junit.framework.TestCase;
 
 import java.io.ByteArrayOutputStream;
@@ -71,7 +72,7 @@ public class HtmlReportTest extends TestCase {
     ClassCost cost = new ClassCost("classFoo", Arrays.asList(new MethodCost("methodFoo", 1, false, false)));
     generator.addClassCost(cost);
     ClassIssues classIssues = new ClassIssues(cost.getClassName(), 0);
-    classIssues.getConstructionIssues().add(null, true);
+    classIssues.add(new Issue(1, "", 1f));
     report.getWorstOffenders().add(classIssues);
     generator.printFooter();
     String text = out.toString();

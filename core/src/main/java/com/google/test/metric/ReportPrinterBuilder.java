@@ -22,6 +22,7 @@ import com.google.test.metric.report.html.HtmlReport;
 import com.google.test.metric.report.html.HtmlReportGenerator;
 import com.google.test.metric.report.issues.IssuesReporter;
 import com.google.test.metric.report.issues.TriageIssuesQueue;
+import com.google.test.metric.report.issues.ClassIssues;
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
@@ -67,8 +68,10 @@ public class ReportPrinterBuilder {
         options.getGlobalMultiplier());
     SourceLinker linker = new SourceLinker(
         options.getSrcFileLineUrl(), options.getSrcFileUrl());
-    IssuesReporter issuesReporter =
-        new IssuesReporter(new TriageIssuesQueue(options), costModel);
+    TriageIssuesQueue<ClassIssues> mostImportantIssues =
+        new TriageIssuesQueue<ClassIssues>(options.getMaxExcellentCost(),
+            options.getWorstOffenderCount(), new ClassIssues.TotalCostComparator());
+    IssuesReporter issuesReporter = new IssuesReporter(mostImportantIssues, costModel);
     SourceLoader sourceLoader = new SourceLoader(classPath);
     switch (printer) {
       case summary:

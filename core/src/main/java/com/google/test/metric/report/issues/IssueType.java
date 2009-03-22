@@ -15,14 +15,9 @@
  */
 package com.google.test.metric.report.issues;
 
-import com.google.test.metric.CostUtil;
-
 /**
  * @author alexeagle@google.com (Alex Eagle)
  */
-public class SeveralNonMockableMethodIssues {
-  public void foo() {
-    CostUtil.staticCost2();
-    CostUtil.staticCost4();
-  }
+public enum IssueType {
+  CONSTRUCTION, COLLABORATOR, DIRECT_COST
 }

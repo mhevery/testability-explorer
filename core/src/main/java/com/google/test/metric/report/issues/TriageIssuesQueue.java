@@ -16,12 +16,12 @@
 package com.google.test.metric.report.issues;
 
 import com.google.common.collect.ForwardingQueue;
-import com.google.test.metric.report.ReportOptions;
+import com.google.common.collect.Lists;
 
 import java.util.*;
 
 /**
- * A queue of ClassIssues that only keeps issues that are important enough to show, and sorts
+ * A queue of IssueHolders that only keeps issues that are important enough to show, and sorts
  * them in order of importance.
  *
  * <b>Important:</b> the semantics of this class are only preserved if elements are enqueued
@@ -29,49 +29,52 @@ import java.util.*;
  *
  * @author alexeagle@google.com (Alex Eagle)
  */
-public class TriageIssuesQueue extends ForwardingQueue<ClassIssues> {
+public class TriageIssuesQueue<I extends IssueHolder> extends ForwardingQueue<I> {
   /**
    * The delegated queue, in which issues are stored with the lowest priority first.
    */
-  private final Queue<ClassIssues> delegate = new PriorityQueue<ClassIssues>(10,
-      new ClassIssues.TotalCostComparator());
+  private final Queue<I> delegate;
+  private final float minCost;
+  private final int maxSize;
 
-  private final ReportOptions reportOptions;
-
-  public TriageIssuesQueue(ReportOptions reportOptions) {
-    this.reportOptions = reportOptions;
+  public TriageIssuesQueue(float minCost, int maxSize, Comparator<I> comparator) {
+    this.minCost = minCost;
+    this.maxSize = maxSize;
+    delegate = new PriorityQueue<I>(maxSize, comparator);
   }
 
-  protected Queue<ClassIssues> delegate() {
+  @Override
+  protected Queue<I> delegate() {
     return delegate;
   }
 
   @Override
-  public boolean offer(ClassIssues classIssues) {
-    if (classIssues.isEmpty()) {
+  public boolean offer(I issue) {
+    if (issue.isEmpty()) {
       return false;
     }
-    if (classIssues.getTotalCost() <= reportOptions.getMaxExcellentCost()) {
+    if (issue.getTotalCost() <= minCost) {
       return false;
     }
-    if (size() == reportOptions.getWorstOffenderCount()) {
+    if (size() == maxSize) {
       poll();
     }
-    return super.offer(classIssues);
+    return super.offer(issue);
   }
 
   /**
-   * Empties this queue into an ordered list, with the opposite ordering as the elements
+   * Copies this queue into an ordered list, with the opposite ordering as the elements
    * had in the queue. This will put the most important issues at the beginning of the list.
    * @return The list of elements in this queue
    */
-  public List<ClassIssues> asList() {
-    int index = size();
-    ClassIssues[] array = new ClassIssues[index];
-    while (!isEmpty()) {
-      index--;
-      array[index] = poll();
+  public List<I> asList() {
+    // Stupid PriorityQueue doesn't provide an ordered iterator, and it only guarantees that the
+    // topmost element is in the right order
+    PriorityQueue<I> copy = new PriorityQueue<I>(delegate);
+    List<I> asList = Lists.newLinkedList();
+    while (!copy.isEmpty()) {
+      asList.add(0, copy.poll());
     }
-    return Arrays.asList(array);
+    return asList;
   }
 }
