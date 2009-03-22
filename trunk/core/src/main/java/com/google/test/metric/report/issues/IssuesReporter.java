@@ -65,11 +65,17 @@ public class IssuesReporter {
             (float) classCost.getTotalComplexityCost();
         issue.setContributionToClassCost(contributionToCost);
         if (methodCost.isConstructor()) {
-          classIssues.getConstructionIssues().add(issue, isStatic);
+          issue.setType(IssueType.CONSTRUCTION);
         } else {
+          issue.setType(IssueType.COLLABORATOR);
           issuesFound = true;
-          classIssues.getCollaboratorIssues().add(issue, isStatic);
         }
+        if (isStatic) {
+          issue.setSubType(IssueSubType.STATIC_METHOD);
+        } else {
+          issue.setSubType(IssueSubType.NEW_OPERATOR);
+        }
+        classIssues.add(issue);
       }
     }
     if (!issuesFound) {
@@ -79,12 +85,15 @@ public class IssuesReporter {
             (float) classCost.getTotalComplexityCost();
         if (methodCost.isConstructor()) {
           issue.setContributionToClassCost(contributionToClassCost);
-          classIssues.getConstructionIssues().addComplexity(issue);
+          issue.setType(IssueType.CONSTRUCTION);
+          issue.setSubType(IssueSubType.COMPLEXITY);
         } else {
           issue.setLineNumberIsApproximate(true);
           issue.setContributionToClassCost(contributionToClassCost);
-          classIssues.getDirectCostIssues().add(issue);
+          issue.setType(IssueType.DIRECT_COST);
+          issue.setSubType(IssueSubType.COMPLEXITY);
         }
+        classIssues.add(issue);
       }
     }
   }

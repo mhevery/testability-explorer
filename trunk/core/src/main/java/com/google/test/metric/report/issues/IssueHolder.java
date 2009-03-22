@@ -15,14 +15,13 @@
  */
 package com.google.test.metric.report.issues;
 
-import com.google.test.metric.CostUtil;
-
 /**
+ * Simple interface for types that can be stored in a
+ * {@link com.google.test.metric.report.issues.TriageIssuesQueue}.
  * @author alexeagle@google.com (Alex Eagle)
  */
-public class SeveralNonMockableMethodIssues {
-  public void foo() {
-    CostUtil.staticCost2();
-    CostUtil.staticCost4();
-  }
+public interface IssueHolder {
+  boolean isEmpty();
+
+  float getTotalCost();
 }

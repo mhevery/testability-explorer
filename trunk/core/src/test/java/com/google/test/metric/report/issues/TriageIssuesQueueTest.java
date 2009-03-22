@@ -16,12 +16,9 @@
 package com.google.test.metric.report.issues;
 
 import junit.framework.TestCase;
-import static com.google.test.metric.report.issues.ConstructionIssues.ConstructionType.*;
-import com.google.test.metric.report.ReportOptions;
-import static com.google.common.collect.ImmutableMap.*;
 
-import static java.util.Arrays.*;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Tests for {@link TriageIssuesQueue}
@@ -29,20 +26,17 @@ import java.util.Iterator;
  * @author alexeagle@google.com (Alex Eagle)
  */
 public class TriageIssuesQueueTest extends TestCase {
-  TriageIssuesQueue queue;
+  TriageIssuesQueue<ClassIssues> queue;
   private final int maxExcellentCost = 50;
-  private ConstructionIssues constructionIssues;
   private final int maxOffenders = 10;
-
+  private Issue issue;
 
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    ReportOptions reportOptions = new ReportOptions();
-    reportOptions.setMaxExcellentCost(maxExcellentCost);
-    reportOptions.setWorstOffenderCount(maxOffenders);
-    queue = new TriageIssuesQueue(reportOptions);
-    constructionIssues = new ConstructionIssues(of(NEW_OPERATOR, asList(new Issue(1, "", 1f))));
+    queue = new TriageIssuesQueue(maxExcellentCost, maxOffenders,
+        new ClassIssues.TotalCostComparator());
+    issue = new Issue(1, "", 1f);
   }
 
   public void testEmptyClassIssuesAreDiscarded() throws Exception {
@@ -51,19 +45,19 @@ public class TriageIssuesQueueTest extends TestCase {
   }
 
   public void testNonEmptyClassIssuesAreAdded() throws Exception {
-    ClassIssues classIssues = new ClassIssues("FooClass", 100,
-        constructionIssues, new DirectCostIssues(), new CollaboratorIssues());
+    ClassIssues classIssues = new ClassIssues("FooClass", 100);
+    classIssues.add(issue);
     queue.offer(classIssues);
     assertEquals(classIssues, queue.peek());
   }
 
   public void testAsListMethodGivesOrderedIterator() throws Exception {
-    ClassIssues class1Issues = new ClassIssues("FooClass", 100,
-        constructionIssues, new DirectCostIssues(), new CollaboratorIssues());
-    ClassIssues class2Issues = new ClassIssues("FooClass", 200,
-        constructionIssues, new DirectCostIssues(), new CollaboratorIssues());
-    ClassIssues class3Issues = new ClassIssues("FooClass", 300,
-        constructionIssues, new DirectCostIssues(), new CollaboratorIssues());
+    ClassIssues class1Issues = new ClassIssues("FooClass", 100);
+    ClassIssues class2Issues = new ClassIssues("FooClass", 200);
+    ClassIssues class3Issues = new ClassIssues("FooClass", 300);
+    class1Issues.add(issue);
+    class2Issues.add(issue);
+    class3Issues.add(issue);
     queue.offer(class1Issues);
     queue.offer(class3Issues);
     queue.offer(class2Issues);
@@ -75,17 +69,27 @@ public class TriageIssuesQueueTest extends TestCase {
 
   public void testOnlyMaxOffendersAreRetained() throws Exception {
     for (int count = 0; count <= maxOffenders; count++) {
-      ClassIssues class1Issues = new ClassIssues("FooClass", 100,
-          constructionIssues, new DirectCostIssues(), new CollaboratorIssues());
+      ClassIssues class1Issues = new ClassIssues("FooClass", 100);
+      class1Issues.add(issue);
       queue.offer(class1Issues);
     }
     assertEquals(maxOffenders, queue.size());
   }
 
   public void testOnlyNonExcellentClassesAreRetained() throws Exception {
-    ClassIssues class1Issues = new ClassIssues("FooClass", maxExcellentCost - 1,
-        constructionIssues, new DirectCostIssues(), new CollaboratorIssues());
+    ClassIssues class1Issues = new ClassIssues("FooClass", maxExcellentCost - 1);
+    class1Issues.add(issue);
     queue.offer(class1Issues);
     assertTrue(queue.isEmpty());
+  }
+
+  public void testQueueWorksWithIssuesAlso() throws Exception {
+    Issue issue = new Issue(1, "", 1f);
+    TriageIssuesQueue<Issue> issueQueue = new TriageIssuesQueue<Issue>(.5f, 20,
+        new Issue.TotalCostComparator());
+    issueQueue.offer(issue);
+    assertFalse(issueQueue.isEmpty());
+    List<Issue> list = issueQueue.asList();
+    assertEquals(issue, list.get(0));
   }
 }

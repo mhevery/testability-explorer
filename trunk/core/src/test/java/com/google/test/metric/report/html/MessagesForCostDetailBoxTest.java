@@ -18,16 +18,9 @@ package com.google.test.metric.report.html;
 import com.google.test.metric.report.ClassPathTemplateLoader;
 import com.google.test.metric.report.SourceLinker;
 import com.google.test.metric.report.FreemarkerReportGenerator;
-import com.google.test.metric.report.issues.ConstructionIssues;
-import com.google.test.metric.report.issues.Issue;
-import com.google.test.metric.report.issues.CollaboratorIssues;
-import com.google.test.metric.report.issues.DirectCostIssues;
-import com.google.test.metric.report.issues.DirectCostIssues.DirectCostType;
-import com.google.test.metric.report.issues.ConstructionIssues.ConstructionType;
-import com.google.test.metric.report.issues.CollaboratorIssues.CollaboratorType;
-import static com.google.test.metric.report.issues.ConstructionIssues.ConstructionType.*;
+import com.google.test.metric.report.issues.*;
 
-import static com.google.common.collect.ImmutableMap.of;
+import com.google.common.collect.Lists;
 
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.ResourceBundleModel;
@@ -39,11 +32,7 @@ import junit.framework.TestCase;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import static java.util.Arrays.asList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * Test that all the messages we might want to show are defined.
@@ -59,6 +48,7 @@ public class MessagesForCostDetailBoxTest extends TestCase {
   });
   private Template template;
   private Map<String, Object> model;
+  private Queue<Issue> issueQueue;
 
   @Override
   protected void setUp() throws Exception {
@@ -69,6 +59,7 @@ public class MessagesForCostDetailBoxTest extends TestCase {
     cfg.setObjectWrapper(objectWrapper);
     ResourceBundleModel messageBundleModel =
         new ResourceBundleModel(ResourceBundle.getBundle("messages"), objectWrapper);
+    issueQueue = Lists.newLinkedList();
     template = cfg.getTemplate("costDetailBoxTest.ftl");
     model = new HashMap<String, Object>();
     model.put("message", messageBundleModel);
@@ -76,73 +67,66 @@ public class MessagesForCostDetailBoxTest extends TestCase {
   }
 
   public void testWorkInConstructorMessages() throws Exception {
-    Map<ConstructionType, List<Issue>> issues =
-        of(COMPLEXITY, asList(new Issue(12, "foo()", 1.0f)));
-    ConstructionIssues constructionIssues = new ConstructionIssues(issues);
-    model.put("issues", constructionIssues);
-
+    issueQueue.offer(new Issue(12, "foo()", 1.0f, IssueType.CONSTRUCTION, IssueSubType.COMPLEXITY));
+    ClassIssues issues = new ClassIssues("Foo", 100, issueQueue);
+    model.put("issues", issues.getConstructionIssues());
+    model.put("issueType", "construction");
     template.process(model, devNull);
   }
 
   public void testStaticMethodCalledInConstructorMessages() throws Exception {
-    Map<ConstructionType, List<Issue>> issues =
-        of(STATIC_METHOD, asList(new Issue(12, "foo()", 1.0f)));
-    ConstructionIssues constructionIssues = new ConstructionIssues(issues);
-    model.put("issues", constructionIssues);
-
+    issueQueue.offer(new Issue(12, "foo()", 1.0f, IssueType.CONSTRUCTION, IssueSubType.STATIC_METHOD));
+    ClassIssues issues = new ClassIssues("Foo", 100, issueQueue);
+    model.put("issues", issues.getConstructionIssues());
+    model.put("issueType", "construction");
     template.process(model, devNull);
   }
 
   public void testCollaboratorInConstructorMessages() throws Exception {
-    Map<ConstructionType, List<Issue>> issues =
-        of(NEW_OPERATOR, asList(new Issue(12, "foo()", 1.0f)));
-    ConstructionIssues constructionIssues = new ConstructionIssues(issues);
-    model.put("issues", constructionIssues);
-
+    issueQueue.offer(new Issue(12, "foo()", 1.0f, IssueType.CONSTRUCTION, IssueSubType.NEW_OPERATOR));
+    ClassIssues issues = new ClassIssues("Foo", 100, issueQueue);
+    model.put("issues", issues.getConstructionIssues());
+    model.put("issueType", "construction");
     template.process(model, devNull);
   }
 
   public void testStaticInitializationMessages() throws Exception {
-    Map<ConstructionType, List<Issue>> issues =
-        of(STATIC_INIT, asList(new Issue(12, "foo()", 1.0f)));
-    ConstructionIssues constructionIssues = new ConstructionIssues(issues);
-    model.put("issues", constructionIssues);
-
+    issueQueue.offer(new Issue(12, "foo()", 1.0f, IssueType.CONSTRUCTION, IssueSubType.STATIC_INIT));
+    ClassIssues issues = new ClassIssues("Foo", 100, issueQueue);
+    model.put("issues", issues.getConstructionIssues());
+    model.put("issueType", "construction");
     template.process(model, devNull);
   }
 
   public void testComplexSetterMessages() throws Exception {
-    Map<ConstructionType, List<Issue>> issues =
-        of(SETTER, asList(new Issue(12, "foo()", 1.0f)));
-    ConstructionIssues constructionIssues = new ConstructionIssues(issues);
-    model.put("issues", constructionIssues);
-
+    issueQueue.offer(new Issue(12, "foo()", 1.0f, IssueType.CONSTRUCTION, IssueSubType.SETTER));
+    ClassIssues issues = new ClassIssues("Foo", 100, issueQueue);
+    model.put("issues", issues.getConstructionIssues());
+    model.put("issueType", "construction");
     template.process(model, devNull);
   }
 
   public void testCollaboratorNewOperatorMessages() throws Exception {
-    Map<CollaboratorType, List<Issue>> issues =
-        of(CollaboratorType.NEW_OPERATOR, asList(new Issue(12, "new Foo()", 1.0f)));
-    CollaboratorIssues collaboratorIssues = new CollaboratorIssues(issues);
-    model.put("issues", collaboratorIssues);
-
+    issueQueue.offer(new Issue(12, "foo()", 1.0f, IssueType.COLLABORATOR, IssueSubType.NEW_OPERATOR));
+    ClassIssues issues = new ClassIssues("Foo", 100, issueQueue);
+    model.put("issues", issues.getConstructionIssues());
+    model.put("issueType", "collaborator");
     template.process(model, devNull);
   }
 
   public void testCollaboratorStaticMethodCallMessages() throws Exception {
-    Map<CollaboratorType, List<Issue>> issues =
-        of(CollaboratorType.STATIC_METHOD, asList(new Issue(12, "new Foo()", 1.0f)));
-    CollaboratorIssues collaboratorIssues = new CollaboratorIssues(issues);
-    model.put("issues", collaboratorIssues);
-
+    issueQueue.offer(new Issue(12, "foo()", 1.0f, IssueType.COLLABORATOR, IssueSubType.STATIC_METHOD));
+    ClassIssues issues = new ClassIssues("Foo", 100, issueQueue);
+    model.put("issues", issues.getConstructionIssues());
+    model.put("issueType", "collaborator");
     template.process(model, devNull);
   }
 
   public void testDirectCostMessages() throws Exception {
-    Map<DirectCostType, List<Issue>> issues = of(DirectCostType.CYCLOMATIC, asList(new Issue(12, "new Foo()", 1f)));
-    DirectCostIssues directCostIssues = new DirectCostIssues(issues);
-    model.put("issues", directCostIssues);
-
+    issueQueue.offer(new Issue(12, "foo()", 1.0f, IssueType.DIRECT_COST, IssueSubType.COMPLEXITY));
+    ClassIssues issues = new ClassIssues("Foo", 100, issueQueue);
+    model.put("issues", issues.getConstructionIssues());
+    model.put("issueType", "direct_cost");
     template.process(model, devNull);
   }
 }
