@@ -53,4 +53,8 @@ public class JavaProjectHelper {
       return null;
     }
   }
+
+  public String getProjectLocation(IJavaProject javaProject) {
+    return javaProject.getProject().getRawLocation().removeLastSegments(1).toOSString();
+  }
 }
