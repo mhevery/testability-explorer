@@ -113,9 +113,18 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
     ClassPath classPath = classPathFactory.createFromPaths(classPaths);
 
     IPath pluginStateLocation = Activator.getDefault().getStateLocation();
-    File reportDirectory =
-        new File(pluginStateLocation.toOSString(), javaProject.getProject().getName()
+    String baseReportDirectoryString = 
+      configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_REPORT_FOLDER_NAME,
+          "");
+    if ("".equals(baseReportDirectoryString)) {
+      baseReportDirectoryString = pluginStateLocation.toOSString();
+    }
+    File reportDirectory = 
+        new File(baseReportDirectoryString, javaProject.getProject().getName()
             + "-TestabilityReport");
+    if (!reportDirectory.exists()) {
+      reportDirectory.mkdirs();
+    }
 
     int maxExcellentCost =
         configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_MAX_EXCELLENT_COST,
@@ -133,7 +142,11 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
         getReport(classPath, reportDirectory, maxExcellentCost, maxAcceptableCost, cyclomaticCost,
             globalCost);
     try {
-      PrintStream printStream = new PrintStream(new File(reportDirectory, "error-log"));
+      File file = new File(reportDirectory, "error-log");
+      if (!file.exists()) {
+        file.createNewFile();
+      }
+      PrintStream printStream = new PrintStream(file);
       // TODO(klundberg) get whitelist from configuration
       RegExpWhiteList whitelist = new RegExpWhiteList() {
         @Override
@@ -190,7 +203,7 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
     return allJavaPackages;
   }
 
-  protected String[] getClassPaths(IJavaProject javaProject, String projectLocation)
+  public String[] getClassPaths(IJavaProject javaProject, String projectLocation)
       throws JavaModelException {
     IClasspathEntry[] classPathEntries = javaProject.getRawClasspath();
     String[] classPaths = new String[classPathEntries.length + 1];
@@ -199,7 +212,7 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
       String classPathString = null;
       IPath outputPath = classPathEntry.getOutputLocation();
       if (outputPath != null) {
-        classPathString = outputPath.toOSString();
+        classPathString = projectLocation + outputPath.toOSString();
       } else {
         IPath classPath = classPathEntry.getPath();
         classPathString = classPath.toOSString();
