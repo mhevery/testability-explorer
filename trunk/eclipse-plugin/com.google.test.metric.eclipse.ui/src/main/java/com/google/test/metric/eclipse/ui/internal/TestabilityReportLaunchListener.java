@@ -26,7 +26,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 import java.io.File;
-import java.net.MalformedURLException;
 
 public class TestabilityReportLaunchListener implements TestabilityLaunchListener {
 
@@ -44,10 +43,7 @@ public class TestabilityReportLaunchListener implements TestabilityLaunchListene
           }
         } catch (PartInitException e) {
           logger.logException("Error initializing Testability View", e);
-        } catch (MalformedURLException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        }
+        } 
       }
     });
   }

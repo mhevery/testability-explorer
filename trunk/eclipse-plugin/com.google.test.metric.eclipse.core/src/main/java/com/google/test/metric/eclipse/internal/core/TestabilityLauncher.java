@@ -102,8 +102,7 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
         configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_PROJECT_NAME, "");
 
     IJavaProject javaProject = javaProjectHelper.getJavaProject(projectName);
-    IPath projectLocationPath = javaProject.getProject().getParent().getLocation();
-    String projectLocation = projectLocationPath.toOSString();
+    String projectLocation = javaProjectHelper.getProjectLocation(javaProject);
 
     String[] classPaths = getClassPaths(javaProject, projectLocation);
 
