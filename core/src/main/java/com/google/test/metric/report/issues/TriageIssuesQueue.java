@@ -36,10 +36,12 @@ public class TriageIssuesQueue<I extends IssueHolder> extends ForwardingQueue<I>
   private final Queue<I> delegate;
   private final float minCost;
   private final int maxSize;
+  private final Comparator<I> comparator;
 
   public TriageIssuesQueue(float minCost, int maxSize, Comparator<I> comparator) {
     this.minCost = minCost;
     this.maxSize = maxSize;
+    this.comparator = comparator;
     delegate = new PriorityQueue<I>(maxSize, comparator);
   }
 
@@ -57,6 +59,9 @@ public class TriageIssuesQueue<I extends IssueHolder> extends ForwardingQueue<I>
       return false;
     }
     if (size() == maxSize) {
+      if (comparator.compare(issue, peek()) < 0) {
+        return false;
+      }
       poll();
     }
     return super.offer(issue);
