@@ -18,19 +18,23 @@ package com.google.test.metric.eclipse.internal.core;
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 import com.google.test.metric.CostModel;
-import com.google.test.metric.RegExpWhiteList;
-import com.google.test.metric.TestabilityConfig;
-import com.google.test.metric.TestabilityRunner;
+import com.google.test.metric.JavaTestabilityConfig;
+import com.google.test.metric.JavaTestabilityRunner;
+import com.google.test.metric.WhiteList;
 import com.google.test.metric.eclipse.core.TestabilityLaunchListener;
 import com.google.test.metric.eclipse.core.plugin.Activator;
 import com.google.test.metric.eclipse.internal.util.JavaPackageVisitor;
 import com.google.test.metric.eclipse.internal.util.JavaProjectHelper;
 import com.google.test.metric.eclipse.internal.util.Logger;
 import com.google.test.metric.eclipse.internal.util.TestabilityConstants;
-import com.google.test.metric.report.GradeCategories;
+import com.google.test.metric.report.FreemarkerReportGenerator;
 import com.google.test.metric.report.Report;
-import com.google.test.metric.report.SourceLoader;
-import com.google.test.metric.report.SourceReport;
+import com.google.test.metric.report.ReportOptions;
+import com.google.test.metric.report.SourceLinker;
+import com.google.test.metric.report.html.HtmlReport;
+import com.google.test.metric.report.issues.ClassIssues;
+import com.google.test.metric.report.issues.IssuesReporter;
+import com.google.test.metric.report.issues.TriageIssuesQueue;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
@@ -49,9 +53,9 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -137,36 +141,40 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
     int cyclomaticCost =
         configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_CYCLOMATIC_COST,
             TestabilityConstants.CYCLOMATIC_COST);
-    Report report =
-        getReport(classPath, reportDirectory, maxExcellentCost, maxAcceptableCost, cyclomaticCost,
-            globalCost);
+    int recordingDepth =
+      configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_RECORDING_DEPTH,
+          TestabilityConstants.RECORDING_DEPTH);
+    
     try {
-      File file = new File(reportDirectory, "error-log");
-      if (!file.exists()) {
-        file.createNewFile();
-      }
-      PrintStream printStream = new PrintStream(file);
-      // TODO(klundberg) get whitelist from configuration
-      RegExpWhiteList whitelist = new RegExpWhiteList() {
-        @Override
+      PrintStream reportStream = new PrintStream(new FileOutputStream(
+          new File(reportDirectory, "report.html")));
+      PrintStream errorStream = new PrintStream(new FileOutputStream(
+          new File(reportDirectory, "error-log")));
+
+      WhiteList whitelist = new WhiteList() {
         public boolean isClassWhiteListed(String arg0) {
           return false;
         }
       };
-      int recordingDepth =
-          configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_RECORDING_DEPTH,
-              TestabilityConstants.RECORDING_DEPTH);
-
-      TestabilityConfig testabilityConfig =
-          new TestabilityConfig(allJavaPackages, classPath, whitelist, report, printStream,
+      CostModel costModel = new CostModel(cyclomaticCost, globalCost);
+      IssuesReporter issuesReporter = new IssuesReporter(
+          new TriageIssuesQueue<ClassIssues>(maxExcellentCost, 5, 
+              new ClassIssues.TotalCostComparator()), costModel);
+      ReportOptions options = new ReportOptions(cyclomaticCost, globalCost, maxExcellentCost,
+          maxAcceptableCost, 5, 5, 5, recordingDepth, 10, "", "");
+      HtmlReport htmlReport = new HtmlReport(costModel, issuesReporter, options);
+      Report report = new FreemarkerReportGenerator(htmlReport, reportStream,
+          new SourceLinker("", ""), FreemarkerReportGenerator.HTML_REPORT_TEMPLATE);
+      JavaTestabilityConfig testabilityConfig =
+          new JavaTestabilityConfig(allJavaPackages, classPath, whitelist, report, errorStream,
               recordingDepth);
-      TestabilityRunner testabilityRunner = new TestabilityRunner(testabilityConfig);
+      JavaTestabilityRunner testabilityRunner = new JavaTestabilityRunner(testabilityConfig);
       testabilityRunner.run();
 
       notifyAllListeners(reportDirectory);
 
-      printStream.flush();
-      printStream.close();
+      reportStream.flush();
+      reportStream.close();
     } catch (Exception e) {
       logger.logException(e);
     }
@@ -226,16 +234,4 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
     classPaths[classPathEntries.length] = projectLocation + defaultOutputPath;
     return classPaths;
   }
-
-  private Report getReport(ClassPath classPath, File reportDirectory, int maxExcellentCost,
-      int maxAcceptableCost, double cyclomaticMultiplier, double globalMultiplier) {
-    CostModel costModel = new CostModel(cyclomaticMultiplier, globalMultiplier);
-    GradeCategories gradeCategories = new GradeCategories(maxExcellentCost, maxAcceptableCost);
-    SourceLoader sourceLoader = new SourceLoader(classPath);
-    Report report =
-        new SourceReport(gradeCategories, sourceLoader, reportDirectory, costModel, new Date(), 20);
-    return report;
-  }
-
-  
 }

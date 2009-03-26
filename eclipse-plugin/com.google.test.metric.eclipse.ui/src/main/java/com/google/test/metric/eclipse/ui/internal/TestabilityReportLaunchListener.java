@@ -39,7 +39,7 @@ public class TestabilityReportLaunchListener implements TestabilityLaunchListene
           IViewPart viewPart = page.showView("com.google.test.metric.eclipse.ui.browserview");
           if (viewPart instanceof TestabilityReportView) {
             ((TestabilityReportView) viewPart).setUrl(reportDirectory.getAbsolutePath() 
-                + "/index.html");
+                + "/report.html");
           }
         } catch (PartInitException e) {
           logger.logException("Error initializing Testability View", e);
