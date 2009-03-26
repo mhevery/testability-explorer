@@ -74,6 +74,75 @@
            class="com.google.test.metric.eclipse.ui.internal.TestabilityReportLaunchListener">
      </testabilityLaunchListener>
   </extension>
+  <extension
+        point="org.eclipse.ui.editors.markerAnnotationSpecification">
+     <specification
+           annotationType="com.google.test.metric.ui.excellentTestability"
+           colorPreferenceKey="excellentTestability_color"
+           colorPreferenceValue="192,255,192"
+           contributesToHeader="false"
+           highlightPreferenceKey="excellentTestability_highlight"
+           highlightPreferenceValue="true"
+           includeOnPreferencePage="true"
+           isGoToNextNavigationTarget="false"
+           isGoToNextNavigationTargetKey="excellentTestability_isGoToNextNavigationTargetKey"
+           isGoToPreviousNavigationTarget="false"
+           isGoToPreviousNavigationTargetKey="excellentTestability_isGoToPreviousNavigationTargetKey"
+           label="%excellentTestabilityAnnotation.label"
+           overviewRulerPreferenceValue="false"
+           presentationLayer="0"
+           showInNextPrevDropdownToolbarAction="false"
+           showInNextPrevDropdownToolbarActionKey="excellentTestability_showInNextPrevDropdownToolbarActionKey"
+           textPreferenceValue="true"
+           textStylePreferenceKey="excellentTestability_stylePreferences"
+           textStylePreferenceValue="BOX"
+           verticalRulerPreferenceValue="false">
+     </specification>
+     <specification
+           annotationType="com.google.test.metric.ui.goodTestability"
+           colorPreferenceKey="goodTestability_color"
+           colorPreferenceValue="255,255,128"
+           contributesToHeader="false"
+           highlightPreferenceKey="goodTestability_highlight"
+           highlightPreferenceValue="true"
+           includeOnPreferencePage="true"
+           isGoToNextNavigationTarget="false"
+           isGoToNextNavigationTargetKey="goodTestability_isGoToNextNavigationTargetKey"
+           isGoToPreviousNavigationTarget="false"
+           isGoToPreviousNavigationTargetKey="goodTestability_isGoToPreviousNavigationTargetKey"
+           label="%goodTestabilityAnnotation.label"
+           overviewRulerPreferenceValue="false"
+           presentationLayer="0"
+           showInNextPrevDropdownToolbarAction="false"
+           showInNextPrevDropdownToolbarActionKey="goodTestability_showInNextPrevDropdownToolbarActionKey"
+           textPreferenceValue="true"
+           textStylePreferenceKey="goodTestability_stylePreferences"
+           textStylePreferenceValue="BOX"
+           verticalRulerPreferenceValue="false">
+     </specification>
+     <specification
+           annotationType="com.google.test.metric.ui.badTestability"
+           colorPreferenceKey="badTestability_color"
+           colorPreferenceValue="255,160,160"
+           contributesToHeader="false"
+           highlightPreferenceKey="badTestability_highlight"
+           highlightPreferenceValue="true"
+           includeOnPreferencePage="true"
+           isGoToNextNavigationTarget="false"
+           isGoToNextNavigationTargetKey="badTestability_isGoToNextNavigationTargetKey"
+           isGoToPreviousNavigationTarget="false"
+           isGoToPreviousNavigationTargetKey="badTestability_isGoToPreviousNavigationTargetKey"
+           label="%badTestabilityAnnotation.label"
+           overviewRulerPreferenceValue="false"
+           presentationLayer="0"
+           showInNextPrevDropdownToolbarAction="false"
+           showInNextPrevDropdownToolbarActionKey="badTestability_showInNextPrevDropdownToolbarActionKey"
+           textPreferenceValue="true"
+           textStylePreferenceKey="badTestability_stylePreferences"
+           textStylePreferenceValue="BOX"
+           verticalRulerPreferenceValue="false">
+     </specification>
+  </extension>
 
 
 </plugin>
