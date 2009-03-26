@@ -29,29 +29,33 @@
     ${overallChart}
   </div>
   <div class="overview">
-    <table class="overview_table">
-      <tr>
-        <th>Analyzed classes</th>
-        <th class="value">${total}</th>
-        <th class="percent">&nbsp;</th>
-      </tr>
-      <tr>
-        <td> - Excellent</td>
-        <td class="value">${excellentCount}</td>
-        <td class="percent">${(excellentCount / total)?string.percent}</td>
-      </tr>
+    <#if total gt 0>
+      <table class="overview_table">
+        <tr>
+          <th>Analyzed classes</th>
+          <th class="value">${total}</th>
+          <th class="percent">&nbsp;</th>
+        </tr>
+        <tr>
+          <td> - Excellent</td>
+          <td class="value">${excellentCount}</td>
+          <td class="percent">${(excellentCount / total)?string.percent}</td>
+        </tr>
 
-      <tr>
-        <td> - Good</td>
-        <td class="value">${goodCount}</td>
-        <td class="percent">${(goodCount / total)?string.percent}</td>
-      </tr>
-      <tr>
-        <td> - Needs work</td>
-        <td class="value">${needsWorkCount}</td>
-        <td class="percent">${(needsWorkCount / total)?string.percent}</td>
-      </tr>
-    </table>
+        <tr>
+          <td> - Good</td>
+          <td class="value">${goodCount}</td>
+          <td class="percent">${(goodCount / total)?string.percent}</td>
+        </tr>
+        <tr>
+          <td> - Needs work</td>
+          <td class="value">${needsWorkCount}</td>
+          <td class="percent">${(needsWorkCount / total)?string.percent}</td>
+        </tr>
+      </table>
+    <#else/>
+      Total score is zero - were any classes analyzed??
+    </#if>
   </div>
 
   <div style="clear:both; width: 0">&nbsp;</div>
