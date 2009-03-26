@@ -457,6 +457,15 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
     assertEquals(0, cost.getMethodCost(cost.getClassName() + "()").getTotalCost().getGlobalCost());
   }
 
+  public void testSyntheticEnumValuesAccessorClassIsZero() throws Exception {
+    RegExpWhiteList customWhitelist = new RegExpWhiteList("java.");
+    MetricComputer toDecorate = new MetricComputerBuilder().withClassRepository(repo)
+        .withWhitelist(customWhitelist).build();
+    computer = new MetricComputerJavaDecorator(toDecorate, repo);
+    ClassCost cost = computer.compute("com.google.test.metric.InnerEnumHolder$1");
+    assertEquals(0, cost.getMethodCost(cost.getClassName() + "()").getTotalCost().getGlobalCost());
+  }
+
   private final String testValue = null;
   class InnerClassTest {
     public void test() {
@@ -525,7 +534,7 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
       CostUtil.staticCost2();
     }
     public void setNoCost(int i) {
-      
+
     }
     public void setWithCost(int i) {
       CostUtil.staticCost1();
@@ -538,7 +547,7 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
   public void testZeroImplicitCostNotCounted() throws Exception {
     MethodCost cost = computer.compute(HasIrrelevantImplicitCost.class, "execute()V");
     List<? extends ViolationCost> implicitViolationCosts = cost.getImplicitViolationCosts();
-    
+
     assertEquals(2, implicitViolationCosts.size());
     MethodInvokationCost constructor = (MethodInvokationCost) implicitViolationCosts.get(0);
 
