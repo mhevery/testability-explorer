@@ -92,4 +92,34 @@ public class TriageIssuesQueueTest extends TestCase {
     List<Issue> list = issueQueue.asList();
     assertEquals(issue, list.get(0));
   }
+
+  public void testLastItemAddedMustHaveHighPriority() throws Exception {
+    TriageIssuesQueue<ClassIssues> smallQueue = new TriageIssuesQueue<ClassIssues>(100, 1,
+        new ClassIssues.TotalCostComparator());
+    ClassIssues class1Issues = new ClassIssues("BadClass", 500);
+    class1Issues.add(issue);
+    smallQueue.offer(class1Issues);
+    ClassIssues class2Issues = new ClassIssues("PrettyGoodClass", 101);
+    class2Issues.add(issue);
+    smallQueue.offer(class2Issues);
+
+    assertEquals("BadClass", smallQueue.asList().get(0).getClassName());
+  }
+
+  public void testLastItemDoesPushOutLowerPriority() throws Exception {
+    TriageIssuesQueue<ClassIssues> smallQueue = new TriageIssuesQueue<ClassIssues>(100, 2,
+        new ClassIssues.TotalCostComparator());
+    ClassIssues class1Issues = new ClassIssues("BadClass", 500);
+    ClassIssues class2Issues = new ClassIssues("PrettyGoodClass", 200);
+    ClassIssues class3Issues = new ClassIssues("NotGreatClass", 300);
+    class1Issues.add(issue);
+    class2Issues.add(issue);
+    class3Issues.add(issue);
+    smallQueue.offer(class1Issues);
+    smallQueue.offer(class2Issues);
+    smallQueue.offer(class3Issues);
+
+    assertEquals("BadClass", smallQueue.asList().get(0).getClassName());
+    assertEquals("NotGreatClass", smallQueue.asList().get(1).getClassName());
+  }
 }
