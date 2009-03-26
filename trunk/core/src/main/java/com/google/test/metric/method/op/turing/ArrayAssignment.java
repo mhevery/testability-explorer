@@ -19,7 +19,15 @@ import com.google.test.metric.TestabilityVisitor;
 import com.google.test.metric.Variable;
 
 public class ArrayAssignment extends Operation {
-
+  /**
+   * Ugliness:
+   * When a Java 1.5 enhanced switch statement is used on an enum, a synthetic
+   * class is created as an anonymous inner class of the class where the
+   * switch statement appears. That synthetic class stores a statuc array of the values
+   * of the enum, which is named {@code $SwitchMap$com$google$AnEnum}. 
+   * We don't want to record the assignments into this JVM-internal array.
+   */
+  private final String ENUM_SWITCH_MAP_NAME = "$SwitchMap$";
   private final Variable array;
   private final Variable index;
   private final Variable value;
@@ -33,8 +41,10 @@ public class ArrayAssignment extends Operation {
   }
 
   @Override
-  public void visit(TestabilityVisitor.Frame visistor) {
-    visistor.assignArray(array, index, value, getLineNumber());
+  public void visit(TestabilityVisitor.Frame visitor) {
+    if (!array.getName().startsWith(ENUM_SWITCH_MAP_NAME)) {
+      visitor.assignArray(array, index, value, getLineNumber());
+    }
   }
 
   @Override
