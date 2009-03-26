@@ -15,6 +15,7 @@
  */
 package com.google.test.metric.report.html;
 
+import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.report.*;
 import static com.google.test.metric.report.GoogleChartAPI.*;
@@ -45,6 +46,12 @@ public class HtmlReport extends SummaryReport {
 
   public int getTotal() {
     return costs.size();
+  }
+
+  @Override
+  public void addClassCost(ClassCost classCost) {
+    super.addClassCost(classCost);
+    issuesReporter.inspectClass(classCost);
   }
 
   public String getHistogram() {
@@ -99,6 +106,8 @@ public class HtmlReport extends SummaryReport {
     chart.setValues(excellentCount, goodCount, needsWorkCount);
     return chart.getHtml();
   }
+  
+  
 
   public List<ClassIssues> getWorstOffenders() {
     return issuesReporter.getMostImportantIssues();

@@ -32,6 +32,7 @@ import java.util.ResourceBundle;
  */
 public class FreemarkerReportGenerator implements Report {
   public static final String PREFIX = "com/google/test/metric/report/";
+  public static final String HTML_REPORT_TEMPLATE = "html/Report.html";
   private final TemplateMethodModel sourceLinker;
   private final ReportModel model;
   private final PrintStream out;
