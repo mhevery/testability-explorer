@@ -16,8 +16,12 @@
 package com.google.test.metric;
 
 import com.google.test.metric.TestabilityTest.WatchedOutputStream;
-import com.google.test.metric.report.*;
-import com.google.test.metric.report.html.HtmlReportGenerator;
+import com.google.test.metric.report.DrillDownReport;
+import com.google.test.metric.report.FreemarkerReportGenerator;
+import com.google.test.metric.report.PropertiesReport;
+import com.google.test.metric.report.SourceReport;
+import com.google.test.metric.report.TextReport;
+import com.google.test.metric.report.XMLReport;
 
 import org.kohsuke.args4j.CmdLineException;
 
@@ -44,7 +48,7 @@ public class CommandLineConfigTest extends AutoFieldClearTestCase {
   public void testCreateHtmlReport() throws Exception {
     commandLineConfig.printer = "html"; 
     JavaTestabilityConfig config = commandLineConfig.buildTestabilityConfig();
-    assertEquals(HtmlReportGenerator.class, config.getReport().getClass());
+    assertEquals(FreemarkerReportGenerator.class, config.getReport().getClass());
   }
 
   public void testCreateDetailReport() throws Exception {

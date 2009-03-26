@@ -16,13 +16,24 @@
 package com.google.test.metric;
 
 import com.google.classpath.ClassPath;
-import com.google.test.metric.report.*;
+import com.google.test.metric.report.DrillDownReport;
+import com.google.test.metric.report.FreemarkerReportGenerator;
+import com.google.test.metric.report.GradeCategories;
+import com.google.test.metric.report.PropertiesReport;
+import com.google.test.metric.report.Report;
+import com.google.test.metric.report.ReportModel;
+import com.google.test.metric.report.ReportOptions;
+import com.google.test.metric.report.SourceLinker;
+import com.google.test.metric.report.SourceLoader;
+import com.google.test.metric.report.SourceReport;
+import com.google.test.metric.report.TextReport;
+import com.google.test.metric.report.XMLReport;
 import com.google.test.metric.report.about.AboutTestabilityReport;
 import com.google.test.metric.report.html.HtmlReport;
-import com.google.test.metric.report.html.HtmlReportGenerator;
+import com.google.test.metric.report.issues.ClassIssues;
 import com.google.test.metric.report.issues.IssuesReporter;
 import com.google.test.metric.report.issues.TriageIssuesQueue;
-import com.google.test.metric.report.issues.ClassIssues;
+
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
@@ -79,7 +90,8 @@ public class ReportPrinterBuilder {
         break;
       case html:
         HtmlReport model = new HtmlReport(costModel, issuesReporter, options);
-        report = new HtmlReportGenerator(model, out, issuesReporter, linker);
+        report = new FreemarkerReportGenerator(model, out, linker,
+            FreemarkerReportGenerator.HTML_REPORT_TEMPLATE);
         break;
       case detail:
         report = new DrillDownReport(out, costModel, entryList,
