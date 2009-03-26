@@ -15,8 +15,10 @@
  */
 package com.google.test.metric.eclipse.internal.util;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IJavaModel;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
@@ -55,6 +57,14 @@ public class JavaProjectHelper {
   }
 
   public String getProjectLocation(IJavaProject javaProject) {
-    return javaProject.getProject().getRawLocation().removeLastSegments(1).toOSString();
+    IProject project = javaProject.getProject();
+    IPath rawLocation = project.getRawLocation();
+    IPath projectLocation;
+    if (rawLocation != null) {
+      projectLocation = rawLocation.removeLastSegments(1);
+    } else {
+      projectLocation = project.getParent().getLocation();
+    }
+    return projectLocation.toOSString();
   }
 }

@@ -13,6 +13,7 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ClassPath: .,
  te.jar
 Eclipse-AutoStart: true
-Export-Package: com.google.test.metric.eclipse.core,
+Export-Package: com.google.test.metric,
+ com.google.test.metric.eclipse.core,
  com.google.test.metric.eclipse.internal.core,
  com.google.test.metric.eclipse.internal.util
