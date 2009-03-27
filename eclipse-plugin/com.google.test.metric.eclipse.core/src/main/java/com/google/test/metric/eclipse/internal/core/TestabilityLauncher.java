@@ -20,6 +20,7 @@ import com.google.classpath.ClassPathFactory;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.JavaTestabilityConfig;
 import com.google.test.metric.JavaTestabilityRunner;
+import com.google.test.metric.RegExpWhiteList;
 import com.google.test.metric.WhiteList;
 import com.google.test.metric.eclipse.core.TestabilityLaunchListener;
 import com.google.test.metric.eclipse.core.plugin.Activator;
@@ -141,9 +142,12 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
     int cyclomaticCost =
         configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_CYCLOMATIC_COST,
             TestabilityConstants.CYCLOMATIC_COST);
-    int recordingDepth =
-      configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_RECORDING_DEPTH,
-          TestabilityConstants.RECORDING_DEPTH);
+    int printDepth = 
+        configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_RECORDING_DEPTH,
+            TestabilityConstants.RECORDING_DEPTH);
+    String whitelistPackages = 
+        configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_WHITELIST,
+            TestabilityConstants.WHITELIST);
     
     try {
       PrintStream reportStream = new PrintStream(new FileOutputStream(
@@ -151,23 +155,29 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
       PrintStream errorStream = new PrintStream(new FileOutputStream(
           new File(reportDirectory, "error-log")));
 
-      WhiteList whitelist = new WhiteList() {
-        public boolean isClassWhiteListed(String arg0) {
-          return false;
-        }
-      };
+      RegExpWhiteList whitelist = new RegExpWhiteList("java.");
+      for (String packageName :
+          "".equals(whitelistPackages) ? new String[] {} : whitelistPackages.split("[,;:]")) {
+        whitelist.addPackage(packageName);
+      }
       CostModel costModel = new CostModel(cyclomaticCost, globalCost);
+      float minCost = 1;
+      int maxSize = 5;
       IssuesReporter issuesReporter = new IssuesReporter(
-          new TriageIssuesQueue<ClassIssues>(maxExcellentCost, 5, 
+          new TriageIssuesQueue<ClassIssues>(minCost, maxSize, 
               new ClassIssues.TotalCostComparator()), costModel);
+      int maxLineCount = 10;
+      int maxMethodCount = 10;
+      int worstOffenderCount = 20;
       ReportOptions options = new ReportOptions(cyclomaticCost, globalCost, maxExcellentCost,
-          maxAcceptableCost, 5, 5, 5, recordingDepth, 10, "", "");
+          maxAcceptableCost, worstOffenderCount, maxMethodCount, maxLineCount, 
+          printDepth, (int)minCost, "", "");
       HtmlReport htmlReport = new HtmlReport(costModel, issuesReporter, options);
       Report report = new FreemarkerReportGenerator(htmlReport, reportStream,
           new SourceLinker("", ""), FreemarkerReportGenerator.HTML_REPORT_TEMPLATE);
       JavaTestabilityConfig testabilityConfig =
           new JavaTestabilityConfig(allJavaPackages, classPath, whitelist, report, errorStream,
-              recordingDepth);
+              printDepth);
       JavaTestabilityRunner testabilityRunner = new JavaTestabilityRunner(testabilityConfig);
       testabilityRunner.run();
 
