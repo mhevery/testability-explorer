@@ -21,7 +21,6 @@ import com.google.test.metric.CostModel;
 import com.google.test.metric.JavaTestabilityConfig;
 import com.google.test.metric.JavaTestabilityRunner;
 import com.google.test.metric.RegExpWhiteList;
-import com.google.test.metric.WhiteList;
 import com.google.test.metric.eclipse.core.TestabilityLaunchListener;
 import com.google.test.metric.eclipse.core.plugin.Activator;
 import com.google.test.metric.eclipse.internal.util.JavaPackageVisitor;
@@ -67,23 +66,22 @@ import java.util.List;
  */
 public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
 
-  private static final String TESTABILITY = "testability";
   private JavaProjectHelper javaProjectHelper = new JavaProjectHelper();
   private final Logger logger = new Logger();
 
   public boolean buildForLaunch(ILaunchConfiguration configuration, String mode,
       IProgressMonitor monitor) {
     // make sure everything is built before the launch
-    return TESTABILITY.equals(mode);
+    return TestabilityConstants.TESTABILITY.equals(mode);
   }
 
   public boolean finalLaunchCheck(ILaunchConfiguration configuration, String mode,
       IProgressMonitor monitor) {
-    return TESTABILITY.equals(mode);
+    return TestabilityConstants.TESTABILITY.equals(mode);
   }
 
   public ILaunch getLaunch(ILaunchConfiguration configuration, String mode) {
-    if (TESTABILITY.equals(mode)) {
+    if (TestabilityConstants.TESTABILITY.equals(mode)) {
       return new Launch(configuration, mode, null);
     } else {
       throw new IllegalStateException(
@@ -93,12 +91,12 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
 
   public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode,
       IProgressMonitor monitor) {
-    return TESTABILITY.equals(mode);
+    return TestabilityConstants.TESTABILITY.equals(mode);
   }
 
   public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch,
       IProgressMonitor monitor) throws CoreException {
-    if (!TESTABILITY.equals(mode)) {
+    if (!TestabilityConstants.TESTABILITY.equals(mode)) {
       throw new IllegalStateException(
           "Cannot launch testability configuration when not in testability mode.");
     }
@@ -151,9 +149,9 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
     
     try {
       PrintStream reportStream = new PrintStream(new FileOutputStream(
-          new File(reportDirectory, "report.html")));
+          new File(reportDirectory, TestabilityConstants.HTML_REPORT_FILENAME)));
       PrintStream errorStream = new PrintStream(new FileOutputStream(
-          new File(reportDirectory, "error-log")));
+          new File(reportDirectory, TestabilityConstants.ERROR_LOG_FILENAME)));
 
       RegExpWhiteList whitelist = new RegExpWhiteList("java.");
       for (String packageName :
@@ -161,17 +159,13 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
         whitelist.addPackage(packageName);
       }
       CostModel costModel = new CostModel(cyclomaticCost, globalCost);
-      float minCost = 1;
-      int maxSize = 5;
       IssuesReporter issuesReporter = new IssuesReporter(
-          new TriageIssuesQueue<ClassIssues>(minCost, maxSize, 
+          new TriageIssuesQueue<ClassIssues>(TestabilityConstants.MIN_COST, TestabilityConstants.MAX_SIZE, 
               new ClassIssues.TotalCostComparator()), costModel);
-      int maxLineCount = 10;
-      int maxMethodCount = 10;
-      int worstOffenderCount = 20;
       ReportOptions options = new ReportOptions(cyclomaticCost, globalCost, maxExcellentCost,
-          maxAcceptableCost, worstOffenderCount, maxMethodCount, maxLineCount, 
-          printDepth, (int)minCost, "", "");
+          maxAcceptableCost, TestabilityConstants.WORST_OFFENDER_COUNT,
+          TestabilityConstants.MAX_METHOD_COUNT, TestabilityConstants.MAX_LINE_COUNT, 
+          printDepth, (int)TestabilityConstants.MIN_COST, "", "");
       HtmlReport htmlReport = new HtmlReport(costModel, issuesReporter, options);
       Report report = new FreemarkerReportGenerator(htmlReport, reportStream,
           new SourceLinker("", ""), FreemarkerReportGenerator.HTML_REPORT_TEMPLATE);
