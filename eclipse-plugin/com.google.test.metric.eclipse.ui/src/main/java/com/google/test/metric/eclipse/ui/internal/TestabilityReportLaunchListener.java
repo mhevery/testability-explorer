@@ -17,6 +17,7 @@ package com.google.test.metric.eclipse.ui.internal;
 
 import com.google.test.metric.eclipse.core.TestabilityLaunchListener;
 import com.google.test.metric.eclipse.internal.util.Logger;
+import com.google.test.metric.eclipse.internal.util.TestabilityConstants;
 import com.google.test.metric.eclipse.ui.TestabilityReportView;
 
 import org.eclipse.swt.widgets.Display;
@@ -39,7 +40,7 @@ public class TestabilityReportLaunchListener implements TestabilityLaunchListene
           IViewPart viewPart = page.showView("com.google.test.metric.eclipse.ui.browserview");
           if (viewPart instanceof TestabilityReportView) {
             ((TestabilityReportView) viewPart).setUrl(reportDirectory.getAbsolutePath() 
-                + "/report.html");
+                + "/" + TestabilityConstants.HTML_REPORT_FILENAME);
           }
         } catch (PartInitException e) {
           logger.logException("Error initializing Testability View", e);

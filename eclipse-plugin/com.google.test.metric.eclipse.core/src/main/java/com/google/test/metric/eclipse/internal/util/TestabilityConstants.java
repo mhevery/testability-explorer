@@ -42,6 +42,14 @@ public class TestabilityConstants {
   public static final int GLOBAL_STATE_COST = 10;
   public static final int RECORDING_DEPTH = 10;
   public static final String WHITELIST = "";
+  public static final String ERROR_LOG_FILENAME = "error-log";
+  public static final String HTML_REPORT_FILENAME = "report.html";
+  public static final String TESTABILITY = "testability";
+  public static final float MIN_COST = 1;
+  public static final int MAX_SIZE = 5;
+  public static final int MAX_LINE_COUNT = 10;
+  public static final int MAX_METHOD_COUNT = 10;
+  public static final int WORST_OFFENDER_COUNT = 20;
   
   private TestabilityConstants() {
   }
