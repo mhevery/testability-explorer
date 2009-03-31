@@ -166,4 +166,9 @@ public class IssuesReporterTest extends TestCase {
     assertEquals(2/6f, issue1.getContributionToClassCost());
 
   }
+
+  public void testNoIssuesForMainMethod() throws Exception {
+    ClassIssues classIssues = issuesReporter.determineIssues(decoratedComputer.compute(Main.class));
+    assertEquals(0, classIssues.getSize());
+  }
 }

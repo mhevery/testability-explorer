@@ -49,7 +49,8 @@ public class IssuesReporter {
   }
 
   void addIssuesInMethod(ClassIssues classIssues, MethodCost methodCost, ClassCost classCost) {
-    if (methodCost.getViolationCosts() == null || methodCost.getViolationCosts().isEmpty()) {
+    if (methodCost.getViolationCosts() == null || methodCost.getViolationCosts().isEmpty() ||
+        methodCost.isMainMethod()) {
       // no issues to add
       return;
     }
