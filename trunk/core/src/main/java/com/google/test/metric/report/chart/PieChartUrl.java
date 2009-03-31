@@ -13,25 +13,25 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.test.metric.report;
+package com.google.test.metric.report.chart;
 
-public class HistogramChartUrl extends GoogleChartAPI {
 
-  public HistogramChartUrl() {
-    keys.put("cht", "bvs");
+public class PieChartUrl extends GoogleChartAPI {
+
+  public PieChartUrl() {
+    keys.put("cht", "p3");
   }
 
-  public void setBarWidth(int width) {
-    keys.put("chbh", Integer.toString(width));
-  }
-
-  public void setBarWidth(int width, int spaceBar, int spaceGroup) {
-    keys.put("chbh", toList(",", width, spaceBar, spaceGroup));
-  }
-
-  public void setYMark(int...value) {
-    keys.put("chxt", "y");
-    keys.put("chxl", "0:|" + toList("|", value));
+  @Override
+  public void setValues(int... values) {
+    double sum = 0;
+    for (int value : values) {
+      sum += value;
+    }
+    for (int i = 0; i < values.length; i++) {
+      values[i] = (int) (100.0 *  values[i] / sum);
+    }
+    super.setValues(values);
   }
 
 }

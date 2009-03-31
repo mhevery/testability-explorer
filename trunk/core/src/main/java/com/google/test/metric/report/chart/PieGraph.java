@@ -1,4 +1,3 @@
-package com.google.test.metric.report;
 /*
  * Copyright 2007 Google Inc.
  *
@@ -14,6 +13,9 @@ package com.google.test.metric.report;
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+package com.google.test.metric.report.chart;
+
+import com.google.test.metric.report.Marker;
 
 public class PieGraph {
 

@@ -15,9 +15,14 @@
  */
 package com.google.test.metric.report;
 
-import static com.google.test.metric.report.GoogleChartAPI.GREEN;
-import static com.google.test.metric.report.GoogleChartAPI.RED;
-import static com.google.test.metric.report.GoogleChartAPI.YELLOW;
+import static com.google.test.metric.report.chart.GoogleChartAPI.GREEN;
+import static com.google.test.metric.report.chart.GoogleChartAPI.RED;
+import static com.google.test.metric.report.chart.GoogleChartAPI.YELLOW;
+import com.google.test.metric.report.chart.GoodnessChart;
+import com.google.test.metric.report.chart.Histogram;
+import com.google.test.metric.report.chart.HistogramChartUrl;
+import com.google.test.metric.report.chart.PieChartUrl;
+
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.ceil;
 import static java.lang.Math.log;

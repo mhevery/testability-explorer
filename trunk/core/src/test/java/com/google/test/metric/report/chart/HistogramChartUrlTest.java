@@ -13,11 +13,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.test.metric.report;
+package com.google.test.metric.report.chart;
 
-import static com.google.test.metric.report.GoogleChartAPI.GREEN;
-import static com.google.test.metric.report.GoogleChartAPI.RED;
-import static com.google.test.metric.report.GoogleChartAPI.YELLOW;
+import static com.google.test.metric.report.chart.GoogleChartAPI.GREEN;
+import static com.google.test.metric.report.chart.GoogleChartAPI.RED;
+import static com.google.test.metric.report.chart.GoogleChartAPI.YELLOW;
 
 import junit.framework.TestCase;
 

@@ -13,10 +13,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.test.metric.report;
+package com.google.test.metric.report.chart;
 
 import static java.util.Arrays.asList;
 import junit.framework.TestCase;
+import com.google.test.metric.report.GradeCategories;
 
 public class GradeCategoriesTest extends TestCase {
 

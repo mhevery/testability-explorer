@@ -13,9 +13,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.test.metric.report;
+package com.google.test.metric.report.chart;
 
 import junit.framework.TestCase;
+import com.google.test.metric.report.CharMarker;
 
 public class PieGraphTest extends TestCase {
 

@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.test.metric.WeightedAverage;
+import com.google.test.metric.report.chart.GoodnessChart;
+import com.google.test.metric.report.chart.PieChartUrl;
 
 public abstract class SummaryGraphReport<T extends SummaryGraphReport.Unit> {
 
