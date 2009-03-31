@@ -121,4 +121,7 @@ public class MethodCost {
   public void link() {
   }
 
+  public boolean isMainMethod() {
+    return isStatic() && "void main(java.lang.String[])".equals(getMethodName());
+  }
 }
