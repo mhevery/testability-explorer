@@ -65,7 +65,9 @@ public class CostDistributionChart {
   }
 
   public void addValues(double[] vals) {
-    dataset.addSeries("Costs", vals, NUM_BINS);
+    if (vals.length > 0) {
+      dataset.addSeries("Costs", vals, NUM_BINS);
+    }
   }
 
   public void addValues(List<Integer> costs) {

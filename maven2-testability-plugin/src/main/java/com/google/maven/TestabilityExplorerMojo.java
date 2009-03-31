@@ -164,9 +164,9 @@ public class TestabilityExplorerMojo extends AbstractMavenReport {
   }
 
   protected void executeReport(Locale locale) throws MavenReportException {
-    if (!"jar".equals(mavenProject.getPackaging())) {
+    if ("pom".equals(mavenProject.getPackaging())) {
       getLog().info(String.format("Not running testability explorer for project %s " +
-          "because it is not a \"jar\" packaging", mavenProject.getName()));
+          "because it is a \"pom\" packaging", mavenProject.getName()));
       return;
     }
 
