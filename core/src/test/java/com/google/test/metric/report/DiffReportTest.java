@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import junit.framework.TestCase;
+import freemarker.template.Configuration;
+import com.google.test.metric.ReportPrinterBuilder;
 
 /**
  * Tests for HTML generation of the Diff report
@@ -14,24 +16,27 @@ import junit.framework.TestCase;
  */
 public class DiffReportTest extends TestCase {
   private Writer out;
+  private Configuration cfg;
 
   @Override
   protected void setUp() throws Exception {
     super.setUp();
     out = new StringWriter();
+    cfg = new Configuration();
+    cfg.setTemplateLoader(new ClassPathTemplateLoader(ReportPrinterBuilder.PREFIX));
   }
 
   @SuppressWarnings("unchecked")
-public void testNoDiffs() throws Exception {
+  public void testNoDiffs() throws Exception {
     Diff diff = new Diff(Collections.EMPTY_LIST);
-    DiffReport diffReport = new DiffReport(diff);
+    DiffReport diffReport = new DiffReport(diff, cfg);
     diffReport.writeHtml(out);
     assertContains("<html>", out.toString());
   }
 
   public void testSourceLinks() throws Exception {
     Diff diff = new Diff(Arrays.asList(new Diff.ClassDiff("com.Foo", 123, 456)));
-    DiffReport diffReport = new DiffReport(diff);
+    DiffReport diffReport = new DiffReport(diff, cfg);
     diffReport.setOldSourceUrl("link1/{path}.html");
     diffReport.setNewSourceUrl("link2/{path}.html");
     diffReport.writeHtml(out);
@@ -42,7 +47,7 @@ public void testNoDiffs() throws Exception {
 
   public void testClassCostIncreased() throws Exception {
     Diff diff = new Diff(Arrays.asList(new Diff.ClassDiff("Foo", 123, 456)));
-    DiffReport diffReport = new DiffReport(diff);
+    DiffReport diffReport = new DiffReport(diff, cfg);
     diffReport.writeHtml(out);
     assertContains("Foo", out.toString());
     assertContains("123", out.toString());
@@ -53,7 +58,7 @@ public void testNoDiffs() throws Exception {
 
   public void testClassCostDecreased() throws Exception {
     Diff diff = new Diff(Arrays.asList(new Diff.ClassDiff("Foo", 456, 123)));
-    DiffReport diffReport = new DiffReport(diff);
+    DiffReport diffReport = new DiffReport(diff, cfg);
     diffReport.writeHtml(out);
     assertContains("Foo", out.toString());
     assertContains("123", out.toString());
@@ -63,7 +68,7 @@ public void testNoDiffs() throws Exception {
 
   public void testClassRemoved() throws Exception {
     Diff diff = new Diff(Arrays.asList(new Diff.ClassDiff("Foo", 456, null)));
-    DiffReport diffReport = new DiffReport(diff);
+    DiffReport diffReport = new DiffReport(diff, cfg);
     diffReport.writeHtml(out);
     assertContains("Foo", out.toString());
     assertContains("456", out.toString());
@@ -72,7 +77,7 @@ public void testNoDiffs() throws Exception {
 
   public void testClassAdded() throws Exception {
     Diff diff = new Diff(Arrays.asList(new Diff.ClassDiff("Foo", null, 456)));
-    DiffReport diffReport = new DiffReport(diff);
+    DiffReport diffReport = new DiffReport(diff, cfg);
     diffReport.writeHtml(out);
     assertContains("Foo", out.toString());
     assertContains("456", out.toString());
@@ -83,7 +88,7 @@ public void testNoDiffs() throws Exception {
     Diff.MethodDiff methodDiff = new Diff.MethodDiff("doThing", 123, null);
     Diff.ClassDiff classDiff = new Diff.ClassDiff("Foo", 1, 1, Arrays.asList(methodDiff));
     Diff diff = new Diff(Arrays.asList(classDiff));
-    DiffReport diffReport = new DiffReport(diff);
+    DiffReport diffReport = new DiffReport(diff, cfg);
     diffReport.writeHtml(out);
     assertContains("doThing", out.toString());
     assertContains("123", out.toString());
@@ -94,7 +99,7 @@ public void testNoDiffs() throws Exception {
     Diff.MethodDiff methodDiff = new Diff.MethodDiff("doThing", null, 123);
     Diff.ClassDiff classDiff = new Diff.ClassDiff("Foo", 1, 1, Arrays.asList(methodDiff));
     Diff diff = new Diff(Arrays.asList(classDiff));
-    DiffReport diffReport = new DiffReport(diff);
+    DiffReport diffReport = new DiffReport(diff, cfg);
     diffReport.writeHtml(out);
     assertContains("doThing", out.toString());
     assertContains("123", out.toString());
@@ -105,7 +110,7 @@ public void testNoDiffs() throws Exception {
     Diff.MethodDiff methodDiff = new Diff.MethodDiff("doThing", 123, 456);
     Diff.ClassDiff classDiff = new Diff.ClassDiff("Foo", 1, 1, Arrays.asList(methodDiff));
     Diff diff = new Diff(Arrays.asList(classDiff));
-    DiffReport diffReport = new DiffReport(diff);
+    DiffReport diffReport = new DiffReport(diff, cfg);
     diffReport.writeHtml(out);
     assertContains("doThing", out.toString());
     assertContains("123", out.toString());
@@ -117,7 +122,7 @@ public void testNoDiffs() throws Exception {
     Diff.MethodDiff methodDiff = new Diff.MethodDiff("doThing", 456, 123);
     Diff.ClassDiff classDiff = new Diff.ClassDiff("Foo", 1, 1, Arrays.asList(methodDiff));
     Diff diff = new Diff(Arrays.asList(classDiff));
-    DiffReport diffReport = new DiffReport(diff);
+    DiffReport diffReport = new DiffReport(diff, cfg);
     diffReport.writeHtml(out);
     assertContains("doThing", out.toString());
     assertContains("123", out.toString());

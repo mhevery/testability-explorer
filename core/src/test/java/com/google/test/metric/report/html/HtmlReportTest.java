@@ -20,6 +20,8 @@ import com.google.test.metric.MethodInvokationCost.Reason;
 import com.google.test.metric.report.FreemarkerReportGenerator;
 import com.google.test.metric.report.ReportOptions;
 import com.google.test.metric.report.SourceLinker;
+import com.google.test.metric.report.ClassPathTemplateLoader;
+import static com.google.test.metric.report.FreemarkerReportGenerator.*;
 import com.google.test.metric.report.issues.ClassIssues;
 import com.google.test.metric.report.issues.IssuesReporter;
 import com.google.test.metric.report.issues.Issue;
@@ -31,6 +33,12 @@ import static java.text.MessageFormat.format;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.ResourceBundle;
+import static java.util.ResourceBundle.getBundle;
+
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.ext.beans.BeansWrapper;
+import freemarker.ext.beans.ResourceBundleModel;
 
 public class HtmlReportTest extends TestCase {
   private HtmlReport report;
@@ -46,17 +54,22 @@ public class HtmlReportTest extends TestCase {
     CostModel costModel = new CostModel();
     IssuesReporter issuesReporter = new IssuesReporter(new LinkedList<ClassIssues>(), costModel);
     ReportOptions options = new ReportOptions(1, 10, 10, 20, 5, 100, 100, 1, 10, "", "");
-    linker =
-        new SourceLinker("http://code.repository/basepath/{path}&line={line}",
-            "http://code.repository/basepath/{path}");
+    linker = new SourceLinker("http://code.repository/basepath/{path}&line={line}",
+                              "http://code.repository/basepath/{path}");
     MethodCost methodCost = new MethodCost("methodFoo", 1, false, false);
     methodCost.addCostSource(new MethodInvokationCost(1, methodCost, Reason.IMPLICIT_SETTER,
         new Cost(100, 1, new int[0])));
     cost = new ClassCost("com.google.FooClass", Arrays.asList(methodCost));
     report = new HtmlReport(costModel, issuesReporter, options);
-    generator =
-        new FreemarkerReportGenerator(report, new PrintStream(out), linker,
-            FreemarkerReportGenerator.HTML_REPORT_TEMPLATE);
+    BeansWrapper objectWrapper = new DefaultObjectWrapper();
+    Configuration configuration = new Configuration();
+    configuration.setObjectWrapper(objectWrapper);
+    ResourceBundleModel bundleModel = new ResourceBundleModel(getBundle("messages"), objectWrapper);
+    configuration.setTemplateLoader(new ClassPathTemplateLoader(ReportPrinterBuilder.PREFIX));
+    report.setMessageBundle(bundleModel);
+    report.setSourceLinker(new SourceLinkerModel(linker));
+    generator = new FreemarkerReportGenerator(report, new PrintStream(out), 
+        HTML_REPORT_TEMPLATE, configuration);
   }
 
   public void testPrintReport() throws Exception {

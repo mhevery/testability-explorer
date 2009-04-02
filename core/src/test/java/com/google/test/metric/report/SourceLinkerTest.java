@@ -25,23 +25,23 @@ public class SourceLinkerTest extends TestCase {
   private final SourceLinker linker = new SourceLinker(lineTemplate, classTemplate);
 
   public void testBuildClassLink() {
-    assertEquals("<a href=\"pre//a.java\">fin.FinUI</a>",
+    assertEquals("<a href=\"pre//a.java\" target=\"source\">fin.FinUI</a>",
         linker.buildClassLink("//a.java", "fin.FinUI"));
 
     String generatedLink = linker.buildClassLink("//class.java", "class$Conv");
-    assertEquals(generatedLink, "<a href=\"pre//class.java\">class$Conv</a>");
+    assertEquals(generatedLink, "<a href=\"pre//class.java\" target=\"source\">class$Conv</a>");
 
   }
 
   public void testBuildLineLink() {
     assertEquals(
-        "<a href=\"pre//a.java#1234\">fin.FinUI</a>",
+        "<a href=\"pre//a.java#1234\" target=\"source\">fin.FinUI</a>",
         linker.buildLineLink("//a.java", 1234, "fin.FinUI"));
 
 
     String generatedLink = linker.buildLineLink("//class.java", 1234, " void methodA()");
     assertEquals(
-        "<a href=\"pre//class.java#1234\"> void methodA()</a>",
+        "<a href=\"pre//class.java#1234\" target=\"source\"> void methodA()</a>",
         generatedLink);
   }
 

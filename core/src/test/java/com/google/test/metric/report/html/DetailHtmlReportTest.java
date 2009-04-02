@@ -140,9 +140,9 @@ public class DetailHtmlReportTest extends TestCase {
     report.write(classCost);
     String text = report.getOutput();
 
-    assertTrue(
-        text,
-        text.contains("(<a href=\"http://code.google.com/p/testability-explorer/source/browse/trunk/src/com/google/ant/TaskModel.java\">source</a>)"));
+    assertTrue(text,
+        text.contains("(<a href=\"http://code.google.com/p/testability-explorer/source/browse/" +
+                "trunk/src/com/google/ant/TaskModel.java\" target=\"source\">source</a>)"));
 
   }
 

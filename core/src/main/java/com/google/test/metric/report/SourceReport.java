@@ -92,12 +92,12 @@ public class SourceReport implements Report {
 
   public SourceReport(GradeCategories grades, SourceLoader sourceLoader,
       File outputDirectory, CostModel costModel, Date currentTime,
-      int worstCount) {
+      int worstCount, Configuration cfg) {
     this.grades = grades;
     this.sourceLoader = sourceLoader;
     this.directory = outputDirectory;
     this.costModel = costModel;
-    cfg = new Configuration();
+    this.cfg = cfg;
     cfg.setTemplateLoader(new ClassPathTemplateLoader(PREFIX));
     cfg.setObjectWrapper(new DefaultObjectWrapper());
     try {
