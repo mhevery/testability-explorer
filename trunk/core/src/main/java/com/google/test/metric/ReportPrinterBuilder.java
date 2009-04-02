@@ -16,20 +16,10 @@
 package com.google.test.metric;
 
 import com.google.classpath.ClassPath;
-import com.google.test.metric.report.DrillDownReport;
-import com.google.test.metric.report.FreemarkerReportGenerator;
-import com.google.test.metric.report.GradeCategories;
-import com.google.test.metric.report.PropertiesReport;
-import com.google.test.metric.report.Report;
-import com.google.test.metric.report.ReportModel;
-import com.google.test.metric.report.ReportOptions;
-import com.google.test.metric.report.SourceLinker;
-import com.google.test.metric.report.SourceLoader;
-import com.google.test.metric.report.SourceReport;
-import com.google.test.metric.report.TextReport;
-import com.google.test.metric.report.XMLReport;
+import com.google.test.metric.report.*;
 import com.google.test.metric.report.about.AboutTestabilityReport;
 import com.google.test.metric.report.html.HtmlReport;
+import com.google.test.metric.report.html.SourceLinkerModel;
 import com.google.test.metric.report.issues.ClassIssues;
 import com.google.test.metric.report.issues.IssuesReporter;
 import com.google.test.metric.report.issues.TriageIssuesQueue;
@@ -41,6 +31,12 @@ import java.io.File;
 import java.io.PrintStream;
 import java.util.Date;
 import java.util.List;
+import static java.util.ResourceBundle.getBundle;
+
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.ext.beans.BeansWrapper;
+import freemarker.ext.beans.ResourceBundleModel;
 
 /**
  * Builds a Report, using various formats, and given all of the needed options.
@@ -53,6 +49,7 @@ public class ReportPrinterBuilder {
   private final ReportFormat printer;
   private final PrintStream out;
   private final List<String> entryList;
+  public static final String PREFIX = "com/google/test/metric/report/";
 
   public ReportPrinterBuilder(ClassPath classPath, ReportOptions options, ReportFormat printer,
                               PrintStream out, List<String> entryList) {
@@ -84,14 +81,22 @@ public class ReportPrinterBuilder {
             options.getWorstOffenderCount(), new ClassIssues.TotalCostComparator());
     IssuesReporter issuesReporter = new IssuesReporter(mostImportantIssues, costModel);
     SourceLoader sourceLoader = new SourceLoader(classPath);
+    Configuration cfg = new Configuration();
+    cfg.setTemplateLoader(new ClassPathTemplateLoader(PREFIX));
+    BeansWrapper objectWrapper = new DefaultObjectWrapper();
+    cfg.setObjectWrapper(objectWrapper);
+    ResourceBundleModel bundleModel = new ResourceBundleModel(getBundle("messages"), objectWrapper);
+
     switch (printer) {
       case summary:
         report = new TextReport(out, costModel, options);
         break;
       case html:
         HtmlReport model = new HtmlReport(costModel, issuesReporter, options);
-        report = new FreemarkerReportGenerator(model, out, linker,
-            FreemarkerReportGenerator.HTML_REPORT_TEMPLATE);
+        model.setMessageBundle(bundleModel);
+        model.setSourceLinker(new SourceLinkerModel(linker));
+        report = new FreemarkerReportGenerator(model, out,
+            FreemarkerReportGenerator.HTML_REPORT_TEMPLATE, cfg);
         break;
       case detail:
         report = new DrillDownReport(out, costModel, entryList,
@@ -104,7 +109,7 @@ public class ReportPrinterBuilder {
         GradeCategories gradeCategories = new GradeCategories(options.getMaxExcellentCost(),
             options.getMaxAcceptableCost());
         report = new SourceReport(gradeCategories, sourceLoader, new File("te-report"), costModel,
-            new Date(), options.getWorstOffenderCount());
+            new Date(), options.getWorstOffenderCount(), cfg);
         break;
       case xml:
         XMLSerializer xmlSerializer = new XMLSerializer();
@@ -116,7 +121,9 @@ public class ReportPrinterBuilder {
         break;
       case about:
         ReportModel aboutModel = new AboutTestabilityReport(issuesReporter, sourceLoader);
-        report = new FreemarkerReportGenerator(aboutModel, out, linker, "about/Report.html");
+        aboutModel.setMessageBundle(bundleModel);
+        aboutModel.setSourceLinker(new SourceLinkerModel(linker));
+        report = new FreemarkerReportGenerator(aboutModel, out, "about/Report.html", cfg);
         break;
       default:
         throw new IllegalStateException("Unknown report format " + printer);

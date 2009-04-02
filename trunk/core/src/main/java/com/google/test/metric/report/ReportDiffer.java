@@ -22,6 +22,8 @@ import org.w3c.dom.Document;
 
 import java.io.*;
 
+import freemarker.template.Configuration;
+
 public class ReportDiffer {
 
   @Option(name="-oldFile", usage="name of the old XML report", required=true)
@@ -47,16 +49,16 @@ public class ReportDiffer {
   public static void main(String[] args) throws Exception {
     ReportDiffer differ = new ReportDiffer();
     differ.parseArgs(args);
-    differ.doDiff();
+    differ.doDiff(new DiffReportFactory());
   }
 
-  private void doDiff() throws Exception {
+  private void doDiff(DiffReportFactory diffReportFactory) throws Exception {
     XMLReportLoader reportLoader = new XMLReportLoader();
     Document oldReport = reportLoader.loadXML(new FileReader(oldFile));
     Document newReport = reportLoader.loadXML(new FileReader(newFile));
     FileWriter out = new FileWriter(htmlReportFile);
     Diff diff = new XMLReportDiffer().diff(oldReport, newReport);
-    DiffReport report = new DiffReport(diff);
+    DiffReport report = diffReportFactory.buildReport(diff);
     if (oldLinkUrl != null && !oldLinkUrl.equals("")) {
       report.setOldSourceUrl(oldLinkUrl);
     }
@@ -75,6 +77,12 @@ public class ReportDiffer {
       parser.setUsageWidth(120);
       parser.printUsage(System.err);
       throw new CmdLineException("Exiting...");
+    }
+  }
+
+  private static class DiffReportFactory {
+    public DiffReport buildReport(Diff diff) {
+      return new DiffReport(diff, new Configuration());
     }
   }
 }

@@ -30,6 +30,7 @@ import com.google.test.metric.MethodCost;
 import com.google.test.metric.MetricComputer;
 import com.google.test.metric.RegExpWhiteList;
 import com.google.test.metric.report.Source.Line;
+import freemarker.template.Configuration;
 
 public class SourceReportTest extends TestCase {
 
@@ -47,8 +48,10 @@ public class SourceReportTest extends TestCase {
   public void testCreateSourceReport() throws Exception {
     ClassPath classPath = new DirectoryClassPath(new File("src/test/java"));
     SourceLoader loader = new SourceLoader(classPath);
-    SourceReport report = new SourceReport(new GradeCategories(0, 0), loader, null, new CostModel(), new Date(), 10);
-    MetricComputer computer = new MetricComputer(new JavaClassRepository(), null, new RegExpWhiteList(), 1);
+    SourceReport report = new SourceReport(new GradeCategories(0, 0), loader, null, new CostModel(),
+            new Date(), 10, new Configuration());
+    MetricComputer computer = new MetricComputer(new JavaClassRepository(), null,
+            new RegExpWhiteList(), 1);
     ClassCost classCost = computer.compute(TestClass.class.getName());
 
     ClassReport classReport = report.createClassReport(classCost);

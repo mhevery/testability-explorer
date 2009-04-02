@@ -36,7 +36,8 @@ public class SourceLinker implements SourceLinkGenerator {
     if (noTemplate) {
       return anchorText;
     }
-    String url = "<a href=\"" + classUrlTemplate + "\">" + anchorText + "</a>";
+    String url = String.format("<a href=\"%s\" target=\"source\">%s</a>", classUrlTemplate,
+            anchorText);
     url = url.replace("{path}", filePath);
     return url;
   }
@@ -46,7 +47,8 @@ public class SourceLinker implements SourceLinkGenerator {
     if (noTemplate) {
       return anchorText;
     }
-    String url = "<a href=\"" + lineUrlTemplate + "\">" + anchorText + "</a>";
+    String url = String.format("<a href=\"%s\" target=\"source\">%s</a>", lineUrlTemplate,
+            anchorText);
     url = url.replace("{path}", filePath);
     url = url.replace("{line}", "" + lineNumber);
     return url;

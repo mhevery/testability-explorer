@@ -14,19 +14,17 @@ import java.util.*;
  * @author alexeagle@google.com (Alex Eagle)
  */
 public class DiffReport {
-  private static final String PREFIX = "com/google/test/metric/report/";
-
   private Configuration cfg;
   private final Diff diff;
   private String oldSourceUrl;
   private String newSourceUrl;
   private String changelistUrl;
 
-  public DiffReport(Diff diff) {
+  public DiffReport(Diff diff, Configuration cfg) {
     this.diff = diff;
     diff.sort();
-    cfg = new Configuration();
-    cfg.setTemplateLoader(new ClassPathTemplateLoader(PREFIX));
+    this.cfg = cfg;
+    
   }
 
   public void writeHtml(Writer out) throws IOException, TemplateException {
