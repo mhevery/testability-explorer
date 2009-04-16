@@ -62,4 +62,10 @@ public class MethodCostTest extends TestCase {
         1, false, false);
     assertEquals("String computeString()", methodCost.shortFormat());
   }
+
+  public void testInnerClassConstructorMethod() throws Exception {
+    MethodCost methodCost = new MethodCost("com.google.test.metric.example.ExpensiveConstructor."
+        + "StaticWorkInTheConstructor$StaticHolder()", 1, true, false);
+    assertEquals("StaticWorkInTheConstructor$StaticHolder()", methodCost.shortFormat());
+  }
 }
