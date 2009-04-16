@@ -20,6 +20,8 @@ import junit.framework.TestCase;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.test.metric.report.StubSourceElement;
+
 /**
  * Tests for {@link TriageIssuesQueue}
  *
@@ -36,7 +38,7 @@ public class TriageIssuesQueueTest extends TestCase {
     super.setUp();
     queue = new TriageIssuesQueue(maxExcellentCost, maxOffenders,
         new ClassIssues.TotalCostComparator());
-    issue = new Issue(1, "", 1f);
+    issue = new Issue(1, new StubSourceElement(null), 1f);
   }
 
   public void testEmptyClassIssuesAreDiscarded() throws Exception {
@@ -84,7 +86,7 @@ public class TriageIssuesQueueTest extends TestCase {
   }
 
   public void testQueueWorksWithIssuesAlso() throws Exception {
-    Issue issue = new Issue(1, "", 1f);
+    Issue issue = new Issue(1, new StubSourceElement(null), 1f);
     TriageIssuesQueue<Issue> issueQueue = new TriageIssuesQueue<Issue>(.5f, 20,
         new Issue.TotalCostComparator());
     issueQueue.offer(issue);

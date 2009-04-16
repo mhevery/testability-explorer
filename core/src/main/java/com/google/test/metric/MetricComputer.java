@@ -21,7 +21,7 @@ import java.util.List;
 
 import com.google.test.metric.TestabilityVisitor.CostRecordingFrame;
 import com.google.test.metric.TestabilityVisitor.Frame;
-import static com.google.test.metric.MethodInvokationCost.Reason.*;
+import static com.google.test.metric.Reason.*;
 
 public class MetricComputer {
 

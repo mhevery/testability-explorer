@@ -17,8 +17,10 @@ package com.google.test.metric.report.issues;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Nullable;
+import com.google.common.collect.Lists;
 
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * A model of a single reportable issue with the class under analysis.
@@ -27,23 +29,25 @@ import java.util.Comparator;
  */
 public class Issue implements IssueHolder {
   private final int lineNumber;
-  private final String elementName;
+  private final SourceElement element;
   private float contributionToClassCost;
   private boolean isLineNumberApproximate;
   private IssueType type;
   private IssueSubType subType;
+  private List<Issue> implications = Lists.newLinkedList();
 
-  public Issue(int lineNumber, String elementName, float contributionToClassCost) {
-    this(lineNumber, elementName, contributionToClassCost, null, null);
+  public Issue(int lineNumber, SourceElement element, float contributionToClassCost) {
+    this(lineNumber, element, contributionToClassCost, null, null);
   }
 
-  public Issue(int lineNumber, String elementName) {
-    this(lineNumber, elementName, 0f, null, null);
+  public Issue(int lineNumber, SourceElement element) {
+    this(lineNumber, element, 0f, null, null);
   }
 
-  public Issue(int lineNumber, String elementName, float contributionToClassCost, IssueType type, IssueSubType subType) {
+  public Issue(int lineNumber, SourceElement element, float contributionToClassCost,
+               IssueType type, IssueSubType subType) {
     this.lineNumber = lineNumber;
-    this.elementName = elementName;
+    this.element = element;
     this.contributionToClassCost = contributionToClassCost;
     this.type = type;
     this.subType = subType;
@@ -57,8 +61,8 @@ public class Issue implements IssueHolder {
     return lineNumber;
   }
 
-  public String getElementName() {
-    return elementName;
+  public SourceElement getElement() {
+    return element;
   }
 
   public float getContributionToClassCost() {
@@ -76,7 +80,7 @@ public class Issue implements IssueHolder {
   @Override
   public String toString() {
     return String.format("On line %d, element %s with contribution %f",
-        lineNumber, elementName, contributionToClassCost);
+        lineNumber, element, contributionToClassCost);
   }
 
   public void setType(IssueType type) {
@@ -103,7 +107,8 @@ public class Issue implements IssueHolder {
     return contributionToClassCost;
   }
 
-  public static Predicate<? super Issue> isType(final IssueType issueType, final IssueSubType subType) {
+  public static Predicate<? super Issue> isType(final IssueType issueType,
+                                                final IssueSubType subType) {
     return new Predicate<Issue>() {
       public boolean apply(@Nullable Issue issue) {
         if (issue.getType() == null || issue.getSubType() == null) {
@@ -112,6 +117,19 @@ public class Issue implements IssueHolder {
         return issue.getType() == issueType && issue.getSubType() == subType;
       }
     };
+  }
+
+  public List<Issue> getImplications() {
+    return implications;
+  }
+
+  public void setImplications(List<Issue> implications) {
+    this.implications = implications;
+  }
+
+  public boolean hasSameRootCause(Issue anIssue) {
+    return lineNumber == anIssue.lineNumber &&
+        element.shortFormat().equals(anIssue.element.shortFormat());
   }
 
   public static class TotalCostComparator implements Comparator<Issue> {

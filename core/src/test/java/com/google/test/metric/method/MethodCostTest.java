@@ -23,7 +23,7 @@ import com.google.test.metric.CyclomaticCost;
 import com.google.test.metric.GlobalCost;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvokationCost;
-import static com.google.test.metric.MethodInvokationCost.Reason.IMPLICIT_STATIC_INIT;
+import static com.google.test.metric.Reason.IMPLICIT_STATIC_INIT;
 
 public class MethodCostTest extends TestCase {
 
@@ -36,7 +36,7 @@ public class MethodCostTest extends TestCase {
     cost3.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     cost3.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     cost.addCostSource(new MethodInvokationCost(0, cost3,
-      IMPLICIT_STATIC_INIT, Cost.cyclomatic(3)));
+      IMPLICIT_STATIC_INIT, Cost.cyclomatic(3), null));
     CostModel costModel = new CostModel(2, 10);
     cost.link();
 
@@ -45,4 +45,21 @@ public class MethodCostTest extends TestCase {
     assertEquals(1, cost.getImplicitViolationCosts().size());
   }
 
+  public void testShortFormatting() throws Exception {
+    MethodCost methodCost = new MethodCost("int com.google.longpackagename.Foo.thing()",
+        1, false, false);
+    assertEquals("int thing()", methodCost.shortFormat());
+  }
+
+  public void testShortFormattingWithParameters() throws Exception {
+    MethodCost methodCost = new MethodCost("t.n.e(p.e, a.b)",
+        1, false, false);
+    assertEquals("e(e, b)", methodCost.shortFormat());
+  }
+
+  public void testInnerClassMethodNamesShortFormatting() throws Exception {
+    MethodCost methodCost = new MethodCost("String com.google.Outer$HasInner.computeString()",
+        1, false, false);
+    assertEquals("String computeString()", methodCost.shortFormat());
+  }
 }

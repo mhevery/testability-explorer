@@ -16,6 +16,8 @@
 package com.google.test.metric.report.issues;
 
 import com.google.test.metric.*;
+import static com.google.test.metric.report.issues.IssueSubType.*;
+import static com.google.test.metric.report.issues.IssueType.*;
 
 import java.util.*;
 
@@ -59,61 +61,83 @@ public class IssuesReporter {
     for (ViolationCost violationCost : methodCost.getViolationCosts()) {
       if (violationCost instanceof MethodInvokationCost) {
         MethodInvokationCost invokationCost = (MethodInvokationCost) violationCost;
-        Issue issue = new Issue(invokationCost.getLineNumber(), invokationCost.getDescription());
+        Issue issue = new Issue(invokationCost.getLineNumber(),
+            invokationCost.getMethodCost());
         boolean isStatic = invokationCost.getMethodCost().isStatic();
-        float contributionToCost =
-            invokationCost.getMethodCost().getTotalCost().getCyclomaticComplexityCost() /
-            (float) classCost.getTotalComplexityCost();
-        issue.setContributionToClassCost(contributionToCost);
+        boolean isGlobal = hasGlobalSource(invokationCost.getMethodCost());
+        int cost = costModel.computeOverall(invokationCost.getMethodCost().getTotalCost());
+        float totalCost = costModel.computeClass(classCost);
+        issue.setContributionToClassCost(cost / totalCost);
         if (methodCost.isConstructor()) {
-          issue.setType(IssueType.CONSTRUCTION);
+          issue.setType(CONSTRUCTION);
         } else {
-          issue.setType(IssueType.COLLABORATOR);
+          issue.setType(COLLABORATOR);
           issuesFound = true;
         }
         if (isStatic) {
-          issue.setSubType(IssueSubType.STATIC_METHOD);
+          issue.setSubType(STATIC_METHOD);
         } else {
-          issue.setSubType(IssueSubType.NEW_OPERATOR);
+          if (isGlobal) {
+            issue.setSubType(SINGLETON);
+          } else {
+            issue.setSubType(NEW_OPERATOR);
+          }
+          if (!methodCost.isConstructor()) {
+            MethodInvokationCost source1 = getMethodInvokationSource(methodCost);
+            if (source1.getNonInjectable() != null) {
+              Issue rootCauseIssue = new Issue(source1.getNonInjectable().getLineNumber(),
+                  source1.getNonInjectable(),
+                  issue.getContributionToClassCost(), issue.getType(), issue.getSubType());
+              rootCauseIssue.getImplications().add(issue);
+              issue = rootCauseIssue;
+            }
+          }
         }
         classIssues.add(issue);
       }
     }
     if (!issuesFound) {
       if (methodCost.getDirectCost().getCyclomaticComplexityCost() > 0) {
-        Issue issue = new Issue(methodCost.getMethodLineNumber(), methodCost.getMethodName());
+        Issue issue = new Issue(methodCost.getMethodLineNumber(), methodCost);
         float contributionToClassCost = methodCost.getDirectCost().getCyclomaticComplexityCost() /
             (float) classCost.getTotalComplexityCost();
         if (methodCost.isConstructor()) {
           issue.setContributionToClassCost(contributionToClassCost);
-          issue.setType(IssueType.CONSTRUCTION);
-          issue.setSubType(IssueSubType.COMPLEXITY);
+          issue.setType(CONSTRUCTION);
+          issue.setSubType(COMPLEXITY);
         } else {
           issue.setLineNumberIsApproximate(true);
           issue.setContributionToClassCost(contributionToClassCost);
-          issue.setType(IssueType.DIRECT_COST);
-          issue.setSubType(IssueSubType.COMPLEXITY);
+          issue.setType(DIRECT_COST);
+          issue.setSubType(COMPLEXITY);
         }
         classIssues.add(issue);
       }
     }
   }
 
-  /**
-   * Is this methodCost a result of calling a static method?
-   */
-  boolean hasStaticMethodSource(MethodCost methodCost) {
-    if (methodCost.getViolationCosts() == null || methodCost.getViolationCosts().isEmpty()) {
-      return false;
+  private MethodInvokationCost getMethodInvokationSource(MethodCost methodCost) {
+    MethodInvokationCost result = null;
+    for (ViolationCost cost : methodCost.getViolationCosts()) {
+      if (cost instanceof MethodInvokationCost) {
+        //TODO(alexeagle): this may overwrite earlier invocationCosts
+        result = (MethodInvokationCost) cost;
+      }
     }
-    if (methodCost.getViolationCosts().get(0) instanceof MethodInvokationCost) {
-      MethodInvokationCost invokationCost =
-          (MethodInvokationCost) methodCost.getViolationCosts().get(0);
-      return invokationCost.getMethodCost().isStatic();
+    if (result == null) {
+      throw new IllegalStateException("No method invokation cost in " + methodCost);
+    }
+    return result;
+  }
+
+  private boolean hasGlobalSource(MethodCost methodCost) {
+    for (ViolationCost cost : methodCost.getViolationCosts()) {
+      if (cost instanceof GlobalCost) {
+        return true;
+      }
     }
     return false;
   }
-
 
   public List<ClassIssues> getMostImportantIssues() {
     if (mostImportantIssues instanceof TriageIssuesQueue) {

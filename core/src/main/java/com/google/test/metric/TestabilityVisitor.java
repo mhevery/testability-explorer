@@ -22,8 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.test.metric.MethodInvokationCost.Reason;
-import static com.google.test.metric.MethodInvokationCost.Reason.NON_OVERRIDABLE_METHOD_CALL;
+import static com.google.test.metric.Reason.NON_OVERRIDABLE_METHOD_CALL;
 import com.google.test.metric.method.Constant;
 import com.google.test.metric.method.op.turing.Operation;
 
@@ -78,12 +77,12 @@ public class TestabilityVisitor {
 
     @Override
     protected void addMethodInvocationCost(int lineNumber, MethodInfo to,
-        Cost methodInvocationCost, Reason reason) {
-      super.addMethodInvocationCost(lineNumber, to, methodInvocationCost, reason);
+        Cost methodInvocationCost, Reason reason, Variable nonInjectable) {
+      super.addMethodInvocationCost(lineNumber, to, methodInvocationCost, reason, nonInjectable);
       if (!methodInvocationCost.isEmpty()) {
         ViolationCost cost = new MethodInvokationCost(lineNumber,
             getMethodCostCache(to), reason,
-            methodInvocationCost);
+            methodInvocationCost, nonInjectable);
         methodCost.addCostSource(cost);
       }
     }
@@ -134,7 +133,7 @@ public class TestabilityVisitor {
      *          information about why they have the costs they have.
      * @return
      */
-    public void applyImplicitCost(MethodInfo implicitMethod, MethodInvokationCost.Reason reason) {
+    public void applyImplicitCost(MethodInfo implicitMethod, Reason reason) {
       if (implicitMethod.getMethodThis() != null) {
         variableState.setInjectable(implicitMethod.getMethodThis());
       }
@@ -232,7 +231,7 @@ public class TestabilityVisitor {
     }
 
     protected void addMethodInvocationCost(int lineNumber, MethodInfo to,
-        Cost methodInvocationCost, MethodInvokationCost.Reason reason) {
+        Cost methodInvocationCost, Reason reason, Variable nonInjectable) {
       indirect.add(methodInvocationCost);
     }
 
@@ -381,14 +380,14 @@ public class TestabilityVisitor {
       }
     }
 
-    protected void recordNonOveridableMethodCall(MethodInvokationCost.Reason reason, int lineNumber,
+    protected void recordNonOveridableMethodCall(Reason reason, int lineNumber,
         MethodInfo toMethod, Variable methodThis,
         List<? extends Variable> parameters, Variable returnVariable) {
       Frame childFrame = createChildFrame(toMethod);
       childFrame.recordMethodCall(lineNumber, toMethod, methodThis, parameters,
           returnVariable);
       addMethodInvocationCost(lineNumber, toMethod, childFrame.getTotalCost()
-          .copyNoLOD(), reason);
+          .copyNoLOD(), reason, methodThis);
     }
 
     protected Frame createChildFrame(MethodInfo toMethod) {

@@ -96,7 +96,20 @@ public class ClassIssues implements IssueHolder {
     return issues.size();
   }
 
+  /**
+   * Add this issue to the collection of issues related to the class. If the issue shares a root
+   * cause with an issue added earlier, those issues are collaped to a common issue with
+   * multiple implications.
+   *
+   * @param issue to add
+   */
   public void add(Issue issue) {
+    for (Issue anIssue : issues) {
+      if (issue.hasSameRootCause(anIssue)) {
+        anIssue.getImplications().addAll(issue.getImplications());
+        return;
+      }
+    }
     issues.offer(issue);
   }
 

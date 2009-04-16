@@ -46,6 +46,7 @@ public class PutField extends StackOperation {
 
   @Override
   public Operation toOperation(List<Variable> input) {
+    fieldInfo.setLineNumber(lineNumber);
     if (fieldInfo.isGlobal()) {
       Variable value = input.get(0);
       return new FieldAssignment(lineNumber, null, fieldInfo, value);

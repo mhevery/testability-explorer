@@ -18,13 +18,6 @@ package com.google.test.metric.report.issues;
 /**
  * @author alexeagle@google.com (Alex Eagle)
  */
-public enum IssueSubType {
-  STATIC_INIT,
-  COMPLEXITY,
-  STATIC_METHOD,
-  NEW_OPERATOR,
-  SETTER,
-  FINAL_METHOD,
-  PRIVATE_METHOD,
-  SINGLETON
+public interface SourceElement {
+  String shortFormat();
 }
