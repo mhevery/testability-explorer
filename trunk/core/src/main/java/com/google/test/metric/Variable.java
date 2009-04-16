@@ -15,14 +15,17 @@
  */
 package com.google.test.metric;
 
+import com.google.test.metric.report.issues.SourceElement;
 
-public class Variable {
+
+public class Variable implements SourceElement {
 
   protected final Type type;
   private final boolean isFinal;
   private final boolean isGlobal;
   private String name;
   private int hashCode;
+  private int lineNumber;
 
   public Variable(String name, Type type, boolean isFinal, boolean isGlobal) {
     setName(name);
@@ -68,6 +71,20 @@ public class Variable {
 
   public boolean isFinal() {
     return isFinal;
+  }
+
+  public void setLineNumber(int lineNumber) {
+    this.lineNumber = lineNumber;
+  }
+
+  public int getLineNumber() {
+    return lineNumber;
+  }
+
+  public String shortFormat() {
+    String type = getType().toString();
+    String typeSimpleName = type.substring(type.lastIndexOf(".") + 1);
+    return String.format("%s %s", typeSimpleName, getName());
   }
 
 }

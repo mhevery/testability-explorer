@@ -43,6 +43,7 @@ public class Store extends StackOperation {
 
   @Override
   public Operation toOperation(List<Variable> input) {
+    variable.setLineNumber(lineNumber);
     return new LocalAssignment(lineNumber, variable, input.get(0));
   }
 

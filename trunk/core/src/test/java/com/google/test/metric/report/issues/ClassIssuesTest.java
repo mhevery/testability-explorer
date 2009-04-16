@@ -17,21 +17,25 @@ package com.google.test.metric.report.issues;
 
 import static com.google.test.metric.report.issues.IssueType.*;
 import static com.google.test.metric.report.issues.IssueSubType.*;
+import com.google.test.metric.report.StubSourceElement;
 import junit.framework.TestCase;
 
 import java.util.List;
 import java.util.Map;
+import java.util.LinkedList;
 
 /**
  * Tests for {@link com.google.test.metric.report.issues.ClassIssues}
  * @author alexeagle@google.com (Alex Eagle)
  */
 public class ClassIssuesTest extends TestCase {
+  private SourceElement foo = new StubSourceElement("foo()");
+
   public void testIssuesAreSortedByContribution() throws Exception {
     ClassIssues classIssues = new ClassIssues("Foo", 100);
-    classIssues.add(new Issue(1, "foo()", 0.1f, COLLABORATOR, COMPLEXITY));
-    classIssues.add(new Issue(2, "foo()", 0.9f, COLLABORATOR, COMPLEXITY));
-    classIssues.add(new Issue(3, "foo()", 0.5f, COLLABORATOR, COMPLEXITY));
+    classIssues.add(new Issue(1, foo, 0.1f, COLLABORATOR, COMPLEXITY));
+    classIssues.add(new Issue(2, foo, 0.9f, COLLABORATOR, COMPLEXITY));
+    classIssues.add(new Issue(3, foo, 0.5f, COLLABORATOR, COMPLEXITY));
 
     List<Issue> list = classIssues.getCollaboratorIssues().get(COMPLEXITY.toString());
     assertEquals(3, list.size());
@@ -43,10 +47,10 @@ public class ClassIssuesTest extends TestCase {
 
   public void testBucketizationOfIssuesIntoSubTypes() throws Exception {
     ClassIssues classIssues = new ClassIssues("Foo", 100);
-    classIssues.add(new Issue(1, "foo()", 0.1f, COLLABORATOR, COMPLEXITY));
-    classIssues.add(new Issue(2, "foo()", 0.9f, DIRECT_COST, COMPLEXITY));
-    classIssues.add(new Issue(3, "foo()", 0.5f, DIRECT_COST, COMPLEXITY));
-    classIssues.add(new Issue(4, "foo()", 0.5f, DIRECT_COST, STATIC_METHOD));
+    classIssues.add(new Issue(1, foo, 0.1f, COLLABORATOR, COMPLEXITY));
+    classIssues.add(new Issue(2, foo, 0.9f, DIRECT_COST, COMPLEXITY));
+    classIssues.add(new Issue(3, foo, 0.5f, DIRECT_COST, COMPLEXITY));
+    classIssues.add(new Issue(4, foo, 0.5f, DIRECT_COST, STATIC_METHOD));
 
     Map<String, List<Issue>> issueMap = classIssues.bucketize(IssueType.DIRECT_COST);
     assertEquals(2, issueMap.keySet().size());
@@ -59,5 +63,23 @@ public class ClassIssuesTest extends TestCase {
   public void testPathInnerClassIsStripped() throws Exception {
     ClassIssues classIssues = new ClassIssues("com.google.Foo$1", 100);
     assertEquals("com/google/Foo", classIssues.getPath());
+  }
+
+  public void testDuplicateRootCausesAreCondensedToOneIssue() throws Exception {
+    SourceElement baz = new StubSourceElement(null);
+    ClassIssues classIssues = new ClassIssues("com.google.Foo", 100, new LinkedList<Issue>());
+    Issue rootCause1 = new Issue(1, foo);
+    Issue implication1 = new Issue(2, baz);
+    rootCause1.getImplications().add(implication1);
+
+    Issue rootCause2 = new Issue(1, foo);
+    Issue implication2 = new Issue(4, baz);
+    rootCause2.getImplications().add(implication2);
+
+    classIssues.add(rootCause1);
+    assertEquals(1, classIssues.getSize());
+    classIssues.add(rootCause2);
+    assertEquals(1, classIssues.getSize());
+    assertEquals(2, classIssues.getMostImportantIssues().get(0).getImplications().size());
   }
 }

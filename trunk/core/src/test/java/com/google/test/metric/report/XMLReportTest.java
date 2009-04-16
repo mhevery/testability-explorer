@@ -31,7 +31,7 @@ import com.google.test.metric.GlobalCost;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvokationCost;
 import com.google.test.metric.ViolationCost;
-import static com.google.test.metric.MethodInvokationCost.Reason.*;
+import static com.google.test.metric.Reason.*;
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
@@ -69,7 +69,7 @@ public class XMLReportTest extends TestCase {
     methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     ViolationCost violation = new MethodInvokationCost(123, methodCost,
-        IMPLICIT_STATIC_INIT, Cost.cyclomatic(2).add(Cost.global(3)));
+        IMPLICIT_STATIC_INIT, Cost.cyclomatic(2).add(Cost.global(3)), null);
     report.writeCost(violation);
     assertXMLEquals("<cost cyclomatic=\"2\" global=\"3\" line=\"123\" "
         + "lod=\"0\" method=\"methodName\" overall=\"32\" "
@@ -84,7 +84,7 @@ public class XMLReportTest extends TestCase {
     methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     ViolationCost violation = new MethodInvokationCost(123, methodCost,
-        NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(2).add(Cost.global(3)));
+        NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(2).add(Cost.global(3)), null);
     report.writeCost(violation);
     assertXMLEquals("<cost cyclomatic=\"2\" global=\"3\" line=\"123\" "
         + "lod=\"0\" method=\"methodName\" overall=\"32\" "

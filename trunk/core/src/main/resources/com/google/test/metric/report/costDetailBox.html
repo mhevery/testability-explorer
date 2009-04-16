@@ -26,11 +26,23 @@
 
             </td>
             <td>
-              <tt>${issue.elementName}</tt>
+              ${message(messagePrefix + ".element", "<tt>", issue.element.shortFormat(), "</tt>")}
               <#-- ${message(messagePrefix + ".method", "UIUtils#archiveThread", "high", "high")} -->
             </td>
             <td class="percent">${issue.contributionToClassCost?string.percent}</td>
           </tr>
+          <#list issue.implications as implication>
+              <tr class="${rowStyle}">
+                <td></td>
+                <td style="padding-left: 1em">${message("report.explain.thenOnLine")}
+                  ${sourceLink(classFilePath, implication.lineNumber?c, implication.lineNumber)},
+                  ${message("report.explain.methodCalled", "<tt>", implication.element.shortFormat(), "</tt>")}
+                </td>
+                <td>
+
+                </td>
+              </tr>
+            </#list>
         </#list>
         <tr>
           <td colspan="4">

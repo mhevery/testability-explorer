@@ -13,18 +13,22 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.test.metric.report.issues;
+package com.google.test.metric.report;
+
+import com.google.test.metric.report.issues.SourceElement;
 
 /**
  * @author alexeagle@google.com (Alex Eagle)
  */
-public enum IssueSubType {
-  STATIC_INIT,
-  COMPLEXITY,
-  STATIC_METHOD,
-  NEW_OPERATOR,
-  SETTER,
-  FINAL_METHOD,
-  PRIVATE_METHOD,
-  SINGLETON
+public class StubSourceElement implements SourceElement {
+  private final String formatStr;
+
+  public StubSourceElement(String formatStr) {
+
+    this.formatStr = formatStr;
+  }
+
+  public String shortFormat() {
+    return formatStr;
+  }
 }

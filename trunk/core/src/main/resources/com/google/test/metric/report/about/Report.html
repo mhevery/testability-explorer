@@ -56,6 +56,7 @@
       </#list>
     </code>
     <#assign classIssues = clazz.issues />
+    <p class="header">${message("report.explain.class.hardToTest", "<tt>", classIssues.className, "</tt>")}</p>
     <div class="classExplanation">
       <div class="cost">${classIssues.totalCost}</div>
       <#if classIssues.constructionIssues?keys?size != 0>
@@ -72,8 +73,6 @@
         <em>${message("report.explain.class.directCost")}</em>
         <@costDetailBox classIssues.directCostIssues classIssues.path "directCost" />
       </#if>
-
-      <p>${message("report.explain.class.benefits", "<b>", 0.00, "</b>")}</p>
     </div>
     <p>&nbsp;</p>
   </#list>

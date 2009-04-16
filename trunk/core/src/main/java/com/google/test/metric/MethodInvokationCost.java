@@ -26,44 +26,18 @@ public class MethodInvokationCost extends ViolationCost {
   }
 
   private Reason costSourceType;
+  private final Variable nonInjectable;
 
-  /** This attempts to answer "What is the source of each line's cost?" */
-  public static enum Reason {
-    IMPLICIT_CONSTRUCTOR("implicit cost from construction", true),
-    //
-    IMPLICIT_SETTER("implicit cost calling all setters", true),
-    //
-    IMPLICIT_STATIC_INIT("implicit cost from static initialization", true),
-    //
-    NON_OVERRIDABLE_METHOD_CALL("cost from calling non-overridable method", false);
-    // TODO(jwolter): be able to tell people why this method could not be overridden:
-    // whether it is static, private or final.
-    // SOMEDAY(jwolter): it would be nice to make static methods worse than others. Because we don't
-    // want to encourage people to subclass for tests.
-
-    private final String description;
-    private final boolean isImplicit;
-
-    Reason(String description, boolean implicit) {
-      this.description = description;
-      isImplicit = implicit;
-    }
-
-    @Override
-    public String toString() {
-      return description;
-    }
-
-    public boolean isImplicit() {
-      return isImplicit;
-    }
+  public Variable getNonInjectable() {
+    return nonInjectable;
   }
 
   public MethodInvokationCost(int lineNumber, MethodCost methodCost,
-      Reason costSourceType, Cost invocationCost) {
+                              Reason costSourceType, Cost invocationCost, Variable nonInjectable) {
     super(lineNumber, invocationCost);
     this.methodCost = methodCost;
     this.costSourceType = costSourceType;
+    this.nonInjectable = nonInjectable;
   }
 
   public String getReason() {

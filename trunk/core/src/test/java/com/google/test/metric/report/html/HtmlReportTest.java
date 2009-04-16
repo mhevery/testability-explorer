@@ -1,12 +1,12 @@
 /*
  * Copyright 2007 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -16,11 +16,8 @@
 package com.google.test.metric.report.html;
 
 import com.google.test.metric.*;
-import com.google.test.metric.MethodInvokationCost.Reason;
-import com.google.test.metric.report.FreemarkerReportGenerator;
-import com.google.test.metric.report.ReportOptions;
-import com.google.test.metric.report.SourceLinker;
-import com.google.test.metric.report.ClassPathTemplateLoader;
+import com.google.test.metric.Reason;
+import com.google.test.metric.report.*;
 import static com.google.test.metric.report.FreemarkerReportGenerator.*;
 import com.google.test.metric.report.issues.ClassIssues;
 import com.google.test.metric.report.issues.IssuesReporter;
@@ -58,7 +55,7 @@ public class HtmlReportTest extends TestCase {
                               "http://code.repository/basepath/{path}");
     MethodCost methodCost = new MethodCost("methodFoo", 1, false, false);
     methodCost.addCostSource(new MethodInvokationCost(1, methodCost, Reason.IMPLICIT_SETTER,
-        new Cost(100, 1, new int[0])));
+        new Cost(100, 1, new int[0]), null));
     cost = new ClassCost("com.google.FooClass", Arrays.asList(methodCost));
     report = new HtmlReport(costModel, issuesReporter, options);
     BeansWrapper objectWrapper = new DefaultObjectWrapper();
@@ -68,7 +65,7 @@ public class HtmlReportTest extends TestCase {
     configuration.setTemplateLoader(new ClassPathTemplateLoader(ReportPrinterBuilder.PREFIX));
     report.setMessageBundle(bundleModel);
     report.setSourceLinker(new SourceLinkerModel(linker));
-    generator = new FreemarkerReportGenerator(report, new PrintStream(out), 
+    generator = new FreemarkerReportGenerator(report, new PrintStream(out),
         HTML_REPORT_TEMPLATE, configuration);
   }
 
@@ -92,7 +89,7 @@ public class HtmlReportTest extends TestCase {
         new ClassCost("classFoo", Arrays.asList(new MethodCost("methodFoo", 1, false, false)));
     generator.addClassCost(cost);
     ClassIssues classIssues = new ClassIssues(cost.getClassName(), 0);
-    classIssues.add(new Issue(1, "", 1f));
+    classIssues.add(new Issue(1, new StubSourceElement(null), 1f));
     report.getWorstOffenders().add(classIssues);
     generator.printFooter();
     String text = out.toString();
