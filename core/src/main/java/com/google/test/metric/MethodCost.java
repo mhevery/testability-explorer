@@ -142,6 +142,8 @@ public class MethodCost implements SourceElement {
     while (matcher.find()) {
       String identifier = matcher.group();
       String simple = identifier.substring(identifier.lastIndexOf(".") + 1);
+      // Have to escape dollar signs, or they look like capture group identifiers
+      simple = simple.replaceAll("\\$", "\\\\\\$");
       matcher.appendReplacement(result, simple);
     }
     return result.toString();
