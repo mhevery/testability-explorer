@@ -116,8 +116,7 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
 
     IPath pluginStateLocation = Activator.getDefault().getStateLocation();
     String baseReportDirectoryString = 
-      configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_REPORT_FOLDER_NAME,
-          "");
+      configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_REPORT_FOLDER_NAME, "");
     if ("".equals(baseReportDirectoryString)) {
       baseReportDirectoryString = pluginStateLocation.toOSString();
     }
@@ -160,8 +159,8 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
       }
       CostModel costModel = new CostModel(cyclomaticCost, globalCost);
       IssuesReporter issuesReporter = new IssuesReporter(
-          new TriageIssuesQueue<ClassIssues>(TestabilityConstants.MIN_COST, TestabilityConstants.MAX_SIZE, 
-              new ClassIssues.TotalCostComparator()), costModel);
+          new TriageIssuesQueue<ClassIssues>(TestabilityConstants.MIN_COST,
+              TestabilityConstants.MAX_SIZE, new ClassIssues.TotalCostComparator()), costModel);
       ReportOptions options = new ReportOptions(cyclomaticCost, globalCost, maxExcellentCost,
           maxAcceptableCost, TestabilityConstants.WORST_OFFENDER_COUNT,
           TestabilityConstants.MAX_METHOD_COUNT, TestabilityConstants.MAX_LINE_COUNT, 
@@ -175,7 +174,7 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
       JavaTestabilityRunner testabilityRunner = new JavaTestabilityRunner(testabilityConfig);
       testabilityRunner.run();
 
-      notifyAllListeners(reportDirectory);
+      notifyAllListeners(reportDirectory, issuesReporter.getMostImportantIssues(), javaProject);
 
       reportStream.flush();
       reportStream.close();
@@ -184,16 +183,17 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
     }
   }
 
-  private void notifyAllListeners(File reportDirectory) {
-    IConfigurationElement[] elements =
-        Platform.getExtensionRegistry().getConfigurationElementsFor(
-            "com.google.test.metric.eclipse.core.testabilityLaunchListener");
+  private void notifyAllListeners(File reportDirectory, List<ClassIssues> classIssues,
+      IJavaProject javaProject) {
+    IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
+         "com.google.test.metric.eclipse.core.testabilityLaunchListener");
 
     for (IConfigurationElement element : elements) {
       try {
         TestabilityLaunchListener launchListener =
             (TestabilityLaunchListener) element.createExecutableExtension("class");
         launchListener.onLaunchCompleted(reportDirectory);
+        launchListener.onLaunchCompleted(javaProject, classIssues);
       } catch (CoreException e) {
         logger.logException("Error creating Testability Launch Listener", e);
       }

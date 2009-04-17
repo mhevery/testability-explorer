@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: TE Eclipse UI Test
+Bundle-SymbolicName: com.google.test.metric.eclipse.ui.test
+Bundle-Version: 1.0.0
+Bundle-Vendor: Google, Inc.
+Require-Bundle: org.eclipse.core.runtime,
+ org.junit;bundle-version="3.8.2",
+ org.eclipse.core.resources;bundle-version="3.4.0",
+ org.eclipse.jdt.core;bundle-version="3.4.0",
+ com.google.test.metric.eclipse.ui;bundle-version="1.0.0",
+ org.eclipse.jface.text;bundle-version="3.4.0",
+ com.google.test.metric.eclipse.core;bundle-version="1.0.0",
+ com.google.test.metric.eclipse.test;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

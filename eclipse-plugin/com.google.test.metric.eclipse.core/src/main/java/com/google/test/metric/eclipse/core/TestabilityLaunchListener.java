@@ -15,7 +15,12 @@
  */
 package com.google.test.metric.eclipse.core;
 
+import com.google.test.metric.report.issues.ClassIssues;
+
+import org.eclipse.jdt.core.IJavaProject;
+
 import java.io.File;
+import java.util.List;
 
 /**
  * Implementations of this interface can be notified upon completion of a
@@ -28,5 +33,7 @@ import java.io.File;
  */
 public interface TestabilityLaunchListener {
 
-  public void onLaunchCompleted(File reportDirectory);
+  void onLaunchCompleted(File reportDirectory);
+  
+  void onLaunchCompleted(final IJavaProject javaProject, List<ClassIssues> classIssues);
 }

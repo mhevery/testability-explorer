@@ -15,26 +15,28 @@
  */
 package com.google.test.metric.eclipse.ui.annotation;
 
+import junit.framework.TestCase;
+
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 
 /**
- * Represents a testability annotation.
+ * Tests for {@link TestabilityAnnotationModel}.
  * 
  * @author shyamseshadri@google.com (Shyam Seshadri)
  */
-public class TestabilityAnnotation extends Annotation {
-  public static final String EXCELLENT_TESTABILITY = "com.google.test.metric.ui.excellentTestability";
-  public static final String GOOD_TESTABILITY = "com.google.test.metric.ui.goodTestability";
-  public static final String BAD_TESTABILITY = "com.google.test.metric.ui.badTestability";
-  private final Position position;
+public class TestabilityAnnotationModelTest extends TestCase {
 
-  public TestabilityAnnotation(Position position, String type) {
-    super(type, false, null);
-    this.position = position;
+  private TestabilityAnnotationModel model = new TestabilityAnnotationModel(null);
+
+  public void testGetPositionOfTestabilityAnnotation() throws Exception {
+    Annotation annotation = new TestabilityAnnotation(new Position(0), "something");
+    assertNotNull(model.getPosition(annotation));
+    assertEquals(0, model.getPosition(annotation).getOffset());
   }
 
-  public Position getPosition() {
-    return position;
+  public void testGetPositionOfNonTestabilityAnnotation() throws Exception {
+    Annotation annotation = new Annotation(true);
+    assertNull(model.getPosition(annotation));
   }
 }
