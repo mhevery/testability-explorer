@@ -89,13 +89,16 @@
            isGoToPreviousNavigationTarget="false"
            isGoToPreviousNavigationTargetKey="excellentTestability_isGoToPreviousNavigationTargetKey"
            label="%excellentTestabilityAnnotation.label"
+           overviewRulerPreferenceKey="excellentTestability_overviewRuler"
            overviewRulerPreferenceValue="false"
            presentationLayer="0"
            showInNextPrevDropdownToolbarAction="false"
            showInNextPrevDropdownToolbarActionKey="excellentTestability_showInNextPrevDropdownToolbarActionKey"
+           textPreferenceKey="excellentTestability_text"
            textPreferenceValue="true"
            textStylePreferenceKey="excellentTestability_stylePreferences"
            textStylePreferenceValue="BOX"
+           verticalRulerPreferenceKey="excellentTestability_verticalRuler"
            verticalRulerPreferenceValue="false">
      </specification>
      <specification
@@ -104,20 +107,21 @@
            colorPreferenceValue="255,255,128"
            contributesToHeader="false"
            highlightPreferenceKey="goodTestability_highlight"
-           highlightPreferenceValue="true"
            includeOnPreferencePage="true"
-           isGoToNextNavigationTarget="false"
            isGoToNextNavigationTargetKey="goodTestability_isGoToNextNavigationTargetKey"
            isGoToPreviousNavigationTarget="false"
            isGoToPreviousNavigationTargetKey="goodTestability_isGoToPreviousNavigationTargetKey"
            label="%goodTestabilityAnnotation.label"
+           overviewRulerPreferenceKey="goodTestability_overviewRuler"
            overviewRulerPreferenceValue="false"
            presentationLayer="0"
            showInNextPrevDropdownToolbarAction="false"
            showInNextPrevDropdownToolbarActionKey="goodTestability_showInNextPrevDropdownToolbarActionKey"
+           textPreferenceKey="goodTestability_text"
            textPreferenceValue="true"
            textStylePreferenceKey="goodTestability_stylePreferences"
            textStylePreferenceValue="BOX"
+           verticalRulerPreferenceKey="goodTestability_verticalRuler"
            verticalRulerPreferenceValue="false">
      </specification>
      <specification
@@ -133,13 +137,16 @@
            isGoToPreviousNavigationTarget="false"
            isGoToPreviousNavigationTargetKey="badTestability_isGoToPreviousNavigationTargetKey"
            label="%badTestabilityAnnotation.label"
+           overviewRulerPreferenceKey="badTestability_overviewRuler"
            overviewRulerPreferenceValue="false"
            presentationLayer="0"
            showInNextPrevDropdownToolbarAction="false"
            showInNextPrevDropdownToolbarActionKey="badTestability_showInNextPrevDropdownToolbarActionKey"
+           textPreferenceKey="badTestability_text"
            textPreferenceValue="true"
            textStylePreferenceKey="badTestability_stylePreferences"
            textStylePreferenceValue="BOX"
+           verticalRulerPreferenceKey="badTestability_verticalRuler"
            verticalRulerPreferenceValue="false">
      </specification>
   </extension>
