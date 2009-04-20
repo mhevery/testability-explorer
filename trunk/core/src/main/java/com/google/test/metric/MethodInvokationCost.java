@@ -26,18 +26,12 @@ public class MethodInvokationCost extends ViolationCost {
   }
 
   private Reason costSourceType;
-  private final Variable nonInjectable;
-
-  public Variable getNonInjectable() {
-    return nonInjectable;
-  }
 
   public MethodInvokationCost(int lineNumber, MethodCost methodCost,
-                              Reason costSourceType, Cost invocationCost, Variable nonInjectable) {
+                              Reason costSourceType, Cost invocationCost) {
     super(lineNumber, invocationCost);
     this.methodCost = methodCost;
     this.costSourceType = costSourceType;
-    this.nonInjectable = nonInjectable;
   }
 
   public String getReason() {

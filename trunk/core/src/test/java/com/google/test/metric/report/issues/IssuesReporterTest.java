@@ -133,17 +133,11 @@ public class IssuesReporterTest extends TestCase {
     List<Issue> issues = classIssues.getCollaboratorIssues().get(NEW_OPERATOR.toString());
     assertEquals(1, issues.size());
     Issue issue = issues.get(0);
-    assertEquals(20, issue.getLineNumber());
+    assertEquals(25, issue.getLineNumber());
     assertFalse(issue.isLineNumberApproximate());
-    assertEquals("Primeness primeness", issue.getElement().shortFormat());
+    // TODO: we'd rather see "Primeness primeness" on line 20 as the root issue here
+    assertEquals("boolean isPrime(int)", issue.getElement().shortFormat());
     assertEquals(0.5f, issue.getContributionToClassCost());
-    assertEquals(1, issue.getImplications().size());
-
-    Issue implication = issue.getImplications().get(0);
-    assertEquals("boolean isPrime(int)", implication.getElement().shortFormat());
-    assertEquals(25, implication.getLineNumber());
-    assertFalse(implication.isLineNumberApproximate());
-    assertEquals(0.5f, implication.getContributionToClassCost());
   }
 
   public void testStaticMethodCalledIssues() throws Exception {
@@ -179,25 +173,13 @@ public class IssuesReporterTest extends TestCase {
   public void testFinalGlobalExampleIssues() throws Exception {
     ClassIssues classIssues = issuesReporter.determineIssues(
         decoratedComputer.compute(FinalGlobalExample.class));
-    assertEquals(1, classIssues.getSize());
+    assertEquals(2, classIssues.getSize());
     List<Issue> issues = classIssues.getCollaboratorIssues().get(SINGLETON.toString());
     Issue issue = issues.get(0);
-    assertEquals("FinalGlobalExample$Gadget finalInstance",
-        issue.getElement().shortFormat());
-    assertEquals(68, issue.getLineNumber());
+    //TODO: we'd rather see "FinalGlobalExample$Gadget finalInstance" on line 68 as the root issue
+    assertEquals("int increment()", issue.getElement().shortFormat());
+    assertEquals(88, issue.getLineNumber());
     assertEquals(1.0f, issue.getContributionToClassCost());
-
-    assertEquals(2, issue.getImplications().size());
-    Issue implication0 = issue.getImplications().get(0);
-    Issue implication1 = issue.getImplications().get(1);
-
-    //assertEquals(0.5f, implication0.getContributionToClassCost());
-    //assertEquals(0.5f, implication1.getContributionToClassCost());
-
-    assertEquals("int getCount()", implication0.getElement().shortFormat());
-    assertEquals(84, implication0.getLineNumber());
-    assertEquals("int increment()", implication1.getElement().shortFormat());
-    assertEquals(88, implication1.getLineNumber());
   }
 
   public void testNoIssuesForMainMethod() throws Exception {

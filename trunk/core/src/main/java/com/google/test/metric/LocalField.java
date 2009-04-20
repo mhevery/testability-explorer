@@ -41,8 +41,4 @@ public class LocalField extends Variable {
     return instance;
   }
 
-  @Override
-  public int getLineNumber() {
-    return fieldInfo.getLineNumber();
-  }
 }

@@ -82,16 +82,6 @@ public class IssuesReporter {
           } else {
             issue.setSubType(NEW_OPERATOR);
           }
-          if (!methodCost.isConstructor()) {
-            MethodInvokationCost source1 = getMethodInvokationSource(methodCost);
-            if (source1.getNonInjectable() != null) {
-              Issue rootCauseIssue = new Issue(source1.getNonInjectable().getLineNumber(),
-                  source1.getNonInjectable(),
-                  issue.getContributionToClassCost(), issue.getType(), issue.getSubType());
-              rootCauseIssue.getImplications().add(issue);
-              issue = rootCauseIssue;
-            }
-          }
         }
         classIssues.add(issue);
       }
