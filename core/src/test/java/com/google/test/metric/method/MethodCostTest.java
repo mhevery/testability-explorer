@@ -36,7 +36,7 @@ public class MethodCostTest extends TestCase {
     cost3.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     cost3.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     cost.addCostSource(new MethodInvokationCost(0, cost3,
-      IMPLICIT_STATIC_INIT, Cost.cyclomatic(3), null));
+      IMPLICIT_STATIC_INIT, Cost.cyclomatic(3)));
     CostModel costModel = new CostModel(2, 10);
     cost.link();
 

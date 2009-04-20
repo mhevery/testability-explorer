@@ -64,22 +64,4 @@ public class ClassIssuesTest extends TestCase {
     ClassIssues classIssues = new ClassIssues("com.google.Foo$1", 100);
     assertEquals("com/google/Foo", classIssues.getPath());
   }
-
-  public void testDuplicateRootCausesAreCondensedToOneIssue() throws Exception {
-    SourceElement baz = new StubSourceElement(null);
-    ClassIssues classIssues = new ClassIssues("com.google.Foo", 100, new LinkedList<Issue>());
-    Issue rootCause1 = new Issue(1, foo);
-    Issue implication1 = new Issue(2, baz);
-    rootCause1.getImplications().add(implication1);
-
-    Issue rootCause2 = new Issue(1, foo);
-    Issue implication2 = new Issue(4, baz);
-    rootCause2.getImplications().add(implication2);
-
-    classIssues.add(rootCause1);
-    assertEquals(1, classIssues.getSize());
-    classIssues.add(rootCause2);
-    assertEquals(1, classIssues.getSize());
-    assertEquals(2, classIssues.getMostImportantIssues().get(0).getImplications().size());
-  }
 }

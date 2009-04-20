@@ -34,7 +34,6 @@ public class Issue implements IssueHolder {
   private boolean isLineNumberApproximate;
   private IssueType type;
   private IssueSubType subType;
-  private List<Issue> implications = Lists.newLinkedList();
 
   public Issue(int lineNumber, SourceElement element, float contributionToClassCost) {
     this(lineNumber, element, contributionToClassCost, null, null);
@@ -117,19 +116,6 @@ public class Issue implements IssueHolder {
         return issue.getType() == issueType && issue.getSubType() == subType;
       }
     };
-  }
-
-  public List<Issue> getImplications() {
-    return implications;
-  }
-
-  public void setImplications(List<Issue> implications) {
-    this.implications = implications;
-  }
-
-  public boolean hasSameRootCause(Issue anIssue) {
-    return lineNumber == anIssue.lineNumber &&
-        element.shortFormat().equals(anIssue.element.shortFormat());
   }
 
   public static class TotalCostComparator implements Comparator<Issue> {

@@ -55,7 +55,7 @@ public class HtmlReportTest extends TestCase {
                               "http://code.repository/basepath/{path}");
     MethodCost methodCost = new MethodCost("methodFoo", 1, false, false);
     methodCost.addCostSource(new MethodInvokationCost(1, methodCost, Reason.IMPLICIT_SETTER,
-        new Cost(100, 1, new int[0]), null));
+        new Cost(100, 1, new int[0])));
     cost = new ClassCost("com.google.FooClass", Arrays.asList(methodCost));
     report = new HtmlReport(costModel, issuesReporter, options);
     BeansWrapper objectWrapper = new DefaultObjectWrapper();

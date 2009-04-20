@@ -77,12 +77,12 @@ public class TestabilityVisitor {
 
     @Override
     protected void addMethodInvocationCost(int lineNumber, MethodInfo to,
-        Cost methodInvocationCost, Reason reason, Variable nonInjectable) {
-      super.addMethodInvocationCost(lineNumber, to, methodInvocationCost, reason, nonInjectable);
+        Cost methodInvocationCost, Reason reason) {
+      super.addMethodInvocationCost(lineNumber, to, methodInvocationCost, reason);
       if (!methodInvocationCost.isEmpty()) {
         ViolationCost cost = new MethodInvokationCost(lineNumber,
             getMethodCostCache(to), reason,
-            methodInvocationCost, nonInjectable);
+            methodInvocationCost);
         methodCost.addCostSource(cost);
       }
     }
@@ -231,7 +231,7 @@ public class TestabilityVisitor {
     }
 
     protected void addMethodInvocationCost(int lineNumber, MethodInfo to,
-        Cost methodInvocationCost, Reason reason, Variable nonInjectable) {
+        Cost methodInvocationCost, Reason reason) {
       indirect.add(methodInvocationCost);
     }
 
@@ -387,7 +387,7 @@ public class TestabilityVisitor {
       childFrame.recordMethodCall(lineNumber, toMethod, methodThis, parameters,
           returnVariable);
       addMethodInvocationCost(lineNumber, toMethod, childFrame.getTotalCost()
-          .copyNoLOD(), reason, methodThis);
+          .copyNoLOD(), reason);
     }
 
     protected Frame createChildFrame(MethodInfo toMethod) {

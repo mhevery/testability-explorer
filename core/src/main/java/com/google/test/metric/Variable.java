@@ -25,7 +25,6 @@ public class Variable implements SourceElement {
   private final boolean isGlobal;
   private String name;
   private int hashCode;
-  private int lineNumber;
 
   public Variable(String name, Type type, boolean isFinal, boolean isGlobal) {
     setName(name);
@@ -71,14 +70,6 @@ public class Variable implements SourceElement {
 
   public boolean isFinal() {
     return isFinal;
-  }
-
-  public void setLineNumber(int lineNumber) {
-    this.lineNumber = lineNumber;
-  }
-
-  public int getLineNumber() {
-    return lineNumber;
   }
 
   public String shortFormat() {
