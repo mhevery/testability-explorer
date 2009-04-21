@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2009 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,10 +13,21 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.test.metric;
+package com.google.test.metric.javasrc;
 
-public interface ClassRepository {
+import java.io.File;
 
-  public ClassInfo getClass(String clazzName);
+import junit.framework.TestCase;
+
+import com.google.classpath.DirectoryClassPath;
+import com.google.test.metric.ClassInfo;
+
+public class JavaSrcRepositoryTest extends TestCase {
+
+	public void testRecognizeClasses() throws Exception {
+		JavaSrcRepository repo = new JavaSrcRepository(new DirectoryClassPath(new File("src/test/java")));
+		ClassInfo info = repo.getClass(getClass().getName());
+		assertEquals(getClass().getName(), info.getName());
+	}
 
 }

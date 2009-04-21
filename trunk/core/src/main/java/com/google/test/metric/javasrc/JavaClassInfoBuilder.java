@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2009 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,10 +13,25 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.test.metric;
+package com.google.test.metric.javasrc;
 
-public interface ClassRepository {
+import com.google.test.metric.ClassInfo;
 
-  public ClassInfo getClass(String clazzName);
+public class JavaClassInfoBuilder {
+
+	private String pakageName = "";
+	private String type;
+
+	public ClassInfo build() {
+		return new ClassInfo(pakageName + type, false, null, null);
+	}
+
+	public void setPackage(String packageName) {
+		this.pakageName = packageName + ".";
+	}
+
+	public void startType(String type) {
+		this.type = type;
+	}
 
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launchConfiguration type="org.eclipse.ui.externaltools.ProgramBuilderLaunchConfigurationType">
+<stringAttribute key="org.eclipse.debug.core.ATTR_REFRESH_SCOPE" value="${working_set:&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;launchConfigurationWorkingSet editPageId=&quot;org.eclipse.ui.resourceWorkingSetPage&quot; factoryID=&quot;org.eclipse.ui.internal.WorkingSetFactory&quot; label=&quot;working set&quot; name=&quot;working set&quot;&gt;&#10;&lt;item factoryID=&quot;org.eclipse.ui.internal.model.ResourceFactory&quot; path=&quot;/testability-explorer-core/target/generated-sources/antlr&quot; type=&quot;2&quot;/&gt;&#10;&lt;/launchConfigurationWorkingSet&gt;}"/>
+<booleanAttribute key="org.eclipse.debug.ui.ATTR_LAUNCH_IN_BACKGROUND" value="false"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_BUILD_SCOPE" value="${working_set:&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;launchConfigurationWorkingSet editPageId=&quot;org.eclipse.ui.resourceWorkingSetPage&quot; factoryID=&quot;org.eclipse.ui.internal.WorkingSetFactory&quot; label=&quot;workingSet&quot; name=&quot;workingSet&quot;&gt;&#10;&lt;item factoryID=&quot;org.eclipse.ui.internal.model.ResourceFactory&quot; path=&quot;/testability-explorer-core/src/main/antlr/cppparser.g&quot; type=&quot;1&quot;/&gt;&#10;&lt;/launchConfigurationWorkingSet&gt;}"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="/usr/bin/java"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_RUN_BUILD_KINDS" value="full,incremental,auto,"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="-cp ${M2REPO}/repository/antlr/antlr/2.7.7/antlr-2.7.7.jar&#13;antlr.Tool&#13;-o target/generated-sources/antlr/com/google/test/metric/cpp&#13;src/main/antlr/cppparser.g"/>
+<booleanAttribute key="org.eclipse.ui.externaltools.ATTR_TRIGGERS_CONFIGURED" value="true"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_WORKING_DIRECTORY" value="${workspace_loc:/testability-explorer-core}"/>
+</launchConfiguration>

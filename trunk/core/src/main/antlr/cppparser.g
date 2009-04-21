@@ -1415,7 +1415,7 @@ case_statement
   ;
 
 default_statement
-  : {b.beginDefaultStatement();} 
+  : {b.beginDefaultStatement();}
     "default" COLON statement
     {b.endDefaultStatement();}
   ;
@@ -1543,7 +1543,7 @@ expression_list
 
 /* right-to-left for assignment op */
 assignment_expression
-  : 
+  :
     conditional_expression
     (
       {b.beginAssignmentExpression(LT(1).getLine());}
