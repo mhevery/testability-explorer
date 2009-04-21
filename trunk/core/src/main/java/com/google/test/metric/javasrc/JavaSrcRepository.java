@@ -34,6 +34,7 @@ public class JavaSrcRepository implements ClassRepository {
 		String src = clazzName.replace('.', '/') + ".java";
 		JavaLexer lexer = new JavaLexer(classPath.getResourceAsStream(src));
 		JavaRecognizer recognizer = new JavaRecognizer(lexer);
+		recognizer.getASTFactory().setASTNodeClass(CommonASTWithLine.class);
 		JavaTreeParser treeParser = new JavaTreeParser();
 		try {
 			recognizer.compilationUnit();

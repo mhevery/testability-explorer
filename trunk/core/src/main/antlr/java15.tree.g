@@ -16,15 +16,24 @@ options {
 }
 
 {
-  JavaClassInfoBuilder builder = new JavaClassInfoBuilder();
+	JavaClassInfoBuilder builder = new JavaClassInfoBuilder();
 
-  private String s(AST ast){
-  	return ast==null ? null : ast.getText();
-  }
+	private String s(AST ast) {
+		return ast == null ? null : ast.getText();
+	}
 
-  private String packageName(AST ast) {
-    return ast.toStringTree().replace(" ( .", "").replace(" )", "").replace(" ", ".").substring(1);
-  }
+	private String inline(AST ast) {
+		if (ast == null)
+			return "";
+		String text = "";
+		AST child = ast.getFirstChild();
+		if (child != null)
+			text += inline(child);
+		text += ast.getText();
+		if (child != null)
+			text += inline(child.getNextSibling());
+		return text;
+	}
 }
 
 compilationUnit
@@ -35,7 +44,7 @@ compilationUnit
 
 packageDefinition
 	:	#( PACKAGE_DEF annotations pkgIdent:identifier )
-		{builder.setPackage(packageName(pkgIdent));}
+		{builder.setPackage(pkgIdent.getLine(), inline(pkgIdent));}
 	;
 
 importDefinition
@@ -45,7 +54,7 @@ importDefinition
 
 typeDefinition
 	:	#(CLASS_DEF modifiers i:IDENT (typeParameters)? extendsClause implementsClause objBlock )
-		{builder.startType(s(i));}
+		{builder.startType(i.getLine(), s(i));}
 	|	#(INTERFACE_DEF modifiers IDENT (typeParameters)? extendsClause interfaceBlock )
 	|	#(ENUM_DEF modifiers IDENT implementsClause enumBlock )
 	|	#(ANNOTATION_DEF modifiers IDENT annotationBlock )

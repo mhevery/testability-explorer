@@ -26,11 +26,14 @@ public class JavaClassInfoBuilder {
 		return new ClassInfo(pakageName + type, false, null, null);
 	}
 
-	public void setPackage(String packageName) {
-		this.pakageName = packageName + ".";
+	public void setPackage(int line, String packageName) {
+		if (!packageName.endsWith(".")) {
+			packageName += ".";
+		}
+		this.pakageName = packageName;
 	}
 
-	public void startType(String type) {
+	public void startType(int line, String type) {
 		this.type = type;
 	}
 
