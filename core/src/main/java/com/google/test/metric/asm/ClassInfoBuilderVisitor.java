@@ -23,14 +23,14 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 import com.google.test.metric.ClassInfo;
-import com.google.test.metric.ClassRepository;
+import com.google.test.metric.JavaClassRepository;
 
 public class ClassInfoBuilderVisitor extends NoopClassVisitor {
 
-  private final ClassRepository repository;
+  private final JavaClassRepository repository;
   private ClassInfo classInfo;
 
-  public ClassInfoBuilderVisitor(ClassRepository repository) {
+  public ClassInfoBuilderVisitor(JavaClassRepository repository) {
     this.repository = repository;
   }
 
