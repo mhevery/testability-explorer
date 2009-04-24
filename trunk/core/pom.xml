@@ -113,40 +113,11 @@
   </build>
   <reporting>
     <plugins>
-
-      <!-- TODO: enable once the testability maven plugin is available
-      <plugin>
-        <groupId>com.google.testability-explorer</groupId>
-        <artifactId>maven2-plugin</artifactId>
-        <version>1.3.1</version>
-        <configuration>
-          <filter>com.google.test.metric</filter>
-          <resultfile>report.xml</resultfile>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      -->
-
-      <!--
-      <plugin>
-        <groupId>emma</groupId>
-        <artifactId>maven-emma-plugin</artifactId>
-        <configuration>
-          <filter>
-            <excludes>
-              <exclude>com.google.test.metric.example.*</exclude>
-              <exclude>com.google.test.metric.cpp.InternalLexer</exclude>
-              <exclude>com.google.test.metric.cpp.InternalParser</exclude>
-            </excludes>
-          </filter>
-        </configuration>
-      </plugin>
+      <!-- The testability explorer maven plugin cannot be used here, because it would introduce
+      a cyclical dependency.
+      Instead, we manually run the testability plugin in the continuous build by running
+      mvn com.google.testability-explorer:maven-testability-plugin:testability
+      after the mvn clean install goals.
       -->
     </plugins>
   </reporting>
