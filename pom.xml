@@ -40,7 +40,7 @@
   <modules>
     <module>core</module>
     <module>ant-task</module>
-    <module>maven2-testability-plugin</module>
+    <module>maven-testability-plugin</module>
   </modules>
 
   <build>
