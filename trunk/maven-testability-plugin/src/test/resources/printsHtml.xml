@@ -3,11 +3,10 @@
     <plugins>
       <plugin>
         <groupId>com.google.testability-explorer</groupId>
-        <artifactId>maven2-testability-plugin</artifactId>
+        <artifactId>maven-testability-plugin</artifactId>
 
         <configuration>
-          <filter>com.google</filter>
-          <mavenProject implementation="com.google.maven.NonJarProjectStub"/>
+          <mavenProject implementation="com.google.maven.ProjectStub"/>
           <outputDirectory>target/testability</outputDirectory>
           <targetDirectory>target</targetDirectory>
         </configuration>
