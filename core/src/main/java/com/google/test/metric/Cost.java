@@ -76,7 +76,7 @@ public class Cost {
     return this;
   }
 
-  public void addDependent(Cost cost) {
+  public void addWithoutLod(Cost cost) {
     cyclomaticCost += cost.cyclomaticCost;
     globalCost += cost.globalCost;
   }
@@ -216,5 +216,14 @@ public class Cost {
 
   public boolean isEmpty() {
     return lodDistribution.length == 0 && cyclomaticCost == 0 && globalCost == 0;
+  }
+
+  public Cost negate() {
+    int[] negativeLod = new int[lodDistribution.length];
+    int index = 0;
+    for (int lod : lodDistribution) {
+      negativeLod[index++] = -lod;
+    }
+    return new Cost(-cyclomaticCost, -globalCost, negativeLod);
   }
 }

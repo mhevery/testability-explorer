@@ -47,4 +47,13 @@ public class CostTest extends TestCase {
     assertEquals(2, lod.getLoDSum());
   }
 
+  public void testAddingACostWithItsNegationIsZero() {
+    Cost cost = new Cost().add(Cost.cyclomatic(5)).add(Cost.global(2)).add(Cost.lod(3));
+    Cost negation = cost.negate();
+    Cost sum = cost.add(negation);
+    assertEquals(0, sum.getCyclomaticComplexityCost());
+    assertEquals(0, sum.getGlobalCost());
+    assertEquals(0, sum.getLoDSum());
+  }
+
 }
