@@ -29,8 +29,12 @@ public class CostModel {
   private final double cyclomaticMultiplier;
   private final double globalMultiplier;
 
+  public double weightToEmphasizeExpensiveMethods = WEIGHT_TO_EMPHASIZE_EXPENSIVE_METHODS;
+
+  /* For testing only */
   public CostModel() {
     this(DEFAULT_CYCLOMATIC_MULTIPLIER, DEFAULT_GLOBAL_MULTIPLIER);
+    weightToEmphasizeExpensiveMethods = 0;
   }
 
   public CostModel(double cyclomaticMultiplier, double globalMultiplier) {
@@ -49,13 +53,34 @@ public class CostModel {
   }
 
   public int computeClass(ClassCost classCost) {
-    WeightedAverage average = new WeightedAverage(
-        WEIGHT_TO_EMPHASIZE_EXPENSIVE_METHODS);
+    return computeClassWithoutMethod(classCost, null, null);
+  }
+
+  private int computeClassWithoutMethod(ClassCost classCost, MethodCost adjustedMethod,
+                                        Cost replacementCost) {
+    WeightedAverage average = new WeightedAverage(weightToEmphasizeExpensiveMethods);
     for (MethodCost methodCost : classCost.getMethods()) {
-      average.addValue(computeOverall(methodCost.getTotalCost()));
+      Cost cost = (adjustedMethod == methodCost ? replacementCost : methodCost.getTotalCost());
+      average.addValue(computeOverall(cost));
     }
     return (int) average.getAverage();
   }
 
 
+  public float computeContributionFromIssue(ClassCost classCost, MethodCost violationMethodCost,
+                                            ViolationCost violationCost) {
+    Cost adjustedCost = violationMethodCost.getTotalCost().add(violationCost.getCost().negate());
+    return 1 - computeClassWithoutMethod(classCost, violationMethodCost, adjustedCost) /
+               (float)computeClass(classCost);
+  }
+
+  public float computeDirectCostContributionFromMethod(ClassCost classCost,
+                                                       MethodCost violationMethodCost) {
+
+    final float costWithoutIssue =
+        computeClassWithoutMethod(classCost, violationMethodCost,
+            violationMethodCost.getDependentCost());
+    final float totalCost = (float) computeClass(classCost);
+    return 1 - costWithoutIssue / totalCost;
+  }
 }

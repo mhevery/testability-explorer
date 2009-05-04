@@ -15,11 +15,23 @@
  */
 package com.google.test.metric.report.issues;
 
-import com.google.test.metric.*;
-import static com.google.test.metric.report.issues.IssueSubType.*;
-import static com.google.test.metric.report.issues.IssueType.*;
+import com.google.test.metric.ClassCost;
+import com.google.test.metric.CostModel;
+import com.google.test.metric.GlobalCost;
+import com.google.test.metric.MethodCost;
+import com.google.test.metric.MethodInvokationCost;
+import com.google.test.metric.ViolationCost;
+import static com.google.test.metric.report.issues.IssueSubType.COMPLEXITY;
+import static com.google.test.metric.report.issues.IssueSubType.NON_MOCKABLE;
+import static com.google.test.metric.report.issues.IssueSubType.SINGLETON;
+import static com.google.test.metric.report.issues.IssueSubType.STATIC_METHOD;
+import static com.google.test.metric.report.issues.IssueType.COLLABORATOR;
+import static com.google.test.metric.report.issues.IssueType.CONSTRUCTION;
+import static com.google.test.metric.report.issues.IssueType.DIRECT_COST;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
 
 /**
  * Looks at ClassCost models and infers the coding issue that incurred the cost.
@@ -61,63 +73,60 @@ public class IssuesReporter {
     for (ViolationCost violationCost : methodCost.getViolationCosts()) {
       if (violationCost instanceof MethodInvokationCost) {
         MethodInvokationCost invokationCost = (MethodInvokationCost) violationCost;
-        Issue issue = new Issue(invokationCost.getLineNumber(),
-            invokationCost.getMethodCost());
-        boolean isStatic = invokationCost.getMethodCost().isStatic();
-        boolean isGlobal = hasGlobalSource(invokationCost.getMethodCost());
-        int cost = costModel.computeOverall(invokationCost.getMethodCost().getTotalCost());
-        float totalCost = costModel.computeClass(classCost);
-        issue.setContributionToClassCost(cost / totalCost);
-        if (methodCost.isConstructor()) {
-          issue.setType(CONSTRUCTION);
-        } else {
-          issue.setType(COLLABORATOR);
-          issuesFound = true;
-        }
-        if (isStatic) {
-          issue.setSubType(STATIC_METHOD);
-        } else {
-          if (isGlobal) {
-            issue.setSubType(SINGLETON);
-          } else {
-            issue.setSubType(NEW_OPERATOR);
-          }
-        }
-        classIssues.add(issue);
+        issuesFound = addMethodInvocationIssues(classIssues, methodCost, classCost, issuesFound,
+                invokationCost);
       }
     }
     if (!issuesFound) {
       if (methodCost.getDirectCost().getCyclomaticComplexityCost() > 0) {
-        Issue issue = new Issue(methodCost.getMethodLineNumber(), methodCost);
-        float contributionToClassCost = methodCost.getDirectCost().getCyclomaticComplexityCost() /
-            (float) classCost.getTotalComplexityCost();
-        if (methodCost.isConstructor()) {
-          issue.setContributionToClassCost(contributionToClassCost);
-          issue.setType(CONSTRUCTION);
-          issue.setSubType(COMPLEXITY);
-        } else {
-          issue.setLineNumberIsApproximate(true);
-          issue.setContributionToClassCost(contributionToClassCost);
-          issue.setType(DIRECT_COST);
-          issue.setSubType(COMPLEXITY);
-        }
-        classIssues.add(issue);
+        addDirectCostIssue(classIssues, methodCost, classCost);
       }
     }
   }
 
-  private MethodInvokationCost getMethodInvokationSource(MethodCost methodCost) {
-    MethodInvokationCost result = null;
-    for (ViolationCost cost : methodCost.getViolationCosts()) {
-      if (cost instanceof MethodInvokationCost) {
-        //TODO(alexeagle): this may overwrite earlier invocationCosts
-        result = (MethodInvokationCost) cost;
+  private void addDirectCostIssue(ClassIssues classIssues, MethodCost methodCost,
+                                  ClassCost classCost) {
+    Issue issue = new Issue(methodCost.getMethodLineNumber(), methodCost);
+    float contributionToClassCost = costModel.computeDirectCostContributionFromMethod(classCost, methodCost);
+    if (methodCost.isConstructor()) {
+      issue.setContributionToClassCost(contributionToClassCost);
+      issue.setType(CONSTRUCTION);
+      issue.setSubType(COMPLEXITY);
+    } else {
+      issue.setLineNumberIsApproximate(true);
+      issue.setContributionToClassCost(contributionToClassCost);
+      issue.setType(DIRECT_COST);
+      issue.setSubType(COMPLEXITY);
+    }
+    classIssues.add(issue);
+  }
+
+  private boolean addMethodInvocationIssues(ClassIssues classIssues, MethodCost methodCost,
+                                            ClassCost classCost, boolean issuesFound,
+                                            MethodInvokationCost invokationCost) {
+    Issue issue = new Issue(invokationCost.getLineNumber(),
+        invokationCost.getMethodCost());
+    boolean isStatic = invokationCost.getMethodCost().isStatic();
+    boolean isGlobal = hasGlobalSource(invokationCost.getMethodCost());
+
+    issue.setContributionToClassCost(costModel.computeContributionFromIssue(classCost, methodCost, invokationCost));
+    if (methodCost.isConstructor()) {
+      issue.setType(CONSTRUCTION);
+    } else {
+      issue.setType(COLLABORATOR);
+      issuesFound = true;
+    }
+    if (isStatic) {
+      issue.setSubType(STATIC_METHOD);
+    } else {
+      if (isGlobal) {
+        issue.setSubType(SINGLETON);
+      } else {
+        issue.setSubType(NON_MOCKABLE);
       }
     }
-    if (result == null) {
-      throw new IllegalStateException("No method invokation cost in " + methodCost);
-    }
-    return result;
+    classIssues.add(issue);
+    return issuesFound;
   }
 
   private boolean hasGlobalSource(MethodCost methodCost) {

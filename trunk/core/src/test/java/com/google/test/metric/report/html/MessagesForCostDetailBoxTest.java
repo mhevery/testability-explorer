@@ -15,25 +15,32 @@
  */
 package com.google.test.metric.report.html;
 
+import com.google.common.collect.Lists;
+import com.google.test.metric.ReportPrinterBuilder;
 import com.google.test.metric.report.ClassPathTemplateLoader;
 import com.google.test.metric.report.SourceLinker;
 import com.google.test.metric.report.StubSourceElement;
-import com.google.test.metric.report.issues.*;
-import com.google.test.metric.ReportPrinterBuilder;
-
-import com.google.common.collect.Lists;
+import com.google.test.metric.report.issues.ClassIssues;
+import com.google.test.metric.report.issues.Issue;
+import com.google.test.metric.report.issues.IssueSubType;
+import com.google.test.metric.report.issues.IssueType;
+import com.google.test.metric.report.issues.SourceElement;
 
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.ResourceBundleModel;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
+
 import junit.framework.TestCase;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Queue;
+import java.util.ResourceBundle;
 
 /**
  * Test that all the messages we might want to show are defined.
@@ -85,7 +92,7 @@ public class MessagesForCostDetailBoxTest extends TestCase {
   }
 
   public void testCollaboratorInConstructorMessages() throws Exception {
-    issueQueue.offer(new Issue(12, foo, 1.0f, IssueType.CONSTRUCTION, IssueSubType.NEW_OPERATOR));
+    issueQueue.offer(new Issue(12, foo, 1.0f, IssueType.CONSTRUCTION, IssueSubType.NON_MOCKABLE));
     ClassIssues issues = new ClassIssues("Foo", 100, issueQueue);
     model.put("issues", issues.getConstructionIssues());
     model.put("issueType", "construction");
@@ -109,7 +116,7 @@ public class MessagesForCostDetailBoxTest extends TestCase {
   }
 
   public void testCollaboratorNewOperatorMessages() throws Exception {
-    issueQueue.offer(new Issue(12, foo, 1.0f, IssueType.COLLABORATOR, IssueSubType.NEW_OPERATOR));
+    issueQueue.offer(new Issue(12, foo, 1.0f, IssueType.COLLABORATOR, IssueSubType.NON_MOCKABLE));
     ClassIssues issues = new ClassIssues("Foo", 100, issueQueue);
     model.put("issues", issues.getConstructionIssues());
     model.put("issueType", "collaborator");

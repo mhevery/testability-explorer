@@ -27,6 +27,7 @@ public class MethodInvokationCost extends ViolationCost {
 
   private Reason costSourceType;
 
+  //TODO(misko): only need to pass the name of the method here??
   public MethodInvokationCost(int lineNumber, MethodCost methodCost,
                               Reason costSourceType, Cost invocationCost) {
     super(lineNumber, invocationCost);
@@ -44,7 +45,7 @@ public class MethodInvokationCost extends ViolationCost {
 
   @Override
   public void link(Cost directCost, Cost dependentCost) {
-    dependentCost.addDependent(cost);
+    dependentCost.addWithoutLod(cost);
   }
 
   public MethodCost getMethodCost() {
