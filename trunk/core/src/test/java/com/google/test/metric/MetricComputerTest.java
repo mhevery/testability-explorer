@@ -462,7 +462,13 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
     MetricComputer toDecorate = new MetricComputerBuilder().withClassRepository(repo)
         .withWhitelist(customWhitelist).build();
     computer = new MetricComputerJavaDecorator(toDecorate, repo);
-    ClassCost cost = computer.compute("com.google.test.metric.InnerEnumHolder$1");
+    ClassCost cost;
+    try {
+      cost = computer.compute("com.google.test.metric.InnerEnumHolder$1");
+    } catch (ClassNotFoundException e) {
+      // Eclipse names its enumerations differently
+      cost = computer.compute("com.google.test.metric.InnerEnumHolder$NodeType");
+    }
     assertEquals(0, cost.getMethodCost(cost.getClassName() + "()").getTotalCost().getGlobalCost());
   }
 

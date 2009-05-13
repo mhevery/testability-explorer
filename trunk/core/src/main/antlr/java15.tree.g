@@ -7,6 +7,13 @@
 
 header {
 package com.google.test.metric.javasrc;
+
+import java.util.List;
+import java.util.ArrayList;
+
+import com.google.test.metric.Type;
+import com.google.test.metric.JavaType;
+
 }
 
 class JavaTreeParser extends TreeParser;
@@ -16,23 +23,11 @@ options {
 }
 
 {
-	JavaClassInfoBuilder builder = new JavaClassInfoBuilder();
+	CompilationUnitBuilder builder;
+	Type ignore;
 
 	private String s(AST ast) {
-		return ast == null ? null : ast.getText();
-	}
-
-	private String inline(AST ast) {
-		if (ast == null)
-			return "";
-		String text = "";
-		AST child = ast.getFirstChild();
-		if (child != null)
-			text += inline(child);
-		text += ast.getText();
-		if (child != null)
-			text += inline(child.getNextSibling());
-		return text;
+	   return ast.getText();
 	}
 }
 
@@ -44,84 +39,93 @@ compilationUnit
 
 packageDefinition
 	:	#( PACKAGE_DEF annotations pkgIdent:identifier )
-		{builder.setPackage(pkgIdent.getLine(), inline(pkgIdent));}
 	;
 
 importDefinition
-	:	#( i:IMPORT identifierStar )
+	:	#( IMPORT identifierStar)
 	|	#( STATIC_IMPORT identifierStar )
 	;
 
 typeDefinition
-	:	#(CLASS_DEF modifiers i:IDENT (typeParameters)? extendsClause implementsClause objBlock )
-		{builder.startType(i.getLine(), s(i));}
-	|	#(INTERFACE_DEF modifiers IDENT (typeParameters)? extendsClause interfaceBlock )
-	|	#(ENUM_DEF modifiers IDENT implementsClause enumBlock )
+{
+    Type extendsType;
+    List<Type> impls;
+}
+	:	#(CLASS_DEF m:modifiers i:IDENT
+	    (ignore=typeParameters)? extendsType=extendsClause
+	    impls=implementsClause {
+	       builder.startType(i.getLine(), s(i), extendsType, impls);
+	    }
+	    objBlock ) {builder.endType();}
+	|	#(INTERFACE_DEF modifiers IDENT (ignore=typeParameters)? extendsType=extendsClause interfaceBlock )
+	|	#(ENUM_DEF modifiers IDENT impls=implementsClause enumBlock )
 	|	#(ANNOTATION_DEF modifiers IDENT annotationBlock )
 	;
 
-typeParameters
-	:	#(TYPE_PARAMETERS (typeParameter)+)
+typeParameters returns [Type type = null;]
+	:	#(TYPE_PARAMETERS (type=typeParameter)+)
 	;
 
-typeParameter
-	:	#(TYPE_PARAMETER IDENT (typeUpperBounds)?)
+typeParameter returns [Type type = null;]
+	:	#(TYPE_PARAMETER IDENT (type=typeUpperBounds)?)
 	;
 
-typeUpperBounds
-	:	#(TYPE_UPPER_BOUNDS (classOrInterfaceType)+)
+typeUpperBounds returns [Type type = null;]
+	:	#(TYPE_UPPER_BOUNDS (type=classOrInterfaceType)+)
 	;
 
-typeSpec
-	:	#(TYPE typeSpecArray)
+typeSpec returns [Type type = null;]
+	:	#(TYPE type=typeSpecArray)
 	;
 
-typeSpecArray
-	:	#( ARRAY_DECLARATOR typeSpecArray )
-	|	type
+typeSpecArray returns [Type type = null;]
+	:	#( ARRAY_DECLARATOR type=typeSpecArray )
+	|	type=type
 	;
 
-type
-	:	classOrInterfaceType
-	|	builtInType
+type returns [Type type = null;]
+	:	type=classOrInterfaceType
+	|	type=builtInType
 	;
 
-classOrInterfaceType
-	:	IDENT (typeArguments)?
-	|	#( DOT classOrInterfaceType )
+classOrInterfaceType returns [Type info = null;]
+{info = builder.toType(classOrInterfaceType_AST_in);}
+	:	IDENT (ignore=typeArguments)?
+	|	#( DOT ignore=classOrInterfaceType )
 	;
 
-typeArguments
-	:	#(TYPE_ARGUMENTS (typeArgument)+)
+typeArguments returns [Type type = null;]
+/*  :   #(TYPE_ARGUMENTS (type=type ignore=typeArgument)+) this seams to be wrong */
+    :   #(TYPE_ARGUMENTS (ignore=typeArgument)+)
 	;
 
-typeArgument
+typeArgument returns [Type type = null;]
 	:	#(	TYPE_ARGUMENT
-			(	typeSpec
-			|	wildcardType
+			(	type=typeSpec
+			|	type=wildcardType
 			)
 		)
 	;
 
-wildcardType
-	:	#(WILDCARD_TYPE (typeArgumentBounds)?)
+wildcardType returns [Type type = null;]
+	:	#(WILDCARD_TYPE (type=typeArgumentBounds)?)
 	;
 
-typeArgumentBounds
-	:	#(TYPE_UPPER_BOUNDS (classOrInterfaceType)+)
-	|	#(TYPE_LOWER_BOUNDS (classOrInterfaceType)+)
+typeArgumentBounds returns [Type type = null;]
+	:	#(TYPE_UPPER_BOUNDS (type=classOrInterfaceType)+)
+	|	#(TYPE_LOWER_BOUNDS (type=classOrInterfaceType)+)
 	;
 
-builtInType
-	:	"void"
-	|	"boolean"
-	|	"byte"
-	|	"char"
-	|	"short"
-	|	"int"
-	|	"float"
-	|	"long"
-	|	"double"
+builtInType returns [Type type = null;]
+	:	"void" {type = JavaType.VOID;}
+	|	"boolean" {type = JavaType.BOOLEAN;}
+	|	"byte" {type = JavaType.BYTE;}
+	|	"char" {type = JavaType.CHAR;}
+	|	"short" {type = JavaType.SHORT;}
+	|	"int" {type = JavaType.INT;}
+	|	"float" {type = JavaType.FLOAT;}
+	|	"long" {type = JavaType.LONG;}
+	|	"double" {type = JavaType.DOUBLE;}
 	;
 
 modifiers
@@ -169,12 +173,13 @@ annotationMemberArrayValueInitializer
 	:	conditionalExpr | annotation
 	;
 
-extendsClause
-	:	#(EXTENDS_CLAUSE (classOrInterfaceType)* )
+extendsClause returns [Type type=null]
+	:	#(EXTENDS_CLAUSE (type=classOrInterfaceType)* )
 	;
 
-implementsClause
-	:	#(IMPLEMENTS_CLAUSE (classOrInterfaceType)* )
+implementsClause returns [List<Type> impls=new ArrayList<Type>();]
+{Type c;}
+	:	#(IMPLEMENTS_CLAUSE (c=classOrInterfaceType{impls.add(c);})* )
 	;
 
 
@@ -224,31 +229,33 @@ enumBlock
 	;
 
 ctorDef
-	:	#(CTOR_DEF modifiers (typeParameters)? methodHead (slist)?)
+	:	#(CTOR_DEF modifiers (ignore=typeParameters)? methodHead (slist)?)
 	;
 
 methodDecl
-	:	#(METHOD_DEF modifiers (typeParameters)? typeSpec methodHead)
+	:	#(METHOD_DEF modifiers (ignore=typeParameters)? ignore=typeSpec methodHead)
 	;
 
 methodDef
-	:	#(METHOD_DEF modifiers (typeParameters)? typeSpec methodHead (slist)?)
+	:	#(METHOD_DEF modifiers (ignore=typeParameters)? ignore=typeSpec methodHead (slist)?)
 	;
 
 variableDef
-	:	#(VARIABLE_DEF modifiers typeSpec variableDeclarator varInitializer)
+{Type type;}
+	:	#(VARIABLE_DEF m:modifiers type=typeSpec v:variableDeclarator i:varInitializer)
+	    {builder.type.addField(s(v), type, builder.visibility(m), builder.isStatic(m), builder.isFinal(m));}
 	;
 
 parameterDef
-	:	#(PARAMETER_DEF modifiers typeSpec IDENT )
+	:	#(PARAMETER_DEF modifiers ignore=typeSpec IDENT )
 	;
 
 variableLengthParameterDef
-	:	#(VARIABLE_PARAMETER_DEF modifiers typeSpec IDENT )
+	:	#(VARIABLE_PARAMETER_DEF modifiers ignore=typeSpec IDENT )
 	;
 
 annotationFieldDecl
-	:	#(ANNOTATION_FIELD_DEF modifiers typeSpec IDENT (annotationMemberValueInitializer)?)
+	:	#(ANNOTATION_FIELD_DEF modifiers ignore=typeSpec IDENT (annotationMemberValueInitializer)?)
 	;
 
 enumConstantDef
@@ -293,7 +300,7 @@ methodHead
 	;
 
 throwsClause
-	:	#( "throws" (classOrInterfaceType)* )
+	:	#( "throws" (ignore=classOrInterfaceType)* )
 	;
 
 identifier
@@ -418,16 +425,16 @@ primaryExpression
 				|	"class"
 				|	newExpression
 				|	"super"
-				|	(typeArguments)? // for generic methods calls
+				|	(ignore=typeArguments)? // for generic methods calls
 				)
-			|	#(ARRAY_DECLARATOR typeSpecArray)
-			|	builtInType ("class")?
+			|	#(ARRAY_DECLARATOR ignore=typeSpecArray)
+			|	ignore=builtInType ("class")?
 			)
 		)
 	|	arrayIndex
-	|	#(METHOD_CALL primaryExpression (typeArguments)? elist)
+	|	#(METHOD_CALL primaryExpression (ignore=typeArguments)? elist)
 	|	ctorCall
-	|	#(TYPECAST typeSpec expr)
+	|	#(TYPECAST ignore=typeSpec expr)
 	|	newExpression
 	|	constant
 	|	"super"
@@ -435,7 +442,7 @@ primaryExpression
 	|	"false"
 	|	"this"
 	|	"null"
-	|	typeSpec // type name used with instanceof
+	|	ignore=typeSpec // type name used with instanceof
 	;
 
 ctorCall
@@ -461,7 +468,7 @@ constant
 	;
 
 newExpression
-	:	#(	"new" (typeArguments)? type
+	:	#(	"new" (ignore=typeArguments)? ignore=type
 			(	newArrayDeclarator (arrayInitializer)?
 			|	elist (objBlock)?
 			)
