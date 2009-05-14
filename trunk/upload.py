@@ -31,6 +31,8 @@ against by using the '--rev' option.
 # This code is derived from appcfg.py in the App Engine SDK (open source),
 # and from ASPN recipe #146306.
 
+# Defaults edited by alexeagle@google.com (Alex Eagle)
+
 import cookielib
 import getpass
 import logging
@@ -429,10 +431,10 @@ group.add_option("-f", "--description_file", action="store",
                  help="Optional path of a file that contains "
                       "the description when creating an issue.")
 group.add_option("-r", "--reviewers", action="store", dest="reviewers",
-                 metavar="REVIEWERS", default=None,
+                 metavar="REVIEWERS", default="aeagle22206@gmail.com",
                  help="Add reviewers (comma separated email addresses).")
 group.add_option("--cc", action="store", dest="cc",
-                 metavar="CC", default=None,
+                 metavar="CC", default="testability-explorer-dev@googlegroups.com",
                  help="Add CC (comma separated email addresses).")
 # Upload options
 group = parser.add_option_group("Patch options")
