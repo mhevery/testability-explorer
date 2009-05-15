@@ -22,8 +22,8 @@ import org.kohsuke.args4j.CmdLineException;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
-import com.google.test.metric.ReportPrinterBuilder.ReportFormat;
-import com.google.test.metric.report.Report;
+import com.google.test.metric.ReportGeneratorBuilder.ReportFormat;
+import com.google.test.metric.report.ReportGenerator;
 import com.google.test.metric.report.ReportOptions;
 
 /**
@@ -40,7 +40,7 @@ public class JavaTestabilityConfig {
   private final List<String> entryList;
   private final ClassPath classPath;
   private final WhiteList whitelist;
-  private final Report report;
+  private final ReportGenerator report;
   private final PrintStream err;
   private final int printDepth;
 
@@ -61,7 +61,7 @@ public class JavaTestabilityConfig {
     } catch (Exception e) {
       throw new CmdLineException("Don't understand '-print' option '" + config.printer + "'");
     }
-    report = new ReportPrinterBuilder(classPath, options, format, config.out, entryList).build();
+    report = new ReportGeneratorBuilder(classPath, options, format, config.out, entryList).build();
     RegExpWhiteList regExpWhitelist = new RegExpWhiteList("java.");
     for (String packageName : config.wl == null ? new String[] {} : config.wl.split("[,:]")) {
       regExpWhitelist.addPackage(packageName);
@@ -73,7 +73,7 @@ public class JavaTestabilityConfig {
       List<String> entryList, 
       ClassPath classPath,
       WhiteList whitelist,
-      Report report, 
+      ReportGenerator report, 
       PrintStream err, 
       int printDepth) {
         this.entryList = entryList;
@@ -96,7 +96,7 @@ public class JavaTestabilityConfig {
     return whitelist;
   }
 
-  public Report getReport() {
+  public ReportGenerator getReport() {
     return report;
   }
 

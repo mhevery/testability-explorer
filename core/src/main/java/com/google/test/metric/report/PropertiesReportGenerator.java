@@ -27,7 +27,7 @@ import com.google.test.metric.CostModel;
  * @author alexeagle@google.com (Alex Eagle)
  *
  */
-public class PropertiesReport implements Report {
+public class PropertiesReportGenerator implements ReportGenerator {
 
   private final Properties properties = new Properties();
   private final OutputStream out;
@@ -36,7 +36,7 @@ public class PropertiesReport implements Report {
   /**
    * @param out where the report should be written
    */
-  public PropertiesReport(OutputStream out, CostModel costModel) {
+  public PropertiesReportGenerator(OutputStream out, CostModel costModel) {
     this.out = out;
     this.costModel = costModel;
   }

@@ -7,7 +7,7 @@ import java.util.Collections;
 
 import junit.framework.TestCase;
 import freemarker.template.Configuration;
-import com.google.test.metric.ReportPrinterBuilder;
+import com.google.test.metric.ReportGeneratorBuilder;
 
 /**
  * Tests for HTML generation of the Diff report
@@ -23,7 +23,7 @@ public class DiffReportTest extends TestCase {
     super.setUp();
     out = new StringWriter();
     cfg = new Configuration();
-    cfg.setTemplateLoader(new ClassPathTemplateLoader(ReportPrinterBuilder.PREFIX));
+    cfg.setTemplateLoader(new ClassPathTemplateLoader(ReportGeneratorBuilder.PREFIX));
   }
 
   @SuppressWarnings("unchecked")

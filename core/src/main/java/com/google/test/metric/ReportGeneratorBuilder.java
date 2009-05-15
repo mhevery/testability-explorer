@@ -18,7 +18,7 @@ package com.google.test.metric;
 import com.google.classpath.ClassPath;
 import com.google.test.metric.report.*;
 import com.google.test.metric.report.about.AboutTestabilityReport;
-import com.google.test.metric.report.html.HtmlReport;
+import com.google.test.metric.report.html.HtmlReportModel;
 import com.google.test.metric.report.html.SourceLinkerModel;
 import com.google.test.metric.report.issues.ClassIssues;
 import com.google.test.metric.report.issues.IssuesReporter;
@@ -43,7 +43,7 @@ import freemarker.ext.beans.ResourceBundleModel;
  *
  * @author alexeagle@google.com (Alex Eagle)
  */
-public class ReportPrinterBuilder {
+public class ReportGeneratorBuilder {
   private final ClassPath classPath;
   private final ReportOptions options;
   private final ReportFormat printer;
@@ -51,7 +51,7 @@ public class ReportPrinterBuilder {
   private final List<String> entryList;
   public static final String PREFIX = "com/google/test/metric/report/";
 
-  public ReportPrinterBuilder(ClassPath classPath, ReportOptions options, ReportFormat printer,
+  public ReportGeneratorBuilder(ClassPath classPath, ReportOptions options, ReportFormat printer,
                               PrintStream out, List<String> entryList) {
     this.classPath = classPath;
     this.options = options;
@@ -70,8 +70,8 @@ public class ReportPrinterBuilder {
     about
   }
 
-  public Report build() {
-    Report report;
+  public ReportGenerator build() {
+    ReportGenerator report;
     CostModel costModel = new CostModel(options.getCyclomaticMultiplier(),
         options.getGlobalMultiplier());
     SourceLinker linker = new SourceLinker(
@@ -89,26 +89,27 @@ public class ReportPrinterBuilder {
 
     switch (printer) {
       case summary:
-        report = new TextReport(out, costModel, options);
+        report = new TextReportGenerator(out, costModel, options);
         break;
       case html:
-        HtmlReport model = new HtmlReport(costModel, issuesReporter, options);
+        AnalysisModel analysisModel = new AnalysisModel(issuesReporter);
+        HtmlReportModel model = new HtmlReportModel(costModel, analysisModel, options);
         model.setMessageBundle(bundleModel);
         model.setSourceLinker(new SourceLinkerModel(linker));
         report = new FreemarkerReportGenerator(model, out,
             FreemarkerReportGenerator.HTML_REPORT_TEMPLATE, cfg);
         break;
       case detail:
-        report = new DrillDownReport(out, costModel, entryList,
+        report = new DrillDownReportGenerator(out, costModel, entryList,
             options.getPrintDepth(), options.getMinCost());
         break;
       case props:
-        report = new PropertiesReport(out, costModel);
+        report = new PropertiesReportGenerator(out, costModel);
         break;
       case source:
         GradeCategories gradeCategories = new GradeCategories(options.getMaxExcellentCost(),
             options.getMaxAcceptableCost());
-        report = new SourceReport(gradeCategories, sourceLoader, new File("te-report"), costModel,
+        report = new SourceReportGenerator(gradeCategories, sourceLoader, new File("te-report"), costModel,
             new Date(), options.getWorstOffenderCount(), cfg);
         break;
       case xml:
@@ -117,7 +118,7 @@ public class ReportPrinterBuilder {
         OutputFormat format = new OutputFormat();
         format.setIndenting(true);
         xmlSerializer.setOutputFormat(format);
-        report = new XMLReport(xmlSerializer, costModel, options);
+        report = new XMLReportGenerator(xmlSerializer, costModel, options);
         break;
       case about:
         ReportModel aboutModel = new AboutTestabilityReport(issuesReporter, sourceLoader);

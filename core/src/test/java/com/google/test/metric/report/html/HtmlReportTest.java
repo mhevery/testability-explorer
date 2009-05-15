@@ -38,7 +38,7 @@ import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.ResourceBundleModel;
 
 public class HtmlReportTest extends TestCase {
-  private HtmlReport report;
+  private HtmlReportModel report;
   private FreemarkerReportGenerator generator;
   private ByteArrayOutputStream out;
   private ClassCost cost;
@@ -57,12 +57,12 @@ public class HtmlReportTest extends TestCase {
     methodCost.addCostSource(new MethodInvokationCost(1, methodCost, Reason.IMPLICIT_SETTER,
         new Cost(100, 1, new int[0])));
     cost = new ClassCost("com.google.FooClass", Arrays.asList(methodCost));
-    report = new HtmlReport(costModel, issuesReporter, options);
+    report = new HtmlReportModel(costModel, new AnalysisModel(issuesReporter), options);
     BeansWrapper objectWrapper = new DefaultObjectWrapper();
     Configuration configuration = new Configuration();
     configuration.setObjectWrapper(objectWrapper);
     ResourceBundleModel bundleModel = new ResourceBundleModel(getBundle("messages"), objectWrapper);
-    configuration.setTemplateLoader(new ClassPathTemplateLoader(ReportPrinterBuilder.PREFIX));
+    configuration.setTemplateLoader(new ClassPathTemplateLoader(ReportGeneratorBuilder.PREFIX));
     report.setMessageBundle(bundleModel);
     report.setSourceLinker(new SourceLinkerModel(linker));
     generator = new FreemarkerReportGenerator(report, new PrintStream(out),

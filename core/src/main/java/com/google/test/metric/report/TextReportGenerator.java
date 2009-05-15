@@ -23,15 +23,15 @@ import com.google.test.metric.report.chart.PieGraph;
 import java.io.PrintStream;
 
 
-public class TextReport extends SummaryReport implements Report {
+public class TextReportGenerator extends SummaryReportModel implements ReportGenerator {
 
   private final PrintStream out;
-  public TextReport(PrintStream out, CostModel costModel, int maxExcellentCost, int maxAcceptableCost, int worstOffenderCount) {
+  public TextReportGenerator(PrintStream out, CostModel costModel, int maxExcellentCost, int maxAcceptableCost, int worstOffenderCount) {
     super(costModel, maxExcellentCost, maxAcceptableCost, worstOffenderCount);
     this.out = out;
   }
 
-  public TextReport(PrintStream out, CostModel costModel, ReportOptions options) {
+  public TextReportGenerator(PrintStream out, CostModel costModel, ReportOptions options) {
     this(out, costModel, options.getMaxExcellentCost(), options.getMaxAcceptableCost(),
             options.getWorstOffenderCount());
   }

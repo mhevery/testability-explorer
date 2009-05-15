@@ -27,7 +27,8 @@ import java.util.TreeSet;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.RegExpResourceFilter;
-import com.google.test.metric.report.Report;
+import com.google.test.metric.report.ReportGenerator;
+import com.google.test.metric.report.issues.IssuesReporter;
 
 /**
  * Has the responsibility of kicking off the analysis. A programmatic interface into using 
@@ -40,7 +41,7 @@ public class JavaTestabilityRunner implements Runnable {
   private final List<String> entryList;
   private final ClassPath classPath;
   private final WhiteList whitelist;
-  private final Report report;
+  private final ReportGenerator report;
   private final PrintStream err;
   private final int printDepth;
 
@@ -53,39 +54,53 @@ public class JavaTestabilityRunner implements Runnable {
     this.printDepth = config.getPrintDepth();
   }
 
-  public void run(){
+  public AnalysisModel generateModel(IssuesReporter issuesReporter) {
     ClassRepository classRepository = new JavaClassRepository(classPath);
-    
     MetricComputer computer = new MetricComputer(classRepository, err, whitelist, printDepth);
+
+    SortedSet<String> classNames = new TreeSet<String>();
+    RegExpResourceFilter resourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
+    AnalysisModel model = new AnalysisModel(issuesReporter);
+    for (String entry : entryList) {
+      if (entry.equals(".")) {
+        entry = "";
+      }
+      // TODO(jonathan) seems too complicated, replacing "." with "/" using the resource filter, then right below replace all "/" with "."
+      classNames.addAll(asList(classPath.findResources(entry.replace(".", "/"), resourceFilter)));
+    }
+    for (String resource : classNames) {
+      String className = resource.replace(".class", "").replace("/", ".");
+      try {
+        if (!whitelist.isClassWhiteListed(className)) {
+          ClassInfo clazz = classRepository.getClass(className);
+          ClassCost classCost = computer.compute(clazz);
+          model.addClassCost(classCost);
+        }
+      } catch (ClassNotFoundException e) {
+        err.println("WARNING: can not analyze class '" + className
+            + "' since class '" + e.getClassName() + "' was not found.");
+      }
+    }
+    
+    return model;
+  }
+  
+  public void renderReport(AnalysisModel model) {
     try {
       report.printHeader();
-
-      SortedSet<String> classNames = new TreeSet<String>();
-      RegExpResourceFilter resourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
-      for (String entry : entryList) {
-        if (entry.equals(".")) {
-          entry = "";
-        }
-        // TODO(jonathan) seems too complicated, replacing "." with "/" using the resource filter, then right below replace all "/" with "."
-        classNames.addAll(asList(classPath.findResources(entry.replace(".", "/"), resourceFilter)));
+      
+      for (ClassCost classCost : model.getClassCosts()) {
+        report.addClassCost(classCost);
       }
-      for (String resource : classNames) {
-        String className = resource.replace(".class", "").replace("/", ".");
-        try {
-          if (!whitelist.isClassWhiteListed(className)) {
-            ClassInfo clazz = classRepository.getClass(className);
-            ClassCost classCost = computer.compute(clazz);
-            report.addClassCost(classCost);
-          }
-        } catch (ClassNotFoundException e) {
-          err.println("WARNING: can not analyze class '" + className
-              + "' since class '" + e.getClassName() + "' was not found.");
-        }
-      }
+      
       report.printFooter();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+  
+  public void run() {
+    renderReport(generateModel(null));
   }  
 
 }

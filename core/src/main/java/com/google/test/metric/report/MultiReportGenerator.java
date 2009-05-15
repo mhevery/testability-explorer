@@ -14,45 +14,45 @@ import java.util.List;
  * @author alexeagle@google.com (Alex Eagle)
  *
  */
-public class MultiReport implements Report {
+public class MultiReportGenerator implements ReportGenerator {
 
-  private Report summaryReport;
-  private List<Report> reports = new ArrayList<Report>();
+  private ReportGenerator summaryReport;
+  private List<ReportGenerator> reports = new ArrayList<ReportGenerator>();
 
-  public MultiReport() {}
+  public MultiReportGenerator() {}
 
-  public MultiReport(Report summaryReport) {
+  public MultiReportGenerator(ReportGenerator summaryReport) {
     this.summaryReport = summaryReport;
   }
 
-  public MultiReport(Report summaryReport, Report... reports) {
+  public MultiReportGenerator(ReportGenerator summaryReport, ReportGenerator... reports) {
     this(summaryReport);
     this.reports.addAll(Arrays.asList(reports));
   }
 
   /**
-   * @see com.google.test.metric.report.Report#addClassCost(com.google.test.metric.ClassCost)
+   * @see com.google.test.metric.report.ReportGenerator#addClassCost(com.google.test.metric.ClassCost)
    */
   public void addClassCost(ClassCost classCost) {
-    for (Report report : reports) {
+    for (ReportGenerator report : reports) {
       report.addClassCost(classCost);
     }
   }
 
   /**
-   * @see com.google.test.metric.report.Report#printFooter()
+   * @see com.google.test.metric.report.ReportGenerator#printFooter()
    */
   public void printFooter() throws IOException {
-    for (Report report : reports) {
+    for (ReportGenerator report : reports) {
       report.printFooter();
     }
   }
 
   /**
-   * @see com.google.test.metric.report.Report#printHeader()
+   * @see com.google.test.metric.report.ReportGenerator#printHeader()
    */
   public void printHeader() throws IOException {
-    for (Report report : reports) {
+    for (ReportGenerator report : reports) {
       report.printHeader();
     }
   }
@@ -60,7 +60,7 @@ public class MultiReport implements Report {
   /**
    * Delegate to a SummaryReport, if we have one. The Report interface
    * doesn't provide this method.
-   * @see SummaryReport#getOverall()
+   * @see SummaryReportModel#getOverall()
    */
   public int getOverall() {
     if (summaryReport != null) {
@@ -75,7 +75,7 @@ public class MultiReport implements Report {
    * One report may be the summary report.
    * @param summaryReport the summaryReport to set
    */
-  public void setSummaryReport(Report summaryReport) {
+  public void setSummaryReport(ReportGenerator summaryReport) {
     this.summaryReport = summaryReport;
     add(summaryReport);
   }
@@ -83,7 +83,7 @@ public class MultiReport implements Report {
   /**
    * @param report
    */
-  public void add(Report report) {
+  public void add(ReportGenerator report) {
     reports.add(report);
   }
 

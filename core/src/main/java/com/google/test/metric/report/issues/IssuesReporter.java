@@ -15,12 +15,6 @@
  */
 package com.google.test.metric.report.issues;
 
-import com.google.test.metric.ClassCost;
-import com.google.test.metric.CostModel;
-import com.google.test.metric.GlobalCost;
-import com.google.test.metric.MethodCost;
-import com.google.test.metric.MethodInvokationCost;
-import com.google.test.metric.ViolationCost;
 import static com.google.test.metric.report.issues.IssueSubType.COMPLEXITY;
 import static com.google.test.metric.report.issues.IssueSubType.NON_MOCKABLE;
 import static com.google.test.metric.report.issues.IssueSubType.SINGLETON;
@@ -28,6 +22,12 @@ import static com.google.test.metric.report.issues.IssueSubType.STATIC_METHOD;
 import static com.google.test.metric.report.issues.IssueType.COLLABORATOR;
 import static com.google.test.metric.report.issues.IssueType.CONSTRUCTION;
 import static com.google.test.metric.report.issues.IssueType.DIRECT_COST;
+import com.google.test.metric.ClassCost;
+import com.google.test.metric.CostModel;
+import com.google.test.metric.GlobalCost;
+import com.google.test.metric.MethodCost;
+import com.google.test.metric.MethodInvokationCost;
+import com.google.test.metric.ViolationCost;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -140,7 +140,7 @@ public class IssuesReporter {
 
   public List<ClassIssues> getMostImportantIssues() {
     if (mostImportantIssues instanceof TriageIssuesQueue) {
-      return ((TriageIssuesQueue)mostImportantIssues).asList();
+      return ((TriageIssuesQueue<ClassIssues>) mostImportantIssues).asList();
     }
     return new ArrayList<ClassIssues>(mostImportantIssues);
   }

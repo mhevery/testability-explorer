@@ -37,7 +37,7 @@ public class ClassSourceReportTest extends TestCase {
   private final ClassPath classPath = new DirectoryClassPath(new File("src-test"));
   GradeCategories grades = new GradeCategories(50, 100);
   File out = new File("test-out");
-  SourceReport report = new SourceReport(grades, new SourceLoader(classPath),
+  SourceReportGenerator report = new SourceReportGenerator(grades, new SourceLoader(classPath),
       out, new CostModel(), new Date(), 10, new Configuration());
   ClassRepository repo = new JavaClassRepository();
   MetricComputer computer = new MetricComputer(repo, null, new RegExpWhiteList(

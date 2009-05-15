@@ -19,14 +19,12 @@ import com.google.test.metric.ClassCost;
 
 import java.io.IOException;
 
-// TODO(alexeagle): should maybe rename to ReportGenerator since this isn't a model class.
-public interface Report {
+public interface ReportGenerator {
 
   void printHeader() throws IOException;
 
   void addClassCost(ClassCost classCost);
 
   void printFooter() throws IOException;
-
 
 }

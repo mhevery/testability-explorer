@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeSet;
 
-public class XMLReport extends SummaryReport implements Report {
+public class XMLReportGenerator extends SummaryReportModel implements ReportGenerator {
 
   private final ContentHandler out;
   private final CostModel costModel;
@@ -38,14 +38,14 @@ public class XMLReport extends SummaryReport implements Report {
   public static final String METHOD_NAME_ATTRIBUTE = MethodCost.METHOD_NAME_ATTRIBUTE;
   public static final String METHOD_OVERALL_COST_ATTRIBUTE = "overall";
 
-  public XMLReport(ContentHandler out, CostModel costModel, int maxExcellentCost,
+  public XMLReportGenerator(ContentHandler out, CostModel costModel, int maxExcellentCost,
       int maxAcceptableCost, int worstOffenderCount) {
     super(costModel, maxExcellentCost, maxAcceptableCost, worstOffenderCount);
     this.out = out;
     this.costModel = costModel;
   }
 
-  public XMLReport(ContentHandler out, CostModel costModel, ReportOptions options) {
+  public XMLReportGenerator(ContentHandler out, CostModel costModel, ReportOptions options) {
     this(out, costModel, options.getMaxExcellentCost(),
         options.getMaxAcceptableCost(), options.getWorstOffenderCount());
   }
