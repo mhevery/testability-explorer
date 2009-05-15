@@ -25,8 +25,8 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Path;
 import com.google.test.metric.*;
-import com.google.test.metric.ReportPrinterBuilder.ReportFormat;
-import com.google.test.metric.report.Report;
+import com.google.test.metric.ReportGeneratorBuilder.ReportFormat;
+import com.google.test.metric.report.ReportGenerator;
 import com.google.test.metric.report.ReportOptions;
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
@@ -119,7 +119,7 @@ public class TestabilityTask extends Task {
     WhiteList packageWhiteList = new RegExpWhiteList(model.getWhiteList());
     ReportOptions options = setOptions();
     ClassPath classPath = new ClassPathFactory().createFromPath(model.getClassPath());
-    Report report = new ReportPrinterBuilder(classPath, options,
+    ReportGenerator report = new ReportGeneratorBuilder(classPath, options,
         ReportFormat.valueOf(model.getPrint()), model.getResultPrintStream(), entries).build();
     JavaTestabilityConfig config = new JavaTestabilityConfig(entries, classPath, packageWhiteList,
         report, model.getErrorPrintStream(), model.getPrintDepth());

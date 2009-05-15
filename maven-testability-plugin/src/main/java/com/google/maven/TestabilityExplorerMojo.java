@@ -1,14 +1,19 @@
 package com.google.maven;
 
-import com.google.test.metric.*;
-import com.google.test.metric.ReportPrinterBuilder.ReportFormat;
-import com.google.test.metric.report.*;
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
-import org.apache.maven.artifact.DependencyResolutionRequiredException;
-import org.apache.maven.reporting.AbstractMavenReport;
-import org.apache.maven.reporting.MavenReportException;
+import com.google.test.metric.JavaTestabilityConfig;
+import com.google.test.metric.JavaTestabilityRunner;
+import com.google.test.metric.RegExpWhiteList;
+import com.google.test.metric.ReportGeneratorBuilder;
+import com.google.test.metric.WhiteList;
+import com.google.test.metric.ReportGeneratorBuilder.ReportFormat;
+import com.google.test.metric.report.MultiReportGenerator;
+import com.google.test.metric.report.ReportGenerator;
+import com.google.test.metric.report.ReportOptions;
+
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.reporting.AbstractMavenReport;
 import org.codehaus.doxia.site.renderer.SiteRenderer;
 
 import java.io.File;
@@ -151,19 +156,23 @@ public class TestabilityExplorerMojo extends AbstractMavenReport {
   private static final String NAME_KEY = "report.testability.name";
   private static final String DESCRIPTION_KEY = "report.testability.description";
 
+  @Override
   protected SiteRenderer getSiteRenderer() {
     return siteRenderer;
   }
 
+  @Override
   protected String getOutputDirectory() {
     return outputDirectory.getAbsolutePath();
   }
 
+  @Override
   protected MavenProject getProject() {
     return mavenProject;
   }
 
-  protected void executeReport(Locale locale) throws MavenReportException {
+  @Override
+  protected void executeReport(Locale locale) {
     if ("pom".equals(mavenProject.getPackaging())) {
       getLog().info(String.format("Not running testability explorer for project %s " +
           "because it is a \"pom\" packaging", mavenProject.getName()));
@@ -175,13 +184,13 @@ public class TestabilityExplorerMojo extends AbstractMavenReport {
     WhiteList packageWhiteList = new RegExpWhiteList(whiteList);
     List<String> entries = Arrays.asList(filter);
     ReportOptions reportOptions = setOptions();
-    Report report = new ReportPrinterBuilder(classPath, reportOptions, ReportFormat.html,
+    ReportGenerator report = new ReportGeneratorBuilder(classPath, reportOptions, ReportFormat.html,
         getResultPrintStream(ReportFormat.html), entries).build();
     if (!"html".equals(format)) {
       PrintStream resultPrintStream = getResultPrintStream(ReportFormat.valueOf(format));
-      Report otherReport = new ReportPrinterBuilder(classPath, reportOptions,
+      ReportGenerator otherReport = new ReportGeneratorBuilder(classPath, reportOptions,
           ReportFormat.valueOf(format), resultPrintStream, entries).build();
-      report = new MultiReport(null, report, otherReport);
+      report = new MultiReportGenerator(null, report, otherReport);
     }
     JavaTestabilityConfig config = new JavaTestabilityConfig(entries, classPath, packageWhiteList,
         report, getErrorPrintStream(), printDepth);
