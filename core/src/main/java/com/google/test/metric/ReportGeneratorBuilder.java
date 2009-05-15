@@ -69,34 +69,36 @@ public class ReportGeneratorBuilder {
     html,
     about
   }
-
-  public ReportGenerator build() {
-    ReportGenerator report;
-    CostModel costModel = new CostModel(options.getCyclomaticMultiplier(),
-        options.getGlobalMultiplier());
+  
+  /**
+   * Method to allow retaining a handle on preconfigured model objects.
+   * 
+   * @param costModel Cost Model for the {@link ReportGenerator}
+   * @param reportModel Can be {@code null} if {@link ReportFormat} is not
+   *    {@link ReportFormat#html} or {@link ReportFormat#about} 
+   * @param sourceLoader Source Loader used by {@link ReportFormat#source} reports.
+   * @return a ready to use {@link ReportGenerator}
+   */
+  public ReportGenerator build(CostModel costModel, ReportModel reportModel,
+      SourceLoader sourceLoader) {
     SourceLinker linker = new SourceLinker(
         options.getSrcFileLineUrl(), options.getSrcFileUrl());
-    TriageIssuesQueue<ClassIssues> mostImportantIssues =
-        new TriageIssuesQueue<ClassIssues>(options.getMaxExcellentCost(),
-            options.getWorstOffenderCount(), new ClassIssues.TotalCostComparator());
-    IssuesReporter issuesReporter = new IssuesReporter(mostImportantIssues, costModel);
-    SourceLoader sourceLoader = new SourceLoader(classPath);
     Configuration cfg = new Configuration();
     cfg.setTemplateLoader(new ClassPathTemplateLoader(PREFIX));
     BeansWrapper objectWrapper = new DefaultObjectWrapper();
     cfg.setObjectWrapper(objectWrapper);
-    ResourceBundleModel bundleModel = new ResourceBundleModel(getBundle("messages"), objectWrapper);
+    ResourceBundleModel bundleModel = new ResourceBundleModel(getBundle("messages"),
+        objectWrapper);
 
+    ReportGenerator report;
     switch (printer) {
       case summary:
         report = new TextReportGenerator(out, costModel, options);
         break;
       case html:
-        AnalysisModel analysisModel = new AnalysisModel(issuesReporter);
-        HtmlReportModel model = new HtmlReportModel(costModel, analysisModel, options);
-        model.setMessageBundle(bundleModel);
-        model.setSourceLinker(new SourceLinkerModel(linker));
-        report = new FreemarkerReportGenerator(model, out,
+        reportModel.setMessageBundle(bundleModel);
+        reportModel.setSourceLinker(new SourceLinkerModel(linker));
+        report = new FreemarkerReportGenerator(reportModel, out,
             FreemarkerReportGenerator.HTML_REPORT_TEMPLATE, cfg);
         break;
       case detail:
@@ -109,8 +111,8 @@ public class ReportGeneratorBuilder {
       case source:
         GradeCategories gradeCategories = new GradeCategories(options.getMaxExcellentCost(),
             options.getMaxAcceptableCost());
-        report = new SourceReportGenerator(gradeCategories, sourceLoader, new File("te-report"), costModel,
-            new Date(), options.getWorstOffenderCount(), cfg);
+        report = new SourceReportGenerator(gradeCategories, sourceLoader,
+            new File("te-report"), costModel, new Date(), options.getWorstOffenderCount(), cfg);
         break;
       case xml:
         XMLSerializer xmlSerializer = new XMLSerializer();
@@ -121,14 +123,40 @@ public class ReportGeneratorBuilder {
         report = new XMLReportGenerator(xmlSerializer, costModel, options);
         break;
       case about:
-        ReportModel aboutModel = new AboutTestabilityReport(issuesReporter, sourceLoader);
-        aboutModel.setMessageBundle(bundleModel);
-        aboutModel.setSourceLinker(new SourceLinkerModel(linker));
-        report = new FreemarkerReportGenerator(aboutModel, out, "about/Report.html", cfg);
+        reportModel.setMessageBundle(bundleModel);
+        reportModel.setSourceLinker(new SourceLinkerModel(linker));
+        report = new FreemarkerReportGenerator(reportModel, out, "about/Report.html", cfg);
         break;
       default:
         throw new IllegalStateException("Unknown report format " + printer);
     }
     return report;
+  }
+
+  public ReportGenerator build() {
+    CostModel costModel = new CostModel(options.getCyclomaticMultiplier(),
+        options.getGlobalMultiplier());
+    TriageIssuesQueue<ClassIssues> mostImportantIssues =
+        new TriageIssuesQueue<ClassIssues>(options.getMaxExcellentCost(),
+            options.getWorstOffenderCount(), new ClassIssues.TotalCostComparator());
+    SourceLoader sourceLoader = new SourceLoader(classPath);
+
+    IssuesReporter issuesReporter = new IssuesReporter(mostImportantIssues, costModel);
+    AnalysisModel analysisModel = new AnalysisModel(issuesReporter);    
+    ReportModel reportModel;
+
+    switch (printer) {
+      case html:
+        reportModel = new HtmlReportModel(costModel, analysisModel, options);
+        break;
+        
+      case about:
+        reportModel = new AboutTestabilityReport(issuesReporter, sourceLoader);
+        break;
+
+      default:
+        reportModel = null;
+    }
+    return build(costModel, reportModel, sourceLoader);
   }
 }
