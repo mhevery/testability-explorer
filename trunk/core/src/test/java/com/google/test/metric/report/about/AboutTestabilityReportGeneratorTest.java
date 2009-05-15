@@ -18,7 +18,7 @@ package com.google.test.metric.report.about;
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.MethodCost;
-import com.google.test.metric.ReportPrinterBuilder;
+import com.google.test.metric.ReportGeneratorBuilder;
 import com.google.test.metric.report.*;
 import com.google.test.metric.report.Source.Line;
 import com.google.test.metric.report.issues.ClassIssues;
@@ -61,7 +61,7 @@ public class AboutTestabilityReportGeneratorTest extends TestCase {
       }
     });
     Configuration configuration = new Configuration();
-    configuration.setTemplateLoader(new ClassPathTemplateLoader(ReportPrinterBuilder.PREFIX));
+    configuration.setTemplateLoader(new ClassPathTemplateLoader(ReportGeneratorBuilder.PREFIX));
     BeansWrapper objectWrapper = new DefaultObjectWrapper();
     configuration.setObjectWrapper(objectWrapper);
     ResourceBundleModel bundleModel = new ResourceBundleModel(getBundle("messages"), objectWrapper);

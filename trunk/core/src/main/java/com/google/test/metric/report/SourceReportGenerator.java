@@ -44,7 +44,7 @@ import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 
-public class SourceReport implements Report {
+public class SourceReportGenerator implements ReportGenerator {
 
   private class PrintCostMethod implements TemplateMethodModelEx {
     @SuppressWarnings("unchecked")
@@ -90,7 +90,7 @@ public class SourceReport implements Report {
   private final ProjectReport projectByPackageReport;
   private final CostModel costModel;
 
-  public SourceReport(GradeCategories grades, SourceLoader sourceLoader,
+  public SourceReportGenerator(GradeCategories grades, SourceLoader sourceLoader,
       File outputDirectory, CostModel costModel, Date currentTime,
       int worstCount, Configuration cfg) {
     this.grades = grades;

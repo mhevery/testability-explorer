@@ -7,8 +7,8 @@ import java.util.List;
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 import com.google.test.metric.TestabilityTest.WatchedOutputStream;
-import com.google.test.metric.report.Report;
-import com.google.test.metric.report.TextReport;
+import com.google.test.metric.report.ReportGenerator;
+import com.google.test.metric.report.TextReportGenerator;
 
 public class TestabilityRunnerTest extends AutoFieldClearTestCase {
   /**
@@ -39,12 +39,12 @@ public class TestabilityRunnerTest extends AutoFieldClearTestCase {
   public static final String CLASSES_EXTERNAL_DEPS_NO_SUPERCLASSES =
     CLASSES_FOR_TEST + "/root3";
 
-private static final String NEW_LINE = System.getProperty("line.separator");
+  private static final String NEW_LINE = System.getProperty("line.separator");
 
   private WatchedOutputStream out = new WatchedOutputStream();
   private WatchedOutputStream err = new WatchedOutputStream();
   private List<String> allEntryList = Arrays.<String>asList("");
-  private Report report = new TextReport(new PrintStream(out), new CostModel(), 0, 0, 0);
+  private ReportGenerator report = new TextReportGenerator(new PrintStream(out), new CostModel(), 0, 0, 0);
   private RegExpWhiteList whiteList = new RegExpWhiteList("java.");
 
   public void testClassesNotInClasspath() throws Exception {

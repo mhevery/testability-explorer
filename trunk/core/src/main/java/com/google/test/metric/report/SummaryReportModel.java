@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public abstract class SummaryReport extends ReportModel {
+public abstract class SummaryReportModel extends ReportModel {
 
   protected final WeightedAverage weightedAverage = new WeightedAverage();
   protected SortedSet<ClassCost> worstOffenders;
@@ -51,7 +51,7 @@ public abstract class SummaryReport extends ReportModel {
   protected int worstCost = 1;
   private final CostModel costModel;
 
-  public SummaryReport(CostModel costModel, int maxExcellentCost, int maxAcceptableCost, int worstOffenderCount) {
+  public SummaryReportModel(CostModel costModel, int maxExcellentCost, int maxAcceptableCost, int worstOffenderCount) {
     this.costModel = costModel;
     this.worstOffenders = new TreeSet<ClassCost>(new ClassCost.CostComparator(costModel));
     this.maxExcellentCost = maxExcellentCost;
@@ -59,6 +59,7 @@ public abstract class SummaryReport extends ReportModel {
     this.worstOffenderCount = worstOffenderCount;
   }
 
+  @Override
   public void addClassCost(ClassCost classCost) {
     int cost = costModel.computeClass(classCost);
     if (cost < maxExcellentCost) {
@@ -84,5 +85,4 @@ public abstract class SummaryReport extends ReportModel {
   public int getOverall() {
     return (int) weightedAverage.getAverage();
   }
-
 }

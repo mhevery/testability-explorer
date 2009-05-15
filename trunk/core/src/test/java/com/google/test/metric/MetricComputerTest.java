@@ -19,7 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.List;
 
-import com.google.test.metric.report.DrillDownReport;
+import com.google.test.metric.report.DrillDownReportGenerator;
 import com.google.test.metric.testing.MetricComputerBuilder;
 import com.google.test.metric.testing.MetricComputerJavaDecorator;
 
@@ -380,7 +380,7 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
   public void testGlobalLoadAccessStateThroughFinalShouldBeOne() {
     MethodCost cost =
         computer.compute(GlobalStateUser.class, "accessMutableState()V");
-    new DrillDownReport(new PrintStream(new ByteArrayOutputStream()), new CostModel(),
+    new DrillDownReportGenerator(new PrintStream(new ByteArrayOutputStream()), new CostModel(),
         null, Integer.MAX_VALUE, 0).print("", cost, 10);
     assertEquals("Expecting one for read and one for write", 2L,
         cost.getTotalCost().getGlobalCost());

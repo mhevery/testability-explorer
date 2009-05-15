@@ -15,6 +15,7 @@
  */
 package com.google.test.metric.report.html;
 
+import com.google.test.metric.AnalysisModel;
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.report.*;
@@ -34,12 +35,12 @@ import static org.apache.commons.codec.binary.Base64.encodeBase64;
  *
  * @author alexeagle@google.com (Alex Eagle)
  */
-public class HtmlReport extends SummaryReport {
-  private final IssuesReporter issuesReporter;
+public class HtmlReportModel extends SummaryReportModel {
+  private final AnalysisModel analysisModel;
 
-  public HtmlReport(CostModel costModel, IssuesReporter issuesReporter, ReportOptions options) {
+  public HtmlReportModel(CostModel costModel, AnalysisModel analysisModel, ReportOptions options) {
     super(costModel, options.getMaxExcellentCost(), options.getMaxAcceptableCost(), options.getWorstOffenderCount());
-    this.issuesReporter = issuesReporter;
+    this.analysisModel = analysisModel;
   }
 
   public int getTotal() {
@@ -49,7 +50,7 @@ public class HtmlReport extends SummaryReport {
   @Override
   public void addClassCost(ClassCost classCost) {
     super.addClassCost(classCost);
-    issuesReporter.inspectClass(classCost);
+    analysisModel.addClassCost(classCost);
   }
 
   public String getHistogram() {
@@ -81,7 +82,7 @@ public class HtmlReport extends SummaryReport {
   }
   
   public List<ClassIssues> getWorstOffenders() {
-    return issuesReporter.getMostImportantIssues();
+    return analysisModel.getWorstOffenders();
   }
 
   public Date getNow() {

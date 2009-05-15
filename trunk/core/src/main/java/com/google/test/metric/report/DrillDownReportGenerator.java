@@ -30,7 +30,7 @@ import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvokationCost;
 import com.google.test.metric.ViolationCost;
 
-public class DrillDownReport implements Report {
+public class DrillDownReportGenerator implements ReportGenerator {
   public static final String NEW_LINE = getProperty("line.separator");
 
   private static final String DIVIDER = "-----------------------------------------\n";
@@ -42,7 +42,7 @@ public class DrillDownReport implements Report {
 
   private final CostModel costModel;
 
-  public DrillDownReport(PrintStream out, CostModel costModel,
+  public DrillDownReportGenerator(PrintStream out, CostModel costModel,
       List<String> entryList, int maxDepth, int minCost) {
     this.out = out;
     this.entryList = entryList;

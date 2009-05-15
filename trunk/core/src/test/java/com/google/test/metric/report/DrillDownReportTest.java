@@ -15,7 +15,7 @@
  */
 package com.google.test.metric.report;
 
-import static com.google.test.metric.report.DrillDownReport.NEW_LINE;
+import static com.google.test.metric.report.DrillDownReportGenerator.NEW_LINE;
 import static java.lang.Integer.MAX_VALUE;
 
 import java.io.ByteArrayOutputStream;
@@ -55,8 +55,8 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
 }
 
   public void testSimpleCost() throws Exception {
-    DrillDownReport printer =
-      new DrillDownReport(new PrintStream(out), costModel, null, MAX_VALUE, 0);
+    DrillDownReportGenerator printer =
+      new DrillDownReportGenerator(new PrintStream(out), costModel, null, MAX_VALUE, 0);
     MethodCost costOnlyMethod1 = new MethodCost("c.g.t.A.method1()V", 0, false, false);
     costOnlyMethod1.addCostSource(new CyclomaticCost(1, Cost.cyclomatic(1)));
     costOnlyMethod1.addCostSource(new GlobalCost(0, null, Cost.global(1)));
@@ -66,8 +66,8 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   }
 
   public void test2DeepPrintAll() throws Exception {
-    DrillDownReport printer =
-      new DrillDownReport(new PrintStream(out), costModel, null, MAX_VALUE, 0);
+    DrillDownReportGenerator printer =
+      new DrillDownReportGenerator(new PrintStream(out), costModel, null, MAX_VALUE, 0);
     methodCost2.addCostSource(new MethodInvokationCost(81, methodCost1, NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(1)));
     methodCost2.link();
     printer.print("", methodCost2, MAX_VALUE);
@@ -77,8 +77,8 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   }
 
   public void test3DeepPrintAll() throws Exception {
-    DrillDownReport printer =
-      new DrillDownReport(new PrintStream(out), costModel, null, MAX_VALUE, 0);
+    DrillDownReportGenerator printer =
+      new DrillDownReportGenerator(new PrintStream(out), costModel, null, MAX_VALUE, 0);
     methodCost2.addCostSource(new MethodInvokationCost(8, methodCost1, NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(1)));
     methodCost3.addCostSource(new MethodInvokationCost(2, methodCost2, NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(3)));
     methodCost3.link();
@@ -90,8 +90,8 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   }
 
   public void test2DeepSupress0Cost() throws Exception {
-    DrillDownReport printer =
-      new DrillDownReport(new PrintStream(out), costModel, null, MAX_VALUE, 2);
+    DrillDownReportGenerator printer =
+      new DrillDownReportGenerator(new PrintStream(out), costModel, null, MAX_VALUE, 2);
     methodCost1.addCostSource(new MethodInvokationCost(8, methodCost0, NON_OVERRIDABLE_METHOD_CALL, new Cost()));
     methodCost1.addCostSource(new MethodInvokationCost(13, methodCost3, NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(3)));
     methodCost1.link();
@@ -102,8 +102,8 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   }
 
   public void test3DeepPrint2Deep() throws Exception {
-    DrillDownReport printer =
-      new DrillDownReport(new PrintStream(out), costModel, null, MAX_VALUE, 0);
+    DrillDownReportGenerator printer =
+      new DrillDownReportGenerator(new PrintStream(out), costModel, null, MAX_VALUE, 0);
     methodCost3.addCostSource(new MethodInvokationCost(2, methodCost2, NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(3)));
     methodCost2.addCostSource(new MethodInvokationCost(2, methodCost1, NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(1)));
     methodCost3.link();
@@ -114,8 +114,8 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   }
 
   public void testSupressAllWhenMinCostIs4() throws Exception {
-    DrillDownReport printer =
-      new DrillDownReport(new PrintStream(out), costModel, null, MAX_VALUE, 4);
+    DrillDownReportGenerator printer =
+      new DrillDownReportGenerator(new PrintStream(out), costModel, null, MAX_VALUE, 4);
     methodCost2.addCostSource(new MethodInvokationCost(81, methodCost1, NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(1)));
     methodCost2.link();
     printer.print("", methodCost2, MAX_VALUE);
@@ -123,8 +123,8 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   }
 
   public void testSupressPartialWhenMinCostIs2() throws Exception {
-    DrillDownReport printer =
-      new DrillDownReport(new PrintStream(out), costModel, null, MAX_VALUE, 2);
+    DrillDownReportGenerator printer =
+      new DrillDownReportGenerator(new PrintStream(out), costModel, null, MAX_VALUE, 2);
     methodCost2.addCostSource(new MethodInvokationCost(81, methodCost1, NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(1)));
     methodCost2.link();
     printer.print("", methodCost2, Integer.MAX_VALUE);
@@ -132,8 +132,8 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   }
 
   public void testSecondLevelRecursive() throws Exception {
-    DrillDownReport printer =
-      new DrillDownReport(new PrintStream(out), costModel, null, MAX_VALUE, 0);
+    DrillDownReportGenerator printer =
+      new DrillDownReportGenerator(new PrintStream(out), costModel, null, MAX_VALUE, 0);
     methodCost3.addCostSource(new MethodInvokationCost(1, methodCost2, NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(2)));
     methodCost2.addCostSource(new MethodInvokationCost(2, methodCost2, NON_OVERRIDABLE_METHOD_CALL, new Cost()));
     methodCost3.link();
@@ -144,8 +144,8 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   }
 
   public void testAddOneClassCostThenPrintIt() throws Exception {
-    DrillDownReport printer =
-      new DrillDownReport(new PrintStream(out), costModel, null, MAX_VALUE, 0);
+    DrillDownReportGenerator printer =
+      new DrillDownReportGenerator(new PrintStream(out), costModel, null, MAX_VALUE, 0);
     ClassCost classCost0 = new ClassCost("FAKE_classInfo0", new ArrayList<MethodCost>());
     printer.addClassCost(classCost0);
     printer.printFooter();
@@ -154,8 +154,8 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   }
 
   public void testAddSeveralClassCostsAndPrintThem() throws Exception {
-    DrillDownReport printer =
-      new DrillDownReport(new PrintStream(out), costModel, null, MAX_VALUE, 0);
+    DrillDownReportGenerator printer =
+      new DrillDownReportGenerator(new PrintStream(out), costModel, null, MAX_VALUE, 0);
     ClassCost classCost0 = new ClassCost("FAKE_classInfo0", new ArrayList<MethodCost>());
     ClassCost classCost1 = new ClassCost("FAKE_classInfo1", new ArrayList<MethodCost>());
     ClassCost classCost2 = new ClassCost("FAKE_classInfo2", new ArrayList<MethodCost>());
@@ -171,8 +171,8 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
 
   public void testAddSeveralClassCostsAndPrintThemInDescendingCostOrder()
       throws Exception {
-    DrillDownReport printer =
-      new DrillDownReport(new PrintStream(out), costModel, null, MAX_VALUE, 0);
+    DrillDownReportGenerator printer =
+      new DrillDownReportGenerator(new PrintStream(out), costModel, null, MAX_VALUE, 0);
     methodCost1.link();
     methodCost2.link();
     List<MethodCost> methodCosts1 = new ArrayList<MethodCost>();

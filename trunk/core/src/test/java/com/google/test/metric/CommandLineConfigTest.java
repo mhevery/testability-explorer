@@ -16,12 +16,12 @@
 package com.google.test.metric;
 
 import com.google.test.metric.TestabilityTest.WatchedOutputStream;
-import com.google.test.metric.report.DrillDownReport;
+import com.google.test.metric.report.DrillDownReportGenerator;
 import com.google.test.metric.report.FreemarkerReportGenerator;
-import com.google.test.metric.report.PropertiesReport;
-import com.google.test.metric.report.SourceReport;
-import com.google.test.metric.report.TextReport;
-import com.google.test.metric.report.XMLReport;
+import com.google.test.metric.report.PropertiesReportGenerator;
+import com.google.test.metric.report.SourceReportGenerator;
+import com.google.test.metric.report.TextReportGenerator;
+import com.google.test.metric.report.XMLReportGenerator;
 
 import org.kohsuke.args4j.CmdLineException;
 
@@ -42,7 +42,7 @@ public class CommandLineConfigTest extends AutoFieldClearTestCase {
   public void testCreateSummaryReport2() throws Exception {
     commandLineConfig.printer = "summary"; 
     JavaTestabilityConfig config = commandLineConfig.buildTestabilityConfig();
-    assertEquals(TextReport.class, config.getReport().getClass());
+    assertEquals(TextReportGenerator.class, config.getReport().getClass());
   }
 
   public void testCreateHtmlReport() throws Exception {
@@ -54,25 +54,25 @@ public class CommandLineConfigTest extends AutoFieldClearTestCase {
   public void testCreateDetailReport() throws Exception {
     commandLineConfig.printer = "detail"; 
     JavaTestabilityConfig config = commandLineConfig.buildTestabilityConfig();
-    assertEquals(DrillDownReport.class, config.getReport().getClass());
+    assertEquals(DrillDownReportGenerator.class, config.getReport().getClass());
   }
   
   public void testCreatePropertiesReport() throws Exception {
     commandLineConfig.printer = "props"; 
     JavaTestabilityConfig config = commandLineConfig.buildTestabilityConfig();
-    assertEquals(PropertiesReport.class, config.getReport().getClass());
+    assertEquals(PropertiesReportGenerator.class, config.getReport().getClass());
   }
 
   public void testCreateSourceReport() throws Exception {
     commandLineConfig.printer = "source"; 
     JavaTestabilityConfig config = commandLineConfig.buildTestabilityConfig();
-    assertEquals(SourceReport.class, config.getReport().getClass());
+    assertEquals(SourceReportGenerator.class, config.getReport().getClass());
   }
 
   public void testCreateXmlReport() throws Exception {
     commandLineConfig.printer = "xml"; 
     JavaTestabilityConfig config = commandLineConfig.buildTestabilityConfig();
-    assertEquals(XMLReport.class, config.getReport().getClass());
+    assertEquals(XMLReportGenerator.class, config.getReport().getClass());
   }
 
   public void testCreateNonexistantReportThrowsException() throws Exception {
@@ -102,7 +102,7 @@ public class CommandLineConfigTest extends AutoFieldClearTestCase {
     assertTrue(testabilityConfig.getWhitelist().isClassWhiteListed("java.lang"));
     assertFalse(testabilityConfig.getWhitelist().isClassWhiteListed("com.example"));
     
-    assertEquals(TextReport.class, testabilityConfig.getReport().getClass());
+    assertEquals(TextReportGenerator.class, testabilityConfig.getReport().getClass());
     
     assertEquals(errStream, testabilityConfig.getErr());
     

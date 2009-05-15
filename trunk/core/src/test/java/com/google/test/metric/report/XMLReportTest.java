@@ -63,7 +63,7 @@ public class XMLReportTest extends TestCase {
   }
 
   public void testPrintCost() throws Exception {
-    XMLReport report = new XMLReport(handler, costModel, 0, 0, 0);
+    XMLReportGenerator report = new XMLReportGenerator(handler, costModel, 0, 0, 0);
 
     MethodCost methodCost = new MethodCost("methodName", 1, false, false);
     methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
@@ -78,7 +78,7 @@ public class XMLReportTest extends TestCase {
 
   // This was throwing NPE before
   public void testPrintCostNullReason() throws Exception {
-    XMLReport report = new XMLReport(handler, costModel, 0, 0, 0);
+    XMLReportGenerator report = new XMLReportGenerator(handler, costModel, 0, 0, 0);
 
     MethodCost methodCost = new MethodCost("methodName", 1, false, false);
     methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
@@ -92,7 +92,7 @@ public class XMLReportTest extends TestCase {
   }
 
   public void testPrintMethodCost() throws Exception {
-    XMLReport report = new XMLReport(handler, costModel, 0, 0, 0) {
+    XMLReportGenerator report = new XMLReportGenerator(handler, costModel, 0, 0, 0) {
       @Override
       public void writeCost(ViolationCost violation) throws SAXException {
         write("L" + violation.getLineNumber() + ",");
@@ -111,7 +111,7 @@ public class XMLReportTest extends TestCase {
   }
 
   public void testPrintClassCost() throws Exception {
-    XMLReport report = new XMLReport(handler, costModel, 0, 0, 0) {
+    XMLReportGenerator report = new XMLReportGenerator(handler, costModel, 0, 0, 0) {
       @Override
       public void writeCost(MethodCost methodCost) throws SAXException {
         write(methodCost.getMethodName() + "()");
@@ -130,7 +130,7 @@ public class XMLReportTest extends TestCase {
   }
 
   public void testWholeDocument() throws Exception {
-    XMLReport report = new XMLReport(handler, costModel, 1, 2, 3) {
+    XMLReportGenerator report = new XMLReportGenerator(handler, costModel, 1, 2, 3) {
       @Override
       public void writeCost(ClassCost cost) throws SAXException {
         write(cost.getClassName() + ";");

@@ -16,7 +16,7 @@
 package com.google.test.metric.report.html;
 
 import com.google.common.collect.Lists;
-import com.google.test.metric.ReportPrinterBuilder;
+import com.google.test.metric.ReportGeneratorBuilder;
 import com.google.test.metric.report.ClassPathTemplateLoader;
 import com.google.test.metric.report.SourceLinker;
 import com.google.test.metric.report.StubSourceElement;
@@ -63,7 +63,7 @@ public class MessagesForCostDetailBoxTest extends TestCase {
   protected void setUp() throws Exception {
     super.setUp();
     Configuration cfg = new Configuration();
-    cfg.setTemplateLoader(new ClassPathTemplateLoader(ReportPrinterBuilder.PREFIX));
+    cfg.setTemplateLoader(new ClassPathTemplateLoader(ReportGeneratorBuilder.PREFIX));
     BeansWrapper objectWrapper = new DefaultObjectWrapper();
     cfg.setObjectWrapper(objectWrapper);
     ResourceBundleModel messageBundleModel =

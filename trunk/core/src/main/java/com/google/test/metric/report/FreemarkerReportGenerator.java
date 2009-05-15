@@ -26,7 +26,7 @@ import java.io.PrintWriter;
  * The base class for ReportGenerator's that use Freemarker for rendering.
  * @author alexeagle@google.com (Alex Eagle)
  */
-public class FreemarkerReportGenerator implements Report {
+public class FreemarkerReportGenerator implements ReportGenerator {
   public static final String HTML_REPORT_TEMPLATE = "html/Report.html";
   private final ReportModel model;
   private final PrintStream out;

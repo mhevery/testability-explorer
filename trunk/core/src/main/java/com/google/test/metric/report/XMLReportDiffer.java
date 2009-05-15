@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.*;
 
-import static com.google.test.metric.report.XMLReport.*;
+import static com.google.test.metric.report.XMLReportGenerator.*;
 
 /**
  * Calculate the differences between classes and methods in two XML
