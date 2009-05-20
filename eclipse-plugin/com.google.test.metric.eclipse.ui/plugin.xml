@@ -150,6 +150,17 @@
            verticalRulerPreferenceValue="false">
      </specification>
   </extension>
+  <extension
+        id="com.google.test.metric.testabilityMarker"
+        name="Testability"
+        point="org.eclipse.core.resources.markers">
+     <persistent
+           value="true">
+     </persistent>
+     <super
+           type="org.eclipse.core.resources.problemmarker">
+     </super>
+  </extension>
 
 
 </plugin>

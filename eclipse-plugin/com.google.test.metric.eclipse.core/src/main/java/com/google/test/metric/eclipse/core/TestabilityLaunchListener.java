@@ -15,6 +15,7 @@
  */
 package com.google.test.metric.eclipse.core;
 
+import com.google.test.metric.report.ReportOptions;
 import com.google.test.metric.report.issues.ClassIssues;
 
 import org.eclipse.jdt.core.IJavaProject;
@@ -33,7 +34,6 @@ import java.util.List;
  */
 public interface TestabilityLaunchListener {
 
-  void onLaunchCompleted(File reportDirectory);
-  
-  void onLaunchCompleted(final IJavaProject javaProject, List<ClassIssues> classIssues);
+  void onLaunchCompleted(ReportOptions reportOptions, IJavaProject javaProject,
+      List<ClassIssues> classIssues, File reportDirectory);
 }

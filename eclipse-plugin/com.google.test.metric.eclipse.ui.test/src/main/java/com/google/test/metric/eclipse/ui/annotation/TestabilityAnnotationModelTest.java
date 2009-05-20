@@ -27,7 +27,7 @@ import org.eclipse.jface.text.source.Annotation;
  */
 public class TestabilityAnnotationModelTest extends TestCase {
 
-  private TestabilityAnnotationModel model = new TestabilityAnnotationModel(null);
+  private TestabilityAnnotationModel model = new TestabilityAnnotationModel(null, null);
 
   public void testGetPositionOfTestabilityAnnotation() throws Exception {
     Annotation annotation = new TestabilityAnnotation(new Position(0), "something");

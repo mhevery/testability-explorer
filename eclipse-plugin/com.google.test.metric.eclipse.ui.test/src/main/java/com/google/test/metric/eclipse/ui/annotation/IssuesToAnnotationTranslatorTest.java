@@ -20,6 +20,7 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
+import com.google.test.metric.report.ReportOptions;
 import com.google.test.metric.report.issues.ClassIssues;
 import com.google.test.metric.report.issues.Issue;
 
@@ -41,28 +42,37 @@ public class IssuesToAnnotationTranslatorTest extends TestCase {
 
   public void testGetAnnotations() throws Exception {
     ClassIssues issues = new ClassIssues("SomeClass", 12, new LinkedList<Issue>());
-    Issue issue1 = new Issue(13, "myMethod1");
-    Issue issue2 = new Issue(25, "myMethod2");
+    Issue issue1 = new Issue(13, null);
+    Issue issue2 = new Issue(25, null);
+    Issue issue3 = new Issue(7, null);
     issues.add(issue1);
     issues.add(issue2);
-    IssuesToAnnotationTranslator translator = new IssuesToAnnotationTranslator();
+    issues.add(issue3);
+    ReportOptions options = new ReportOptions();
+    options.setMaxAcceptableCost(10);
+    options.setMaxExcellentCost(15);
+    
+    IssuesToAnnotationTranslator translator = new IssuesToAnnotationTranslator(options);
     IDocument document = createMock(IDocument.class);
     IRegion region1 = createMock(IRegion.class);
-    IRegion region2 = createMock(IRegion.class);
     expect(region1.getOffset()).andStubReturn(111);
     expect(region1.getLength()).andStubReturn(111);
-    expect(region2.getOffset()).andStubReturn(111);
-    expect(region2.getLength()).andStubReturn(111);
     expect(document.getLineInformation(issue1.getLineNumber()))
         .andReturn(region1);
     expect(document.getLineInformation(issue2.getLineNumber()))
-        .andReturn(region2);
-    replay(region1, region2, document);
+        .andReturn(region1);
+    expect(document.getLineInformation(issue3.getLineNumber()))
+        .andReturn(region1);
+    replay(region1, document);
+
     List<Annotation> annotations =
         translator.getAnnotations(issues, document);
     
     assertNotNull(annotations);
-    assertEquals(2, annotations.size());
-    verify(region1, region2, document);
+    assertEquals(3, annotations.size());
+    assertEquals(TestabilityAnnotation.GOOD_TESTABILITY, annotations.get(0).getType());
+    assertEquals(TestabilityAnnotation.BAD_TESTABILITY, annotations.get(1).getType());
+    assertEquals(TestabilityAnnotation.EXCELLENT_TESTABILITY, annotations.get(2).getType());
+    verify(region1, document);
   }
 }
