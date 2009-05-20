@@ -15,15 +15,15 @@
  */
 package com.google.test.metric;
 
+import com.google.classpath.ClassPath;
+import com.google.test.metric.asm.ClassInfoBuilderVisitor;
+
+import org.objectweb.asm.ClassReader;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.objectweb.asm.ClassReader;
-
-import com.google.classpath.ClassPath;
-import com.google.test.metric.asm.ClassInfoBuilderVisitor;
 
 public class JavaClassRepository implements ClassRepository {
 
@@ -47,6 +47,8 @@ public class JavaClassRepository implements ClassRepository {
           classInfo = parseClass(inputStreamForClass(clazzName));
         } catch (ArrayIndexOutOfBoundsException e) {
           throw new ClassNotFoundException(clazzName);
+        } catch (ClassNotFoundException e) {
+          throw new ClassNotFoundException(clazzName, e);
         }
     }
     return classInfo;

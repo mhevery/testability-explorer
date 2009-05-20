@@ -1,14 +1,14 @@
 package com.google.test.metric;
 
-import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.List;
-
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 import com.google.test.metric.TestabilityTest.WatchedOutputStream;
 import com.google.test.metric.report.ReportGenerator;
 import com.google.test.metric.report.TextReportGenerator;
+
+import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.List;
 
 public class TestabilityRunnerTest extends AutoFieldClearTestCase {
   /**
@@ -22,28 +22,23 @@ public class TestabilityRunnerTest extends AutoFieldClearTestCase {
    * Directory root that contains one class with no external
    * dependencies.
    */
-  public static final String CLASS_NO_EXTERNAL_DEPS = CLASSES_FOR_TEST +
-    "/root1";
+  public static final String CLASS_NO_EXTERNAL_DEPS = CLASSES_FOR_TEST + "/root1";
 
   /**
    * Directory root containing classes that extend from, and reference, external
    * classes outside of this directory.
    */
-  public static final String CLASSES_EXTERNAL_DEPS_AND_SUPERCLASSES =
-    CLASSES_FOR_TEST + "/root2";
+  public static final String CLASSES_EXTERNAL_DEPS_AND_SUPERCLASSES = CLASSES_FOR_TEST + "/root2";
 
   /**
    * Directory root containing classes extending from Object that reference
    * external classes outside of this directory.
    */
-  public static final String CLASSES_EXTERNAL_DEPS_NO_SUPERCLASSES =
-    CLASSES_FOR_TEST + "/root3";
-
-  private static final String NEW_LINE = System.getProperty("line.separator");
+  public static final String CLASSES_EXTERNAL_DEPS_NO_SUPERCLASSES = CLASSES_FOR_TEST + "/root3";
 
   private WatchedOutputStream out = new WatchedOutputStream();
   private WatchedOutputStream err = new WatchedOutputStream();
-  private List<String> allEntryList = Arrays.<String>asList("");
+  private List<String> allEntryList = Arrays.asList("");
   private ReportGenerator report = new TextReportGenerator(new PrintStream(out), new CostModel(), 0, 0, 0);
   private RegExpWhiteList whiteList = new RegExpWhiteList("java.");
 
@@ -51,13 +46,12 @@ public class TestabilityRunnerTest extends AutoFieldClearTestCase {
     JavaTestabilityConfig testabilityConfig = configFor(CLASSES_EXTERNAL_DEPS_AND_SUPERCLASSES);
     new JavaTestabilityRunner(testabilityConfig).run();
     assertTrue(out.toString().length() > 0);
-    assertTrue(err.toString(), err.toString().length() > 0);
-    assertTrue(err.toString().startsWith("WARNING: can not analyze class "));
-    assertEquals("WARNING: can not analyze class 'com.google.test.metric.ClassInfoTest' " +
-        "since class 'com/google/test/metric/ClassRepositoryTestCase' was not found." + NEW_LINE +
-        "WARNING: can not analyze class 'com.google.test.metric.x.SelfTest' " +
-        "since class 'com/google/test/metric/ClassRepositoryTestCase' was not found." +  NEW_LINE,
-        err.toString());
+    final String errStr = err.toString();
+    assertTrue(errStr, errStr.length() > 0);
+    assertTrue(errStr, errStr.startsWith("WARNING: can not analyze class "));
+    assertTrue(errStr, errStr.contains("'com.google.test.metric.ClassInfoTest'"));
+    assertTrue(errStr, errStr.contains("'com.google.test.metric.x.SelfTest'"));
+    assertTrue(errStr, errStr.contains("'com/google/test/metric/ClassRepositoryTestCase'"));
   }
 
   /*
@@ -105,9 +99,8 @@ public class TestabilityRunnerTest extends AutoFieldClearTestCase {
 
   private JavaTestabilityConfig configFor(String path) {
     ClassPath classPath = new ClassPathFactory().createFromPath(path);
-    JavaTestabilityConfig testabilityConfig = new JavaTestabilityConfig(
+    return new JavaTestabilityConfig(
         allEntryList, classPath, whiteList, report, new PrintStream(err), 1);
-    return testabilityConfig;
   }
 
 }

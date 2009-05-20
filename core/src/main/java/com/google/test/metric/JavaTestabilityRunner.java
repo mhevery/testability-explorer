@@ -15,25 +15,24 @@
  */
 package com.google.test.metric;
 
+import com.google.classpath.ClassPath;
+import com.google.classpath.RegExpResourceFilter;
 import static com.google.classpath.RegExpResourceFilter.ANY;
 import static com.google.classpath.RegExpResourceFilter.ENDS_WITH_CLASS;
-import static java.util.Arrays.asList;
+import com.google.test.metric.report.ReportGenerator;
+import com.google.test.metric.report.issues.IssuesReporter;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import static java.util.Arrays.asList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import com.google.classpath.ClassPath;
-import com.google.classpath.RegExpResourceFilter;
-import com.google.test.metric.report.ReportGenerator;
-import com.google.test.metric.report.issues.IssuesReporter;
-
 /**
- * Has the responsibility of kicking off the analysis. A programmatic interface into using 
+ * Has the responsibility of kicking off the analysis. A programmatic interface into using
  * Testability Explorer.
- * 
+ *
  * @author Jonathan Andrew Wolter <jaw@jawspeak.com>
  */
 public class JavaTestabilityRunner implements Runnable {
@@ -78,29 +77,29 @@ public class JavaTestabilityRunner implements Runnable {
         }
       } catch (ClassNotFoundException e) {
         err.println("WARNING: can not analyze class '" + className
-            + "' since class '" + e.getClassName() + "' was not found.");
+            + "' since class '" + e.getClassName() + "' was not found. Chain: " + e.getMessage());
       }
     }
-    
+
     return model;
   }
-  
+
   public void renderReport(AnalysisModel model) {
     try {
       report.printHeader();
-      
+
       for (ClassCost classCost : model.getClassCosts()) {
         report.addClassCost(classCost);
       }
-      
+
       report.printFooter();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
-  
+
   public void run() {
     renderReport(generateModel(null));
-  }  
+  }
 
 }
