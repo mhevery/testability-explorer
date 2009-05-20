@@ -26,6 +26,11 @@ public class ClassNotFoundException extends RuntimeException {
     this.className = className;
   }
 
+  public ClassNotFoundException(String className, ClassNotFoundException e) {
+    super(className + " -> " + e.getMessage(), e);
+    this.className = className;
+  }
+
   public String getClassName() {
     return className;
   }
