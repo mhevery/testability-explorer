@@ -16,6 +16,7 @@
 package com.google.test.metric.eclipse.ui.annotation;
 
 import com.google.test.metric.ClassCost;
+import com.google.test.metric.report.ReportOptions;
 import com.google.test.metric.report.issues.ClassIssues;
 import com.google.test.metric.report.issues.Issue;
 
@@ -36,6 +37,12 @@ import java.util.List;
  */
 public class IssuesToAnnotationTranslator {
   
+  private final ReportOptions configuration;
+
+  public IssuesToAnnotationTranslator(ReportOptions reportOptions) {
+    this.configuration = reportOptions;
+  }
+
   public List<Annotation> getAnnotations(ClassIssues classIssues,
       IDocument document) throws BadLocationException {
     List<Annotation> annotations = new ArrayList<Annotation>();
@@ -43,11 +50,17 @@ public class IssuesToAnnotationTranslator {
       // TODO(shyamseshadri): COULD BE OFF BY ONE. FIGURE OUT!!!
       IRegion region = document.getLineInformation(issue.getLineNumber());
       Position position = new Position(region.getOffset(), region.getLength());
-      // TODO(shyamseshadri): FIGURE OUT LEVEL OF TESTABILITY
-      TestabilityAnnotation annotation = new TestabilityAnnotation(position,
-          TestabilityAnnotation.BAD_TESTABILITY);
+
+      String type = TestabilityAnnotation.BAD_TESTABILITY;
+      TestabilityAnnotation annotation = new TestabilityAnnotation(position, type);
+      
       annotations.add(annotation);
     }
     return annotations;
+  }
+  
+  public String getTestabilityAnnotationType(Issue issue) {
+    
+    return null;
   }
 }

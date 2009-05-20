@@ -17,21 +17,24 @@ package com.google.test.metric.eclipse.internal.core;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
+import com.google.test.metric.AnalysisModel;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.JavaTestabilityConfig;
 import com.google.test.metric.JavaTestabilityRunner;
 import com.google.test.metric.RegExpWhiteList;
+import com.google.test.metric.ReportGeneratorBuilder;
+import com.google.test.metric.ReportGeneratorBuilder.ReportFormat;
 import com.google.test.metric.eclipse.core.TestabilityLaunchListener;
 import com.google.test.metric.eclipse.core.plugin.Activator;
 import com.google.test.metric.eclipse.internal.util.JavaPackageVisitor;
 import com.google.test.metric.eclipse.internal.util.JavaProjectHelper;
 import com.google.test.metric.eclipse.internal.util.Logger;
 import com.google.test.metric.eclipse.internal.util.TestabilityConstants;
-import com.google.test.metric.report.FreemarkerReportGenerator;
-import com.google.test.metric.report.Report;
+import com.google.test.metric.report.ReportGenerator;
+import com.google.test.metric.report.ReportModel;
 import com.google.test.metric.report.ReportOptions;
-import com.google.test.metric.report.SourceLinker;
-import com.google.test.metric.report.html.HtmlReport;
+import com.google.test.metric.report.SourceLoader;
+import com.google.test.metric.report.html.HtmlReportModel;
 import com.google.test.metric.report.issues.ClassIssues;
 import com.google.test.metric.report.issues.IssuesReporter;
 import com.google.test.metric.report.issues.TriageIssuesQueue;
@@ -133,10 +136,10 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
     int maxAcceptableCost =
         configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_MAX_ACCEPTABLE_COST,
             TestabilityConstants.MAX_ACCEPTABLE_COST);
-    int globalCost =
+    double globalCost =
         configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_GLOBAL_STATE_COST,
             TestabilityConstants.GLOBAL_STATE_COST);
-    int cyclomaticCost =
+    double cyclomaticCost =
         configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_CYCLOMATIC_COST,
             TestabilityConstants.CYCLOMATIC_COST);
     int printDepth = 
@@ -157,6 +160,7 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
           "".equals(whitelistPackages) ? new String[] {} : whitelistPackages.split("[,;:]")) {
         whitelist.addPackage(packageName);
       }
+      
       CostModel costModel = new CostModel(cyclomaticCost, globalCost);
       IssuesReporter issuesReporter = new IssuesReporter(
           new TriageIssuesQueue<ClassIssues>(TestabilityConstants.MIN_COST,
@@ -165,16 +169,19 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
           maxAcceptableCost, TestabilityConstants.WORST_OFFENDER_COUNT,
           TestabilityConstants.MAX_METHOD_COUNT, TestabilityConstants.MAX_LINE_COUNT, 
           printDepth, (int)TestabilityConstants.MIN_COST, "", "");
-      HtmlReport htmlReport = new HtmlReport(costModel, issuesReporter, options);
-      Report report = new FreemarkerReportGenerator(htmlReport, reportStream,
-          new SourceLinker("", ""), FreemarkerReportGenerator.HTML_REPORT_TEMPLATE);
+      SourceLoader sourceLoader = new SourceLoader(classPath);
+
+      AnalysisModel analysisModel = new AnalysisModel(issuesReporter);
+      ReportModel reportModel = new HtmlReportModel(costModel, analysisModel, options);
+      ReportGenerator report = new ReportGeneratorBuilder(classPath, options, ReportFormat.html,
+          reportStream, allJavaPackages).build(costModel, reportModel, sourceLoader);
+      
       JavaTestabilityConfig testabilityConfig =
           new JavaTestabilityConfig(allJavaPackages, classPath, whitelist, report, errorStream,
               printDepth);
-      JavaTestabilityRunner testabilityRunner = new JavaTestabilityRunner(testabilityConfig);
-      testabilityRunner.run();
+      new JavaTestabilityRunner(testabilityConfig).run();
 
-      notifyAllListeners(reportDirectory, issuesReporter.getMostImportantIssues(), javaProject);
+      notifyAllListeners(options, analysisModel.getWorstOffenders(), javaProject, reportDirectory);
 
       reportStream.flush();
       reportStream.close();
@@ -183,8 +190,8 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
     }
   }
 
-  private void notifyAllListeners(File reportDirectory, List<ClassIssues> classIssues,
-      IJavaProject javaProject) {
+  private void notifyAllListeners(ReportOptions reportOptions,
+      List<ClassIssues> classIssues, IJavaProject javaProject, File reportDirectory) {
     IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
          "com.google.test.metric.eclipse.core.testabilityLaunchListener");
 
@@ -192,8 +199,7 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
       try {
         TestabilityLaunchListener launchListener =
             (TestabilityLaunchListener) element.createExecutableExtension("class");
-        launchListener.onLaunchCompleted(reportDirectory);
-        launchListener.onLaunchCompleted(javaProject, classIssues);
+        launchListener.onLaunchCompleted(reportOptions, javaProject, classIssues, reportDirectory);
       } catch (CoreException e) {
         logger.logException("Error creating Testability Launch Listener", e);
       }

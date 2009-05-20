@@ -19,35 +19,26 @@ import com.google.test.metric.eclipse.core.TestabilityLaunchListener;
 import com.google.test.metric.eclipse.internal.util.Logger;
 import com.google.test.metric.eclipse.internal.util.TestabilityConstants;
 import com.google.test.metric.eclipse.ui.TestabilityReportView;
-import com.google.test.metric.eclipse.ui.annotation.TestabilityAnnotationModel;
+import com.google.test.metric.report.ReportOptions;
 import com.google.test.metric.report.issues.ClassIssues;
+import com.google.test.metric.report.issues.Issue;
 
-import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
-import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jface.text.source.IAnnotationModel;
-import org.eclipse.jface.text.source.IAnnotationModelExtension;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.part.FileEditorInput;
-import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
-import org.eclipse.ui.texteditor.IDocumentProvider;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Listener which knows how to handle tasks after a testability launch is successfully completed,
@@ -59,7 +50,56 @@ public class TestabilityReportLaunchListener implements TestabilityLaunchListene
 
   private final Logger logger = new Logger(); 
 
-  public void onLaunchCompleted(final File reportDirectory) {
+  public void onLaunchCompleted(final ReportOptions reportOptions, final IJavaProject javaProject,
+      final List<ClassIssues> classIssues, File reportDirectory) {
+    showHtmlReportView(reportDirectory);
+    try {
+      createMarkersFromClassIssues(classIssues, javaProject);
+    } catch (CoreException e) {
+      e.printStackTrace();
+    }
+  }
+  
+  private void createMarkersFromClassIssues(List<ClassIssues> classIssues,
+      IJavaProject javaProject) throws CoreException {
+    javaProject.getProject().deleteMarkers(TestabilityConstants.TESTABILITY_MARKER_TYPE,
+        true, IResource.DEPTH_INFINITE);
+    IPackageFragmentRoot[] roots = javaProject.getPackageFragmentRoots();
+    List<IPath> sourceFolderPaths = new ArrayList<IPath>();
+    for (IPackageFragmentRoot root : roots) {
+      if (!root.isArchive()) {
+        IResource rootResource = root.getCorrespondingResource();
+        sourceFolderPaths.add(rootResource.getFullPath().removeFirstSegments(1));
+      }
+    }
+    for (ClassIssues classIssue : classIssues) {
+      IResource resource = getAbsolutePathFromJavaFile(classIssue.getPath(), sourceFolderPaths,
+          javaProject.getProject());
+      if (resource != null) {
+        for (Issue issue : classIssue.getMostImportantIssues()) {
+          IMarker marker = resource.createMarker(TestabilityConstants.TESTABILITY_MARKER_TYPE);
+          marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+          marker.setAttribute(IMarker.LINE_NUMBER, issue.getLineNumber());
+          marker.setAttribute(IMarker.MESSAGE, "Issue of type : " + issue.getType().toString());
+        }
+      } else {
+        logger.logException("No Resource found for Class : " + classIssue.getPath(), null);
+      }
+    }
+  }
+
+  private IResource getAbsolutePathFromJavaFile(String path, List<IPath> sourceFolderPaths,
+      IProject project) {
+    for (IPath sourceFolderPath : sourceFolderPaths) {
+      IPath totalPath = sourceFolderPath.append(path + ".java");
+      if (project.exists(totalPath)) {
+        return project.findMember(totalPath);
+      }
+    }
+    return null;
+  }
+
+  public void showHtmlReportView(final File reportDirectory) {
     Display.getDefault().asyncExec(new Runnable() {
       public void run() {
         IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
@@ -74,111 +114,5 @@ public class TestabilityReportLaunchListener implements TestabilityLaunchListene
         } 
       }
     });
-  }
-
-  public void onLaunchCompleted(final IJavaProject javaProject,
-      final List<ClassIssues> classIssues) {
-    Display.getDefault().asyncExec(new Runnable() {
-      public void run() {
-        IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-        Map<String, EditorInfo> documentMap =
-            getPathToDocumentMapping(javaProject, page.getEditorReferences());
-        for (ClassIssues issue : classIssues) {
-          String path = issue.getPath();
-          if (documentMap.containsKey(path)) {
-            EditorInfo info = documentMap.get(path);
-            IDocumentProvider documentProvider = info.provider;
-            FileEditorInput editorInput = info.input;
-            IResource resource = editorInput.getFile();
-            IAnnotationModel annotationModel = documentProvider.getAnnotationModel(editorInput);
-            if (annotationModel instanceof IAnnotationModelExtension) {
-              // TODO(shyamseshadri): Might need to remove AM if already added.
-              IAnnotationModelExtension extension = (IAnnotationModelExtension) annotationModel;
-              TestabilityAnnotationModel testabilityAnnotationModel =
-                  new TestabilityAnnotationModel(issue);
-              extension.addAnnotationModel(path + "-" + TestabilityConstants.TESTABILITY,
-                  testabilityAnnotationModel);
-            }
-          }
-        }
-      }
-    });
-  }
-  
-  /**
-   * Visible for testing. Gets the Source folders for a java project.
-   */
-  protected Set<String> getSourceFolders(IJavaProject javaProject) throws JavaModelException {
-    Set<String> sourceFolders = new HashSet<String>();
-    IPackageFragmentRoot[] roots = javaProject.getPackageFragmentRoots();
-    for (IPackageFragmentRoot root : roots) {
-      if (!root.isArchive()) {
-        IResource rootResource = root.getCorrespondingResource();
-        String rootURL = rootResource.getFullPath().toOSString();
-        sourceFolders.add(rootURL + System.getProperty("file.separator"));
-      }
-    }
-    return sourceFolders;
-  }
-
-  private Map<String, EditorInfo> getPathToDocumentMapping(IJavaProject javaProject,
-      IEditorReference[] editorReferences) {
-    Map<String, EditorInfo> documentMap = new HashMap<String, EditorInfo>();
-    for (IEditorReference editorReference : editorReferences) {
-      try {
-        IEditorInput editorInput = editorReference.getEditorInput();
-        if (editorInput instanceof FileEditorInput) {
-          FileEditorInput fileEditorInput = (FileEditorInput) editorInput;
-          IFile file = fileEditorInput.getFile();
-          IPath path = file.getFullPath();
-          if (fileEditorInput.getName().endsWith(".java")) {
-            if (javaProject.getProject().equals(file.getProject())) { 
-              IWorkbenchPart part = editorReference.getPart(false);
-              if (part instanceof AbstractDecoratedTextEditor) {
-                AbstractDecoratedTextEditor editor = (AbstractDecoratedTextEditor) part;
-                IDocumentProvider documentProvider = editor.getDocumentProvider();
-                EditorInfo info = new EditorInfo(fileEditorInput, documentProvider);
-                documentMap.put(getNicePath(path.toOSString(), getSourceFolders(javaProject)),
-                    info);
-              }
-            }
-          }
-        }
-      } catch (PartInitException e) {
-        logger.logException(e);
-      } catch (JavaModelException e) {
-        logger.logException(e);
-      }
-    }
-    return documentMap;
-  }
-  
-  /**
-   * Visible for testing. Gets the path after the source folder without a trailing dot java.
-   */
-  protected String getNicePath(String pathString, Set<String> sourceFolders) {
-    for (String sourceFolder : sourceFolders) {
-      if (pathString.startsWith(sourceFolder)) {
-        return stripDotJavaIfExists(pathString, sourceFolder);
-      }
-    }
-    return pathString;
-  }
-
-  private String stripDotJavaIfExists(String pathString, String sourceFolder) {
-    String substring = pathString.substring(sourceFolder.length());
-    if (substring.endsWith(".java")) {
-      substring = substring.substring(0, substring.length() - 5);
-    }
-    return substring;
-  }
-  
-  static class EditorInfo {
-    EditorInfo(FileEditorInput editorInput, IDocumentProvider documentProvider) {
-      input = editorInput;
-      provider = documentProvider;
-    }
-    IDocumentProvider provider;
-    FileEditorInput input;
   }
 }

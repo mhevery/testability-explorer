@@ -36,6 +36,8 @@ public class TestabilityConstants {
   public static final String CONFIGURATION_ATTR_WHITELIST =
     "testability.launch.configuration.whitelist";
   
+  public static final String TESTABILITY_MARKER_TYPE = "com.google.test.metric.testabilityMarker";
+  
   public static final int MAX_ACCEPTABLE_COST = 100;
   public static final int MAX_EXCELLENT_COST = 20;
   public static final int CYCLOMATIC_COST = 1;

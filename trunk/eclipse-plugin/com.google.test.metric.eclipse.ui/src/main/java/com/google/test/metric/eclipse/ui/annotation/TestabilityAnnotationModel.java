@@ -16,6 +16,7 @@
 package com.google.test.metric.eclipse.ui.annotation;
 
 import com.google.test.metric.eclipse.internal.util.Logger;
+import com.google.test.metric.report.ReportOptions;
 import com.google.test.metric.report.issues.ClassIssues;
 
 import org.eclipse.jface.text.BadLocationException;
@@ -42,11 +43,12 @@ public class TestabilityAnnotationModel implements IAnnotationModel {
   private final Logger logger = new Logger();
   private List<Annotation> annotations;
   private final ClassIssues classIssues;
-  private final IssuesToAnnotationTranslator translator =
-      new IssuesToAnnotationTranslator();
+  private final IssuesToAnnotationTranslator translator;
 
-  public TestabilityAnnotationModel(ClassIssues classIssues) {
+  public TestabilityAnnotationModel(ClassIssues classIssues,
+      ReportOptions reportOptions) {
     this.classIssues = classIssues;
+    this.translator = new IssuesToAnnotationTranslator(reportOptions);
   }
 
   /**
