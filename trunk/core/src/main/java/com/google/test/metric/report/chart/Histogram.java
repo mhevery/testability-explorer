@@ -55,6 +55,10 @@ public class Histogram {
     this.maxBin = maxBin;
   }
 
+  public int[] getBinRange() {
+    return getScaledBinRange(0, Integer.MAX_VALUE, maxBin);
+  }
+
   public int[] getScaledBinRange(int from, int to, int maxScale) {
     double scale = (double) maxScale / maxBin;
     int[] subBins = new int[bins.length];
