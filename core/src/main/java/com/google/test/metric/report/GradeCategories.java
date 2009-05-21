@@ -26,8 +26,8 @@ import com.google.test.metric.report.chart.PieChartUrl;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.ceil;
 import static java.lang.Math.log;
+import static java.lang.Math.max;
 import static java.lang.Math.min;
-import java.util.Collections;
 import java.util.List;
 
 public class GradeCategories {
@@ -109,7 +109,7 @@ public class GradeCategories {
 
   public MultiHistogramDataModel buildHistogramDataModel(List<Integer> costs) {
     int binCount = min(MAX_HISTOGRAM_BINS, 10 * (int) log(costs.size()) + 1);
-    int binWidth = (int) ceil((double) Collections.max(costs) / binCount);
+    int binWidth = (int) ceil((double) findMax(costs) / binCount);
     Histogram overallHistogram = new Histogram(0, binWidth, binCount);
     Histogram excellentHistogram = new Histogram(0, binWidth, binCount);
     Histogram goodHistogram = new Histogram(0, binWidth, binCount);
@@ -131,6 +131,14 @@ public class GradeCategories {
 
     return new MultiHistogramDataModel(excellentHistogram, goodHistogram, needsWorkHistogram,
         overallHistogram, binCount, binWidth);
+  }
+
+  private int findMax(List<Integer> values) {
+    int maxValue = Integer.MIN_VALUE;
+    for (int value : values) {
+      maxValue = max(maxValue, value);
+    }
+    return maxValue;
   }
 
   public int getMaxExcellentCost() {
