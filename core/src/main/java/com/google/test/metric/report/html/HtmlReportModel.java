@@ -18,17 +18,22 @@ package com.google.test.metric.report.html;
 import com.google.test.metric.AnalysisModel;
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
-import com.google.test.metric.report.*;
-import com.google.test.metric.report.chart.*;
-import static com.google.test.metric.report.chart.GoogleChartAPI.*;
+import com.google.test.metric.report.GradeCategories;
+import com.google.test.metric.report.ReportOptions;
+import com.google.test.metric.report.SummaryReportModel;
+import com.google.test.metric.report.chart.CostDistributionChart;
+import com.google.test.metric.report.chart.GoodnessChart;
+import static com.google.test.metric.report.chart.GoogleChartAPI.GREEN;
+import static com.google.test.metric.report.chart.GoogleChartAPI.RED;
+import static com.google.test.metric.report.chart.GoogleChartAPI.YELLOW;
+import com.google.test.metric.report.chart.PieChartUrl;
 import com.google.test.metric.report.issues.ClassIssues;
-import com.google.test.metric.report.issues.IssuesReporter;
-
-import java.util.Date;
-import java.util.List;
-import java.io.*;
 
 import static org.apache.commons.codec.binary.Base64.encodeBase64;
+
+import java.io.ByteArrayOutputStream;
+import java.util.Date;
+import java.util.List;
 
 /**
  * This model provides the data that backs the HTML report.
@@ -54,7 +59,8 @@ public class HtmlReportModel extends SummaryReportModel {
   }
 
   public String getHistogram() {
-    CostDistributionChart chart = new CostDistributionChart();
+    GradeCategories gradeCategories = new GradeCategories(maxExcellentCost, maxAcceptableCost);
+    CostDistributionChart chart = new CostDistributionChart(gradeCategories);
     chart.addValues(costs);
 
     ByteArrayOutputStream out = new ByteArrayOutputStream();

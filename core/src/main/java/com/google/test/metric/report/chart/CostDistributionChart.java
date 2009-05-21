@@ -15,18 +15,23 @@
  */
 package com.google.test.metric.report.chart;
 
+import com.google.test.metric.report.GradeCategories;
+import com.google.test.metric.report.MultiHistogramDataModel;
+
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.renderer.xy.XYItemRenderer;
-import org.jfree.chart.renderer.xy.XYBarRenderer;
-import org.jfree.chart.axis.*;
+import org.jfree.chart.axis.LogarithmicAxis;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.data.statistics.HistogramType;
-import org.jfree.data.statistics.HistogramDataset;
+import org.jfree.chart.renderer.xy.StackedXYBarRenderer;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.data.xy.CategoryTableXYDataset;
+
+import java.awt.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
 
 import javax.imageio.ImageIO;
-import java.io.OutputStream;
-import java.io.IOException;
-import java.util.List;
 
 /**
  * This chart shows the distribution of classes against the testability
@@ -36,22 +41,30 @@ import java.util.List;
  * @author aeagle
  */
 public class CostDistributionChart {
-  private final HistogramDataset dataset = new HistogramDataset();
-  private static final int NUM_BINS = 20;
   private static final int WIDTH = 700;
   private static final int HEIGHT = 200;
+  private List<Integer> costs;
+  private final GradeCategories gradeCategories;
 
-  public CostDistributionChart() {
-    dataset.setType(HistogramType.FREQUENCY);
+  public CostDistributionChart(GradeCategories gradeCategories) {
+    this.gradeCategories = gradeCategories;
   }
 
   public void createChart(OutputStream out) {
+    CategoryTableXYDataset dataset = new CategoryTableXYDataset();
+    MultiHistogramDataModel model = gradeCategories.buildHistogramDataModel(costs);
+    addToDataset(dataset, model, "Excellent", model.getExcellent().getBinRange());
+    addToDataset(dataset, model, "Good", model.getGood().getBinRange());
+    addToDataset(dataset, model, "Needs Work", model.getNeedsWork().getBinRange());
+
     NumberAxis xAxis = new NumberAxis("Cost to test");
     xAxis.setAutoRangeIncludesZero(false);
     LogarithmicAxis yAxis = new LogarithmicAxis("# classes");
     yAxis.setStrictValuesFlag(false);
-    XYItemRenderer renderer = new XYBarRenderer();
-
+    XYItemRenderer renderer = new StackedXYBarRenderer();
+    renderer.setSeriesPaint(2, Color.RED);
+    renderer.setSeriesPaint(1, Color.YELLOW);
+    renderer.setSeriesPaint(0, Color.GREEN);
     XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
     JFreeChart chart = new JFreeChart(null,
             JFreeChart.DEFAULT_TITLE_FONT,
@@ -64,17 +77,15 @@ public class CostDistributionChart {
     }
   }
 
-  public void addValues(double[] vals) {
-    if (vals.length > 0) {
-      dataset.addSeries("Costs", vals, NUM_BINS);
+  private void addToDataset(CategoryTableXYDataset dataset, MultiHistogramDataModel model,
+                            String seriesName, int[] dataSeries) {
+    for (int binNum = 0; binNum < dataSeries.length; binNum++) {
+      int value = dataSeries[binNum];
+      dataset.add((binNum + 0.5) * model.getBinWidth(), value, seriesName);
     }
   }
 
   public void addValues(List<Integer> costs) {
-    double[] vals = new double[costs.size()];
-    for (int i=0; i<vals.length; i++) {
-      vals[i] = costs.get(i);
-    }
-    addValues(vals);
+    this.costs = costs;
   }
 }
