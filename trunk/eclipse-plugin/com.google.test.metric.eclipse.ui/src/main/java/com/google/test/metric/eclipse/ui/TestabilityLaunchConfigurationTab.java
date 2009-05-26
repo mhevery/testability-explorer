@@ -152,6 +152,14 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
     whiteListList = new Text(control, SWT.BORDER);
     GridData whiteListGridData = new GridData(GridData.FILL_HORIZONTAL);
     whiteListList.setLayoutData(whiteListGridData);
+    whiteListList.addKeyListener(new KeyListener() {
+      public void keyPressed(KeyEvent e) {
+      }
+
+      public void keyReleased(KeyEvent e) {
+        setTabDirty();
+      }
+    });
     createEmptyCell(control, 1);
   }
 
@@ -162,6 +170,14 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
     GridData recordingDepthGridData = new GridData();
     recordingDepthGridData.widthHint = 50;
     recordingDepthText.setLayoutData(recordingDepthGridData);
+    recordingDepthText.addKeyListener(new KeyListener() {
+      public void keyPressed(KeyEvent e) {
+      }
+
+      public void keyReleased(KeyEvent e) {
+        setTabDirty();
+      }
+    });
 
     Label cyclomaticCost = new Label(control, SWT.NONE);
     cyclomaticCost.setText("Cyclomatic Cost:");
@@ -169,6 +185,14 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
     GridData cyclomaticCostGridData = new GridData();
     cyclomaticCostGridData.widthHint = 50;
     cyclomaticCostText.setLayoutData(cyclomaticCostGridData);
+    cyclomaticCostText.addKeyListener(new KeyListener() {
+      public void keyPressed(KeyEvent e) {
+      }
+
+      public void keyReleased(KeyEvent e) {
+        setTabDirty();
+      }
+    });
 
     Label globalStateCost = new Label(control, SWT.NONE);
     globalStateCost.setText("Global State Cost:");
@@ -176,6 +200,14 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
     GridData globalStateCostGridData = new GridData();
     globalStateCostGridData.widthHint = 50;
     globalStateCostText.setLayoutData(globalStateCostGridData);
+    globalStateCostText.addKeyListener(new KeyListener() {
+      public void keyPressed(KeyEvent e) {
+      }
+
+      public void keyReleased(KeyEvent e) {
+        setTabDirty();
+      }
+    });
 
     Label maxExcellentCost = new Label(control, SWT.NONE);
     maxExcellentCost.setText("Max Cost for Excellent Classes:");
@@ -183,6 +215,14 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
     GridData maxExcellentCostGridData = new GridData();
     maxExcellentCostGridData.widthHint = 50;
     maxExcellentCostText.setLayoutData(maxExcellentCostGridData);
+    maxExcellentCostText.addKeyListener(new KeyListener() {
+      public void keyPressed(KeyEvent e) {
+      }
+
+      public void keyReleased(KeyEvent e) {
+        setTabDirty();
+      }
+    });
 
     Label maxAcceptableCost = new Label(control, SWT.NONE);
     maxAcceptableCost.setText("Max Cost for Acceptable Classes:");
@@ -190,6 +230,14 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
     GridData maxAcceptableCostGridData = new GridData();
     maxAcceptableCostGridData.widthHint = 50;
     maxAcceptableCostText.setLayoutData(maxAcceptableCostGridData);
+    maxAcceptableCostText.addKeyListener(new KeyListener() {
+      public void keyPressed(KeyEvent e) {
+      }
+
+      public void keyReleased(KeyEvent e) {
+        setTabDirty();
+      }
+    });
   }
 
   private void createEmptyCell(Composite control, int span) {
