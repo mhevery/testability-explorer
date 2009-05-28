@@ -67,6 +67,12 @@
            name="Testability Report"
            restorable="true">
      </view>
+     <view
+           class="com.google.test.metric.eclipse.ui.markers.TestabilityView"
+           id="com.google.test.metric.eclipse.ui.testabilityView"
+           name="Testability View"
+           restorable="true">
+     </view>
   </extension>
   <extension
         point="com.google.test.metric.eclipse.core.testabilityLaunchListener">
@@ -157,9 +163,84 @@
      <persistent
            value="true">
      </persistent>
-     <super
-           type="org.eclipse.core.resources.problemmarker">
-     </super>
+  </extension>
+  <extension
+        id="teMarkerSupport"
+        name="teMarkerSupport"
+        point="org.eclipse.ui.ide.markerSupport">
+     <markerContentGenerator
+           id="com.google.test.metric.eclipse.ui.testabilityMarkerContentGenerator"
+           name="testabilityMarkerContentGenerator">
+        <markerFieldReference
+              id="com.google.test.metric.eclipse.ui.testabilityDescriptionMarkerField"
+              visible="true">
+        </markerFieldReference>
+        <markerFieldReference
+              id="com.google.test.metric.eclipse.ui.testabilityResourceMarkerField"
+              visible="true">
+        </markerFieldReference>
+        <markerFieldReference
+              id="com.google.test.metric.eclipse.ui.testabilityPathMarkerField"
+              visible="true">
+        </markerFieldReference>
+        <markerFieldReference
+              id="com.google.test.metric.eclipse.ui.testabilityLineNumberMarkerField"
+              visible="true">
+        </markerFieldReference>
+        <markerFieldReference
+              id="com.google.test.metric.eclipse.ui.testabilityIssueTypeMarkerField"
+              visible="true">
+        </markerFieldReference>
+        <markerTypeReference
+              id="com.google.test.metric.testabilityMarker">
+        </markerTypeReference>
+        <markerGrouping
+              id="com.google.test.metric.eclipse.ui.testabilityMarkerGrouping"
+              label="Testability">
+           <markerGroupingEntry
+                 id="com.google.test.metric.eclipse.ui.testabilityMarkerGroupingEntry"
+                 label="label"
+                 priority="1">
+           </markerGroupingEntry>
+           <markerAttributeGrouping
+                 attribute="message"
+                 markerType="com.google.test.metric.testabilityMarker">
+           </markerAttributeGrouping>
+        </markerGrouping>
+     </markerContentGenerator>
+     <markerField
+           class="com.google.test.metric.eclipse.ui.markers.TestabilityDescriptionMarkerField"
+           id="com.google.test.metric.eclipse.ui.testabilityDescriptionMarkerField"
+           name="Description">
+     </markerField>
+     <markerField
+           class="com.google.test.metric.eclipse.ui.markers.TestabilityResourceMarkerField"
+           id="com.google.test.metric.eclipse.ui.testabilityResourceMarkerField"
+           name="Resource">
+     </markerField>
+     <markerField
+           class="com.google.test.metric.eclipse.ui.markers.TestabilityPathMarkerField"
+           id="com.google.test.metric.eclipse.ui.testabilityPathMarkerField"
+           name="Path">
+     </markerField>
+     <markerField
+           class="com.google.test.metric.eclipse.ui.markers.TestabilityLineNumberMarkerField"
+           id="com.google.test.metric.eclipse.ui.testabilityLineNumberMarkerField"
+           name="Line Number">
+     </markerField>
+     <markerField
+           class="com.google.test.metric.eclipse.ui.markers.TestabilityIssueTypeMarkerField"
+           id="com.google.test.metric.eclipse.ui.testabilityIssueTypeMarkerField"
+           name="Issue Type">
+     </markerField>
+  </extension>
+  <extension
+        point="org.eclipse.ui.ide.markerImageProviders">
+     <imageprovider
+           class="com.google.test.metric.eclipse.ui.markers.TestabilityMarkerImageProvider"
+           id="com.google.test.metric.eclipse.ui.testabilityMarkerImageProvider"
+           markertype="com.google.test.metric.testabilityMarker">
+     </imageprovider>
   </extension>
 
 

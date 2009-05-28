@@ -53,6 +53,8 @@ public class TestabilityConstants {
   public static final int MAX_METHOD_COUNT = 10;
   public static final int WORST_OFFENDER_COUNT = 20;
   
+  public static final String ISSUE_TYPE = "issueType";
+  
   private TestabilityConstants() {
   }
 }

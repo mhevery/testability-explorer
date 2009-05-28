@@ -18,6 +18,7 @@ package com.google.test.metric.eclipse.ui.internal;
 import com.google.test.metric.eclipse.core.TestabilityLaunchListener;
 import com.google.test.metric.eclipse.internal.util.Logger;
 import com.google.test.metric.eclipse.internal.util.TestabilityConstants;
+import com.google.test.metric.eclipse.internal.util.TestabilityExplorerMessageRetriever;
 import com.google.test.metric.eclipse.ui.TestabilityReportView;
 import com.google.test.metric.report.ReportOptions;
 import com.google.test.metric.report.issues.ClassIssues;
@@ -49,14 +50,17 @@ import java.util.List;
 public class TestabilityReportLaunchListener implements TestabilityLaunchListener {
 
   private final Logger logger = new Logger(); 
+  private final TestabilityExplorerMessageRetriever retriever =
+      new TestabilityExplorerMessageRetriever();
 
   public void onLaunchCompleted(final ReportOptions reportOptions, final IJavaProject javaProject,
       final List<ClassIssues> classIssues, File reportDirectory) {
     showHtmlReportView(reportDirectory);
     try {
       createMarkersFromClassIssues(classIssues, javaProject);
+      showTestabilityView();
     } catch (CoreException e) {
-      e.printStackTrace();
+      logger.logException(e);
     }
   }
   
@@ -80,7 +84,8 @@ public class TestabilityReportLaunchListener implements TestabilityLaunchListene
           IMarker marker = resource.createMarker(TestabilityConstants.TESTABILITY_MARKER_TYPE);
           marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
           marker.setAttribute(IMarker.LINE_NUMBER, issue.getLineNumber());
-          marker.setAttribute(IMarker.MESSAGE, "Issue of type : " + issue.getType().toString());
+          marker.setAttribute(IMarker.MESSAGE, retriever.getSuggestion(issue.getType(), issue.getSubType()));
+          marker.setAttribute(TestabilityConstants.ISSUE_TYPE, issue.getType().toString());
         }
       } else {
         logger.logException("No Resource found for Class : " + classIssue.getPath(), null);
@@ -99,7 +104,20 @@ public class TestabilityReportLaunchListener implements TestabilityLaunchListene
     return null;
   }
 
-  public void showHtmlReportView(final File reportDirectory) {
+  private void showTestabilityView() {
+    Display.getDefault().asyncExec(new Runnable() {
+      public void run() {
+        IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        try {
+          IViewPart viewPart = page.showView("com.google.test.metric.eclipse.ui.testabilityView");
+        } catch (PartInitException e) {
+          logger.logException("Error initializing Testability View", e);
+        } 
+      }
+    });
+  }
+
+  private void showHtmlReportView(final File reportDirectory) {
     Display.getDefault().asyncExec(new Runnable() {
       public void run() {
         IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
@@ -110,7 +128,7 @@ public class TestabilityReportLaunchListener implements TestabilityLaunchListene
                 + "/" + TestabilityConstants.HTML_REPORT_FILENAME);
           }
         } catch (PartInitException e) {
-          logger.logException("Error initializing Testability View", e);
+          logger.logException("Error initializing Testability Report View", e);
         } 
       }
     });
