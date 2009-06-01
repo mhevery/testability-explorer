@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+  <#include "../costDetailBox.html" />
+  <title>${message("report.title")}</title>
+  <link href="../te.css" rel="stylesheet" type="text/css">
+  <style type="text/css">
+    <#include "../te.css"/>
+  </style>
+  <script type="text/javascript">
+    <#include "report.js"/>
+  </script>
+</head>
+<body>
+<h1>${message("report.title")}</h1>
+
+<div id="timestamp">
+  ${message("report.timestamp", now)}
+</div>
+
+<div style="margin-top: 32px;">
+  <div style="padding-bottom: 24px; font-weight: bold; font-size: 120%">Overall score:
+         <span style="font-weight: normal">${overall}</span></div>
+  <div style="float: left;">
+    ${pieChart}
+  </div>
+  <div style="float: left;">
+    ${overallChart}
+  </div>
+  <div class="overview">
+    <#if total gt 0>
+      <table class="overview_table">
+        <tr>
+          <th>Analyzed classes</th>
+          <th class="value">${total}</th>
+          <th class="percent">&nbsp;</th>
+        </tr>
+        <tr>
+          <td> - Excellent</td>
+          <td class="value">${excellentCount}</td>
+          <td class="percent">${(excellentCount / total)?string.percent}</td>
+        </tr>
+
+        <tr>
+          <td> - Good</td>
+          <td class="value">${goodCount}</td>
+          <td class="percent">${(goodCount / total)?string.percent}</td>
+        </tr>
+        <tr>
+          <td> - Needs work</td>
+          <td class="value">${needsWorkCount}</td>
+          <td class="percent">${(needsWorkCount / total)?string.percent}</td>
+        </tr>
+      </table>
+    <#else/>
+      Total score is zero - were any classes analyzed??
+    </#if>
+  </div>
+
+  <div style="clear:both; width: 0">&nbsp;</div>
+</div>
+
+<div style="margin-bottom: 32px; margin-left: 32px; margin-top: 16px;">
+  ${histogram}
+</div>
+
+<h2 style="margin-bottom: 12px;">Least Testable Classes</h2>
+
+<#list worstOffenders as classIssues>
+  <p class="header">${message("report.explain.class.hardToTest", "<tt>", classIssues.className, "</tt>")}</p>
+  <div class="classExplanation">
+    <div class="cost">${classIssues.totalCost}</div>
+    <#if classIssues.constructionIssues?keys?size != 0>
+      <em>${message("report.explain.class.construction")}</em>
+      <@costDetailBox classIssues.constructionIssues classIssues.path "construction"/>
+    </#if>
+
+    <#if classIssues.collaboratorIssues?keys?size != 0>
+      <em>${message("report.explain.class.collaborator")}</em>
+      <@costDetailBox classIssues.collaboratorIssues classIssues.path "collaborator" />
+    </#if>
+
+    <#if classIssues.directCostIssues?keys?size != 0>
+      <em>${message("report.explain.class.directCost")}</em>
+      <@costDetailBox classIssues.directCostIssues classIssues.path "directCost" />
+    </#if>
+
+    <!--input type="button" value="Show more suggestions"/><br/-->
+    <!--p>${message("report.explain.class.benefits", "<b>", 0.00, "</b>")}</p-->
+  </div>
+</#list>
+<div class="copyright">
+  <a href="http://testabilityexplorer.org">http://testabilityexplorer.org</a></div>
+</body>
+</html>

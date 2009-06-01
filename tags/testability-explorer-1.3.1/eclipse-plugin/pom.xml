@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.google.code.testability-explorer</groupId>
+  <artifactId>eclipse-plugin</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <modules>
+    <module>Testability Explorer</module>
+    <module>com.google.test.metric.eclipse.core</module>
+    <module>com.google.test.metric.eclipse.feature</module>
+    <module>com.google.test.metric.eclipse.ui</module>
+  </modules>
+</project>
