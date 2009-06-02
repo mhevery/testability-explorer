@@ -200,11 +200,6 @@ public class IssuesReporterTest extends TestCase {
     assertEquals(classIssues.toString(), 3, classIssues.getSize());
   }
 
-  public void testNoIssuesForMainMethod() throws Exception {
-    ClassIssues classIssues = issuesReporter.determineIssues(decoratedComputer.compute(Main.class));
-    assertEquals(0, classIssues.getSize());
-  }
-
   public void testMultipleMethodInvokationSourcesDoesntBlowUp() throws Exception {
     // Threw an exception at one time
     ClassIssues classIssues = issuesReporter.determineIssues(
