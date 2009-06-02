@@ -15,6 +15,12 @@
  */
 package com.google.test.metric.report.issues;
 
+import com.google.test.metric.ClassCost;
+import com.google.test.metric.CostModel;
+import com.google.test.metric.GlobalCost;
+import com.google.test.metric.MethodCost;
+import com.google.test.metric.MethodInvokationCost;
+import com.google.test.metric.ViolationCost;
 import static com.google.test.metric.report.issues.IssueSubType.COMPLEXITY;
 import static com.google.test.metric.report.issues.IssueSubType.NON_MOCKABLE;
 import static com.google.test.metric.report.issues.IssueSubType.SINGLETON;
@@ -22,16 +28,11 @@ import static com.google.test.metric.report.issues.IssueSubType.STATIC_METHOD;
 import static com.google.test.metric.report.issues.IssueType.COLLABORATOR;
 import static com.google.test.metric.report.issues.IssueType.CONSTRUCTION;
 import static com.google.test.metric.report.issues.IssueType.DIRECT_COST;
-import com.google.test.metric.ClassCost;
-import com.google.test.metric.CostModel;
-import com.google.test.metric.GlobalCost;
-import com.google.test.metric.MethodCost;
-import com.google.test.metric.MethodInvokationCost;
-import com.google.test.metric.ViolationCost;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.logging.Logger;
 
 /**
  * Looks at ClassCost models and infers the coding issue that incurred the cost.
@@ -40,6 +41,7 @@ import java.util.Queue;
  */
 public class IssuesReporter {
 
+  private static final Logger logger = Logger.getLogger(IssuesReporter.class.getCanonicalName());
   private final Queue<ClassIssues> mostImportantIssues;
   private final CostModel costModel;
 
@@ -54,17 +56,20 @@ public class IssuesReporter {
   }
 
   public ClassIssues determineIssues(ClassCost classCost) {
-    ClassIssues classIssues = new ClassIssues(classCost.getClassName(),
-        costModel.computeClass(classCost));
+    int cost = costModel.computeClass(classCost);
+    ClassIssues classIssues = new ClassIssues(classCost.getClassName(), cost);
     for (MethodCost methodCost : classCost.getMethods()) {
       addIssuesInMethod(classIssues, methodCost, classCost);
+    }
+    if (classIssues.isEmpty() && cost > 100) {
+      logger.warning(String.format("No issues found in class %s which has a cost of %d",
+          classCost.getClassName(), cost));
     }
     return classIssues;
   }
 
   void addIssuesInMethod(ClassIssues classIssues, MethodCost methodCost, ClassCost classCost) {
-    if (methodCost.getViolationCosts() == null || methodCost.getViolationCosts().isEmpty() ||
-        methodCost.isMainMethod()) {
+    if (methodCost.getViolationCosts() == null || methodCost.getViolationCosts().isEmpty()) {
       // no issues to add
       return;
     }
