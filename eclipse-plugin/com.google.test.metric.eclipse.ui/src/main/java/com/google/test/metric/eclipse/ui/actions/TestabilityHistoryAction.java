@@ -15,27 +15,16 @@
  */
 package com.google.test.metric.eclipse.ui.actions;
 
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.IWorkbenchWindowActionDelegate;
+import org.eclipse.debug.ui.actions.AbstractLaunchHistoryAction;
 
-public class TestabilityHistoryAction implements IWorkbenchWindowActionDelegate {
+/**
+ * 
+ * @author shyamseshadri@google.com (Shyam Seshadri)
+ */
+public class TestabilityHistoryAction extends AbstractLaunchHistoryAction {
 
-  public void dispose() {
-    // TODO Implement this for the history action.
-  }
-
-  public void init(IWorkbenchWindow window) {
-    // TODO Implement this for the history action.
-  }
-
-  public void run(IAction action) {
-    // TODO Implement this for the history action.
-  }
-
-  public void selectionChanged(IAction action, ISelection selection) {
-    // TODO Implement this for the history action.
+  public TestabilityHistoryAction() {
+    super("com.google.test.metric.eclipse.ui.launchGroup.testability");
   }
 
 }
