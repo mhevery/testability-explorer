@@ -6,8 +6,8 @@ import com.google.test.metric.JavaTestabilityConfig;
 import com.google.test.metric.JavaTestabilityRunner;
 import com.google.test.metric.RegExpWhiteList;
 import com.google.test.metric.ReportGeneratorBuilder;
-import com.google.test.metric.WhiteList;
 import com.google.test.metric.ReportGeneratorBuilder.ReportFormat;
+import com.google.test.metric.WhiteList;
 import com.google.test.metric.report.MultiReportGenerator;
 import com.google.test.metric.report.ReportGenerator;
 import com.google.test.metric.report.ReportOptions;
@@ -190,7 +190,7 @@ public class TestabilityExplorerMojo extends AbstractMavenReport {
       PrintStream resultPrintStream = getResultPrintStream(ReportFormat.valueOf(format));
       ReportGenerator otherReport = new ReportGeneratorBuilder(classPath, reportOptions,
           ReportFormat.valueOf(format), resultPrintStream, entries).build();
-      report = new MultiReportGenerator(null, report, otherReport);
+      report = new MultiReportGenerator(report, otherReport);
     }
     JavaTestabilityConfig config = new JavaTestabilityConfig(entries, classPath, packageWhiteList,
         report, getErrorPrintStream(), printDepth);

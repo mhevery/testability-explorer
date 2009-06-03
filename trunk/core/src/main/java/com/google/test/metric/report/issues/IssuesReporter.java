@@ -82,10 +82,8 @@ public class IssuesReporter {
                 invokationCost);
       }
     }
-    if (!issuesFound) {
-      if (methodCost.getDirectCost().getCyclomaticComplexityCost() > 0) {
-        addDirectCostIssue(classIssues, methodCost, classCost);
-      }
+    if (methodCost.getDirectCost().getCyclomaticComplexityCost() > 0) {
+      addDirectCostIssue(classIssues, methodCost, classCost);
     }
   }
 
