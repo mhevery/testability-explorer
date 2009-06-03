@@ -5,40 +5,37 @@
       <#assign messagePrefix = "report.explain.class." +
               issueType?lower_case + "." +
               issueSubType?lower_case />
+
+      <#assign wikiPage = issueType?capitalize?replace("_", "") + issueSubType?capitalize?replace("_", "") + "Explanation" />
+      <p class="subIssueType">${message(messagePrefix)}
+        <sup style="font-weight: normal;">
+          <a href="http://code.google.com/p/testability-explorer/wiki/${wikiPage}">
+          ${message("report.explain.linkToWiki")}</a>
+        </sup>
+      </p>
+
       <table class="issuesExplanation">
-        <tr>
-          <td colspan="2">
-            ${message(messagePrefix)}
-            <sup><a href="#">${message("report.explain.linkToWiki")}</a></sup>
-          </td>
-          <th class="contribution">${message("report.explain.contribution")}</th>
-        </tr>
         <#list typeIssues as issue>
           <#assign rowStyle><#if issue_index % 2 == 0>even<#else/>odd</#if></#assign>
           <tr class="${rowStyle}">
-            <td style="padding-left: 1em">
+            <td>
               <#if issue.lineNumberApproximate>
                 ${message("report.explain.aroundLine")}
                 <#else/>
                 ${message("report.explain.onLine")}
               </#if>
-              ${sourceLink(classFilePath, issue.lineNumber?c, issue.lineNumber)}
+              ${sourceLink(classFilePath, issue.lineNumber?c, issue.lineNumber)},
 
             </td>
             <td>
               ${message(messagePrefix + ".element", "<tt>", issue.element.shortFormat(), "</tt>")}
               <#-- ${message(messagePrefix + ".method", "UIUtils#archiveThread", "high", "high")} -->
             </td>
-            <td class="percent">${issue.contributionToClassCost?string.percent}</td>
+            <td class="percent">contributing ${issue.contributionToClassCost?string.percent} of total class cost</td>
           </tr>
         </#list>
-        <tr>
-          <td colspan="4">
-            <em>${message(messagePrefix + ".suggest")}</em>
-          </td>
-        </tr>
       </table>
-
+      <p class="suggestion">${message(messagePrefix + ".suggest")}</p>
     </#if>
   </#list>
 </#macro>
