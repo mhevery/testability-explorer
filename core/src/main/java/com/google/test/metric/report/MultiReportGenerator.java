@@ -16,17 +16,11 @@ import java.util.List;
  */
 public class MultiReportGenerator implements ReportGenerator {
 
-  private ReportGenerator summaryReport;
   private List<ReportGenerator> reports = new ArrayList<ReportGenerator>();
 
   public MultiReportGenerator() {}
 
-  public MultiReportGenerator(ReportGenerator summaryReport) {
-    this.summaryReport = summaryReport;
-  }
-
-  public MultiReportGenerator(ReportGenerator summaryReport, ReportGenerator... reports) {
-    this(summaryReport);
+  public MultiReportGenerator(ReportGenerator... reports) {
     this.reports.addAll(Arrays.asList(reports));
   }
 
@@ -55,29 +49,6 @@ public class MultiReportGenerator implements ReportGenerator {
     for (ReportGenerator report : reports) {
       report.printHeader();
     }
-  }
-
-  /**
-   * Delegate to a SummaryReport, if we have one. The Report interface
-   * doesn't provide this method.
-   * @see SummaryReportModel#getOverall()
-   */
-  public int getOverall() {
-    if (summaryReport != null) {
-      // TODO(alexeagle)
-      throw new UnsupportedOperationException("This still needs some refactoring to work...");
-      //return summaryReport.getOverall();
-    }
-    return 0;
-  }
-
-  /**
-   * One report may be the summary report.
-   * @param summaryReport the summaryReport to set
-   */
-  public void setSummaryReport(ReportGenerator summaryReport) {
-    this.summaryReport = summaryReport;
-    add(summaryReport);
   }
 
   /**

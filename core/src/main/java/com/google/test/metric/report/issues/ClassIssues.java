@@ -15,13 +15,17 @@
  */
 package com.google.test.metric.report.issues;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Iterables.filter;
 import com.google.common.collect.Lists;
+import static com.google.common.collect.Lists.newArrayList;
 import com.google.common.collect.Maps;
 import static com.google.test.metric.report.issues.Issue.isType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 
 /**
  * Data model for the issues we want to explain in a class.
@@ -32,7 +36,7 @@ public class ClassIssues implements IssueHolder {
   private final Queue<Issue> issues;
   private final String className;
   private final Integer totalCost;
-  private static final float MIN_PERCENT_TO_DISPLAY = 0.05f;
+  private static final float MIN_PERCENT_TO_DISPLAY = 0.01f;
   private static final int MAX_ISSUES_TO_DISPLAY_PER_CLASS = 20;
 
   public ClassIssues(String className, Integer totalCost) {
