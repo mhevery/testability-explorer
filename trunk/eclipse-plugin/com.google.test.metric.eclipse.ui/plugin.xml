@@ -35,7 +35,10 @@
                    class="com.google.test.metric.eclipse.ui.actions.TestabilityHistoryAction"
                    id="com.google.test.metric.eclipse.ui.actions.testability.history"
                    label="Testability History"
-                   menubarPath="org.eclipse.ui.run/emptyLaunchGroup">
+                   menubarPath="org.eclipse.ui.run/emptyLaunchGroup"
+                   pulldown="true"
+                   state="true"
+                   style="pulldown">
              </action>
 </actionSet>
 </extension>
