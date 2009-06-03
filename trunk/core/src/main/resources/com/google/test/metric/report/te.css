@@ -2,10 +2,6 @@ body {
   font-family: sans-serif;
 }
 
-p {
-  margin-bottom: 0;
-}
-
 #timestamp {
   color: #666;
   font-style: italic;
@@ -41,11 +37,12 @@ p {
 
 .cost {
   font-family: monospace;
-  padding: 2px 5px;
+  padding: 0.25em 0.5em;
   display: block;
   float: right;
   border: 1px dotted red;
   background-color: pink;
+  margin: 1.5em;
 }
 
 .odd {
@@ -54,6 +51,9 @@ p {
 
 .header {
   font-weight: bold;
+  background-color: #99ccff;
+  margin: 0;
+  padding: 0.5em;
 }
 
 tt {
@@ -61,15 +61,32 @@ tt {
 }
 
 .classExplanation {
-  border: 1px solid gray;
-  padding: 7px;
-  margin-left: 1em;
+  border: thin solid gray;
+  margin-bottom: 1em;
 }
 
 .issuesExplanation {
-  border: 1px dotted gray;
-  margin: 0.5em;
+  margin-left: 2em;
+}
+
+.issueType {
+  font-weight: bold;
+  padding-left: 1em;
+}
+
+.subIssueType {
+  margin-left: 1.5em;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
+
+.suggestion {
+  font-style: italic;
+  border: thin solid #cc9900;
+  background-color: lightyellow;
   padding: 0.5em;
+  margin: 0 2em 2em 2em;
+
 }
 
 .contribution {

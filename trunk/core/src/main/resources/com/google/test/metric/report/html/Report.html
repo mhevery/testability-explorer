@@ -65,24 +65,29 @@
   ${histogram}
 </div>
 
-<h2 style="margin-bottom: 12px;">Least Testable Classes</h2>
+<h2 style="margin-bottom: 12px;">Issues that cause the most untestable classes</h2>
 
 <#list worstOffenders as classIssues>
-  <p class="header">${message("report.explain.class.hardToTest", "<tt>", classIssues.className, "</tt>")}</p>
   <div class="classExplanation">
-    <div class="cost">${classIssues.totalCost}</div>
-    <#if classIssues.constructionIssues?keys?size != 0>
-      <em>${message("report.explain.class.construction")}</em>
+    <#assign numConstructionIssues = classIssues.constructionIssues?keys?size />
+    <#assign numCollaboratorIssues = classIssues.collaboratorIssues?keys?size />
+    <#assign numDirectCostIssues = classIssues.directCostIssues?keys?size />
+
+    <div class="cost">Cost: ${classIssues.totalCost}</div>
+    <p class="header">${message("report.explain.class.hardToTest", "<tt>", classIssues.className, "</tt>")} </p>
+
+    <#if numConstructionIssues != 0>
+      <p class="issueType header">${message("report.explain.class.construction")}</p>
       <@costDetailBox classIssues.constructionIssues classIssues.path "construction"/>
     </#if>
 
-    <#if classIssues.collaboratorIssues?keys?size != 0>
-      <em>${message("report.explain.class.collaborator")}</em>
+    <#if numCollaboratorIssues != 0>
+      <p class="issueType header">${message("report.explain.class.collaborator")}</p>
       <@costDetailBox classIssues.collaboratorIssues classIssues.path "collaborator" />
     </#if>
 
-    <#if classIssues.directCostIssues?keys?size != 0>
-      <em>${message("report.explain.class.directCost")}</em>
+    <#if numDirectCostIssues != 0>
+      <p class="issueType header">${message("report.explain.class.directCost")}</p>
       <@costDetailBox classIssues.directCostIssues classIssues.path "directCost" />
     </#if>
 
