@@ -202,11 +202,12 @@
               label="Testability">
            <markerGroupingEntry
                  id="com.google.test.metric.eclipse.ui.testabilityMarkerGroupingEntry"
-                 label="label"
+                 label="Type"
                  priority="1">
            </markerGroupingEntry>
            <markerAttributeGrouping
-                 attribute="message"
+                 attribute="issueType"
+                 defaultGroupingEntry="issueType"
                  markerType="com.google.test.metric.testabilityMarker">
            </markerAttributeGrouping>
         </markerGrouping>

@@ -26,7 +26,6 @@ import com.google.test.metric.ReportGeneratorBuilder;
 import com.google.test.metric.ReportGeneratorBuilder.ReportFormat;
 import com.google.test.metric.eclipse.core.TestabilityLaunchListener;
 import com.google.test.metric.eclipse.core.plugin.Activator;
-import com.google.test.metric.eclipse.internal.util.JavaPackageVisitor;
 import com.google.test.metric.eclipse.internal.util.JavaProjectHelper;
 import com.google.test.metric.eclipse.internal.util.Logger;
 import com.google.test.metric.eclipse.internal.util.TestabilityConstants;
@@ -39,8 +38,6 @@ import com.google.test.metric.report.issues.ClassIssues;
 import com.google.test.metric.report.issues.IssuesReporter;
 import com.google.test.metric.report.issues.TriageIssuesQueue;
 
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IPath;
@@ -52,13 +49,11 @@ import org.eclipse.debug.core.Launch;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate2;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -112,7 +107,7 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
 
     String[] classPaths = getClassPaths(javaProject, projectLocation);
 
-    List<String> allJavaPackages = getAllJavaPackages(javaProject);
+    List<String> allJavaPackages = javaProjectHelper.getAllJavaPackages(javaProject);
 
     ClassPathFactory classPathFactory = new ClassPathFactory();
     ClassPath classPath = classPathFactory.createFromPaths(classPaths);
@@ -145,7 +140,7 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
     int printDepth = 
         configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_RECORDING_DEPTH,
             TestabilityConstants.RECORDING_DEPTH);
-    String whitelistPackages = 
+    List<String> whitelistPackages = 
         configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_WHITELIST,
             TestabilityConstants.WHITELIST);
     
@@ -156,8 +151,7 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
           new File(reportDirectory, TestabilityConstants.ERROR_LOG_FILENAME)));
 
       RegExpWhiteList whitelist = new RegExpWhiteList("java.");
-      for (String packageName :
-          "".equals(whitelistPackages) ? new String[] {} : whitelistPackages.split("[,;:]")) {
+      for (String packageName : whitelistPackages) {
         whitelist.addPackage(packageName);
       }
       
@@ -204,20 +198,6 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
         logger.logException("Error creating Testability Launch Listener", e);
       }
     }
-  }
-
-  public List<String> getAllJavaPackages(IJavaProject javaProject) throws JavaModelException,
-      CoreException {
-    List<String> allJavaPackages = new ArrayList<String>();
-    IPackageFragmentRoot[] roots = javaProject.getPackageFragmentRoots();
-    for (IPackageFragmentRoot root : roots) {
-      if (!root.isArchive()) {
-        IResource rootResource = root.getCorrespondingResource();
-        String rootURL = rootResource.getFullPath().toOSString();
-        rootResource.accept(new JavaPackageVisitor(allJavaPackages, rootURL), IContainer.NONE);
-      }
-    }
-    return allJavaPackages;
   }
 
   public String[] getClassPaths(IJavaProject javaProject, String projectLocation)
