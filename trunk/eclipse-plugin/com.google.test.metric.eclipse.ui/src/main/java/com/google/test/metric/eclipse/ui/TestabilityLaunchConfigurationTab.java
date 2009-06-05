@@ -208,6 +208,7 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
 
   private void removeSelectedPackageFromWhitelist() {
     whiteListList.getList().remove(whiteListList.getList().getSelectionIndices());
+    setTabDirty();
   }
 
   private void createTestabilityPropertiesControls(Composite control) {

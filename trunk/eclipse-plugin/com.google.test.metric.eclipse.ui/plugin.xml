@@ -172,6 +172,7 @@
         name="teMarkerSupport"
         point="org.eclipse.ui.ide.markerSupport">
      <markerContentGenerator
+           defaultMarkerGrouping="com.google.test.metric.eclipse.ui.testabilityMarkerGrouping"
            id="com.google.test.metric.eclipse.ui.testabilityMarkerContentGenerator"
            name="testabilityMarkerContentGenerator">
         <markerFieldReference
@@ -201,15 +202,37 @@
               id="com.google.test.metric.eclipse.ui.testabilityMarkerGrouping"
               label="Testability">
            <markerGroupingEntry
-                 id="com.google.test.metric.eclipse.ui.testabilityMarkerGroupingEntry"
-                 label="Type"
+                 id="com.google.test.metric.eclipse.ui.collaboratorGroupingEntry"
+                 label="COLLABORATOR"
                  priority="1">
            </markerGroupingEntry>
            <markerAttributeGrouping
                  attribute="issueType"
                  defaultGroupingEntry="issueType"
                  markerType="com.google.test.metric.testabilityMarker">
+              <markerAttributeMapping
+                    markerGroupingEntry="com.google.test.metric.eclipse.ui.constructionGroupingEntry"
+                    value="CONSTRUCTION">
+              </markerAttributeMapping>
+              <markerAttributeMapping
+                    markerGroupingEntry="com.google.test.metric.eclipse.ui.directCostGroupingEntry"
+                    value="DIRECT_COST">
+              </markerAttributeMapping>
+              <markerAttributeMapping
+                    markerGroupingEntry="com.google.test.metric.eclipse.ui.collaboratorGroupingEntry"
+                    value="COLLABORATOR">
+              </markerAttributeMapping>
            </markerAttributeGrouping>
+           <markerGroupingEntry
+                 id="com.google.test.metric.eclipse.ui.constructionGroupingEntry"
+                 label="CONSTRUCTION"
+                 priority="2">
+           </markerGroupingEntry>
+           <markerGroupingEntry
+                 id="com.google.test.metric.eclipse.ui.directCostGroupingEntry"
+                 label="DIRECT_COST"
+                 priority="1">
+           </markerGroupingEntry>
         </markerGrouping>
      </markerContentGenerator>
      <markerField
@@ -237,6 +260,12 @@
            id="com.google.test.metric.eclipse.ui.testabilityIssueTypeMarkerField"
            name="Issue Type">
      </markerField>
+     <markerTypeCategory
+           name="Testability Type">
+        <markerTypeReference
+              id="com.google.test.metric.testabilityMarker">
+        </markerTypeReference>
+     </markerTypeCategory>
   </extension>
   <extension
         point="org.eclipse.ui.ide.markerImageProviders">
