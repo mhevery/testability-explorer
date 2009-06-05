@@ -160,10 +160,11 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
 
     Label whiteList = new Label(control, SWT.NONE);
     whiteList.setText("White list:");
-    whiteListList = new ListViewer(control, SWT.BORDER | SWT.V_SCROLL);
+    whiteListList = new ListViewer(control, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
     whiteListList.getList().setBounds(0, 0, 100, 100);
     GridData whiteListGridData = new GridData(GridData.FILL_HORIZONTAL);
     whiteListGridData.heightHint = 100;
+    whiteListGridData.verticalSpan = 2;
     whiteListList.getList().setLayoutData(whiteListGridData);
     whiteListList.getList().addKeyListener(new KeyListener() {
       public void keyPressed(KeyEvent e) {
@@ -184,6 +185,29 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
         setUpWhitelistPackagesDialog();
       }
     });
+    GridData whiteListPackagesBrowseGridData = new GridData();
+    whitelistPackagesBrowseButton.setLayoutData(whiteListPackagesBrowseGridData);
+
+    Label spacer = new Label(control, SWT.NONE);
+
+    Button whitelistPackagesRemoveButton = new Button(control, SWT.PUSH);
+    whitelistPackagesRemoveButton.setText("Remove");
+    whitelistPackagesRemoveButton.addSelectionListener(new SelectionListener() {
+
+      public void widgetDefaultSelected(SelectionEvent e) {
+      }
+
+      public void widgetSelected(SelectionEvent e) {
+        removeSelectedPackageFromWhitelist();
+      }
+    });
+    GridData whiteListRemoveGridData = new GridData();
+    whiteListRemoveGridData.verticalAlignment = SWT.TOP;
+    whitelistPackagesRemoveButton.setLayoutData(whiteListRemoveGridData);
+  }
+
+  private void removeSelectedPackageFromWhitelist() {
+    whiteListList.getList().remove(whiteListList.getList().getSelectionIndices());
   }
 
   private void createTestabilityPropertiesControls(Composite control) {
