@@ -15,6 +15,8 @@
  */
 package com.google.test.metric.eclipse.ui.markers;
 
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.ui.views.markers.MarkerField;
 import org.eclipse.ui.views.markers.MarkerItem;
 
@@ -30,7 +32,13 @@ public class TestabilityResourceMarkerField extends MarkerField {
 
   @Override
   public String getValue(MarkerItem item) {
-    return item.getMarker().getResource().getName();
+    IMarker marker = item.getMarker();
+    if (marker != null) {
+      IResource resource = marker.getResource();
+      String name = resource.getName();
+      return name;
+    }
+    return null;
   }
 
 }
