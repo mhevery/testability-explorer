@@ -17,16 +17,24 @@ package com.google.test.metric.eclipse.ui;
 
 import com.google.test.metric.eclipse.internal.util.JavaProjectHelper;
 import com.google.test.metric.eclipse.internal.util.TestabilityConstants;
+import com.google.test.metric.eclipse.ui.internal.JavaPackageElementContentProvider;
 import com.google.test.metric.eclipse.ui.plugin.Activator;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.ListViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
@@ -43,15 +51,18 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
+import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.List;
 
 public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurationTab {
   private Text projectText;
   private Text reportFolderText;
-  private Text whiteListList;
+  private ListViewer whiteListList;
   private Text recordingDepthText;
   private Text cyclomaticCostText;
   private Text globalStateCostText;
@@ -149,10 +160,12 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
 
     Label whiteList = new Label(control, SWT.NONE);
     whiteList.setText("White list:");
-    whiteListList = new Text(control, SWT.BORDER);
+    whiteListList = new ListViewer(control, SWT.BORDER | SWT.V_SCROLL);
+    whiteListList.getList().setBounds(0, 0, 100, 100);
     GridData whiteListGridData = new GridData(GridData.FILL_HORIZONTAL);
-    whiteListList.setLayoutData(whiteListGridData);
-    whiteListList.addKeyListener(new KeyListener() {
+    whiteListGridData.heightHint = 100;
+    whiteListList.getList().setLayoutData(whiteListGridData);
+    whiteListList.getList().addKeyListener(new KeyListener() {
       public void keyPressed(KeyEvent e) {
       }
 
@@ -160,7 +173,17 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
         setTabDirty();
       }
     });
-    createEmptyCell(control, 1);
+    Button whitelistPackagesBrowseButton = new Button(control, SWT.PUSH);
+    whitelistPackagesBrowseButton.setText("Add...");
+    whitelistPackagesBrowseButton.addSelectionListener(new SelectionListener() {
+
+      public void widgetDefaultSelected(SelectionEvent e) {
+      }
+
+      public void widgetSelected(SelectionEvent e) {
+        setUpWhitelistPackagesDialog();
+      }
+    });
   }
 
   private void createTestabilityPropertiesControls(Composite control) {
@@ -240,14 +263,6 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
     });
   }
 
-  private void createEmptyCell(Composite control, int span) {
-    Label empty;
-    empty = new Label(control, SWT.NONE);
-    GridData emptyGridData = new GridData();
-    emptyGridData.horizontalSpan = span;
-    empty.setLayoutData(emptyGridData);
-  }
-
   public String getName() {
     return "Testability";
   }
@@ -311,10 +326,13 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
             TestabilityConstants.RECORDING_DEPTH);
     recordingDepthText.setText(initRecordingDepth + "");
 
-    String initWhitelist =
+    List<String> initWhitelist =
         configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_WHITELIST,
             TestabilityConstants.WHITELIST);
-    whiteListList.setText(initWhitelist);
+    whiteListList.getList().removeAll();
+    if (initWhitelist.size() != 0) {
+      whiteListList.add(initWhitelist.toArray());
+    }
   }
 
   private void setTabDirty() {
@@ -357,8 +375,8 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
           Integer.parseInt(maxExcellentCostText.getText()));
       configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_RECORDING_DEPTH, Integer
           .parseInt(recordingDepthText.getText()));
-      configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_WHITELIST, whiteListList
-          .getText());
+      configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_WHITELIST,
+          Arrays.asList(whiteListList.getList().getItems()));
     }
   }
 
@@ -389,6 +407,41 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
     String folder = directoryDialog.open();
     if (folder != null && folder.length() > 0) {
       reportFolderText.setText(folder);
+      setTabDirty();
+    }
+  }
+  
+  private void setUpWhitelistPackagesDialog() {
+    IJavaProject project = getSelectedProject();
+    ElementTreeSelectionDialog dialog =
+        new ElementTreeSelectionDialog(getControl().getShell(), new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_BASICS),
+            new JavaPackageElementContentProvider());
+    dialog.setInput(project);
+    dialog.addFilter(new ViewerFilter() {
+
+      @Override
+      public boolean select(Viewer viewer, Object parentElement, Object element) {
+        if (element instanceof IPackageFragment) {
+          return !((IPackageFragment) element).getElementName().equals("");
+        }
+        if (element instanceof ICompilationUnit) {
+          return false;
+        }
+        return true;
+      }
+      
+    });
+    dialog.setMessage("Choose packages to whitelist:");
+
+    if (dialog.open() == Window.OK) {
+      Object[] results = dialog.getResult();
+      String[] stringArray = new String[results.length];
+      for (int i = 0; i < results.length; i++) {
+        if (results[i] instanceof IJavaElement) {
+          stringArray[i] = ((IJavaElement) results[i]).getElementName();
+        }
+      }
+      whiteListList.add(stringArray);
       setTabDirty();
     }
   }
@@ -444,6 +497,5 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
       }
       return null;
     }
-
   }
 }

@@ -15,14 +15,21 @@
  */
 package com.google.test.metric.eclipse.internal.util;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IJavaModel;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Provides utility methods for accessing Java projects.
@@ -66,5 +73,31 @@ public class JavaProjectHelper {
       projectLocation = project.getParent().getLocation();
     }
     return projectLocation.toOSString();
+  }
+
+  public List<String> getAllJavaPackages(IJavaProject javaProject) throws JavaModelException,
+      CoreException {
+    List<String> allJavaPackages = new ArrayList<String>();
+    IPackageFragmentRoot[] roots = javaProject.getPackageFragmentRoots();
+    for (IPackageFragmentRoot root : roots) {
+      if (!root.isArchive()) {
+        IResource rootResource = root.getCorrespondingResource();
+        String rootURL = rootResource.getFullPath().toOSString();
+        rootResource.accept(new JavaPackageVisitor(allJavaPackages, rootURL), IContainer.NONE);
+      }
+    }
+    return allJavaPackages;
+  }
+  
+  public List<IPackageFragmentRoot> getAllJavaPackageFragmentRoots(IJavaProject javaProject)
+      throws JavaModelException, CoreException {
+    List<IPackageFragmentRoot> allJavaPackageFragmentRoot = new ArrayList<IPackageFragmentRoot>();
+    IPackageFragmentRoot[] roots = javaProject.getPackageFragmentRoots();
+    for (IPackageFragmentRoot root : roots) {
+      if (!root.isArchive() && !root.getElementName().equals("")) {
+        allJavaPackageFragmentRoot.add(root);
+      }
+    }
+    return allJavaPackageFragmentRoot;
   }
 }

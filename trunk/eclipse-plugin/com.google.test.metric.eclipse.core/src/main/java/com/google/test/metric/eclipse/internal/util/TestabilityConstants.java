@@ -15,6 +15,9 @@
  */
 package com.google.test.metric.eclipse.internal.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TestabilityConstants {
   public static final String CONFIGURATION_ATTR_PROJECT_NAME =
       "testability.launch.configuration.projectname";
@@ -43,7 +46,7 @@ public class TestabilityConstants {
   public static final int CYCLOMATIC_COST = 1;
   public static final int GLOBAL_STATE_COST = 10;
   public static final int RECORDING_DEPTH = 10;
-  public static final String WHITELIST = "";
+  public static final List<String> WHITELIST = new ArrayList<String>();
   public static final String ERROR_LOG_FILENAME = "error-log";
   public static final String HTML_REPORT_FILENAME = "report.html";
   public static final String TESTABILITY = "testability";
