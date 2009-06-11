@@ -16,9 +16,11 @@
 package com.google.test.metric.eclipse.ui;
 
 import com.google.test.metric.eclipse.internal.util.JavaProjectHelper;
+import com.google.test.metric.eclipse.internal.util.Logger;
 import com.google.test.metric.eclipse.internal.util.TestabilityConstants;
 import com.google.test.metric.eclipse.ui.internal.JavaPackageElementContentProvider;
 import com.google.test.metric.eclipse.ui.plugin.Activator;
+import com.google.test.metric.eclipse.ui.plugin.ImageNotFoundException;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -29,7 +31,6 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.ListViewer;
@@ -53,8 +54,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
@@ -72,15 +71,7 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
 
   private JavaProjectHelper javaProjectHelper = new JavaProjectHelper();
 
-  private Image projectImage;
-
-  @Override
-  public void dispose() {
-    super.dispose();
-    if (projectImage != null) {
-      projectImage.dispose();
-    }
-  }
+  public Logger logger = new Logger();
 
   public void createControl(Composite parent) {
     Composite control = new Composite(parent, SWT.NONE);
@@ -324,6 +315,7 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
     }
   }
 
+  @SuppressWarnings("unchecked")
   private void initializeTextBoxesFromHistory(ILaunchConfiguration configuration)
       throws CoreException {
     int initCyclomaticCost =
@@ -496,21 +488,11 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
     @Override
     public Image getImage(Object element) {
       if (element instanceof IJavaProject) {
-        if (projectImage == null) {
-          try {
-            String pluginLocation = Activator.getDefault().getBundle().getLocation();
-            if (pluginLocation.startsWith("reference:")) {
-              pluginLocation = pluginLocation.substring(10);
-            }
-            URL url = new URL(pluginLocation + "icons/projects.gif");
-
-            ImageDescriptor projectImageDescriptor = ImageDescriptor.createFromURL(url);
-            projectImage = projectImageDescriptor.createImage();
-          } catch (MalformedURLException e) {
-            e.printStackTrace();
-          }
+        try {
+          return Activator.getDefault().getImage("icons/projects.gif");
+        } catch (ImageNotFoundException e) {
+          logger.logException(e);
         }
-        return projectImage;
       }
       return null;
     }

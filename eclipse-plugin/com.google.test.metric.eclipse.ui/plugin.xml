@@ -86,28 +86,29 @@
   <extension
         point="org.eclipse.ui.editors.markerAnnotationSpecification">
      <specification
-           annotationType="com.google.test.metric.ui.excellentTestability"
-           colorPreferenceKey="excellentTestability_color"
+           annotationType="com.google.test.metric.ui.collaboratorTestability"
+           colorPreferenceKey="collaboratorTestability_color"
            colorPreferenceValue="192,255,192"
            contributesToHeader="false"
-           highlightPreferenceKey="excellentTestability_highlight"
+           highlightPreferenceKey="collaboratorTestability_highlight"
            highlightPreferenceValue="true"
+           icon="icons/projects.gif"
            includeOnPreferencePage="true"
            isGoToNextNavigationTarget="false"
-           isGoToNextNavigationTargetKey="excellentTestability_isGoToNextNavigationTargetKey"
+           isGoToNextNavigationTargetKey="collaboratorTestability_isGoToNextNavigationTargetKey"
            isGoToPreviousNavigationTarget="false"
-           isGoToPreviousNavigationTargetKey="excellentTestability_isGoToPreviousNavigationTargetKey"
-           label="%excellentTestabilityAnnotation.label"
-           overviewRulerPreferenceKey="excellentTestability_overviewRuler"
+           isGoToPreviousNavigationTargetKey="collaboratorTestability_isGoToPreviousNavigationTargetKey"
+           label="Collaborator"
+           overviewRulerPreferenceKey="collaboratorTestability_overviewRuler"
            overviewRulerPreferenceValue="false"
            presentationLayer="0"
            showInNextPrevDropdownToolbarAction="false"
-           showInNextPrevDropdownToolbarActionKey="excellentTestability_showInNextPrevDropdownToolbarActionKey"
-           textPreferenceKey="excellentTestability_text"
+           showInNextPrevDropdownToolbarActionKey="collaboratorTestability_showInNextPrevDropdownToolbarActionKey"
+           textPreferenceKey="collaboratorTestability_text"
            textPreferenceValue="true"
            textStylePreferenceKey="excellentTestability_stylePreferences"
            textStylePreferenceValue="BOX"
-           verticalRulerPreferenceKey="excellentTestability_verticalRuler"
+           verticalRulerPreferenceKey="collaboratorTestability_verticalRuler"
            verticalRulerPreferenceValue="false">
      </specification>
      <specification
@@ -203,7 +204,7 @@
               label="Testability">
            <markerGroupingEntry
                  id="com.google.test.metric.eclipse.ui.collaboratorGroupingEntry"
-                 label="COLLABORATOR"
+                 label="Collaborator"
                  priority="1">
            </markerGroupingEntry>
            <markerAttributeGrouping
@@ -225,12 +226,12 @@
            </markerAttributeGrouping>
            <markerGroupingEntry
                  id="com.google.test.metric.eclipse.ui.constructionGroupingEntry"
-                 label="CONSTRUCTION"
-                 priority="2">
+                 label="Construction"
+                 priority="1">
            </markerGroupingEntry>
            <markerGroupingEntry
                  id="com.google.test.metric.eclipse.ui.directCostGroupingEntry"
-                 label="DIRECT_COST"
+                 label="Direct Cost"
                  priority="1">
            </markerGroupingEntry>
         </markerGrouping>

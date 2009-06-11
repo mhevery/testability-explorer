@@ -15,7 +15,12 @@
  */
 package com.google.test.metric.eclipse.ui.markers;
 
+import com.google.test.metric.eclipse.internal.util.Logger;
+import com.google.test.metric.eclipse.ui.plugin.Activator;
+import com.google.test.metric.eclipse.ui.plugin.ImageNotFoundException;
+
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.ui.views.markers.MarkerField;
 import org.eclipse.ui.views.markers.MarkerItem;
 
@@ -26,6 +31,8 @@ import org.eclipse.ui.views.markers.MarkerItem;
  */
 public class TestabilityDescriptionMarkerField extends MarkerField {
 
+  private Logger logger = new Logger();
+
   public TestabilityDescriptionMarkerField() {
   }
 
@@ -34,4 +41,15 @@ public class TestabilityDescriptionMarkerField extends MarkerField {
     return item.getAttributeValue(IMarker.MESSAGE, "");
   }
 
+  @Override
+  public void update(ViewerCell cell) {
+    super.update(cell);
+    
+    try {
+      // TODO(shyamseshadri): Check Item Type and assign image accordingly.
+      cell.setImage(Activator.getDefault().getImage("icons/projects.gif"));
+    } catch (ImageNotFoundException e) {
+      logger.logException(e);
+    }
+  }
 }
