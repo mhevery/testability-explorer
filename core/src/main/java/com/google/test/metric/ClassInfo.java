@@ -129,7 +129,7 @@ public class ClassInfo {
     // or an average of them.
     MethodInfo constructor = null;
     int currentArgsCount = -1;
-    for (MethodInfo methodInfo : getConstructors()) {
+    for (MethodInfo methodInfo : getNonPrivateConstructors()) {
       int count = methodInfo.getNonPrimitiveArgCount();
       if (currentArgsCount < count) {
         constructor = methodInfo;
@@ -139,10 +139,10 @@ public class ClassInfo {
     return constructor;
   }
 
-  public Collection<MethodInfo> getConstructors() {
+  public Collection<MethodInfo> getNonPrivateConstructors() {
     TreeSet<MethodInfo> constructors = new TreeSet<MethodInfo>();
     for (MethodInfo methodInfo : getMethods()) {
-      if (methodInfo.isConstructor()) {
+      if (methodInfo.isConstructor() && !methodInfo.isPrivate()) {
         constructors.add(methodInfo);
       }
     }

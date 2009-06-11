@@ -98,7 +98,7 @@ public class TestabilityRunnerTest extends AutoFieldClearTestCase {
 
 
   private JavaTestabilityConfig configFor(String path) {
-    ClassPath classPath = new ClassPathFactory().createFromPath(path);
+    ClassPath classPath = new ClassPathFactory().createFromPaths(path, "core/" + path);
     return new JavaTestabilityConfig(
         allEntryList, classPath, whiteList, report, new PrintStream(err), 1);
   }

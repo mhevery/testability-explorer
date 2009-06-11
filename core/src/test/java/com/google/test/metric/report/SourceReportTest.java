@@ -15,13 +15,8 @@
  */
 package com.google.test.metric.report;
 
-import java.io.File;
-import java.util.Date;
-
-import junit.framework.TestCase;
-
 import com.google.classpath.ClassPath;
-import com.google.classpath.DirectoryClassPath;
+import com.google.classpath.ClassPathFactory;
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.CostUtil;
@@ -30,7 +25,12 @@ import com.google.test.metric.MethodCost;
 import com.google.test.metric.MetricComputer;
 import com.google.test.metric.RegExpWhiteList;
 import com.google.test.metric.report.Source.Line;
+
 import freemarker.template.Configuration;
+
+import junit.framework.TestCase;
+
+import java.util.Date;
 
 public class SourceReportTest extends TestCase {
 
@@ -46,7 +46,7 @@ public class SourceReportTest extends TestCase {
   }
 
   public void testCreateSourceReport() throws Exception {
-    ClassPath classPath = new DirectoryClassPath(new File("src/test/java"));
+    ClassPath classPath = new ClassPathFactory().createFromPaths("src/test/java", "core/src/test/java");
     SourceLoader loader = new SourceLoader(classPath);
     SourceReportGenerator report = new SourceReportGenerator(new GradeCategories(0, 0), loader, null, new CostModel(),
             new Date(), 10, new Configuration());

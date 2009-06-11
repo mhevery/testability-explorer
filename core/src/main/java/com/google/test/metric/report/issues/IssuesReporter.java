@@ -20,10 +20,15 @@ import com.google.test.metric.CostModel;
 import com.google.test.metric.GlobalCost;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvokationCost;
+import static com.google.test.metric.Reason.IMPLICIT_CONSTRUCTOR;
+import static com.google.test.metric.Reason.IMPLICIT_SETTER;
+import static com.google.test.metric.Reason.IMPLICIT_STATIC_INIT;
 import com.google.test.metric.ViolationCost;
 import static com.google.test.metric.report.issues.IssueSubType.COMPLEXITY;
 import static com.google.test.metric.report.issues.IssueSubType.NON_MOCKABLE;
+import static com.google.test.metric.report.issues.IssueSubType.SETTER;
 import static com.google.test.metric.report.issues.IssueSubType.SINGLETON;
+import static com.google.test.metric.report.issues.IssueSubType.STATIC_INIT;
 import static com.google.test.metric.report.issues.IssueSubType.STATIC_METHOD;
 import static com.google.test.metric.report.issues.IssueType.COLLABORATOR;
 import static com.google.test.metric.report.issues.IssueType.CONSTRUCTION;
@@ -105,31 +110,43 @@ public class IssuesReporter {
   }
 
   private boolean addMethodInvocationIssues(ClassIssues classIssues, MethodCost methodCost,
-                                            ClassCost classCost, boolean issuesFound,
-                                            MethodInvokationCost invokationCost) {
-    Issue issue = new Issue(invokationCost.getLineNumber(),
-        invokationCost.getMethodCost());
-    boolean isStatic = invokationCost.getMethodCost().isStatic();
-    boolean isGlobal = hasGlobalSource(invokationCost.getMethodCost());
-
-    issue.setContributionToClassCost(costModel.computeContributionFromIssue(classCost, methodCost, invokationCost));
-    if (methodCost.isConstructor()) {
-      issue.setType(CONSTRUCTION);
+                                            ClassCost classCost, boolean collaboratorIssuesFound,
+                                            MethodInvokationCost invocationCost) {
+    IssueType type;
+    if (invocationCost.getCostSourceType() == IMPLICIT_CONSTRUCTOR ||
+        invocationCost.getCostSourceType() == IMPLICIT_STATIC_INIT ||
+        invocationCost.getCostSourceType() == IMPLICIT_SETTER ||
+        methodCost.isConstructor()) {
+      type = CONSTRUCTION;
     } else {
-      issue.setType(COLLABORATOR);
-      issuesFound = true;
+      type = COLLABORATOR;
+      collaboratorIssuesFound = true;
     }
-    if (isStatic) {
-      issue.setSubType(STATIC_METHOD);
-    } else {
-      if (isGlobal) {
-        issue.setSubType(SINGLETON);
-      } else {
-        issue.setSubType(NON_MOCKABLE);
-      }
+    IssueSubType subType = null;
+    switch (invocationCost.getCostSourceType()) {
+      case IMPLICIT_CONSTRUCTOR:
+        subType = COMPLEXITY;
+        break;
+      case IMPLICIT_SETTER:
+        subType = SETTER;
+        break;
+      case IMPLICIT_STATIC_INIT:
+        subType = STATIC_INIT;
+        break;
+      case NON_OVERRIDABLE_METHOD_CALL:
+        if (invocationCost.getMethodCost().isStatic()) {
+          subType = STATIC_METHOD;
+        } else if (hasGlobalSource(invocationCost.getMethodCost())) {
+          subType = SINGLETON;
+        } else {
+          subType = NON_MOCKABLE;
+        }
+        break;
     }
-    classIssues.add(issue);
-    return issuesFound;
+    classIssues.add(new Issue(invocationCost.getLineNumber(), invocationCost.getMethodCost(),
+        costModel.computeContributionFromIssue(classCost, methodCost, invocationCost),
+        type, subType));
+    return collaboratorIssuesFound;
   }
 
   private boolean hasGlobalSource(MethodCost methodCost) {
