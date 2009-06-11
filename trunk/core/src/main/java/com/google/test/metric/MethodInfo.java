@@ -15,12 +15,15 @@
  */
 package com.google.test.metric;
 
-import static java.util.Collections.unmodifiableList;
+import com.google.common.base.Nullable;
+import com.google.common.base.Predicate;
+import static com.google.common.collect.Iterables.filter;
+import static com.google.common.collect.Lists.newArrayList;
+import com.google.test.metric.method.op.turing.Operation;
 
 import java.util.Collection;
+import static java.util.Collections.unmodifiableList;
 import java.util.List;
-
-import com.google.test.metric.method.op.turing.Operation;
 
 public class MethodInfo implements Comparable<MethodInfo> {
 
@@ -35,6 +38,12 @@ public class MethodInfo implements Comparable<MethodInfo> {
   private final List<Operation> operations;
   private final int startingLineNumber;
   private final boolean isFinal;
+
+  private Predicate<? super MethodInfo> notSelf = new Predicate<MethodInfo>() {
+      public boolean apply(@Nullable MethodInfo methodInfo) {
+        return methodInfo != MethodInfo.this;
+      }
+    };
 
   public MethodInfo(ClassInfo classInfo, String methodName,
       int startingLineNumber, String desc, Variable methodThis,
@@ -147,8 +156,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
   }
 
   public boolean isConstructor() {
-    return visibility != Visibility.PRIVATE
-        && name.startsWith("<init>");
+    return name.equals("<init>");
   }
 
   public Visibility getVisibility() {
@@ -197,10 +205,10 @@ public class MethodInfo implements Comparable<MethodInfo> {
   }
 
   /**
-   * @return Returns all methods in the same class which are setters
+   * @return Returns all methods in the same class which are setters, other than this setter
    */
   public Collection<MethodInfo> getSiblingSetters() {
-    return classInfo.getSetters();
+    return newArrayList(filter(classInfo.getSetters(), notSelf));
   }
 
   public int compareTo(MethodInfo o) {
@@ -224,4 +232,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return linesOfComplexity;
   }
 
+  public boolean isPrivate() {
+    return getVisibility() == Visibility.PRIVATE;
+  }
 }

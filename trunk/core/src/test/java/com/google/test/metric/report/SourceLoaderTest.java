@@ -15,15 +15,14 @@
  */
 package com.google.test.metric.report;
 
-import java.io.File;
+import com.google.classpath.ClassPath;
+import com.google.classpath.ClassPathFactory;
 
 import junit.framework.TestCase;
 
-import com.google.classpath.DirectoryClassPath;
-
 public class SourceLoaderTest extends TestCase {
 
-  private final DirectoryClassPath classPath = new DirectoryClassPath(new File("src/test/java"));
+  private final ClassPath classPath = new ClassPathFactory().createFromPaths("src/test/java", "core/src/test/java");
 
   public void testReadSourceFile() throws Exception {
     SourceLoader loader = new SourceLoader(classPath);

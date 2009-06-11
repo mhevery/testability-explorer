@@ -15,12 +15,10 @@
  */
 package com.google.test.metric.report.issues;
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Nullable;
-import com.google.common.collect.Lists;
+import com.google.common.base.Predicate;
 
 import java.util.Comparator;
-import java.util.List;
 
 /**
  * A model of a single reportable issue with the class under analysis.
@@ -78,8 +76,8 @@ public class Issue implements IssueHolder {
 
   @Override
   public String toString() {
-    return String.format("On line %d, element %s with contribution %f",
-        lineNumber, element, contributionToClassCost);
+    return String.format("On line %d, element %s with contribution %f (%s/%s)",
+        lineNumber, element, contributionToClassCost, type, subType);
   }
 
   public void setType(IssueType type) {

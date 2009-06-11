@@ -15,6 +15,8 @@
  */
 package com.google.test.metric.report.issues;
 
+import com.google.common.base.Nullable;
+import com.google.common.base.Predicate;
 import static com.google.common.collect.Iterables.filter;
 import com.google.common.collect.Lists;
 import static com.google.common.collect.Lists.newArrayList;
@@ -41,6 +43,7 @@ public class ClassIssues implements IssueHolder {
 
   public ClassIssues(String className, Integer totalCost) {
     this(className, totalCost,
+        //TODO: we would like to inject the Queue, but the className and totalCost are per-instance
         new TriageIssuesQueue<Issue>(MIN_PERCENT_TO_DISPLAY, MAX_ISSUES_TO_DISPLAY_PER_CLASS,
             new Issue.TotalCostComparator()));
   }
@@ -107,6 +110,14 @@ public class ClassIssues implements IssueHolder {
    */
   public void add(Issue issue) {
     issues.offer(issue);
+  }
+
+  public List<Issue> getIssues(final IssueType type, final IssueSubType subType) {
+    return newArrayList(filter(issues, new Predicate<Issue>() {
+      public boolean apply(@Nullable Issue issue) {
+        return issue.getType() == type && issue.getSubType() == subType;
+      }
+    }));
   }
 
   public static class TotalCostComparator implements Comparator<ClassIssues> {

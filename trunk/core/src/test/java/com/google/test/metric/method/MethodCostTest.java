@@ -15,15 +15,19 @@
  */
 package com.google.test.metric.method;
 
-import junit.framework.TestCase;
-
+import com.google.test.metric.ClassCost;
 import com.google.test.metric.Cost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.CyclomaticCost;
 import com.google.test.metric.GlobalCost;
+import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvokationCost;
+import com.google.test.metric.MetricComputer;
 import static com.google.test.metric.Reason.IMPLICIT_STATIC_INIT;
+import com.google.test.metric.RegExpWhiteList;
+
+import junit.framework.TestCase;
 
 public class MethodCostTest extends TestCase {
 
@@ -67,5 +71,19 @@ public class MethodCostTest extends TestCase {
     MethodCost methodCost = new MethodCost("com.google.test.metric.example.ExpensiveConstructor."
         + "StaticWorkInTheConstructor$StaticHolder()", 1, true, false);
     assertEquals("StaticWorkInTheConstructor$StaticHolder()", methodCost.shortFormat());
+  }
+
+  private static class Setters {
+    boolean foo;
+    public void setFoo(String foo) {
+      this.foo = (foo == null);
+    }
+  }
+
+  public void testImplicitSetterCostShouldNotBeDoubleCounted() throws Exception {
+    MetricComputer computer = new MetricComputer(new JavaClassRepository(), null, new RegExpWhiteList(), 1);
+    ClassCost cost = computer.compute(Setters.class.getName());
+    MethodCost cost1 = cost.getMethodCost("void setFoo(java.lang.String)");
+    assertEquals(1, cost1.getTotalCost().getCyclomaticComplexityCost());
   }
 }

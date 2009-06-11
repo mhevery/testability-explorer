@@ -40,4 +40,8 @@ public class WeightedAverage {
     return overallSqr / overallSum;
   }
 
+  @Override
+  public String toString() {
+    return String.format("%.2f / %.2f = %.2f", overallSqr, overallSum, getAverage());
+  }
 }
