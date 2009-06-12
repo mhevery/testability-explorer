@@ -15,20 +15,19 @@
  */
 package com.google.test.metric.report;
 
-import static java.lang.System.getProperty;
+import com.google.test.metric.ClassCost;
+import com.google.test.metric.CostModel;
+import com.google.test.metric.MethodCost;
+import com.google.test.metric.MethodInvocationCost;
+import com.google.test.metric.ViolationCost;
 
 import java.io.PrintStream;
+import static java.lang.System.getProperty;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import com.google.test.metric.ClassCost;
-import com.google.test.metric.CostModel;
-import com.google.test.metric.MethodCost;
-import com.google.test.metric.MethodInvokationCost;
-import com.google.test.metric.ViolationCost;
 
 public class DrillDownReportGenerator implements ReportGenerator {
   public static final String NEW_LINE = getProperty("line.separator");
@@ -98,10 +97,10 @@ public class DrillDownReportGenerator implements ReportGenerator {
 
   private void print(String prefix, ViolationCost line, int maxDepth,
       Set<String> alreadSeen) {
-    if (!(line instanceof MethodInvokationCost)) {
+    if (!(line instanceof MethodInvocationCost)) {
       return;
     }
-    MethodCost method = ((MethodInvokationCost) line).getMethodCost();
+    MethodCost method = ((MethodInvocationCost) line).getMethodCost();
     if (shouldPrint(method, maxDepth, alreadSeen)) {
       out.print(prefix);
       out.print("line ");

@@ -95,7 +95,7 @@ com.google.test.metric.asm.MethodVisitorBuilder$30 17
 com.google.test.metric.asm.MethodVisitorBuilder$12 16
 com.google.test.metric.collection.KeyedMultiStack 15
 com.google.test.metric.method.BlockDecomposer$1 14
-com.google.test.metric.method.op.turing.MethodInvokation 14
+com.google.test.metric.method.op.turing.MethodInvocation 14
 com.google.test.metric.asm.MethodVisitorBuilder$28 12
 com.google.test.metric.asm.SignatureParser 12
 com.google.test.metric.asm.SignatureParser$TypeVisitor 12

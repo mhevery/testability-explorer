@@ -15,12 +15,6 @@
  */
 package com.google.test.metric.method;
 
-import static java.util.Arrays.asList;
-
-import java.util.List;
-
-import junit.framework.TestCase;
-
 import com.google.test.metric.FieldInfo;
 import com.google.test.metric.JavaType;
 import com.google.test.metric.Type;
@@ -29,8 +23,13 @@ import com.google.test.metric.method.op.stack.GetField;
 import com.google.test.metric.method.op.stack.Invoke;
 import com.google.test.metric.method.op.stack.Load;
 import com.google.test.metric.method.op.stack.PutField;
-import com.google.test.metric.method.op.turing.MethodInvokation;
+import com.google.test.metric.method.op.turing.MethodInvocation;
 import com.google.test.metric.method.op.turing.Operation;
+
+import junit.framework.TestCase;
+
+import static java.util.Arrays.asList;
+import java.util.List;
 
 public class BlockTest extends TestCase {
 
@@ -118,11 +117,11 @@ public class BlockTest extends TestCase {
 
     List<Operation> operations = new Stack2Turing(root).translate();
     assertEquals(2, operations.size());
-    MethodInvokation mB = (MethodInvokation) operations.get(0);
-    MethodInvokation mA = (MethodInvokation) operations.get(1);
+    MethodInvocation mB = (MethodInvocation) operations.get(0);
+    MethodInvocation mA = (MethodInvocation) operations.get(1);
     // since we use hash order is non-deterministic
     if (mB.getParameters().get(1).toString().startsWith("A")) {
-      MethodInvokation temp = mB;
+      MethodInvocation temp = mB;
       mB = mA;
       mA = temp;
     }

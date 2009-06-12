@@ -15,8 +15,13 @@
  */
 package com.google.test.metric.report;
 
-import com.google.test.metric.*;
-import com.google.test.metric.report.issues.SourceElement;
+import com.google.test.metric.FieldInfo;
+import com.google.test.metric.JavaType;
+import com.google.test.metric.LocalField;
+import com.google.test.metric.MethodCost;
+import com.google.test.metric.Type;
+import com.google.test.metric.Variable;
+
 import junit.framework.TestCase;
 
 /**
@@ -25,25 +30,25 @@ import junit.framework.TestCase;
 public class SourceElementFormattingTest extends TestCase {
 
   public void testMethodFormatting() throws Exception {
-    SourceElement cost = new MethodCost("void translation_unit()", 1, false, false);
-    assertEquals("void translation_unit()", cost.shortFormat());
+    MethodCost cost = new MethodCost("void translation_unit()", 1, false, false);
+    assertEquals("void translation_unit()", cost.getDescription());
   }
 
   public void testVariableFormatting() throws Exception {
     Type type = JavaType.fromJava("com.google.test.metric.example.MutableGlobalState." +
         "FinalGlobalExample$Gadget");
     FieldInfo field = new FieldInfo(null, "finalInstance", type, false, false, false);
-    SourceElement cost = new LocalField(new Variable(
+    LocalField localField = new LocalField(new Variable(
         "com.google.test.metric.example.MutableGlobalState.FinalGlobalExample$" +
             "FinalGlobal.finalInstance",
         type, false, false), field);
-    assertEquals("FinalGlobalExample$Gadget finalInstance", cost.shortFormat());
+    assertEquals("FinalGlobalExample$Gadget finalInstance", localField.getDescription());
   }
 
   public void testDotsInMethodParameters() throws Exception {
-    SourceElement cost = new MethodCost(
+    MethodCost cost = new MethodCost(
         "com.google.test.metric.cpp.dom.TranslationUnit parse2(java.lang.String, java.lang.String)",
         12, false, false);
-    assertEquals("TranslationUnit parse2(String, String)", cost.shortFormat());
+    assertEquals("TranslationUnit parse2(String, String)", cost.getDescription());
   }
 }

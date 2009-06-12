@@ -15,13 +15,28 @@
  */
 package com.google.test.metric.report.html;
 
-import com.google.test.metric.*;
+import com.google.test.metric.AnalysisModel;
+import com.google.test.metric.ClassCost;
+import com.google.test.metric.Cost;
+import com.google.test.metric.CostModel;
+import com.google.test.metric.MethodCost;
+import com.google.test.metric.MethodInvocationCost;
 import com.google.test.metric.Reason;
-import com.google.test.metric.report.*;
-import static com.google.test.metric.report.FreemarkerReportGenerator.*;
+import com.google.test.metric.ReportGeneratorBuilder;
+import com.google.test.metric.report.ClassPathTemplateLoader;
+import com.google.test.metric.report.FreemarkerReportGenerator;
+import static com.google.test.metric.report.FreemarkerReportGenerator.HTML_REPORT_TEMPLATE;
+import com.google.test.metric.report.ReportOptions;
+import com.google.test.metric.report.SourceLinker;
 import com.google.test.metric.report.issues.ClassIssues;
-import com.google.test.metric.report.issues.IssuesReporter;
 import com.google.test.metric.report.issues.Issue;
+import com.google.test.metric.report.issues.IssuesReporter;
+
+import freemarker.ext.beans.BeansWrapper;
+import freemarker.ext.beans.ResourceBundleModel;
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+
 import junit.framework.TestCase;
 
 import java.io.ByteArrayOutputStream;
@@ -31,11 +46,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.ResourceBundle;
 import static java.util.ResourceBundle.getBundle;
-
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.ext.beans.BeansWrapper;
-import freemarker.ext.beans.ResourceBundleModel;
 
 public class HtmlReportTest extends TestCase {
   private HtmlReportModel report;
@@ -54,7 +64,7 @@ public class HtmlReportTest extends TestCase {
     linker = new SourceLinker("http://code.repository/basepath/{path}&line={line}",
                               "http://code.repository/basepath/{path}");
     MethodCost methodCost = new MethodCost("methodFoo", 1, false, false);
-    methodCost.addCostSource(new MethodInvokationCost(1, methodCost, Reason.IMPLICIT_SETTER,
+    methodCost.addCostSource(new MethodInvocationCost(1, methodCost, Reason.IMPLICIT_SETTER,
         new Cost(100, 1, new int[0])));
     cost = new ClassCost("com.google.FooClass", Arrays.asList(methodCost));
     report = new HtmlReportModel(costModel, new AnalysisModel(issuesReporter), options);
@@ -89,7 +99,7 @@ public class HtmlReportTest extends TestCase {
         new ClassCost("classFoo", Arrays.asList(new MethodCost("methodFoo", 1, false, false)));
     generator.addClassCost(cost);
     ClassIssues classIssues = new ClassIssues(cost.getClassName(), 0);
-    classIssues.add(new Issue(1, new StubSourceElement(null), 1f));
+    classIssues.add(new Issue(1, null, 1f));
     report.getWorstOffenders().add(classIssues);
     generator.printFooter();
     String text = out.toString();

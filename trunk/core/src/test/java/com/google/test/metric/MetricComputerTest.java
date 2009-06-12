@@ -15,13 +15,13 @@
  */
 package com.google.test.metric;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.util.List;
-
 import com.google.test.metric.report.DrillDownReportGenerator;
 import com.google.test.metric.testing.MetricComputerBuilder;
 import com.google.test.metric.testing.MetricComputerJavaDecorator;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.List;
 
 public class MetricComputerTest extends AutoFieldClearTestCase {
 
@@ -404,9 +404,9 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
     List<? extends ViolationCost> lineNumberCosts = cost.getViolationCosts();
     assertEquals(3, lineNumberCosts.size());
 
-    MethodInvokationCost line0 = (MethodInvokationCost) lineNumberCosts.get(0);
-    MethodInvokationCost line1 = (MethodInvokationCost) lineNumberCosts.get(1);
-    MethodInvokationCost line2 = (MethodInvokationCost) lineNumberCosts.get(2);
+    MethodInvocationCost line0 = (MethodInvocationCost) lineNumberCosts.get(0);
+    MethodInvocationCost line1 = (MethodInvocationCost) lineNumberCosts.get(1);
+    MethodInvocationCost line2 = (MethodInvocationCost) lineNumberCosts.get(2);
 
     int methodStartingLine = cost.getMethodLineNumber();
 
@@ -555,13 +555,13 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
     List<? extends ViolationCost> implicitViolationCosts = cost.getImplicitViolationCosts();
 
     assertEquals(2, implicitViolationCosts.size());
-    MethodInvokationCost constructor = (MethodInvokationCost) implicitViolationCosts.get(0);
+    MethodInvocationCost constructor = (MethodInvocationCost) implicitViolationCosts.get(0);
 
     assertEquals("implicit cost from construction", constructor.getReason());
     assertEquals(2, constructor.getCost().getCyclomaticComplexityCost());
     assertTrue(constructor.getMethodCost().getImplicitViolationCosts().isEmpty());
 
-    MethodInvokationCost setter = (MethodInvokationCost) implicitViolationCosts.get(1);
+    MethodInvocationCost setter = (MethodInvocationCost) implicitViolationCosts.get(1);
     assertEquals("implicit cost calling all setters", setter.getReason());
     assertEquals("void setWithCost(int)", setter.getMethodCost().getMethodName());
 

@@ -54,7 +54,7 @@ public class IssuesReportingIntegrationTest extends TestCase {
     Issue issue = issues.get(0);
     assertEquals(22, issue.getLineNumber());
     assertFalse(issue.isLineNumberApproximate());
-    assertEquals("Cost2ToConstruct()", issue.getElement().shortFormat());
+    assertEquals("Cost2ToConstruct()", issue.getElement());
     assertEquals(1.0f, issue.getContributionToClassCost());
   }
 
@@ -66,7 +66,7 @@ public class IssuesReportingIntegrationTest extends TestCase {
     Issue issue = issues.get(0);
     assertEquals(31, issue.getLineNumber());
     assertFalse(issue.isLineNumberApproximate());
-    assertEquals("boolean staticCost2()", issue.getElement().shortFormat());
+    assertEquals("boolean staticCost2()", issue.getElement());
     assertEquals(1.0f, issue.getContributionToClassCost());
   }
 
@@ -78,7 +78,7 @@ public class IssuesReportingIntegrationTest extends TestCase {
     Issue issue = issues.get(0);
     assertEquals(25, issue.getLineNumber());
     assertFalse(issue.isLineNumberApproximate());
-    assertEquals("Cost2ToConstruct()", issue.getElement().shortFormat());
+    assertEquals("Cost2ToConstruct()", issue.getElement());
     assertEquals(1f, issue.getContributionToClassCost());
 
   }
@@ -104,7 +104,7 @@ public class IssuesReportingIntegrationTest extends TestCase {
     assertEquals(21, issue.getLineNumber());
     assertTrue(issue.isLineNumberApproximate());
     assertEquals(1.0f, issue.getContributionToClassCost());
-    assertEquals("boolean isPrime(int)", issue.getElement().shortFormat());
+    assertEquals("boolean isPrime(int)", issue.getElement());
   }
 
   public void testSumOfPrimes1Issues() throws Exception {
@@ -116,7 +116,7 @@ public class IssuesReportingIntegrationTest extends TestCase {
     assertEquals(25, issue.getLineNumber());
     assertFalse(issue.isLineNumberApproximate());
     // TODO: we'd rather see "Primeness primeness" on line 20 as the root issue here
-    assertEquals("boolean isPrime(int)", issue.getElement().shortFormat());
+    assertEquals("boolean isPrime(int)", issue.getElement());
     assertEquals(0.5f, issue.getContributionToClassCost());
   }
 
@@ -129,7 +129,7 @@ public class IssuesReportingIntegrationTest extends TestCase {
     Issue issue = issues.get(0);
     assertEquals(46, issue.getLineNumber());
     assertFalse(issue.isLineNumberApproximate());
-    assertEquals("boolean isGreat()", issue.getElement().shortFormat());
+    assertEquals("boolean isGreat()", issue.getElement());
     assertEquals(1.0f, issue.getContributionToClassCost());
     assertTrue(classIssues.getConstructionIssues().isEmpty());
   }
@@ -143,10 +143,10 @@ public class IssuesReportingIntegrationTest extends TestCase {
     Issue issue1 = issues.get(0);
     Issue issue2 = issues.get(1);
     //TODO: we'd rather see "FinalGlobalExample$Gadget finalInstance" on line 68 as the root issue
-    assertEquals("int increment()", issue1.getElement().shortFormat());
+    assertEquals("int increment()", issue1.getElement());
     assertEquals(88, issue1.getLineNumber());
     assertEquals(0.5f, issue1.getContributionToClassCost());
-    assertEquals("int getCount()", issue2.getElement().shortFormat());
+    assertEquals("int getCount()", issue2.getElement());
     assertEquals(84, issue2.getLineNumber());
     assertEquals(0.5f, issue2.getContributionToClassCost());
   }
