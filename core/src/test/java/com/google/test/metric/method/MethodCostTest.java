@@ -22,7 +22,7 @@ import com.google.test.metric.CyclomaticCost;
 import com.google.test.metric.GlobalCost;
 import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MethodCost;
-import com.google.test.metric.MethodInvokationCost;
+import com.google.test.metric.MethodInvocationCost;
 import com.google.test.metric.MetricComputer;
 import static com.google.test.metric.Reason.IMPLICIT_STATIC_INIT;
 import com.google.test.metric.RegExpWhiteList;
@@ -39,7 +39,7 @@ public class MethodCostTest extends TestCase {
     cost3.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     cost3.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     cost3.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
-    cost.addCostSource(new MethodInvokationCost(0, cost3,
+    cost.addCostSource(new MethodInvocationCost(0, cost3,
       IMPLICIT_STATIC_INIT, Cost.cyclomatic(3)));
     CostModel costModel = new CostModel(2, 10);
     cost.link();
@@ -47,30 +47,6 @@ public class MethodCostTest extends TestCase {
     assertEquals((long) 2 * (3 + 1) + 10 * 1, costModel.computeOverall(cost.getTotalCost()));
     assertEquals(2, cost.getExplicitViolationCosts().size());
     assertEquals(1, cost.getImplicitViolationCosts().size());
-  }
-
-  public void testShortFormatting() throws Exception {
-    MethodCost methodCost = new MethodCost("int com.google.longpackagename.Foo.thing()",
-        1, false, false);
-    assertEquals("int thing()", methodCost.shortFormat());
-  }
-
-  public void testShortFormattingWithParameters() throws Exception {
-    MethodCost methodCost = new MethodCost("t.n.e(p.e, a.b)",
-        1, false, false);
-    assertEquals("e(e, b)", methodCost.shortFormat());
-  }
-
-  public void testInnerClassMethodNamesShortFormatting() throws Exception {
-    MethodCost methodCost = new MethodCost("String com.google.Outer$HasInner.computeString()",
-        1, false, false);
-    assertEquals("String computeString()", methodCost.shortFormat());
-  }
-
-  public void testInnerClassConstructorMethod() throws Exception {
-    MethodCost methodCost = new MethodCost("com.google.test.metric.example.ExpensiveConstructor."
-        + "StaticWorkInTheConstructor$StaticHolder()", 1, true, false);
-    assertEquals("StaticWorkInTheConstructor$StaticHolder()", methodCost.shortFormat());
   }
 
   private static class Setters {

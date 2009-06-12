@@ -15,15 +15,13 @@
  */
 package com.google.test.metric;
 
-import com.google.test.metric.report.issues.SourceElement;
+import com.google.test.metric.report.RemovePackageFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class MethodCost implements SourceElement {
+public class MethodCost {
 
   private final String methodName;
   private final int lineNumber;
@@ -129,23 +127,7 @@ public class MethodCost implements SourceElement {
     return isStatic() && "void main(java.lang.String[])".equals(getMethodName());
   }
 
-  private final Pattern pattern = Pattern.compile("([0-9A-Z\\$a-z_\\.]*)");
-  /**
-   * Shorten the name of a method, removing any package and class names of the method
-   * and its parameters.
-   * "t.n.e(p.e, a.b)" -> "e(e, b)"
-   */
-  public String shortFormat() {
-    //TODO(alexeagle): make sure this doesn't cause ambiguity
-    Matcher matcher = pattern.matcher(methodName);
-    StringBuffer result = new StringBuffer();
-    while (matcher.find()) {
-      String identifier = matcher.group();
-      String simple = identifier.substring(identifier.lastIndexOf(".") + 1);
-      // Have to escape dollar signs, or they look like capture group identifiers
-      simple = simple.replaceAll("\\$", "\\\\\\$");
-      matcher.appendReplacement(result, simple);
-    }
-    return result.toString();
+  public String getDescription() {
+    return new RemovePackageFormatter().format(methodName);
   }
 }

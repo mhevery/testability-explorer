@@ -15,16 +15,16 @@
  */
 package com.google.test.metric.method.op.stack;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import com.google.test.metric.JavaType;
 import com.google.test.metric.Type;
 import com.google.test.metric.Variable;
 import com.google.test.metric.method.Constant;
-import com.google.test.metric.method.op.turing.MethodInvokation;
+import com.google.test.metric.method.op.turing.MethodInvocation;
 import com.google.test.metric.method.op.turing.Operation;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Invoke extends StackOperation {
 
@@ -70,7 +70,7 @@ public class Invoke extends StackOperation {
   public Operation toOperation(List<Variable> input) {
     List<Variable> parameters = removeDuplicateSlots(input);
     Variable methodThis = isStatic ? null : parameters.remove(0);
-    return new MethodInvokation(lineNumber, clazz, name, signature,
+    return new MethodInvocation(lineNumber, clazz, name, signature,
         methodThis, parameters, returnValue);
   }
 

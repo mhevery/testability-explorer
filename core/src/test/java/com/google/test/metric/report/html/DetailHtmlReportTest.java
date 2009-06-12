@@ -15,21 +15,20 @@
  */
 package com.google.test.metric.report.html;
 
-import com.google.test.metric.report.SourceLinker;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import junit.framework.TestCase;
-
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.Cost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.CyclomaticCost;
 import com.google.test.metric.MethodCost;
-import com.google.test.metric.MethodInvokationCost;
+import com.google.test.metric.MethodInvocationCost;
+import static com.google.test.metric.Reason.NON_OVERRIDABLE_METHOD_CALL;
 import com.google.test.metric.ViolationCost;
-import static com.google.test.metric.Reason.*;
+import com.google.test.metric.report.SourceLinker;
+
+import junit.framework.TestCase;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DetailHtmlReportTest extends TestCase {
 
@@ -43,7 +42,7 @@ public class DetailHtmlReportTest extends TestCase {
 
   public void testWriteLineCost() throws Exception {
     MethodCost methodCost = createMethodCallWithOverallCost("a.methodName()V", 64);
-    MethodInvokationCost cost = new MethodInvokationCost(123, methodCost,
+    MethodInvocationCost cost = new MethodInvocationCost(123, methodCost,
       NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(64));
     cost.link(new Cost(), new Cost());
 
@@ -61,7 +60,7 @@ public class DetailHtmlReportTest extends TestCase {
 
   public void testLinkedLineCost() throws Exception {
     MethodCost methodCost = createMethodCallWithOverallCost("a.methodName()V", 64);
-    MethodInvokationCost lineCost = new MethodInvokationCost(123, methodCost,
+    MethodInvocationCost lineCost = new MethodInvocationCost(123, methodCost,
       NON_OVERRIDABLE_METHOD_CALL, new Cost());
     methodCost.link();
 
@@ -84,10 +83,10 @@ public class DetailHtmlReportTest extends TestCase {
     };
 
     MethodCost methodCost = createMethodCallWithOverallCost("a.methodX()V", 0);
-    methodCost.addCostSource(new MethodInvokationCost(123,
+    methodCost.addCostSource(new MethodInvocationCost(123,
       createMethodCallWithOverallCost("cost1", 567),
       NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(567)));
-    methodCost.addCostSource(new MethodInvokationCost(543,
+    methodCost.addCostSource(new MethodInvocationCost(543,
       createMethodCallWithOverallCost("cost2", 789),
       NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(789)));
     methodCost.link();

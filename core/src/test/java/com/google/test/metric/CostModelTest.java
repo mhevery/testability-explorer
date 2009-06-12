@@ -57,7 +57,7 @@ public class CostModelTest extends TestCase {
     
     methodWithIndirectCosts = new MethodCost("hasIndirect()", 2, false, false);
     methodWithIndirectCosts.addCostSource(new CyclomaticCost(4, Cost.cyclomatic(50)));
-    methodWithIndirectCosts.addCostSource(new MethodInvokationCost(1, doThingMethod,
+    methodWithIndirectCosts.addCostSource(new MethodInvocationCost(1, doThingMethod,
         NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(33)));
     costModel = new CostModel();
   }

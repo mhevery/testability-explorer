@@ -15,21 +15,22 @@
  */
 package com.google.test.metric.report.issues;
 
-import static com.google.test.metric.report.issues.IssueType.*;
-import static com.google.test.metric.report.issues.IssueSubType.*;
-import com.google.test.metric.report.StubSourceElement;
+import static com.google.test.metric.report.issues.IssueSubType.COMPLEXITY;
+import static com.google.test.metric.report.issues.IssueSubType.STATIC_METHOD;
+import static com.google.test.metric.report.issues.IssueType.COLLABORATOR;
+import static com.google.test.metric.report.issues.IssueType.DIRECT_COST;
+
 import junit.framework.TestCase;
 
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedList;
 
 /**
  * Tests for {@link com.google.test.metric.report.issues.ClassIssues}
  * @author alexeagle@google.com (Alex Eagle)
  */
 public class ClassIssuesTest extends TestCase {
-  private SourceElement foo = new StubSourceElement("foo()");
+  private String foo = "foo()";
 
   public void testIssuesAreSortedByContribution() throws Exception {
     ClassIssues classIssues = new ClassIssues("Foo", 100);

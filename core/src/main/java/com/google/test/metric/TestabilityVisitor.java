@@ -15,16 +15,16 @@
  */
 package com.google.test.metric;
 
+import static com.google.test.metric.Reason.NON_OVERRIDABLE_METHOD_CALL;
+import com.google.test.metric.method.Constant;
+import com.google.test.metric.method.op.turing.Operation;
+
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static com.google.test.metric.Reason.NON_OVERRIDABLE_METHOD_CALL;
-import com.google.test.metric.method.Constant;
-import com.google.test.metric.method.op.turing.Operation;
 
 public class TestabilityVisitor {
 
@@ -80,7 +80,7 @@ public class TestabilityVisitor {
         Cost methodInvocationCost, Reason reason) {
       super.addMethodInvocationCost(lineNumber, to, methodInvocationCost, reason);
       if (!methodInvocationCost.isEmpty()) {
-        ViolationCost cost = new MethodInvokationCost(lineNumber,
+        ViolationCost cost = new MethodInvocationCost(lineNumber,
             getMethodCostCache(to), reason,
             methodInvocationCost);
         methodCost.addCostSource(cost);

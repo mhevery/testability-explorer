@@ -15,10 +15,7 @@
  */
 package com.google.test.metric;
 
-import com.google.test.metric.report.issues.SourceElement;
-
-
-public class Variable implements SourceElement {
+public class Variable {
 
   protected final Type type;
   private final boolean isFinal;
@@ -72,7 +69,7 @@ public class Variable implements SourceElement {
     return isFinal;
   }
 
-  public String shortFormat() {
+  public String getDescription() {
     String type = getType().toString();
     String typeSimpleName = type.substring(type.lastIndexOf(".") + 1);
     return String.format("%s %s", typeSimpleName, getName());

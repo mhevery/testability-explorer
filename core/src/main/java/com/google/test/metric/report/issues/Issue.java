@@ -27,21 +27,21 @@ import java.util.Comparator;
  */
 public class Issue implements IssueHolder {
   private final int lineNumber;
-  private final SourceElement element;
+  private final String element;
   private float contributionToClassCost;
   private boolean isLineNumberApproximate;
   private IssueType type;
   private IssueSubType subType;
 
-  public Issue(int lineNumber, SourceElement element, float contributionToClassCost) {
+  public Issue(int lineNumber, String element, float contributionToClassCost) {
     this(lineNumber, element, contributionToClassCost, null, null);
   }
 
-  public Issue(int lineNumber, SourceElement element) {
+  public Issue(int lineNumber, String element) {
     this(lineNumber, element, 0f, null, null);
   }
 
-  public Issue(int lineNumber, SourceElement element, float contributionToClassCost,
+  public Issue(int lineNumber, String element, float contributionToClassCost,
                IssueType type, IssueSubType subType) {
     this.lineNumber = lineNumber;
     this.element = element;
@@ -58,7 +58,7 @@ public class Issue implements IssueHolder {
     return lineNumber;
   }
 
-  public SourceElement getElement() {
+  public String getElement() {
     return element;
   }
 

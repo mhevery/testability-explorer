@@ -19,7 +19,7 @@ import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.GlobalCost;
 import com.google.test.metric.MethodCost;
-import com.google.test.metric.MethodInvokationCost;
+import com.google.test.metric.MethodInvocationCost;
 import static com.google.test.metric.Reason.IMPLICIT_CONSTRUCTOR;
 import static com.google.test.metric.Reason.IMPLICIT_SETTER;
 import static com.google.test.metric.Reason.IMPLICIT_STATIC_INIT;
@@ -81,10 +81,14 @@ public class IssuesReporter {
     boolean issuesFound = false;
 
     for (ViolationCost violationCost : methodCost.getViolationCosts()) {
-      if (violationCost instanceof MethodInvokationCost) {
-        MethodInvokationCost invokationCost = (MethodInvokationCost) violationCost;
-        issuesFound = addMethodInvocationIssues(classIssues, methodCost, classCost, issuesFound,
-                invokationCost);
+      if (violationCost instanceof MethodInvocationCost) {
+        MethodInvocationCost invocationCost = (MethodInvocationCost) violationCost;
+        if (invocationCost.getCostSourceType() == IMPLICIT_STATIC_INIT) {
+          issuesFound = addStaticInitializationIssues(classIssues, invocationCost);
+        } else {
+          issuesFound = addMethodInvocationIssues(classIssues, methodCost, classCost, issuesFound,
+              invocationCost);
+        }
       }
     }
     if (methodCost.getDirectCost().getCyclomaticComplexityCost() > 0) {
@@ -92,9 +96,21 @@ public class IssuesReporter {
     }
   }
 
+  private boolean addStaticInitializationIssues(ClassIssues classIssues, MethodInvocationCost invocationCost) {
+    boolean foundStaticInit = false;
+    int totalStaticInitCost = costModel.computeOverall(invocationCost.getMethodCost().getCost());
+    for (final ViolationCost violationCost : invocationCost.getMethodCost().getViolationCosts()) {
+      foundStaticInit = true;
+      float contribution = costModel.computeOverall(violationCost.getCost()) / (float) totalStaticInitCost;
+      classIssues.add(new Issue(violationCost.getLineNumber(), violationCost.getDescription(),
+          contribution, CONSTRUCTION, STATIC_INIT));
+    }
+    return foundStaticInit;
+  }
+
   private void addDirectCostIssue(ClassIssues classIssues, MethodCost methodCost,
                                   ClassCost classCost) {
-    Issue issue = new Issue(methodCost.getMethodLineNumber(), methodCost);
+    Issue issue = new Issue(methodCost.getMethodLineNumber(), methodCost.getDescription());
     float contributionToClassCost = costModel.computeDirectCostContributionFromMethod(classCost, methodCost);
     if (methodCost.isConstructor()) {
       issue.setContributionToClassCost(contributionToClassCost);
@@ -111,10 +127,9 @@ public class IssuesReporter {
 
   private boolean addMethodInvocationIssues(ClassIssues classIssues, MethodCost methodCost,
                                             ClassCost classCost, boolean collaboratorIssuesFound,
-                                            MethodInvokationCost invocationCost) {
+                                            MethodInvocationCost invocationCost) {
     IssueType type;
     if (invocationCost.getCostSourceType() == IMPLICIT_CONSTRUCTOR ||
-        invocationCost.getCostSourceType() == IMPLICIT_STATIC_INIT ||
         invocationCost.getCostSourceType() == IMPLICIT_SETTER ||
         methodCost.isConstructor()) {
       type = CONSTRUCTION;
@@ -130,9 +145,6 @@ public class IssuesReporter {
       case IMPLICIT_SETTER:
         subType = SETTER;
         break;
-      case IMPLICIT_STATIC_INIT:
-        subType = STATIC_INIT;
-        break;
       case NON_OVERRIDABLE_METHOD_CALL:
         if (invocationCost.getMethodCost().isStatic()) {
           subType = STATIC_METHOD;
@@ -143,7 +155,7 @@ public class IssuesReporter {
         }
         break;
     }
-    classIssues.add(new Issue(invocationCost.getLineNumber(), invocationCost.getMethodCost(),
+    classIssues.add(new Issue(invocationCost.getLineNumber(), invocationCost.getDescription(),
         costModel.computeContributionFromIssue(classCost, methodCost, invocationCost),
         type, subType));
     return collaboratorIssuesFound;

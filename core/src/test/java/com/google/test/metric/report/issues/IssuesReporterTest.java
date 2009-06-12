@@ -108,7 +108,7 @@ public class IssuesReporterTest extends TestCase {
 
   }
 
-  public void testMultipleMethodInvokationSourcesDoesntBlowUp() throws Exception {
+  public void testMultipleMethodInvocationSourcesDoesntBlowUp() throws Exception {
     // Threw an exception at one time
     ClassIssues classIssues = issuesReporter.determineIssues(
         decoratedComputer.compute(ClassInfo.class));
@@ -116,12 +116,18 @@ public class IssuesReporterTest extends TestCase {
 
   private static class StaticInit {
     private static int a = 1;
+    private static String b = "b";
   }
 
   public void testStaticInitializationInClass() throws Exception {
     ClassIssues classIssues = issuesReporter.determineIssues(decoratedComputer.compute(StaticInit.class));
-    assertEquals(1, classIssues.getSize());
-    assertEquals(1, classIssues.getIssues(CONSTRUCTION, STATIC_INIT).size());
+    assertEquals(2, classIssues.getSize());
+    List<Issue> issues = classIssues.getIssues(CONSTRUCTION, STATIC_INIT);
+    assertEquals(2, issues.size());
+    assertEquals("int a", issues.get(0).getElement());
+    assertEquals(0.5f, issues.get(0).getContributionToClassCost());
+    assertEquals("String b", issues.get(1).getElement());
+    assertEquals(0.5f, issues.get(1).getContributionToClassCost());
   }
 
   private static class Setters {

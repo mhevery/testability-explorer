@@ -19,12 +19,10 @@ import com.google.common.collect.Lists;
 import com.google.test.metric.ReportGeneratorBuilder;
 import com.google.test.metric.report.ClassPathTemplateLoader;
 import com.google.test.metric.report.SourceLinker;
-import com.google.test.metric.report.StubSourceElement;
 import com.google.test.metric.report.issues.ClassIssues;
 import com.google.test.metric.report.issues.Issue;
 import com.google.test.metric.report.issues.IssueSubType;
 import com.google.test.metric.report.issues.IssueType;
-import com.google.test.metric.report.issues.SourceElement;
 
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.ResourceBundleModel;
@@ -57,7 +55,7 @@ public class MessagesForCostDetailBoxTest extends TestCase {
   private Template template;
   private Map<String, Object> model;
   private Queue<Issue> issueQueue;
-  private SourceElement foo = new StubSourceElement("foo()");
+  private String foo = "foo()";
 
   @Override
   protected void setUp() throws Exception {

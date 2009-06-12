@@ -15,25 +15,26 @@
  */
 package com.google.test.metric.report;
 
-import static java.util.Arrays.asList;
-
-import java.io.StringWriter;
-
-import junit.framework.TestCase;
-
-import org.xml.sax.SAXException;
-
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.Cost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.CyclomaticCost;
 import com.google.test.metric.GlobalCost;
 import com.google.test.metric.MethodCost;
-import com.google.test.metric.MethodInvokationCost;
+import com.google.test.metric.MethodInvocationCost;
+import static com.google.test.metric.Reason.IMPLICIT_STATIC_INIT;
+import static com.google.test.metric.Reason.NON_OVERRIDABLE_METHOD_CALL;
 import com.google.test.metric.ViolationCost;
-import static com.google.test.metric.Reason.*;
+
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
+
+import junit.framework.TestCase;
+
+import org.xml.sax.SAXException;
+
+import java.io.StringWriter;
+import static java.util.Arrays.asList;
 
 public class XMLReportTest extends TestCase {
 
@@ -68,7 +69,7 @@ public class XMLReportTest extends TestCase {
     MethodCost methodCost = new MethodCost("methodName", 1, false, false);
     methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
-    ViolationCost violation = new MethodInvokationCost(123, methodCost,
+    ViolationCost violation = new MethodInvocationCost(123, methodCost,
         IMPLICIT_STATIC_INIT, Cost.cyclomatic(2).add(Cost.global(3)));
     report.writeCost(violation);
     assertXMLEquals("<cost cyclomatic=\"2\" global=\"3\" line=\"123\" "
@@ -83,7 +84,7 @@ public class XMLReportTest extends TestCase {
     MethodCost methodCost = new MethodCost("methodName", 1, false, false);
     methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
-    ViolationCost violation = new MethodInvokationCost(123, methodCost,
+    ViolationCost violation = new MethodInvocationCost(123, methodCost,
         NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(2).add(Cost.global(3)));
     report.writeCost(violation);
     assertXMLEquals("<cost cyclomatic=\"2\" global=\"3\" line=\"123\" "

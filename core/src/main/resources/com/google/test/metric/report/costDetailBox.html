@@ -28,7 +28,7 @@
 
             </td>
             <td>
-              ${message(messagePrefix + ".element", "<tt>", issue.element.shortFormat(), "</tt>")}
+              ${message(messagePrefix + ".element", "<tt>", issue.element, "</tt>")}
               <#-- ${message(messagePrefix + ".method", "UIUtils#archiveThread", "high", "high")} -->
             </td>
             <td class="percent">contributing ${issue.contributionToClassCost?string.percent} of total class cost</td>
