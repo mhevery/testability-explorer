@@ -34,10 +34,14 @@ import java.util.List;
 
 public class DrillDownReportTest extends AutoFieldClearTestCase {
 
-  private final  MethodCost methodCost0 = new MethodCost("c.g.t.A.method0()V", 0, false, false);
-  private final  MethodCost methodCost1 = new MethodCost("c.g.t.A.method1()V", 0, false, false);
-  private final  MethodCost methodCost2 = new MethodCost("c.g.t.A.method2()V", 0, false, false);
-  private final  MethodCost methodCost3 = new MethodCost("c.g.t.A.method3()V", 0, false, false);
+  private final  MethodCost methodCost0 = new MethodCost("c.g.t.A.method0()V", 0, false, false,
+      false);
+  private final  MethodCost methodCost1 = new MethodCost("c.g.t.A.method1()V", 0, false, false,
+      false);
+  private final  MethodCost methodCost2 = new MethodCost("c.g.t.A.method2()V", 0, false, false,
+      false);
+  private final  MethodCost methodCost3 = new MethodCost("c.g.t.A.method3()V", 0, false, false,
+      false);
   private final ByteArrayOutputStream out = new ByteArrayOutputStream();
   private final CostModel costModel = new CostModel();
 
@@ -56,7 +60,7 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   public void testSimpleCost() throws Exception {
     DrillDownReportGenerator printer =
       new DrillDownReportGenerator(new PrintStream(out), costModel, null, MAX_VALUE, 0);
-    MethodCost costOnlyMethod1 = new MethodCost("c.g.t.A.method1()V", 0, false, false);
+    MethodCost costOnlyMethod1 = new MethodCost("c.g.t.A.method1()V", 0, false, false, false);
     costOnlyMethod1.addCostSource(new CyclomaticCost(1, Cost.cyclomatic(1)));
     costOnlyMethod1.addCostSource(new GlobalCost(0, null, Cost.global(1)));
     costOnlyMethod1.link();

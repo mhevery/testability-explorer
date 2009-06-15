@@ -30,7 +30,7 @@ import junit.framework.TestCase;
 public class SourceElementFormattingTest extends TestCase {
 
   public void testMethodFormatting() throws Exception {
-    MethodCost cost = new MethodCost("void translation_unit()", 1, false, false);
+    MethodCost cost = new MethodCost("void translation_unit()", 1, false, false, false);
     assertEquals("void translation_unit()", cost.getDescription());
   }
 
@@ -48,7 +48,7 @@ public class SourceElementFormattingTest extends TestCase {
   public void testDotsInMethodParameters() throws Exception {
     MethodCost cost = new MethodCost(
         "com.google.test.metric.cpp.dom.TranslationUnit parse2(java.lang.String, java.lang.String)",
-        12, false, false);
+        12, false, false, false);
     assertEquals("TranslationUnit parse2(String, String)", cost.getDescription());
   }
 }

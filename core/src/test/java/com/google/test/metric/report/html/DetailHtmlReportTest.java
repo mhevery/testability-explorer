@@ -147,7 +147,7 @@ public class DetailHtmlReportTest extends TestCase {
 
   private MethodCost createMethodCallWithOverallCost(String methodName,
       int overallCost) {
-    MethodCost methodCost = new MethodCost(methodName, -1, false, false);
+    MethodCost methodCost = new MethodCost(methodName, -1, false, false, false);
     for (int i = 0; i < overallCost; i++) {
       methodCost.addCostSource(new CyclomaticCost(i, Cost.cyclomatic(1)));
     }

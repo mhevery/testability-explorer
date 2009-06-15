@@ -94,8 +94,8 @@ public class TestabilityVisitor {
     protected MethodCost getMethodCostCache(MethodInfo method) {
       MethodCost methodCost = methodCosts.get(method);
       if (methodCost == null) {
-        methodCost = new MethodCost(method.getFullName(), method
-            .getStartingLineNumber(), method.isConstructor(), method.isStatic());
+        methodCost = new MethodCost(method.getFullName(), method.getStartingLineNumber(),
+            method.isConstructor(), method.isStatic(), method.isStaticConstructor());
         methodCosts.put(method, methodCost);
       }
       return methodCost;
