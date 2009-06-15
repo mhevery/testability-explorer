@@ -74,18 +74,20 @@ public class IssuesReporter {
   }
 
   void addIssuesInMethod(ClassIssues classIssues, MethodCost methodCost, ClassCost classCost) {
+    if (methodCost.isStaticInit()) {
+      addStaticInitializationIssues(classIssues, methodCost, classCost);
+      return;
+    }
     if (methodCost.getViolationCosts() == null || methodCost.getViolationCosts().isEmpty()) {
       // no issues to add
       return;
     }
-    boolean issuesFound = false;
 
+    boolean issuesFound = false;
     for (ViolationCost violationCost : methodCost.getViolationCosts()) {
       if (violationCost instanceof MethodInvocationCost) {
         MethodInvocationCost invocationCost = (MethodInvocationCost) violationCost;
-        if (invocationCost.getCostSourceType() == IMPLICIT_STATIC_INIT) {
-          issuesFound = addStaticInitializationIssues(classIssues, invocationCost);
-        } else {
+        if (invocationCost.getCostSourceType() != IMPLICIT_STATIC_INIT) {
           issuesFound = addMethodInvocationIssues(classIssues, methodCost, classCost, issuesFound,
               invocationCost);
         }
@@ -96,16 +98,13 @@ public class IssuesReporter {
     }
   }
 
-  private boolean addStaticInitializationIssues(ClassIssues classIssues, MethodInvocationCost invocationCost) {
-    boolean foundStaticInit = false;
-    int totalStaticInitCost = costModel.computeOverall(invocationCost.getMethodCost().getCost());
-    for (final ViolationCost violationCost : invocationCost.getMethodCost().getViolationCosts()) {
-      foundStaticInit = true;
-      float contribution = costModel.computeOverall(violationCost.getCost()) / (float) totalStaticInitCost;
+  private void addStaticInitializationIssues(ClassIssues classIssues, MethodCost methodCost,
+                                             ClassCost classCost) {
+    for (ViolationCost violationCost : methodCost.getViolationCosts()) {
+      float contribution = costModel.computeContributionFromIssue(classCost, methodCost, violationCost);
       classIssues.add(new Issue(violationCost.getLineNumber(), violationCost.getDescription(),
           contribution, CONSTRUCTION, STATIC_INIT));
     }
-    return foundStaticInit;
   }
 
   private void addDirectCostIssue(ClassIssues classIssues, MethodCost methodCost,

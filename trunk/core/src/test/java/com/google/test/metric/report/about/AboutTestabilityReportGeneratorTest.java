@@ -19,10 +19,20 @@ import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.ReportGeneratorBuilder;
-import com.google.test.metric.report.*;
+import com.google.test.metric.report.ClassPathTemplateLoader;
+import com.google.test.metric.report.FreemarkerReportGenerator;
+import com.google.test.metric.report.ReportModel;
+import com.google.test.metric.report.Source;
 import com.google.test.metric.report.Source.Line;
+import com.google.test.metric.report.SourceLoader;
 import com.google.test.metric.report.issues.ClassIssues;
 import com.google.test.metric.report.issues.IssuesReporter;
+
+import freemarker.ext.beans.BeansWrapper;
+import freemarker.ext.beans.ResourceBundleModel;
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+
 import junit.framework.TestCase;
 
 import java.io.ByteArrayOutputStream;
@@ -30,11 +40,6 @@ import java.io.PrintStream;
 import static java.util.Arrays.asList;
 import java.util.LinkedList;
 import static java.util.ResourceBundle.getBundle;
-
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.ext.beans.BeansWrapper;
-import freemarker.ext.beans.ResourceBundleModel;
 
 /**
  * Tests that the About report can be generated.
@@ -70,7 +75,7 @@ public class AboutTestabilityReportGeneratorTest extends TestCase {
             "about/Report.html", configuration);
     generator.printHeader();
     generator.addClassCost(new ClassCost("com.google.test.metric.example.Lessons.SumOfPrimes1",
-        asList(new MethodCost("foo()", 1, false, false))));
+        asList(new MethodCost("foo()", 1, false, false, false))));
     generator.printFooter();
 
     String text = out.toString();

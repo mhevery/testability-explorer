@@ -32,10 +32,10 @@ import junit.framework.TestCase;
 public class MethodCostTest extends TestCase {
 
   public void testComputeOverallCost() throws Exception {
-    MethodCost cost = new MethodCost("a", 0, false, false);
+    MethodCost cost = new MethodCost("a", 0, false, false, false);
     cost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     cost.addCostSource(new GlobalCost(0, null, Cost.global(1)));
-    MethodCost cost3 = new MethodCost("b", 0, false, false);
+    MethodCost cost3 = new MethodCost("b", 0, false, false, false);
     cost3.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     cost3.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
     cost3.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));

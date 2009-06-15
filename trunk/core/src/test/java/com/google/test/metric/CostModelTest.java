@@ -52,10 +52,10 @@ public class CostModelTest extends TestCase {
 
   protected void setUp() throws Exception {
     super.setUp();
-    doThingMethod = new MethodCost("doThing()", 1, false, false);
+    doThingMethod = new MethodCost("doThing()", 1, false, false, false);
     doThingMethod.addCostSource(new CyclomaticCost(3, Cost.cyclomatic(100)));
     
-    methodWithIndirectCosts = new MethodCost("hasIndirect()", 2, false, false);
+    methodWithIndirectCosts = new MethodCost("hasIndirect()", 2, false, false, false);
     methodWithIndirectCosts.addCostSource(new CyclomaticCost(4, Cost.cyclomatic(50)));
     methodWithIndirectCosts.addCostSource(new MethodInvocationCost(1, doThingMethod,
         NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(33)));

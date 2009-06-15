@@ -63,7 +63,7 @@ public class HtmlReportTest extends TestCase {
     ReportOptions options = new ReportOptions(1, 10, 10, 20, 5, 100, 100, 1, 10, "", "");
     linker = new SourceLinker("http://code.repository/basepath/{path}&line={line}",
                               "http://code.repository/basepath/{path}");
-    MethodCost methodCost = new MethodCost("methodFoo", 1, false, false);
+    MethodCost methodCost = new MethodCost("methodFoo", 1, false, false, false);
     methodCost.addCostSource(new MethodInvocationCost(1, methodCost, Reason.IMPLICIT_SETTER,
         new Cost(100, 1, new int[0])));
     cost = new ClassCost("com.google.FooClass", Arrays.asList(methodCost));
@@ -96,7 +96,7 @@ public class HtmlReportTest extends TestCase {
   public void testConstructorCosts() throws Exception {
     generator.printHeader();
     ClassCost cost =
-        new ClassCost("classFoo", Arrays.asList(new MethodCost("methodFoo", 1, false, false)));
+        new ClassCost("classFoo", Arrays.asList(new MethodCost("methodFoo", 1, false, false, false)));
     generator.addClassCost(cost);
     ClassIssues classIssues = new ClassIssues(cost.getClassName(), 0);
     classIssues.add(new Issue(1, null, 1f));

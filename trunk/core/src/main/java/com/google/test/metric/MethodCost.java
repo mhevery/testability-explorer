@@ -27,6 +27,7 @@ public class MethodCost {
   private final int lineNumber;
   private final boolean constructor;
   private final boolean aStatic;
+  private final boolean staticInit;
 
   private final List<ViolationCost> costSources = new ArrayList<ViolationCost>();
 
@@ -54,13 +55,15 @@ public class MethodCost {
    * @param methodName
    *          name of the method, such as {@code void myMethod()}.
    * @param lineNumber
-   *          line number
+   * @param isStaticInit
    */
-  public MethodCost(String methodName, int lineNumber, boolean isConstructor, boolean isStatic) {
+  public MethodCost(String methodName, int lineNumber, boolean isConstructor, boolean isStatic,
+                    boolean isStaticInit) {
     this.methodName = methodName;
     this.lineNumber = lineNumber;
     constructor = isConstructor;
     aStatic = isStatic;
+    staticInit = isStaticInit;
   }
 
   public Cost getTotalCost() {
@@ -129,5 +132,9 @@ public class MethodCost {
 
   public String getDescription() {
     return new RemovePackageFormatter().format(methodName);
+  }
+
+  public boolean isStaticInit() {
+    return staticInit;
   }
 }
