@@ -36,10 +36,13 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.texteditor.MarkerUtilities;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Listener which knows how to handle tasks after a testability launch is successfully completed,
@@ -81,11 +84,14 @@ public class TestabilityReportLaunchListener implements TestabilityLaunchListene
           javaProject.getProject());
       if (resource != null) {
         for (Issue issue : classIssue.getMostImportantIssues()) {
-          IMarker marker = resource.createMarker(TestabilityConstants.TESTABILITY_MARKER_TYPE);
-          marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
-          marker.setAttribute(IMarker.LINE_NUMBER, issue.getLineNumber());
-          marker.setAttribute(IMarker.MESSAGE, retriever.getSuggestion(issue.getType(), issue.getSubType()));
-          marker.setAttribute(TestabilityConstants.ISSUE_TYPE, issue.getType().toString());
+          Map<String, Object> attributes = new HashMap<String, Object>();
+          attributes.put(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+          attributes.put(IMarker.LINE_NUMBER, issue.getLineNumber());
+          attributes.put(IMarker.MESSAGE,
+              retriever.getSuggestion(issue.getType(), issue.getSubType()));
+          attributes.put(TestabilityConstants.ISSUE_TYPE, issue.getType().toString());
+          MarkerUtilities.createMarker(resource, attributes,
+              TestabilityConstants.TESTABILITY_MARKER_TYPE);
         }
       } else {
         logger.logException("No Resource found for Class : " + classIssue.getPath(), null);

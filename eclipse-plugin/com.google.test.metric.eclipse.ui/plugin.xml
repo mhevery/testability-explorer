@@ -84,84 +84,7 @@
      </testabilityLaunchListener>
   </extension>
   <extension
-        point="org.eclipse.ui.editors.markerAnnotationSpecification">
-     <specification
-           annotationType="com.google.test.metric.ui.collaboratorTestability"
-           colorPreferenceKey="collaboratorTestability_color"
-           colorPreferenceValue="192,255,192"
-           contributesToHeader="false"
-           highlightPreferenceKey="collaboratorTestability_highlight"
-           highlightPreferenceValue="true"
-           icon="icons/projects.gif"
-           includeOnPreferencePage="true"
-           isGoToNextNavigationTarget="false"
-           isGoToNextNavigationTargetKey="collaboratorTestability_isGoToNextNavigationTargetKey"
-           isGoToPreviousNavigationTarget="false"
-           isGoToPreviousNavigationTargetKey="collaboratorTestability_isGoToPreviousNavigationTargetKey"
-           label="Collaborator"
-           overviewRulerPreferenceKey="collaboratorTestability_overviewRuler"
-           overviewRulerPreferenceValue="false"
-           presentationLayer="0"
-           showInNextPrevDropdownToolbarAction="false"
-           showInNextPrevDropdownToolbarActionKey="collaboratorTestability_showInNextPrevDropdownToolbarActionKey"
-           textPreferenceKey="collaboratorTestability_text"
-           textPreferenceValue="true"
-           textStylePreferenceKey="excellentTestability_stylePreferences"
-           textStylePreferenceValue="BOX"
-           verticalRulerPreferenceKey="collaboratorTestability_verticalRuler"
-           verticalRulerPreferenceValue="false">
-     </specification>
-     <specification
-           annotationType="com.google.test.metric.ui.goodTestability"
-           colorPreferenceKey="goodTestability_color"
-           colorPreferenceValue="255,255,128"
-           contributesToHeader="false"
-           highlightPreferenceKey="goodTestability_highlight"
-           includeOnPreferencePage="true"
-           isGoToNextNavigationTargetKey="goodTestability_isGoToNextNavigationTargetKey"
-           isGoToPreviousNavigationTarget="false"
-           isGoToPreviousNavigationTargetKey="goodTestability_isGoToPreviousNavigationTargetKey"
-           label="%goodTestabilityAnnotation.label"
-           overviewRulerPreferenceKey="goodTestability_overviewRuler"
-           overviewRulerPreferenceValue="false"
-           presentationLayer="0"
-           showInNextPrevDropdownToolbarAction="false"
-           showInNextPrevDropdownToolbarActionKey="goodTestability_showInNextPrevDropdownToolbarActionKey"
-           textPreferenceKey="goodTestability_text"
-           textPreferenceValue="true"
-           textStylePreferenceKey="goodTestability_stylePreferences"
-           textStylePreferenceValue="BOX"
-           verticalRulerPreferenceKey="goodTestability_verticalRuler"
-           verticalRulerPreferenceValue="false">
-     </specification>
-     <specification
-           annotationType="com.google.test.metric.ui.badTestability"
-           colorPreferenceKey="badTestability_color"
-           colorPreferenceValue="255,160,160"
-           contributesToHeader="false"
-           highlightPreferenceKey="badTestability_highlight"
-           highlightPreferenceValue="true"
-           includeOnPreferencePage="true"
-           isGoToNextNavigationTarget="false"
-           isGoToNextNavigationTargetKey="badTestability_isGoToNextNavigationTargetKey"
-           isGoToPreviousNavigationTarget="false"
-           isGoToPreviousNavigationTargetKey="badTestability_isGoToPreviousNavigationTargetKey"
-           label="%badTestabilityAnnotation.label"
-           overviewRulerPreferenceKey="badTestability_overviewRuler"
-           overviewRulerPreferenceValue="false"
-           presentationLayer="0"
-           showInNextPrevDropdownToolbarAction="false"
-           showInNextPrevDropdownToolbarActionKey="badTestability_showInNextPrevDropdownToolbarActionKey"
-           textPreferenceKey="badTestability_text"
-           textPreferenceValue="true"
-           textStylePreferenceKey="badTestability_stylePreferences"
-           textStylePreferenceValue="BOX"
-           verticalRulerPreferenceKey="badTestability_verticalRuler"
-           verticalRulerPreferenceValue="false">
-     </specification>
-  </extension>
-  <extension
-        id="com.google.test.metric.testabilityMarker"
+        id="testabilityMarker"
         name="Testability"
         point="org.eclipse.core.resources.markers">
      <persistent
@@ -197,7 +120,7 @@
               visible="true">
         </markerFieldReference>
         <markerTypeReference
-              id="com.google.test.metric.testabilityMarker">
+              id="com.google.test.metric.eclipse.ui.testabilityMarker">
         </markerTypeReference>
         <markerGrouping
               id="com.google.test.metric.eclipse.ui.testabilityMarkerGrouping"
@@ -210,7 +133,7 @@
            <markerAttributeGrouping
                  attribute="issueType"
                  defaultGroupingEntry="issueType"
-                 markerType="com.google.test.metric.testabilityMarker">
+                 markerType="com.google.test.metric.eclipse.ui.testabilityMarker">
               <markerAttributeMapping
                     markerGroupingEntry="com.google.test.metric.eclipse.ui.constructionGroupingEntry"
                     value="CONSTRUCTION">
@@ -264,7 +187,7 @@
      <markerTypeCategory
            name="Testability Type">
         <markerTypeReference
-              id="com.google.test.metric.testabilityMarker">
+              id="com.google.test.metric.eclipse.ui.testabilityMarker">
         </markerTypeReference>
      </markerTypeCategory>
   </extension>
@@ -273,8 +196,47 @@
      <imageprovider
            class="com.google.test.metric.eclipse.ui.markers.TestabilityMarkerImageProvider"
            id="com.google.test.metric.eclipse.ui.testabilityMarkerImageProvider"
-           markertype="com.google.test.metric.testabilityMarker">
+           markertype="com.google.test.metric.eclipse.ui.testabilityMarker">
      </imageprovider>
+  </extension>
+  <extension
+        point="org.eclipse.ui.editors.annotationTypes">
+     <type
+           markerSeverity="0"
+           markerType="com.google.test.metric.eclipse.ui.testabilityMarker"
+           name="com.google.test.metric.eclipse.ui.testabilityAnnotationType"
+           super="org.eclipse.jdt.ui.info">
+     </type>
+  </extension>
+  <extension
+        point="org.eclipse.ui.editors.markerAnnotationSpecification">
+     <specification
+           annotationImageProvider="com.google.test.metric.eclipse.ui.markers.TestabilityMarkerImageProvider"
+           annotationType="com.google.test.metric.eclipse.ui.testabilityAnnotationType"
+           colorPreferenceKey="testabilityAnnotationType_colorPreferenceKey"
+           colorPreferenceValue="0,0,0"
+           contributesToHeader="false"
+           highlightPreferenceKey="testabilityAnnotationType_highlightPreferenceKey"
+           highlightPreferenceValue="false"
+           icon="icons/projects.gif"
+           includeOnPreferencePage="true"
+           isGoToNextNavigationTarget="false"
+           isGoToNextNavigationTargetKey="testabilityAnnotationType_isGoToNextNavigationTargetKey"
+           isGoToPreviousNavigationTarget="false"
+           isGoToPreviousNavigationTargetKey="testabilityAnnotationType_isGoToPreviousNavigationTarget"
+           label="Testability"
+           overviewRulerPreferenceKey="testabilityAnnotationType_overviewRulerPreferenceKey"
+           overviewRulerPreferenceValue="true"
+           presentationLayer="2"
+           showInNextPrevDropdownToolbarAction="false"
+           showInNextPrevDropdownToolbarActionKey="testabilityAnnotationType_showInNextPrevDropdownToolbarActionKey"
+           textPreferenceKey="testabilityAnnotationType_textPreferenceKey"
+           textPreferenceValue="false"
+           textStylePreferenceKey="testabilityAnnotationType_textStylePreferenceKey"
+           textStylePreferenceValue="NONE"
+           verticalRulerPreferenceKey="testabilityAnnotationType_verticalRulerPreferenceKey"
+           verticalRulerPreferenceValue="true">
+     </specification>
   </extension>
 
 
