@@ -78,7 +78,7 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
     control.setLayout(new GridLayout(1, false));
     super.setControl(control);
 
-    Group projectPropertiesControl = new Group(control, SWT.BORDER);
+    Group projectPropertiesControl = new Group(control, SWT.NONE);
     projectPropertiesControl.setLayout(new GridLayout(3, false));
     projectPropertiesControl.setText("Project:");
     GridData projectGridData = new GridData(GridData.FILL_HORIZONTAL);
@@ -86,7 +86,7 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
 
     createProjectProperties(projectPropertiesControl);
 
-    Group testabilityPropertiesControl = new Group(control, SWT.BORDER);
+    Group testabilityPropertiesControl = new Group(control, SWT.NONE);
     testabilityPropertiesControl.setLayout(new GridLayout(2, false));
     testabilityPropertiesControl.setText("Testability Report Properties:");
     GridData testabilityGridData = new GridData(GridData.FILL_HORIZONTAL);
