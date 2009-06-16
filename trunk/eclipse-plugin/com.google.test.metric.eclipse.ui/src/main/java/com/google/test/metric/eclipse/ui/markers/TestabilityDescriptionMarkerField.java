@@ -47,7 +47,7 @@ public class TestabilityDescriptionMarkerField extends MarkerField {
     
     try {
       // TODO(shyamseshadri): Check Item Type and assign image accordingly.
-      cell.setImage(Activator.getDefault().getImage("icons/projects.gif"));
+      cell.setImage(Activator.getDefault().getImage("icons/TE.jpg"));
     } catch (ImageNotFoundException e) {
       logger.logException(e);
     }
