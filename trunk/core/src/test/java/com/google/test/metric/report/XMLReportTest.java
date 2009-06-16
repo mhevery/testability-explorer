@@ -26,8 +26,8 @@ import static com.google.test.metric.Reason.IMPLICIT_STATIC_INIT;
 import static com.google.test.metric.Reason.NON_OVERRIDABLE_METHOD_CALL;
 import com.google.test.metric.ViolationCost;
 
-import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
+import org.apache.xml.serialize.OutputFormat;
+import org.apache.xml.serialize.XMLSerializer;
 
 import junit.framework.TestCase;
 
