@@ -92,6 +92,7 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
     return TestabilityConstants.TESTABILITY.equals(mode);
   }
 
+  @SuppressWarnings("unchecked")
   public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch,
       IProgressMonitor monitor) throws CoreException {
     if (!TestabilityConstants.TESTABILITY.equals(mode)) {

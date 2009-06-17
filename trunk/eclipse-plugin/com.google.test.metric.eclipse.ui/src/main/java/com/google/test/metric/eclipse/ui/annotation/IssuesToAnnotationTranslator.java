@@ -37,10 +37,7 @@ import java.util.List;
  */
 public class IssuesToAnnotationTranslator {
   
-  private final ReportOptions configuration;
-
   public IssuesToAnnotationTranslator(ReportOptions reportOptions) {
-    this.configuration = reportOptions;
   }
 
   public List<Annotation> getAnnotations(ClassIssues classIssues,
