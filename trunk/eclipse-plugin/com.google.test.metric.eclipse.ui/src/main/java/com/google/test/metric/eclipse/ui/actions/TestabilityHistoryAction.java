@@ -15,6 +15,8 @@
  */
 package com.google.test.metric.eclipse.ui.actions;
 
+import com.google.test.metric.eclipse.internal.util.TestabilityConstants;
+
 import org.eclipse.debug.ui.actions.AbstractLaunchHistoryAction;
 
 /**
@@ -24,7 +26,7 @@ import org.eclipse.debug.ui.actions.AbstractLaunchHistoryAction;
 public class TestabilityHistoryAction extends AbstractLaunchHistoryAction {
 
   public TestabilityHistoryAction() {
-    super("com.google.test.metric.eclipse.ui.launchGroup.testability");
+    super(TestabilityConstants.TESTABILITY_LAUNCH_GROUP);
   }
 
 }

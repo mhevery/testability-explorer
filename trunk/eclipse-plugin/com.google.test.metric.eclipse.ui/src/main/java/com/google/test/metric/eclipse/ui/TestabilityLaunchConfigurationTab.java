@@ -18,6 +18,7 @@ package com.google.test.metric.eclipse.ui;
 import com.google.test.metric.eclipse.internal.util.JavaProjectHelper;
 import com.google.test.metric.eclipse.internal.util.Logger;
 import com.google.test.metric.eclipse.internal.util.TestabilityConstants;
+import com.google.test.metric.eclipse.internal.util.TestabilityLaunchConfigurationHelper;
 import com.google.test.metric.eclipse.ui.internal.JavaPackageElementContentProvider;
 import com.google.test.metric.eclipse.ui.plugin.Activator;
 import com.google.test.metric.eclipse.ui.plugin.ImageNotFoundException;
@@ -58,6 +59,10 @@ import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * 
+ * @author shyamseshadri@google.com (Shyam Seshadri)
+ */
 public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurationTab {
   private Text projectText;
   private Text reportFolderText;
@@ -67,11 +72,13 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
   private Text globalStateCostText;
   private Text maxExcellentCostText;
   private Text maxAcceptableCostText;
-
+  private Button runOnCompileCheckbox;
 
   private JavaProjectHelper javaProjectHelper = new JavaProjectHelper();
+  private TestabilityLaunchConfigurationHelper configurationHelper =
+      new TestabilityLaunchConfigurationHelper();
 
-  public Logger logger = new Logger();
+  private Logger logger = new Logger();
 
   public void createControl(Composite parent) {
     Composite control = new Composite(parent, SWT.NONE);
@@ -195,6 +202,22 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
     GridData whiteListRemoveGridData = new GridData();
     whiteListRemoveGridData.verticalAlignment = SWT.TOP;
     whitelistPackagesRemoveButton.setLayoutData(whiteListRemoveGridData);
+    
+    Label spacer2 = new Label(control, SWT.NONE);
+    runOnCompileCheckbox = new Button(control, SWT.CHECK);
+    runOnCompileCheckbox.setText("Run this configuration at every build");
+    runOnCompileCheckbox.addSelectionListener(new SelectionListener() {
+
+      public void widgetDefaultSelected(SelectionEvent e) {
+      }
+
+      public void widgetSelected(SelectionEvent e) {
+        setTabDirty();
+      }
+    });
+    GridData checkBoxGrid = new GridData();
+    checkBoxGrid.horizontalSpan = 2;
+    runOnCompileCheckbox.setLayoutData(checkBoxGrid);
   }
 
   private void removeSelectedPackageFromWhitelist() {
@@ -310,6 +333,9 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
 
       initializeTextBoxesFromHistory(configuration);
 
+      boolean isRunOnBuild = configuration.getAttribute(
+          TestabilityConstants.CONFIGURATION_ATTR_RUN_ON_BUILD, false);
+      runOnCompileCheckbox.setSelection(isRunOnBuild);
     } catch (CoreException e) {
       e.printStackTrace();
     }
@@ -366,6 +392,13 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
         setErrorMessage(MessageFormat.format(
             "Project named {0} does not exist. Please choose another project.", currentProjectName));
         return false;
+      } else if (configurationHelper.isExistingLaunchConfigWithRunOnBuildOtherThanCurrent(
+          currentProjectName, launchConfig.getName()) && runOnCompileCheckbox.getSelection()) {
+        setErrorMessage(MessageFormat.format(
+            "Project named {0} already has another active configuration with Run on every build "
+                + "set. Please uncheck the box or remove it from the other configuration",
+            currentProjectName));
+        return false;
       } else {
         setErrorMessage(null);
         setMessage("Create a configuration to launch a testability session.");
@@ -394,6 +427,8 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
           .parseInt(recordingDepthText.getText()));
       configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_WHITELIST,
           Arrays.asList(whiteListList.getList().getItems()));
+      configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_RUN_ON_BUILD,
+          runOnCompileCheckbox.getSelection());
     }
   }
 
@@ -417,6 +452,8 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
         TestabilityConstants.MAX_ACCEPTABLE_COST);
     configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_WHITELIST,
         TestabilityConstants.WHITELIST);
+    configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_RUN_ON_BUILD,
+        false);
   }
 
   private void setUpBrowseFolderDialog() {

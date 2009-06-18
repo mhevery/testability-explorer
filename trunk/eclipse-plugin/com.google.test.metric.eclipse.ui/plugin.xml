@@ -6,7 +6,7 @@
       <launchGroup
             bannerImage="icons/blank.jpg"
             id="com.google.test.metric.eclipse.ui.launchGroup.testability"
-            image="icons/blank.jpg"
+            image="icons/TE.jpg"
             label="Testability"
             mode="testability">
       </launchGroup>
@@ -240,6 +240,15 @@
            verticalRulerPreferenceKey="testabilityAnnotationType_verticalRulerPreferenceKey"
            verticalRulerPreferenceValue="true">
      </specification>
+  </extension>
+  <extension
+        point="org.eclipse.jdt.core.compilationParticipant">
+     <compilationParticipant
+           class="com.google.test.metric.eclipse.ui.internal.compilation.TestabilityCompilationParticipant"
+           createsProblems="false"
+           id="com.google.test.metric.eclipse.ui.testabilityCompilationParticipant"
+           modifiesEnvironment="false">
+     </compilationParticipant>
   </extension>
 
 
