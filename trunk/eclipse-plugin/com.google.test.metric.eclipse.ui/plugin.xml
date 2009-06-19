@@ -135,7 +135,6 @@
            </markerGroupingEntry>
            <markerAttributeGrouping
                  attribute="issueType"
-                 defaultGroupingEntry="issueType"
                  markerType="com.google.test.metric.eclipse.ui.testabilityMarker">
               <markerAttributeMapping
                     markerGroupingEntry="com.google.test.metric.eclipse.ui.constructionGroupingEntry"
