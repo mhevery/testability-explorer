@@ -53,11 +53,7 @@ public class TestabilityConstants {
   public static final String ERROR_LOG_FILENAME = "error-log";
   public static final String HTML_REPORT_FILENAME = "report.html";
   public static final String TESTABILITY = "testability";
-  public static final float MIN_COST = 1;
-  public static final int MAX_SIZE = 5;
-  public static final int MAX_LINE_COUNT = 10;
-  public static final int MAX_METHOD_COUNT = 10;
-  public static final int WORST_OFFENDER_COUNT = 20;
+  public static final int MAX_CLASSES_TO_SHOW_IN_ISSUES_REPORTER = 25;
   
   public static final String ISSUE_TYPE = "issueType";
   public static final String TESTABILITY_LAUNCH_GROUP = "com.google.test.metric.eclipse.ui.launchGroup.testability";

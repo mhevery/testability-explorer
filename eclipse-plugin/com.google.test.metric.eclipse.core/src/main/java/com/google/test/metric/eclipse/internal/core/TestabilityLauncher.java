@@ -158,12 +158,12 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
       
       CostModel costModel = new CostModel(cyclomaticCost, globalCost);
       IssuesReporter issuesReporter = new IssuesReporter(
-          new TriageIssuesQueue<ClassIssues>(TestabilityConstants.MIN_COST,
-              TestabilityConstants.MAX_SIZE, new ClassIssues.TotalCostComparator()), costModel);
+          new TriageIssuesQueue<ClassIssues>(maxAcceptableCost,
+              TestabilityConstants.MAX_CLASSES_TO_SHOW_IN_ISSUES_REPORTER,
+              new ClassIssues.TotalCostComparator()), costModel);
       ReportOptions options = new ReportOptions(cyclomaticCost, globalCost, maxExcellentCost,
-          maxAcceptableCost, TestabilityConstants.WORST_OFFENDER_COUNT,
-          TestabilityConstants.MAX_METHOD_COUNT, TestabilityConstants.MAX_LINE_COUNT, 
-          printDepth, (int)TestabilityConstants.MIN_COST, "", "");
+          maxAcceptableCost, TestabilityConstants.MAX_CLASSES_TO_SHOW_IN_ISSUES_REPORTER,
+          -1, -1, printDepth, -1, "", "");
       SourceLoader sourceLoader = new SourceLoader(classPath);
 
       AnalysisModel analysisModel = new AnalysisModel(issuesReporter);
