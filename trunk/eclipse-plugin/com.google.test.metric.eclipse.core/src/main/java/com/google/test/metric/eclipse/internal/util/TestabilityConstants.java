@@ -41,8 +41,12 @@ public class TestabilityConstants {
 
   public static final String CONFIGURATION_ATTR_RUN_ON_BUILD =
     "testability.launch.configuration.run.on.build";
+
+  public static final String CONFIGURATION_ATTR_RUNNING_IN_COMPILATION_MODE =
+      "testability.launch.configuration.running.in.compilation.mode";
   
-  public static final String TESTABILITY_MARKER_TYPE = "com.google.test.metric.eclipse.ui.testabilityMarker";
+  public static final String TESTABILITY_MARKER_TYPE =
+      "com.google.test.metric.eclipse.ui.testabilityMarker";
   
   public static final int MAX_ACCEPTABLE_COST = 100;
   public static final int MAX_EXCELLENT_COST = 20;
@@ -56,8 +60,10 @@ public class TestabilityConstants {
   public static final int MAX_CLASSES_TO_SHOW_IN_ISSUES_REPORTER = 25;
   
   public static final String ISSUE_TYPE = "issueType";
-  public static final String TESTABILITY_LAUNCH_GROUP = "com.google.test.metric.eclipse.ui.launchGroup.testability";
-  public static final String TESTABILITY_LAUNCH_CONFIGURATION_TYPE = "com.google.test.metric.eclipse.core.launchTestabilityConfigurationType";
+  public static final String TESTABILITY_LAUNCH_GROUP =
+      "com.google.test.metric.eclipse.ui.launchGroup.testability";
+  public static final String TESTABILITY_LAUNCH_CONFIGURATION_TYPE =
+      "com.google.test.metric.eclipse.core.launchTestabilityConfigurationType";
   public static final String TESTABILITY_MODE = "testability";
   
   private TestabilityConstants() {

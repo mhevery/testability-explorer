@@ -22,6 +22,7 @@ import com.google.test.metric.eclipse.internal.util.TestabilityLaunchConfigurati
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.compiler.CompilationParticipant;
 
@@ -52,7 +53,10 @@ public class TestabilityCompilationParticipant extends CompilationParticipant {
         configurationHelper.getLaunchConfiguration(project.getElementName());
     if (launchConfiguration != null) {
       try {
-        ILaunch launch = launchConfiguration.launch(TestabilityConstants.TESTABILITY_MODE, null);
+        ILaunchConfigurationWorkingCopy workingCopy = launchConfiguration.getWorkingCopy();
+        workingCopy.setAttribute(
+            TestabilityConstants.CONFIGURATION_ATTR_RUNNING_IN_COMPILATION_MODE, true);
+        ILaunch launch = workingCopy.launch(TestabilityConstants.TESTABILITY_MODE, null);
       } catch (CoreException e) {
         logger.logException(e);
       }

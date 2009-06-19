@@ -65,15 +65,19 @@
   <extension
         point="org.eclipse.ui.views">
      <view
+           allowMultiple="false"
            class="com.google.test.metric.eclipse.ui.TestabilityReportView"
+           icon="icons/TE.jpg"
            id="com.google.test.metric.eclipse.ui.browserview"
-           name="Testability Report"
+           name="Testability Html Report"
            restorable="true">
      </view>
      <view
+           allowMultiple="false"
            class="com.google.test.metric.eclipse.ui.markers.TestabilityView"
+           icon="icons/TE.jpg"
            id="com.google.test.metric.eclipse.ui.testabilityView"
-           name="Testability View"
+           name="Testability Issues View"
            restorable="true">
      </view>
   </extension>
@@ -128,11 +132,6 @@
         <markerGrouping
               id="com.google.test.metric.eclipse.ui.testabilityMarkerGrouping"
               label="Testability">
-           <markerGroupingEntry
-                 id="com.google.test.metric.eclipse.ui.collaboratorGroupingEntry"
-                 label="Collaborator"
-                 priority="1">
-           </markerGroupingEntry>
            <markerAttributeGrouping
                  attribute="issueType"
                  markerType="com.google.test.metric.eclipse.ui.testabilityMarker">
@@ -149,6 +148,11 @@
                     value="COLLABORATOR">
               </markerAttributeMapping>
            </markerAttributeGrouping>
+           <markerGroupingEntry
+                 id="com.google.test.metric.eclipse.ui.collaboratorGroupingEntry"
+                 label="Collaborator"
+                 priority="1">
+           </markerGroupingEntry>
            <markerGroupingEntry
                  id="com.google.test.metric.eclipse.ui.constructionGroupingEntry"
                  label="Construction"

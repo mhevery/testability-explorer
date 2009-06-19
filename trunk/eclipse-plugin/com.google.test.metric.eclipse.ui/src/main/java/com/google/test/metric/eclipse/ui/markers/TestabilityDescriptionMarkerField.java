@@ -21,6 +21,7 @@ import com.google.test.metric.eclipse.ui.plugin.ImageNotFoundException;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.views.markers.MarkerField;
 import org.eclipse.ui.views.markers.MarkerItem;
 
@@ -34,6 +35,11 @@ public class TestabilityDescriptionMarkerField extends MarkerField {
   private Logger logger = new Logger();
 
   public TestabilityDescriptionMarkerField() {
+  }
+
+  @Override
+  public int getDefaultColumnWidth(Control control) {
+    return 350;
   }
 
   @Override

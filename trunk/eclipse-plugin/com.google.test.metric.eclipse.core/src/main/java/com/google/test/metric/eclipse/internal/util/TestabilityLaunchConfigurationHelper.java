@@ -38,11 +38,8 @@ public class TestabilityLaunchConfigurationHelper {
         String configProjectName =
             launchConfiguration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_PROJECT_NAME,
                 "");
-        boolean runOnEveryBuild =
-            launchConfiguration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_RUN_ON_BUILD,
-                false);
-        // TODO(shyamseshadri): Check validity of configuration before returning.
-        if (configProjectName.equals(projectName) && runOnEveryBuild) {
+        if (configProjectName.equals(projectName)
+            && isValidToRun(projectName, launchConfiguration)) {
           return launchConfiguration;
         }
       }
@@ -81,5 +78,17 @@ public class TestabilityLaunchConfigurationHelper {
   
   public boolean isExistingLaunchConfigurationWithRunOnBuild(String projectName) {
     return getLaunchConfiguration(projectName) != null;
+  }
+  
+  private boolean isValidToRun(String projectName, ILaunchConfiguration launchConfiguration) throws CoreException {
+    boolean runOnEveryBuild =
+        launchConfiguration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_RUN_ON_BUILD,
+            false);
+    if (runOnEveryBuild
+        && !isExistingLaunchConfigWithRunOnBuildOtherThanCurrent(projectName,
+            launchConfiguration.getName())) {
+      return true;
+    }
+    return false;
   }
 }

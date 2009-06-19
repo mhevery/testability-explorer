@@ -57,11 +57,15 @@ public class TestabilityReportLaunchListener implements TestabilityLaunchListene
       new TestabilityExplorerMessageRetriever();
 
   public void onLaunchCompleted(final ReportOptions reportOptions, final IJavaProject javaProject,
-      final List<ClassIssues> classIssues, File reportDirectory) {
-    showHtmlReportView(reportDirectory);
+      final List<ClassIssues> classIssues, File reportDirectory, boolean runningInCompilationMode) {
+    if (!runningInCompilationMode) {
+      showHtmlReportView(reportDirectory);
+    }
     try {
       createMarkersFromClassIssues(classIssues, javaProject);
-      showTestabilityView();
+      if (!runningInCompilationMode) {
+        showTestabilityView();
+      }
     } catch (CoreException e) {
       logger.logException(e);
     }

@@ -35,5 +35,5 @@ import java.util.List;
 public interface TestabilityLaunchListener {
 
   void onLaunchCompleted(ReportOptions reportOptions, IJavaProject javaProject,
-      List<ClassIssues> classIssues, File reportDirectory);
+      List<ClassIssues> classIssues, File reportDirectory, boolean runningInCompilationMode);
 }
