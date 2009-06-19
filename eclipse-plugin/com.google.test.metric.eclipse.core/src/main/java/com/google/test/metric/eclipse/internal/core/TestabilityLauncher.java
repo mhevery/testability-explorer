@@ -176,7 +176,10 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
               printDepth);
       new JavaTestabilityRunner(testabilityConfig).run();
 
-      notifyAllListeners(options, analysisModel.getWorstOffenders(), javaProject, reportDirectory);
+      boolean runningInCompilationMode = configuration.getAttribute(
+          TestabilityConstants.CONFIGURATION_ATTR_RUNNING_IN_COMPILATION_MODE, false);
+      notifyAllListeners(options, analysisModel.getWorstOffenders(), javaProject, reportDirectory,
+          runningInCompilationMode);
 
       reportStream.flush();
       reportStream.close();
@@ -186,7 +189,8 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
   }
 
   private void notifyAllListeners(ReportOptions reportOptions,
-      List<ClassIssues> classIssues, IJavaProject javaProject, File reportDirectory) {
+      List<ClassIssues> classIssues, IJavaProject javaProject, File reportDirectory,
+      boolean runningInCompilationMode) {
     IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
          "com.google.test.metric.eclipse.core.testabilityLaunchListener");
 
@@ -194,7 +198,8 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
       try {
         TestabilityLaunchListener launchListener =
             (TestabilityLaunchListener) element.createExecutableExtension("class");
-        launchListener.onLaunchCompleted(reportOptions, javaProject, classIssues, reportDirectory);
+        launchListener.onLaunchCompleted(reportOptions, javaProject, classIssues, reportDirectory,
+            runningInCompilationMode);
       } catch (CoreException e) {
         logger.logException("Error creating Testability Launch Listener", e);
       }
