@@ -88,8 +88,30 @@
      </testabilityLaunchListener>
   </extension>
   <extension
-        id="testabilityMarker"
-        name="Testability"
+        id="testabilityMarkerDirectCost"
+        name="Testability - Direct Cost"
+        point="org.eclipse.core.resources.markers">
+     <persistent
+           value="true">
+     </persistent>
+     <super
+           type="org.eclipse.core.resources.textmarker">
+     </super>
+  </extension>
+  <extension
+        id="testabilityMarkerCollaborator"
+        name="Testability - Collaborator"
+        point="org.eclipse.core.resources.markers">
+     <persistent
+           value="true">
+     </persistent>
+     <super
+           type="org.eclipse.core.resources.textmarker">
+     </super>
+  </extension>
+  <extension
+        id="testabilityMarkerConstructor"
+        name="Testability - Constructor"
         point="org.eclipse.core.resources.markers">
      <persistent
            value="true">
@@ -127,31 +149,30 @@
               visible="true">
         </markerFieldReference>
         <markerTypeReference
-              id="com.google.test.metric.eclipse.ui.testabilityMarker">
+              id="com.google.test.metric.eclipse.ui.testabilityMarkerCollaborator">
+        </markerTypeReference>
+        <markerTypeReference
+              id="com.google.test.metric.eclipse.ui.testabilityMarkerConstructor">
         </markerTypeReference>
         <markerGrouping
               id="com.google.test.metric.eclipse.ui.testabilityMarkerGrouping"
               label="Testability">
            <markerAttributeGrouping
-                 attribute="issueType"
-                 markerType="com.google.test.metric.eclipse.ui.testabilityMarker">
-              <markerAttributeMapping
-                    markerGroupingEntry="com.google.test.metric.eclipse.ui.constructionGroupingEntry"
-                    value="CONSTRUCTION">
-              </markerAttributeMapping>
-              <markerAttributeMapping
-                    markerGroupingEntry="com.google.test.metric.eclipse.ui.directCostGroupingEntry"
-                    value="DIRECT_COST">
-              </markerAttributeMapping>
-              <markerAttributeMapping
-                    markerGroupingEntry="com.google.test.metric.eclipse.ui.collaboratorGroupingEntry"
-                    value="COLLABORATOR">
-              </markerAttributeMapping>
+                 defaultGroupingEntry="com.google.test.metric.eclipse.ui.constructionGroupingEntry"
+                 markerType="com.google.test.metric.eclipse.ui.testabilityMarkerConstructor">
            </markerAttributeGrouping>
-           <markerGroupingEntry
+           <markerAttributeGrouping
+                 defaultGroupingEntry="com.google.test.metric.eclipse.ui.collaboratorGroupingEntry"
+                 markerType="com.google.test.metric.eclipse.ui.testabilityMarkerCollaborator">
+           </markerAttributeGrouping>
+           <markerAttributeGrouping
+                 defaultGroupingEntry="com.google.test.metric.eclipse.ui.directCostGroupingEntry"
+                 markerType="com.google.test.metric.eclipse.ui.testabilityMarkerDirectCost">
+           </markerAttributeGrouping>
+            <markerGroupingEntry
                  id="com.google.test.metric.eclipse.ui.collaboratorGroupingEntry"
                  label="Collaborator"
-                 priority="1">
+                 priority="2">
            </markerGroupingEntry>
            <markerGroupingEntry
                  id="com.google.test.metric.eclipse.ui.constructionGroupingEntry"
@@ -161,9 +182,12 @@
            <markerGroupingEntry
                  id="com.google.test.metric.eclipse.ui.directCostGroupingEntry"
                  label="Direct Cost"
-                 priority="1">
+                 priority="3">
            </markerGroupingEntry>
         </markerGrouping>
+        <markerTypeReference
+              id="com.google.test.metric.eclipse.ui.testabilityMarkerDirectCost">
+        </markerTypeReference>
      </markerContentGenerator>
      <markerField
            class="com.google.test.metric.eclipse.ui.markers.TestabilityDescriptionMarkerField"
@@ -190,26 +214,54 @@
            id="com.google.test.metric.eclipse.ui.testabilityIssueTypeMarkerField"
            name="Issue Type">
      </markerField>
-     <markerTypeCategory
-           name="Testability Type">
-        <markerTypeReference
-              id="com.google.test.metric.eclipse.ui.testabilityMarker">
-        </markerTypeReference>
-     </markerTypeCategory>
   </extension>
   <extension
         point="org.eclipse.ui.ide.markerImageProviders">
      <imageprovider
            class="com.google.test.metric.eclipse.ui.markers.TestabilityMarkerImageProvider"
            id="com.google.test.metric.eclipse.ui.testabilityMarkerImageProvider"
-           markertype="com.google.test.metric.eclipse.ui.testabilityMarker">
+           markertype="com.google.test.metric.eclipse.ui.testabilityMarkerCollaborator">
+     </imageprovider>
+  </extension>
+  <extension
+        point="org.eclipse.ui.ide.markerImageProviders">
+     <imageprovider
+           class="com.google.test.metric.eclipse.ui.markers.TestabilityMarkerImageProvider"
+           id="com.google.test.metric.eclipse.ui.testabilityMarkerImageProvider"
+           markertype="com.google.test.metric.eclipse.ui.testabilityMarkerConstructor">
+     </imageprovider>
+  </extension>
+  <extension
+        point="org.eclipse.ui.ide.markerImageProviders">
+     <imageprovider
+           class="com.google.test.metric.eclipse.ui.markers.TestabilityMarkerImageProvider"
+           id="com.google.test.metric.eclipse.ui.testabilityMarkerImageProvider"
+           markertype="com.google.test.metric.eclipse.ui.testabilityMarkerDirectCost">
      </imageprovider>
   </extension>
   <extension
         point="org.eclipse.ui.editors.annotationTypes">
      <type
            markerSeverity="0"
-           markerType="com.google.test.metric.eclipse.ui.testabilityMarker"
+           markerType="com.google.test.metric.eclipse.ui.testabilityMarkerCollaborator"
+           name="com.google.test.metric.eclipse.ui.testabilityAnnotationType"
+           super="org.eclipse.jdt.ui.info">
+     </type>
+  </extension>
+  <extension
+        point="org.eclipse.ui.editors.annotationTypes">
+     <type
+           markerSeverity="0"
+           markerType="com.google.test.metric.eclipse.ui.testabilityMarkerConstructor"
+           name="com.google.test.metric.eclipse.ui.testabilityAnnotationType"
+           super="org.eclipse.jdt.ui.info">
+     </type>
+  </extension>
+  <extension
+        point="org.eclipse.ui.editors.annotationTypes">
+     <type
+           markerSeverity="0"
+           markerType="com.google.test.metric.eclipse.ui.testabilityMarkerDirectCost"
            name="com.google.test.metric.eclipse.ui.testabilityAnnotationType"
            super="org.eclipse.jdt.ui.info">
      </type>

@@ -23,6 +23,7 @@ import com.google.test.metric.eclipse.ui.TestabilityReportView;
 import com.google.test.metric.report.ReportOptions;
 import com.google.test.metric.report.issues.ClassIssues;
 import com.google.test.metric.report.issues.Issue;
+import com.google.test.metric.report.issues.IssueType;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -73,8 +74,12 @@ public class TestabilityReportLaunchListener implements TestabilityLaunchListene
   
   private void createMarkersFromClassIssues(List<ClassIssues> classIssues,
       IJavaProject javaProject) throws CoreException {
-    javaProject.getProject().deleteMarkers(TestabilityConstants.TESTABILITY_MARKER_TYPE,
+    javaProject.getProject().deleteMarkers(TestabilityConstants.TESTABILITY_COLLABORATOR_MARKER_TYPE,
         true, IResource.DEPTH_INFINITE);
+    javaProject.getProject().deleteMarkers(TestabilityConstants.TESTABILITY_CONSTRUCTOR_MARKER_TYPE,
+            true, IResource.DEPTH_INFINITE);
+    javaProject.getProject().deleteMarkers(TestabilityConstants.TESTABILITY_DIRECT_COST_MARKER_TYPE,
+            true, IResource.DEPTH_INFINITE);
     IPackageFragmentRoot[] roots = javaProject.getPackageFragmentRoots();
     List<IPath> sourceFolderPaths = new ArrayList<IPath>();
     for (IPackageFragmentRoot root : roots) {
@@ -93,9 +98,19 @@ public class TestabilityReportLaunchListener implements TestabilityLaunchListene
           attributes.put(IMarker.LINE_NUMBER, issue.getLineNumber());
           attributes.put(IMarker.MESSAGE,
               retriever.getSuggestion(issue.getType(), issue.getSubType()));
+          IssueType issueType = issue.getType(); 
           attributes.put(TestabilityConstants.ISSUE_TYPE, issue.getType().toString());
-          MarkerUtilities.createMarker(resource, attributes,
-              TestabilityConstants.TESTABILITY_MARKER_TYPE);
+          String markerType = null;
+          if (IssueType.COLLABORATOR.equals(issueType)) {
+            markerType = TestabilityConstants.TESTABILITY_COLLABORATOR_MARKER_TYPE;
+          } else if (IssueType.CONSTRUCTION.equals(issueType)) {
+            markerType = TestabilityConstants.TESTABILITY_CONSTRUCTOR_MARKER_TYPE;
+          } else if (IssueType.DIRECT_COST.equals(issueType)) {
+            markerType = TestabilityConstants.TESTABILITY_DIRECT_COST_MARKER_TYPE;
+          }
+          if (markerType != null) {
+            MarkerUtilities.createMarker(resource, attributes, markerType);
+          }
         }
       } else {
         logger.logException("No Resource found for Class : " + classIssue.getPath(), null);

@@ -48,8 +48,12 @@ public class TestabilityConstants {
   public static final String CONFIGURATION_ATTR_RUNNING_IN_COMPILATION_MODE =
       "testability.launch.configuration.running.in.compilation.mode";
   
-  public static final String TESTABILITY_MARKER_TYPE =
-      "com.google.test.metric.eclipse.ui.testabilityMarker";
+  public static final String TESTABILITY_DIRECT_COST_MARKER_TYPE =
+      "com.google.test.metric.eclipse.ui.testabilityMarkerDirectCost";
+  public static final String TESTABILITY_CONSTRUCTOR_MARKER_TYPE =
+      "com.google.test.metric.eclipse.ui.testabilityMarkerConstructor";
+  public static final String TESTABILITY_COLLABORATOR_MARKER_TYPE =
+      "com.google.test.metric.eclipse.ui.testabilityMarkerCollaborator";  
   
   public static final int MAX_ACCEPTABLE_COST = 100;
   public static final int MAX_EXCELLENT_COST = 20;
