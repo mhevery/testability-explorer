@@ -225,9 +225,11 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
         }
         classPathString = projectLocation + classPathString;
       }
+      classPathString = classPathString.replace("\\", "/");
       classPaths[i] = classPathString;
     }
     String defaultOutputPath = javaProject.getOutputLocation().toOSString();
+    defaultOutputPath = defaultOutputPath.replace("\\", "/");
     classPaths[classPathEntries.length] = projectLocation + defaultOutputPath;
     return classPaths;
   }
