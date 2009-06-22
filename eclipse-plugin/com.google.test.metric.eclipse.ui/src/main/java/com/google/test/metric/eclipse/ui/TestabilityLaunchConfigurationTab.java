@@ -15,13 +15,9 @@
  */
 package com.google.test.metric.eclipse.ui;
 
-import com.google.test.metric.eclipse.internal.util.JavaProjectHelper;
-import com.google.test.metric.eclipse.internal.util.Logger;
-import com.google.test.metric.eclipse.internal.util.TestabilityConstants;
-import com.google.test.metric.eclipse.internal.util.TestabilityLaunchConfigurationHelper;
-import com.google.test.metric.eclipse.ui.internal.JavaPackageElementContentProvider;
-import com.google.test.metric.eclipse.ui.plugin.Activator;
-import com.google.test.metric.eclipse.ui.plugin.ImageNotFoundException;
+import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -48,16 +44,23 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 
-import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.List;
+import com.google.test.metric.eclipse.doc.HelpContexts;
+import com.google.test.metric.eclipse.internal.util.JavaProjectHelper;
+import com.google.test.metric.eclipse.internal.util.Logger;
+import com.google.test.metric.eclipse.internal.util.TestabilityConstants;
+import com.google.test.metric.eclipse.internal.util.TestabilityLaunchConfigurationHelper;
+import com.google.test.metric.eclipse.ui.internal.JavaPackageElementContentProvider;
+import com.google.test.metric.eclipse.ui.plugin.Activator;
+import com.google.test.metric.eclipse.ui.plugin.ImageNotFoundException;
 
 /**
  * 
@@ -118,6 +121,7 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
         setTabDirty();
       }
     });
+    setHelpContext(projectText, HelpContexts.TESTABILITY_PROJECT);
 
     Button projectBrowseButton = new Button(control, SWT.PUSH);
     projectBrowseButton.setText("Browse...");
@@ -129,6 +133,7 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
         setUpBrowseProjectDialog();
       }
     });
+    setHelpContext(projectText, HelpContexts.TESTABILITY_PROJECT);
 
     Label reportFolderLabel = new Label(control, SWT.NONE);
     reportFolderLabel.setText("Report Folder:");
@@ -144,6 +149,7 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
         setTabDirty();
       }
     });
+    setHelpContext(reportFolderText, HelpContexts.TESTABILITY_REPORT_FOLDER);
 
     Button reportFolderBrowseButton = new Button(control, SWT.PUSH);
     reportFolderBrowseButton.setText("Browse...");
@@ -156,6 +162,7 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
         setUpBrowseFolderDialog();
       }
     });
+    setHelpContext(reportFolderBrowseButton, HelpContexts.TESTABILITY_REPORT_FOLDER);
 
     Label whiteList = new Label(control, SWT.NONE);
     whiteList.setText("White list:");
@@ -173,6 +180,8 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
         setTabDirty();
       }
     });
+    setHelpContext(whiteListList.getList(),
+        HelpContexts.TESTABILITY_WHITELIST);
     Button whitelistPackagesBrowseButton = new Button(control, SWT.PUSH);
     whitelistPackagesBrowseButton.setText("Add...");
     whitelistPackagesBrowseButton.addSelectionListener(new SelectionListener() {
@@ -186,6 +195,7 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
     });
     GridData whiteListPackagesBrowseGridData = new GridData();
     whitelistPackagesBrowseButton.setLayoutData(whiteListPackagesBrowseGridData);
+    setHelpContext(whitelistPackagesBrowseButton, HelpContexts.TESTABILITY_WHITELIST);
 
     Label spacer = new Label(control, SWT.NONE);
 
@@ -203,6 +213,7 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
     GridData whiteListRemoveGridData = new GridData();
     whiteListRemoveGridData.verticalAlignment = SWT.TOP;
     whitelistPackagesRemoveButton.setLayoutData(whiteListRemoveGridData);
+    setHelpContext(whitelistPackagesRemoveButton, HelpContexts.TESTABILITY_WHITELIST);
     
     Label spacer2 = new Label(control, SWT.NONE);
     runOnCompileCheckbox = new Button(control, SWT.CHECK);
@@ -219,6 +230,11 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
     GridData checkBoxGrid = new GridData();
     checkBoxGrid.horizontalSpan = 2;
     runOnCompileCheckbox.setLayoutData(checkBoxGrid);
+    setHelpContext(runOnCompileCheckbox, HelpContexts.TESTABILITY_RUN_IN_COMPILATION);
+  }
+
+  private void setHelpContext(Control control, String helpContext) {
+    PlatformUI.getWorkbench().getHelpSystem().setHelp(control, helpContext);
   }
 
   private void removeSelectedPackageFromWhitelist() {
@@ -242,6 +258,7 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
         setTabDirty();
       }
     });
+    setHelpContext(recordingDepthText, HelpContexts.TESTABILITY_DEPTH);
 
     Label cyclomaticCost = new Label(control, SWT.NONE);
     cyclomaticCost.setText("Cyclomatic Cost:");
@@ -258,6 +275,7 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
         setTabDirty();
       }
     });
+    setHelpContext(cyclomaticCostText, HelpContexts.TESTABILITY_CYCLOMATIC_COST);
 
     Label globalStateCost = new Label(control, SWT.NONE);
     globalStateCost.setText("Global State Cost:");
@@ -274,6 +292,7 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
         setTabDirty();
       }
     });
+    setHelpContext(globalStateCostText, HelpContexts.TESTABILITY_GLOBAL_STATE_COST);
 
     Label maxExcellentCost = new Label(control, SWT.NONE);
     maxExcellentCost.setText("Max Cost for Excellent Classes:");
@@ -292,6 +311,7 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
         setTabDirty();
       }
     });
+    setHelpContext(maxExcellentCostText, HelpContexts.TESTABILITY_MAX_COST_EXCELLENT_CLASSES);
 
     Label maxAcceptableCost = new Label(control, SWT.NONE);
     maxAcceptableCost.setText("Max Cost for Acceptable Classes:");
@@ -310,6 +330,7 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
         setTabDirty();
       }
     });
+    setHelpContext(maxAcceptableCostText, HelpContexts.TESTABILITY_MAX_COST_ACCEPTABLE_CLASSES);
     
     Label maxClassesToShowInIssuesReport = new Label(control, SWT.NONE);
     maxClassesToShowInIssuesReport.setText("Max Classes In Report:");
@@ -328,6 +349,7 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
         setTabDirty();
       }
     });
+    setHelpContext(maxClassesToShowInIssuesReportText, HelpContexts.TESTABILITY_MAX_CLASSES_IN_REPORT);
   }
 
   public String getName() {

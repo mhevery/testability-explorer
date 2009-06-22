@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Testability Documentation
+Bundle-SymbolicName: com.google.test.metric.eclipse.doc;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: Google, Inc.
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.eclipse.help;bundle-version="3.3.102"
+Export-Package: com.google.test.metric.eclipse.doc
