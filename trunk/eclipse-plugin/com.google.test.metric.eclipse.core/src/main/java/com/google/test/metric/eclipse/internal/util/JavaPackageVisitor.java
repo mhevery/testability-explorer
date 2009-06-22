@@ -41,6 +41,7 @@ public class JavaPackageVisitor implements IResourceProxyVisitor {
       String pathString = proxy.requestFullPath().toOSString();
       if (!parentFolderPath.equals(pathString)) {
         pathString = pathString.substring(parentFolderPath.length() + 1, pathString.length());
+        pathString = pathString.replace("\\", "/");
         javaPackages.add(pathString);
       }
       return true;
