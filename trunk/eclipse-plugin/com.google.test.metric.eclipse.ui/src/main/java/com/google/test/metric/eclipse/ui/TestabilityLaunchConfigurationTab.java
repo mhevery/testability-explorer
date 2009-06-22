@@ -72,6 +72,7 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
   private Text globalStateCostText;
   private Text maxExcellentCostText;
   private Text maxAcceptableCostText;
+  private Text maxClassesToShowInIssuesReportText;
   private Button runOnCompileCheckbox;
 
   private JavaProjectHelper javaProjectHelper = new JavaProjectHelper();
@@ -232,6 +233,7 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
     GridData recordingDepthGridData = new GridData();
     recordingDepthGridData.widthHint = 50;
     recordingDepthText.setLayoutData(recordingDepthGridData);
+    recordingDepthText.setToolTipText("Maximum depth to recurse into when examining classes");
     recordingDepthText.addKeyListener(new KeyListener() {
       public void keyPressed(KeyEvent e) {
       }
@@ -247,6 +249,7 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
     GridData cyclomaticCostGridData = new GridData();
     cyclomaticCostGridData.widthHint = 50;
     cyclomaticCostText.setLayoutData(cyclomaticCostGridData);
+    cyclomaticCostText.setToolTipText("Cost multiplier for Cyclomatic Complexity Issues");
     cyclomaticCostText.addKeyListener(new KeyListener() {
       public void keyPressed(KeyEvent e) {
       }
@@ -262,6 +265,7 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
     GridData globalStateCostGridData = new GridData();
     globalStateCostGridData.widthHint = 50;
     globalStateCostText.setLayoutData(globalStateCostGridData);
+    globalStateCostText.setToolTipText("Cost multiplier for Global State Issues");
     globalStateCostText.addKeyListener(new KeyListener() {
       public void keyPressed(KeyEvent e) {
       }
@@ -277,6 +281,9 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
     GridData maxExcellentCostGridData = new GridData();
     maxExcellentCostGridData.widthHint = 50;
     maxExcellentCostText.setLayoutData(maxExcellentCostGridData);
+    maxExcellentCostText.setToolTipText("Cost Threshold which differenties Excellent classes from"
+        + " Acceptable classes. Classes which have a cost below this are Excellent classes, while "
+        + "classes which have a cost higher are not very testable.");
     maxExcellentCostText.addKeyListener(new KeyListener() {
       public void keyPressed(KeyEvent e) {
       }
@@ -292,7 +299,28 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
     GridData maxAcceptableCostGridData = new GridData();
     maxAcceptableCostGridData.widthHint = 50;
     maxAcceptableCostText.setLayoutData(maxAcceptableCostGridData);
+    maxAcceptableCostText.setToolTipText("Cost Threshold which differenties Acceptable classes from"
+        + " classes which need work. Classes which have a cost below this are Acceptable classes,"
+        + " while classes which have a cost higher than this need significant refactoring.");
     maxAcceptableCostText.addKeyListener(new KeyListener() {
+      public void keyPressed(KeyEvent e) {
+      }
+
+      public void keyReleased(KeyEvent e) {
+        setTabDirty();
+      }
+    });
+    
+    Label maxClassesToShowInIssuesReport = new Label(control, SWT.NONE);
+    maxClassesToShowInIssuesReport.setText("Max Classes In Report:");
+    maxClassesToShowInIssuesReportText = new Text(control, SWT.BORDER);
+    GridData maxClassesToShowInIssuesReportGridData = new GridData();
+    maxClassesToShowInIssuesReportGridData.widthHint = 50;
+    maxClassesToShowInIssuesReportText.setLayoutData(maxClassesToShowInIssuesReportGridData);
+    maxClassesToShowInIssuesReportText.setToolTipText("The maximum number of classes to show in "
+        + "the report. Only the top specified number of classes will be displayed in the "
+        + "testability views.");
+    maxClassesToShowInIssuesReportText.addKeyListener(new KeyListener() {
       public void keyPressed(KeyEvent e) {
       }
 
@@ -368,6 +396,11 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
         configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_RECORDING_DEPTH,
             TestabilityConstants.RECORDING_DEPTH);
     recordingDepthText.setText(initRecordingDepth + "");
+    
+    int initMaxClassesInReport =
+        configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_MAX_CLASSES_IN_REPORT,
+            TestabilityConstants.MAX_CLASSES_TO_SHOW_IN_ISSUES_REPORTER);
+    maxClassesToShowInIssuesReportText.setText(initMaxClassesInReport + "");
 
     List<String> initWhitelist =
         configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_WHITELIST,
@@ -390,7 +423,8 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
       IJavaProject javaProject = getSelectedProject();
       if (javaProject == null || !javaProject.exists()) {
         setErrorMessage(MessageFormat.format(
-            "Project named {0} does not exist. Please choose another project.", currentProjectName));
+            "Project named {0} does not exist. Please choose another project.",
+            currentProjectName));
         return false;
       } else if (configurationHelper.isExistingLaunchConfigWithRunOnBuildOtherThanCurrent(
           currentProjectName, launchConfig.getName()) && runOnCompileCheckbox.getSelection()) {
@@ -423,6 +457,8 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
           Integer.parseInt(maxAcceptableCostText.getText()));
       configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_MAX_EXCELLENT_COST,
           Integer.parseInt(maxExcellentCostText.getText()));
+      configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_MAX_CLASSES_IN_REPORT,
+          Integer.parseInt(maxClassesToShowInIssuesReportText.getText()));
       configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_RECORDING_DEPTH, Integer
           .parseInt(recordingDepthText.getText()));
       configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_WHITELIST,
@@ -450,6 +486,8 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
         TestabilityConstants.MAX_EXCELLENT_COST);
     configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_MAX_ACCEPTABLE_COST,
         TestabilityConstants.MAX_ACCEPTABLE_COST);
+    configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_MAX_CLASSES_IN_REPORT,
+        TestabilityConstants.MAX_CLASSES_TO_SHOW_IN_ISSUES_REPORTER);
     configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_WHITELIST,
         TestabilityConstants.WHITELIST);
     configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_RUN_ON_BUILD,
@@ -468,7 +506,8 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
   private void setUpWhitelistPackagesDialog() {
     IJavaProject project = getSelectedProject();
     ElementTreeSelectionDialog dialog =
-        new ElementTreeSelectionDialog(getControl().getShell(), new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_BASICS),
+        new ElementTreeSelectionDialog(getControl().getShell(),
+            new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_BASICS),
             new JavaPackageElementContentProvider());
     dialog.setInput(project);
     dialog.addFilter(new ViewerFilter() {

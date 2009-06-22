@@ -132,6 +132,9 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
     int maxAcceptableCost =
         configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_MAX_ACCEPTABLE_COST,
             TestabilityConstants.MAX_ACCEPTABLE_COST);
+    int maxClassesInReport = 
+        configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_MAX_CLASSES_IN_REPORT,
+            TestabilityConstants.MAX_CLASSES_TO_SHOW_IN_ISSUES_REPORTER);
     double globalCost =
         configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_GLOBAL_STATE_COST,
             TestabilityConstants.GLOBAL_STATE_COST);
@@ -159,11 +162,9 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
       CostModel costModel = new CostModel(cyclomaticCost, globalCost);
       IssuesReporter issuesReporter = new IssuesReporter(
           new TriageIssuesQueue<ClassIssues>(maxAcceptableCost,
-              TestabilityConstants.MAX_CLASSES_TO_SHOW_IN_ISSUES_REPORTER,
-              new ClassIssues.TotalCostComparator()), costModel);
+              maxClassesInReport, new ClassIssues.TotalCostComparator()), costModel);
       ReportOptions options = new ReportOptions(cyclomaticCost, globalCost, maxExcellentCost,
-          maxAcceptableCost, TestabilityConstants.MAX_CLASSES_TO_SHOW_IN_ISSUES_REPORTER,
-          -1, -1, printDepth, -1, "", "");
+          maxAcceptableCost, maxClassesInReport, -1, -1, printDepth, -1, "", "");
       SourceLoader sourceLoader = new SourceLoader(classPath);
 
       AnalysisModel analysisModel = new AnalysisModel(issuesReporter);
