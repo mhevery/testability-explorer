@@ -25,22 +25,25 @@ public class TestabilityConstants {
       "testability.launch.configuration.folder.name";
   
   public static final String CONFIGURATION_ATTR_RECORDING_DEPTH =
-    "testability.launch.configuration.recording.depth";
+      "testability.launch.configuration.recording.depth";
   public static final String CONFIGURATION_ATTR_CYCLOMATIC_COST =
-    "testability.launch.configuration.cyclomatic.cost";
+      "testability.launch.configuration.cyclomatic.cost";
   public static final String CONFIGURATION_ATTR_GLOBAL_STATE_COST =
-    "testability.launch.configuration.global.state.cost";
+      "testability.launch.configuration.global.state.cost";
   
   public static final String CONFIGURATION_ATTR_MAX_EXCELLENT_COST =
-    "testability.launch.configuration.max.excellent.cost";
+      "testability.launch.configuration.max.excellent.cost";
   public static final String CONFIGURATION_ATTR_MAX_ACCEPTABLE_COST =
-    "testability.launch.configuration.max.acceptable.cost";
+      "testability.launch.configuration.max.acceptable.cost";
+  
+  public static final String CONFIGURATION_ATTR_MAX_CLASSES_IN_REPORT =
+      "testability.launch.configuration.max.classes.in.report";
   
   public static final String CONFIGURATION_ATTR_WHITELIST =
-    "testability.launch.configuration.whitelist";
+      "testability.launch.configuration.whitelist";
 
   public static final String CONFIGURATION_ATTR_RUN_ON_BUILD =
-    "testability.launch.configuration.run.on.build";
+      "testability.launch.configuration.run.on.build";
 
   public static final String CONFIGURATION_ATTR_RUNNING_IN_COMPILATION_MODE =
       "testability.launch.configuration.running.in.compilation.mode";
