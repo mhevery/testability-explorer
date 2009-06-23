@@ -21,17 +21,15 @@ import com.google.test.metric.CostModel;
 import com.google.test.metric.report.GradeCategories;
 import com.google.test.metric.report.ReportOptions;
 import com.google.test.metric.report.SummaryReportModel;
-import com.google.test.metric.report.chart.CostDistributionChart;
 import com.google.test.metric.report.chart.GoodnessChart;
 import static com.google.test.metric.report.chart.GoogleChartAPI.GREEN;
 import static com.google.test.metric.report.chart.GoogleChartAPI.RED;
 import static com.google.test.metric.report.chart.GoogleChartAPI.YELLOW;
+import com.google.test.metric.report.chart.Histogram.Logarithmic;
+import com.google.test.metric.report.chart.HistogramChartUrl;
 import com.google.test.metric.report.chart.PieChartUrl;
 import com.google.test.metric.report.issues.ClassIssues;
 
-import static org.apache.commons.codec.binary.Base64.encodeBase64;
-
-import java.io.ByteArrayOutputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -41,6 +39,9 @@ import java.util.List;
  * @author alexeagle@google.com (Alex Eagle)
  */
 public class HtmlReportModel extends SummaryReportModel {
+  private static final int HISTOGRAM_WIDTH = 700;
+  private static final int HISTOGRAM_HEIGHT = 200;
+
   private final AnalysisModel analysisModel;
 
   public HtmlReportModel(CostModel costModel, AnalysisModel analysisModel, ReportOptions options) {
@@ -60,14 +61,9 @@ public class HtmlReportModel extends SummaryReportModel {
 
   public String getHistogram() {
     GradeCategories gradeCategories = new GradeCategories(maxExcellentCost, maxAcceptableCost);
-    CostDistributionChart chart = new CostDistributionChart(gradeCategories);
-    chart.addValues(costs);
-
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    chart.createChart(out);
-
-    String dataUri = new String(encodeBase64(out.toByteArray()));
-    return String.format("<img src=\"data:image/png;base64,%s\"/>", dataUri);
+    HistogramChartUrl histogramChartUrl =
+        gradeCategories.createHistogram(HISTOGRAM_WIDTH, HISTOGRAM_HEIGHT, costs, new Logarithmic());
+    return histogramChartUrl.getHtml();
   }
 
   public String getOverallChart() {
