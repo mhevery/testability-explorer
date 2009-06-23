@@ -15,16 +15,18 @@
  */
 package com.google.test.metric.report.chart;
 
-import static java.lang.Integer.MAX_VALUE;
-
-import java.util.Arrays;
+import com.google.test.metric.report.chart.Histogram.Linear;
+import com.google.test.metric.report.chart.Histogram.Logarithmic;
 
 import junit.framework.TestCase;
+
+import static java.lang.Integer.MAX_VALUE;
+import java.util.Arrays;
 
 public class HistogramTest extends TestCase {
 
   public void testSimpleBreakdown() throws Exception {
-    Histogram histogram = new Histogram(1, 1, 3);
+    Histogram histogram = new Histogram(1, 1, 3, new Linear());
     histogram.value(1);
     histogram.value(1);
     histogram.value(1);
@@ -47,9 +49,20 @@ public class HistogramTest extends TestCase {
         Arrays.toString(actual)), Arrays.equals(expected, actual));
   }
 
-  public void testBinLabels() throws Exception {
-    Histogram histogram = new Histogram(0, 10, 2);
-    assertArrayEquals(array("5", "15"), histogram.getBinLabels(2));
+  public void testLogarithmicScaling() throws Exception {
+    Histogram histogram = new Histogram(1, 1, 3, new Logarithmic());
+    for (int i=0; i<100; i++) {
+      histogram.value(1);
+    }
+    for (int i=0; i<10; i++) {
+      histogram.value(2);
+    }
+    histogram.value(3);
+
+    assertArrayEquals(array(100, 10, 1), histogram.getBins());
+    assertArrayEquals(array(30, 0, 0), histogram.getScaledBinRange(1, 2, 30));
+    assertArrayEquals(array(0, 20, 0), histogram.getScaledBinRange(2, 3, 30));
+    assertArrayEquals(array(0, 0, 10), histogram.getScaledBinRange(3, MAX_VALUE, 30));
   }
 
   private int[] array(int... values) {

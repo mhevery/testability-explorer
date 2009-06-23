@@ -15,11 +15,13 @@
  */
 package com.google.test.metric.report;
 
+import com.google.common.base.Function;
 import com.google.test.metric.report.chart.GoodnessChart;
 import static com.google.test.metric.report.chart.GoogleChartAPI.GREEN;
 import static com.google.test.metric.report.chart.GoogleChartAPI.RED;
 import static com.google.test.metric.report.chart.GoogleChartAPI.YELLOW;
 import com.google.test.metric.report.chart.Histogram;
+import com.google.test.metric.report.chart.Histogram.Linear;
 import com.google.test.metric.report.chart.HistogramChartUrl;
 import com.google.test.metric.report.chart.PieChartUrl;
 
@@ -89,17 +91,21 @@ public class GradeCategories {
     return chart;
   }
 
-  public HistogramChartUrl createHistogram(int width, int height,
-      List<Integer> costs) {
+  public HistogramChartUrl createHistogram(int width, int height, List<Integer> costs) {
+    return createHistogram(width,  height,  costs, new Linear());
+  }
+
+  public HistogramChartUrl createHistogram(int width, int height, List<Integer> costs,
+                                           Function<Integer, Double> scalingFunction) {
     int maxScale = 61;
-    MultiHistogramDataModel model = buildHistogramDataModel(costs);
+    MultiHistogramDataModel model = buildHistogramDataModel(costs, scalingFunction);
     int[] excellent = model.getExcellent().getScaledBinRange(0, MAX_VALUE, maxScale);
     int[] good = model.getGood().getScaledBinRange(0, MAX_VALUE, maxScale);
     int[] needsWork = model.getNeedsWork().getScaledBinRange(0, MAX_VALUE, maxScale);
     HistogramChartUrl chart = new HistogramChartUrl();
     chart.setItemLabel(model.getOverallHistogram().getBinLabels(20));
     chart.setValues(excellent, good, needsWork);
-    chart.setYMark(0, model.getOverallHistogram().getMaxBin());
+    chart.setYMark(0, model.getOverallHistogram().getMaxBin(), scalingFunction);
     chart.setSize(width, height);
     chart.setBarWidth((width - HISTOGRAM_LEGEND_WIDTH) / model.getBinCount(), 0, 0);
     chart.setChartLabel("Excellent", "Good", "Needs Work");
@@ -107,13 +113,14 @@ public class GradeCategories {
     return chart;
   }
 
-  public MultiHistogramDataModel buildHistogramDataModel(List<Integer> costs) {
+  public MultiHistogramDataModel buildHistogramDataModel(List<Integer> costs,
+      Function<Integer, Double> scalingFunction) {
     int binCount = min(MAX_HISTOGRAM_BINS, 10 * (int) log(costs.size()) + 1);
     int binWidth = (int) ceil((double) findMax(costs) / binCount);
-    Histogram overallHistogram = new Histogram(0, binWidth, binCount);
-    Histogram excellentHistogram = new Histogram(0, binWidth, binCount);
-    Histogram goodHistogram = new Histogram(0, binWidth, binCount);
-    Histogram needsWorkHistogram = new Histogram(0, binWidth, binCount);
+    Histogram overallHistogram = new Histogram(0, binWidth, binCount, scalingFunction);
+    Histogram excellentHistogram = new Histogram(0, binWidth, binCount, scalingFunction);
+    Histogram goodHistogram = new Histogram(0, binWidth, binCount, scalingFunction);
+    Histogram needsWorkHistogram = new Histogram(0, binWidth, binCount, scalingFunction);
     for (int overallCost : costs) {
       if (overallCost <= maxExcellentCost) {
         excellentHistogram.value(overallCost);

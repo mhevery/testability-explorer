@@ -15,7 +15,11 @@
  */
 package com.google.test.metric.report.chart;
 
+import com.google.common.base.Function;
+import com.google.common.base.Nullable;
+
 import static java.lang.Math.ceil;
+import static java.lang.Math.log10;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
@@ -24,11 +28,23 @@ public class Histogram {
   private final int min;
   private final int binWidth;
   private final int[] bins;
+  private final Function<Integer, Double> scalingFunction;
   private int maxBin;
+  public static class Linear implements Function<Integer, Double> {
+    public Double apply(@Nullable Integer integer) {
+      return Double.valueOf(integer);
+    }
+  }
+  public static class Logarithmic implements Function<Integer, Double> {
+    public Double apply(@Nullable Integer integer) {
+      return log10(integer) + 1;
+    }
+  }
 
-  public Histogram(int min, int binWidth, int binCount) {
+  public Histogram(int min, int binWidth, int binCount, Function<Integer, Double> scalingFunction) {
     this.min = min;
     this.binWidth = binWidth;
+    this.scalingFunction = scalingFunction;
     this.bins = new int[binCount];
   }
 
@@ -60,13 +76,14 @@ public class Histogram {
   }
 
   public int[] getScaledBinRange(int from, int to, int maxScale) {
-    double scale = (double) maxScale / maxBin;
-    int[] subBins = new int[bins.length];
-    int toBin = min(bins.length, bin(to));
-    for (int i = max(0, bin(from)); i < toBin; i++) {
-      subBins[i] = (int) ceil((scale * bins[i]));
+    double scale = (double) maxScale / scalingFunction.apply(maxBin);
+    int[] scaledBins = new int[bins.length];
+    int firstBin = max(0, bin(from));
+    int lastBin = min(bins.length, bin(to));
+    for (int binNumber = firstBin; binNumber < lastBin; binNumber++) {
+      scaledBins[binNumber] = (int) ceil(scale * scalingFunction.apply(bins[binNumber]));
     }
-    return subBins;
+    return scaledBins;
   }
 
   public String[] getBinLabels(int maxLabels) {
