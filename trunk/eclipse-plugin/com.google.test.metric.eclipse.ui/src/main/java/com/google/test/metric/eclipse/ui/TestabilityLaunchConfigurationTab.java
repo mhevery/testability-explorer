@@ -70,7 +70,6 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
   private Text projectText;
   private Text reportFolderText;
   private ListViewer whiteListList;
-  private Text recordingDepthText;
   private Text cyclomaticCostText;
   private Text globalStateCostText;
   private Text maxExcellentCostText;
@@ -243,23 +242,6 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
   }
 
   private void createTestabilityPropertiesControls(Composite control) {
-    Label depth = new Label(control, SWT.NONE);
-    depth.setText("Depth:");
-    recordingDepthText = new Text(control, SWT.BORDER);
-    GridData recordingDepthGridData = new GridData();
-    recordingDepthGridData.widthHint = 50;
-    recordingDepthText.setLayoutData(recordingDepthGridData);
-    recordingDepthText.setToolTipText("Maximum depth to recurse into when examining classes");
-    recordingDepthText.addKeyListener(new KeyListener() {
-      public void keyPressed(KeyEvent e) {
-      }
-
-      public void keyReleased(KeyEvent e) {
-        setTabDirty();
-      }
-    });
-    setHelpContext(recordingDepthText, HelpContexts.TESTABILITY_DEPTH);
-
     Label cyclomaticCost = new Label(control, SWT.NONE);
     cyclomaticCost.setText("Cyclomatic Cost:");
     cyclomaticCostText = new Text(control, SWT.BORDER);
@@ -414,11 +396,6 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
             TestabilityConstants.MAX_EXCELLENT_COST);
     maxExcellentCostText.setText(initMaxExcellentCost + "");
 
-    int initRecordingDepth =
-        configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_RECORDING_DEPTH,
-            TestabilityConstants.RECORDING_DEPTH);
-    recordingDepthText.setText(initRecordingDepth + "");
-    
     int initMaxClassesInReport =
         configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_MAX_CLASSES_IN_REPORT,
             TestabilityConstants.MAX_CLASSES_TO_SHOW_IN_ISSUES_REPORTER);
@@ -481,8 +458,6 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
           Integer.parseInt(maxExcellentCostText.getText()));
       configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_MAX_CLASSES_IN_REPORT,
           Integer.parseInt(maxClassesToShowInIssuesReportText.getText()));
-      configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_RECORDING_DEPTH, Integer
-          .parseInt(recordingDepthText.getText()));
       configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_WHITELIST,
           Arrays.asList(whiteListList.getList().getItems()));
       configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_RUN_ON_BUILD,
@@ -498,8 +473,6 @@ public class TestabilityLaunchConfigurationTab extends AbstractLaunchConfigurati
   public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
     configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_PROJECT_NAME, "");
     configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_REPORT_FOLDER_NAME, "");
-    configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_RECORDING_DEPTH,
-        TestabilityConstants.RECORDING_DEPTH);
     configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_CYCLOMATIC_COST,
         TestabilityConstants.CYCLOMATIC_COST);
     configuration.setAttribute(TestabilityConstants.CONFIGURATION_ATTR_GLOBAL_STATE_COST,
