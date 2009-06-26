@@ -9,7 +9,34 @@
          What is the Testability Explorer
       </h2>
       <p>
-         Body
+         Testability-explorer is a tool which analyzes Java bytecode and computes how difficult it will be to write unit tests for the code. It attempts to help you quantitatively determine how hard your code is to test, and where to focus to make it more testable.
+      </p>
+      
+      <p>
+      Testability Explorer can be used:<br/>
+
+      <ol>
+        <li> As a learning tool which flags causes of hard to test code with detailed breakdown of reasons. </li>
+        <li> To identify hard to test hair-balls in legacy code. </li>
+        <li> As part of your code analysis-toolset. </li>
+        <li> As a tool which can be added into continuous integration that can enforce testable code. </li> 
+      </ol>
+      </p>
+
+      <p>
+      Currently the tool computes:<br/>
+
+      <ol>
+        <li> Non-Mockable Total Recursive Cyclomatic Complexity. Cyclomatic Complexity is a measure of how many different paths of execution are there in the code. It is computed, by counting the if, while, and case as branching primitives. It is recursive because cost of the method as well as any methods it calls are counted. It is total because cost of object construction as well as any static initializations are counted. And finally, it is non-mockable because any code which can be mocked out in test is not counted as part of the cost. This means that the score is based on the amount of complex code that cannot be mocked out in a unit test. </li>
+        <li> Global Mutable State. Counts the number of fields which are globally reachable by the class under test and which are mutable. Mutable global state makes testing difficult as tests are not isolatable, the global state needs to be set up and cleared between tests. </li>
+        <li> Law of Demeter. This is the principle that calling methods on objects you get from other collaborators is trouble, instead, the collaborator should call that method itself. It makes testing harder because your mocks must expose some internal state through these methods. </li>
+      </ol> 
+      </p>
+      <p>
+      For more information about testability explorer, please visit <a href="http://code.google.com/p/testability-explorer">http://code.google.com/p/testability-explorer</a>
+      </p>
+      <p>
+      For a demo of testability-explorer in action see <a href="http://testabilityexplorer.org/report">http://testabilityexplorer.org/report</a>.
       </p>
    </body>
 </html>
