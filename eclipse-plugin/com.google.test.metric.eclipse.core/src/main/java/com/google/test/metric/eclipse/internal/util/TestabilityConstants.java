@@ -24,8 +24,6 @@ public class TestabilityConstants {
   public static final String CONFIGURATION_ATTR_REPORT_FOLDER_NAME =
       "testability.launch.configuration.folder.name";
   
-  public static final String CONFIGURATION_ATTR_RECORDING_DEPTH =
-      "testability.launch.configuration.recording.depth";
   public static final String CONFIGURATION_ATTR_CYCLOMATIC_COST =
       "testability.launch.configuration.cyclomatic.cost";
   public static final String CONFIGURATION_ATTR_GLOBAL_STATE_COST =
@@ -56,10 +54,10 @@ public class TestabilityConstants {
       "com.google.test.metric.eclipse.ui.testabilityMarkerCollaborator";  
   
   public static final int MAX_ACCEPTABLE_COST = 100;
-  public static final int MAX_EXCELLENT_COST = 20;
+  public static final int MAX_EXCELLENT_COST = 50;
   public static final int CYCLOMATIC_COST = 1;
   public static final int GLOBAL_STATE_COST = 10;
-  public static final int RECORDING_DEPTH = 10;
+  public static final int RECORDING_DEPTH = 0;
   public static final List<String> WHITELIST = new ArrayList<String>();
   public static final String ERROR_LOG_FILENAME = "error-log";
   public static final String HTML_REPORT_FILENAME = "report.html";

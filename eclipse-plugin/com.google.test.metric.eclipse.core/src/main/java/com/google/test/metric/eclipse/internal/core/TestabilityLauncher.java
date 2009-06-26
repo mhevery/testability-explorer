@@ -141,9 +141,7 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
     double cyclomaticCost =
         configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_CYCLOMATIC_COST,
             TestabilityConstants.CYCLOMATIC_COST);
-    int printDepth = 
-        configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_RECORDING_DEPTH,
-            TestabilityConstants.RECORDING_DEPTH);
+    int printDepth = TestabilityConstants.RECORDING_DEPTH;
     List<String> whitelistPackages = 
         configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_WHITELIST,
             TestabilityConstants.WHITELIST);
