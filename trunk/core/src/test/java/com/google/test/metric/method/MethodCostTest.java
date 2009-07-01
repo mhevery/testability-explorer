@@ -24,7 +24,6 @@ import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvocationCost;
 import com.google.test.metric.MetricComputer;
-import com.google.test.metric.ConstructorInvokationCost;
 import static com.google.test.metric.Reason.IMPLICIT_STATIC_INIT;
 import com.google.test.metric.RegExpWhiteList;
 import com.google.test.metric.SourceLocation;
@@ -43,50 +42,14 @@ public class MethodCostTest extends TestCase {
     cost3.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
     cost.addCostSource(new MethodInvocationCost(new SourceLocation(null, 0), cost3,
         IMPLICIT_STATIC_INIT, Cost.cyclomatic(3)));
-    CostModel costModel = new CostModel(2, 10, 7);
+    CostModel costModel = new CostModel(2, 10);
     cost.link();
 
     assertEquals((long) 2 * (3 + 1) + 10 * 1, costModel.computeOverall(cost.getTotalCost()));
     assertEquals(2, cost.getExplicitViolationCosts().size());
     assertEquals(1, cost.getImplicitViolationCosts().size());
   }
-  
-  public void testComputeOverallCostInConstructor() throws Exception {
-    MethodCost cost = new MethodCost("a", 0, true, false, false);
-    cost.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
-    cost.addCostSource(new GlobalCost(new SourceLocation(null, 0), null, Cost.global(1)));
-    MethodCost cost3 = new MethodCost("b", 0, false, false, false);
-    cost3.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
-    cost3.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
-    cost3.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
-    cost.addCostSource(new MethodInvocationCost(new SourceLocation(null, 0), cost3,
-      IMPLICIT_STATIC_INIT, Cost.cyclomatic(3)));
-    CostModel costModel = new CostModel(2, 10, 7);
-    cost.link();
 
-    assertEquals((long) 7 * 2 * (3 + 1) + 7 * 10 * 1, costModel.computeMethodCost(cost));
-    assertEquals(2, cost.getExplicitViolationCosts().size());
-    assertEquals(1, cost.getImplicitViolationCosts().size());
-  }
-  
-  public void testComputeOverallCostCreatingANewObject() throws Exception {
-    MethodCost cost = new MethodCost("a", 0, false, false, false);
-    cost.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
-    cost.addCostSource(new GlobalCost(new SourceLocation(null, 0), null, Cost.global(1)));
-    MethodCost cost3 = new MethodCost("b", 0, false, false, false);
-    cost3.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
-    cost3.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
-    cost3.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
-    cost.addCostSource(new ConstructorInvokationCost(new SourceLocation(null, 0), cost3,
-      IMPLICIT_STATIC_INIT, Cost.cyclomatic(3)));
-    CostModel costModel = new CostModel(2, 10, 7);
-    cost.link();
-
-    assertEquals((long) 7 * 2 * 3 + 2 * 1 + 10 * 1, costModel.computeMethodCost(cost));
-    assertEquals(2, cost.getExplicitViolationCosts().size());
-    assertEquals(1, cost.getImplicitViolationCosts().size());
-  }
-  
   private static class Setters {
     boolean foo;
     public void setFoo(String foo) {

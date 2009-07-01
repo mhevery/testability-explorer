@@ -23,7 +23,6 @@ package com.google.test.metric.report;
 public class ReportOptions {
   private double cyclomaticMultiplier;
   private double globalMultiplier;
-  private double constructorDoesWorkMultiplier;
   private int maxExcellentCost;
   private int maxAcceptableCost;
   private int worstOffenderCount;
@@ -34,14 +33,12 @@ public class ReportOptions {
   private String srcFileLineUrl = "";
   private String srcFileUrl = "";
 
-  public ReportOptions(double cyclomaticMultiplier, double globalMultiplier,
-                       double constructorDoesWorkMultiplier, int maxExcellentCost,
+  public ReportOptions(double cyclomaticMultiplier, double globalMultiplier, int maxExcellentCost,
                        int maxAcceptableCost, int worstOffenderCount, int maxMethodCount,
                        int maxLineCount, int printDepth, int minCost, String srcFileLineUrl,
                        String srcFileUrl) {
     this.cyclomaticMultiplier = cyclomaticMultiplier;
     this.globalMultiplier = globalMultiplier;
-    this.constructorDoesWorkMultiplier = constructorDoesWorkMultiplier;
     this.maxExcellentCost = maxExcellentCost;
     this.maxAcceptableCost = maxAcceptableCost;
     this.worstOffenderCount = worstOffenderCount;
@@ -69,14 +66,6 @@ public class ReportOptions {
 
   public void setGlobalMultiplier(double globalMultiplier) {
     this.globalMultiplier = globalMultiplier;
-  }
-
-  public double getConstructorDoesWorkMultiplier() {
-    return constructorDoesWorkMultiplier;
-  }
-
-  public void setConstructorDoesWorkMultiplier(double constructorDoesWorkMultiplier) {
-    this.constructorDoesWorkMultiplier = constructorDoesWorkMultiplier;
   }
 
   public int getMaxExcellentCost() {

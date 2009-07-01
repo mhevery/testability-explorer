@@ -33,10 +33,10 @@ public class XMLReportGenerator extends SummaryReportModel implements ReportGene
   private final CostModel costModel;
   public static final String CLASS_NODE = "class";
   public static final String CLASS_NAME_ATTRIBUTE = ClassCost.CLASS_NAME;
-  public static final String COST_ATTRIBUTE = "cost";
+  public static final String CLASS_COST_ATTRIBUTE = "cost";
   public static final String METHOD_NODE = "method";
   public static final String METHOD_NAME_ATTRIBUTE = MethodCost.METHOD_NAME_ATTRIBUTE;
-  public static final String OVERALL_COST_ATTRIBUTE = "overall";
+  public static final String METHOD_OVERALL_COST_ATTRIBUTE = "overall";
 
   public XMLReportGenerator(ContentHandler out, CostModel costModel, int maxExcellentCost,
       int maxAcceptableCost, int worstOffenderCount) {
@@ -94,29 +94,23 @@ public class XMLReportGenerator extends SummaryReportModel implements ReportGene
 
   void writeCost(ViolationCost violation) throws SAXException {
     Map<String, Object> attributes = violation.getAttributes();
-    attributes.put(OVERALL_COST_ATTRIBUTE, costModel.computeOverall(violation.getCost()));
-    writeElement(COST_ATTRIBUTE, attributes);
+    attributes.put("overall", costModel.computeOverall(violation.getCost()));
+    writeElement("cost", attributes);
   }
-  
+
   void writeCost(MethodCost methodCost) throws SAXException {
     Map<String, Object> attributes = methodCost.getAttributes();
-    attributes.put(OVERALL_COST_ATTRIBUTE, costModel.computeMethodCost(methodCost));
+    attributes.put(METHOD_OVERALL_COST_ATTRIBUTE, costModel.computeOverall(methodCost.getTotalCost()));
     startElement(METHOD_NODE, attributes);
     for (ViolationCost violation : methodCost.getViolationCosts()) {
-      writeCost(methodCost, violation);
+      writeCost(violation);
     }
     endElement(METHOD_NODE);
-  }
-  
-  void writeCost(MethodCost methodCost, ViolationCost violation) throws SAXException {
-    Map<String, Object> attributes = violation.getAttributes();
-    attributes.put(OVERALL_COST_ATTRIBUTE, costModel.computeViolationCost(methodCost, violation));
-    writeElement(COST_ATTRIBUTE, attributes);
   }
 
   void writeCost(ClassCost classCost) throws SAXException {
     Map<String, Object> attributes = classCost.getAttributes();
-    attributes.put(COST_ATTRIBUTE, costModel.computeClass(classCost));
+    attributes.put(CLASS_COST_ATTRIBUTE, costModel.computeClass(classCost));
     startElement(CLASS_NODE, attributes);
     for (MethodCost cost : classCost.getMethods()) {
       writeCost(cost);

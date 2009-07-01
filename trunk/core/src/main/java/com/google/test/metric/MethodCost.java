@@ -46,14 +46,9 @@ public class MethodCost {
   public Cost getDependentCost() {
     return dependentCost;
   }
-  
-  public Cost getConstructorDependentCost() {
-    return constructorDependantCost;
-  }
 
   private final Cost directCost = new Cost();
   private final Cost dependentCost = new Cost();
-  private final Cost constructorDependantCost = new Cost();
   public static final String METHOD_NAME_ATTRIBUTE = "name";
 
   /**
@@ -72,7 +67,7 @@ public class MethodCost {
   }
 
   public Cost getTotalCost() {
-    return new Cost().add(directCost).add(dependentCost).add(constructorDependantCost);
+    return new Cost().add(directCost).add(dependentCost);
   }
 
   public String getMethodName() {
@@ -80,7 +75,7 @@ public class MethodCost {
   }
 
   public void addCostSource(ViolationCost costSource) {
-    costSource.link(directCost, dependentCost, constructorDependantCost);
+    costSource.link(directCost, dependentCost);
     costSources.add(costSource);
   }
 
