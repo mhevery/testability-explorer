@@ -32,7 +32,7 @@ public class CyclomaticCost extends ViolationCost {
   }
 
   @Override
-  public void link(Cost directCost, Cost dependentCost) {
+  public void link(Cost directCost, Cost dependentCost, Cost constructorDependentCost) {
     directCost.addWithoutLod(getCost());
   }
 
