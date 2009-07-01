@@ -135,7 +135,7 @@ public class ReportGeneratorBuilder {
 
   public ReportGenerator build() {
     CostModel costModel = new CostModel(options.getCyclomaticMultiplier(),
-        options.getGlobalMultiplier());
+        options.getGlobalMultiplier(), options.getConstructorDoesWorkMultiplier());
     TriageIssuesQueue<ClassIssues> mostImportantIssues =
         new TriageIssuesQueue<ClassIssues>(options.getMaxExcellentCost(),
             options.getWorstOffenderCount(), new ClassIssues.TotalCostComparator());

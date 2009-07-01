@@ -61,7 +61,7 @@ public class HtmlReportTest extends TestCase {
     out = new ByteArrayOutputStream();
     CostModel costModel = new CostModel();
     IssuesReporter issuesReporter = new IssuesReporter(new LinkedList<ClassIssues>(), costModel);
-    ReportOptions options = new ReportOptions(1, 10, 10, 20, 5, 100, 100, 1, 10, "", "");
+    ReportOptions options = new ReportOptions(1, 10, 3, 10, 20, 5, 100, 100, 1, 10, "", "");
     linker = new SourceLinker("http://code.repository/basepath/{path}&line={line}",
                               "http://code.repository/basepath/{path}");
     MethodCost methodCost = new MethodCost("methodFoo", 1, false, false, false);

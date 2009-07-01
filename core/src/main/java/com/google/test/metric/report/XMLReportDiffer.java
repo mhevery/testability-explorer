@@ -33,8 +33,8 @@ public class XMLReportDiffer {
     classNames.addAll(newClassMap.keySet());
 
     for (String className : classNames) {
-      Integer oldCost = getNumericalAttributeOfNode(oldClassMap, className, CLASS_COST_ATTRIBUTE);
-      Integer newCost = getNumericalAttributeOfNode(newClassMap, className, CLASS_COST_ATTRIBUTE);
+      Integer oldCost = getNumericalAttributeOfNode(oldClassMap, className, COST_ATTRIBUTE);
+      Integer newCost = getNumericalAttributeOfNode(newClassMap, className, COST_ATTRIBUTE);
 
       List<Diff.MethodDiff> methodDiffs = diffMethods(oldClassMap.get(className), newClassMap.get(className));
 
@@ -68,8 +68,8 @@ public class XMLReportDiffer {
     }
 
     for (String methodName : methodNames) {
-      Integer oldCost = getNumericalAttributeOfNode(oldMethodMap, methodName, METHOD_OVERALL_COST_ATTRIBUTE);
-      Integer newCost = getNumericalAttributeOfNode(newMethodMap, methodName, METHOD_OVERALL_COST_ATTRIBUTE);
+      Integer oldCost = getNumericalAttributeOfNode(oldMethodMap, methodName, OVERALL_COST_ATTRIBUTE);
+      Integer newCost = getNumericalAttributeOfNode(newMethodMap, methodName, OVERALL_COST_ATTRIBUTE);
       if (different(oldCost, newCost)) {
          result.add(new Diff.MethodDiff(methodName, oldCost, newCost));
       }

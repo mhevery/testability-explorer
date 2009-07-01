@@ -34,7 +34,7 @@ import java.util.List;
 public class TextReportTest extends TestCase {
 
   ByteArrayOutputStream out = new ByteArrayOutputStream();
-  CostModel costModel = new CostModel(1, 1);
+  CostModel costModel = new CostModel(1, 1, 1);
   TextReportGenerator report = new TextReportGenerator(new PrintStream(out), costModel, 50, 100, 0);
 
   private void assertOutput(String... expected) {

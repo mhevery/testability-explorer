@@ -96,7 +96,7 @@ public class XMLReportTest extends TestCase {
   public void testPrintMethodCost() throws Exception {
     XMLReportGenerator report = new XMLReportGenerator(handler, costModel, 0, 0, 0) {
       @Override
-      public void writeCost(ViolationCost violation) throws SAXException {
+      public void writeCost(MethodCost methodCost, ViolationCost violation) throws SAXException {
         write("L" + violation.getLocation().getLineNumber() + ",");
       }
 
