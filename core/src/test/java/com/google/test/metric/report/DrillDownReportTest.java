@@ -23,6 +23,7 @@ import com.google.test.metric.CyclomaticCost;
 import com.google.test.metric.GlobalCost;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvocationCost;
+import com.google.test.metric.SourceLocation;
 import static com.google.test.metric.Reason.NON_OVERRIDABLE_METHOD_CALL;
 import static com.google.test.metric.report.DrillDownReportGenerator.NEW_LINE;
 
@@ -47,22 +48,22 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
 
   @Override
   protected void setUp() throws Exception {
-    methodCost1.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
+    methodCost1.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
 
-    methodCost2.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
-    methodCost2.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
+    methodCost2.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
+    methodCost2.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
 
-    methodCost3.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
-    methodCost3.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
-    methodCost3.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
+    methodCost3.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
+    methodCost3.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
+    methodCost3.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
 }
 
   public void testSimpleCost() throws Exception {
     DrillDownReportGenerator printer =
       new DrillDownReportGenerator(new PrintStream(out), costModel, null, MAX_VALUE, 0);
     MethodCost costOnlyMethod1 = new MethodCost("c.g.t.A.method1()V", 0, false, false, false);
-    costOnlyMethod1.addCostSource(new CyclomaticCost(1, Cost.cyclomatic(1)));
-    costOnlyMethod1.addCostSource(new GlobalCost(0, null, Cost.global(1)));
+    costOnlyMethod1.addCostSource(new CyclomaticCost(new SourceLocation(null, 1), Cost.cyclomatic(1)));
+    costOnlyMethod1.addCostSource(new GlobalCost(new SourceLocation(null, 0), null, Cost.global(1)));
     costOnlyMethod1.link();
     printer.print("", costOnlyMethod1, Integer.MAX_VALUE);
     assertStringEquals("c.g.t.A.method1()V [CC: 1, GC: 1 / CC: 1, GC: 1]\n", out.toString());
@@ -71,7 +72,8 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   public void test2DeepPrintAll() throws Exception {
     DrillDownReportGenerator printer =
       new DrillDownReportGenerator(new PrintStream(out), costModel, null, MAX_VALUE, 0);
-    methodCost2.addCostSource(new MethodInvocationCost(81, methodCost1, NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(1)));
+    methodCost2.addCostSource(new MethodInvocationCost(new SourceLocation(null, 81), methodCost1,
+        NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(1)));
     methodCost2.link();
     printer.print("", methodCost2, MAX_VALUE);
     assertStringEquals("c.g.t.A.method2()V [CC: 3 / CC: 2]\n" +
@@ -82,8 +84,10 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   public void test3DeepPrintAll() throws Exception {
     DrillDownReportGenerator printer =
       new DrillDownReportGenerator(new PrintStream(out), costModel, null, MAX_VALUE, 0);
-    methodCost2.addCostSource(new MethodInvocationCost(8, methodCost1, NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(1)));
-    methodCost3.addCostSource(new MethodInvocationCost(2, methodCost2, NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(3)));
+    methodCost2.addCostSource(new MethodInvocationCost(new SourceLocation(null, 8), methodCost1,
+        NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(1)));
+    methodCost3.addCostSource(new MethodInvocationCost(new SourceLocation(null, 2), methodCost2,
+        NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(3)));
     methodCost3.link();
     printer.print("", methodCost3, MAX_VALUE);
     assertStringEquals("c.g.t.A.method3()V [CC: 6 / CC: 3]\n" +
@@ -95,8 +99,10 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   public void test2DeepSupress0Cost() throws Exception {
     DrillDownReportGenerator printer =
       new DrillDownReportGenerator(new PrintStream(out), costModel, null, MAX_VALUE, 2);
-    methodCost1.addCostSource(new MethodInvocationCost(8, methodCost0, NON_OVERRIDABLE_METHOD_CALL, new Cost()));
-    methodCost1.addCostSource(new MethodInvocationCost(13, methodCost3, NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(3)));
+    methodCost1.addCostSource(new MethodInvocationCost(new SourceLocation(null, 8), methodCost0,
+        NON_OVERRIDABLE_METHOD_CALL, new Cost()));
+    methodCost1.addCostSource(new MethodInvocationCost(new SourceLocation(null, 13), methodCost3,
+        NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(3)));
     methodCost1.link();
     printer.print("", methodCost1, MAX_VALUE);
     assertStringEquals("c.g.t.A.method1()V [CC: 4 / CC: 1]\n" +
@@ -107,8 +113,10 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   public void test3DeepPrint2Deep() throws Exception {
     DrillDownReportGenerator printer =
       new DrillDownReportGenerator(new PrintStream(out), costModel, null, MAX_VALUE, 0);
-    methodCost3.addCostSource(new MethodInvocationCost(2, methodCost2, NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(3)));
-    methodCost2.addCostSource(new MethodInvocationCost(2, methodCost1, NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(1)));
+    methodCost3.addCostSource(new MethodInvocationCost(new SourceLocation(null, 2), methodCost2,
+        NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(3)));
+    methodCost2.addCostSource(new MethodInvocationCost(new SourceLocation(null, 2), methodCost1,
+        NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(1)));
     methodCost3.link();
     printer.print("", methodCost3, 2);
     assertStringEquals("c.g.t.A.method3()V [CC: 6 / CC: 3]\n" +
@@ -119,7 +127,8 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   public void testSupressAllWhenMinCostIs4() throws Exception {
     DrillDownReportGenerator printer =
       new DrillDownReportGenerator(new PrintStream(out), costModel, null, MAX_VALUE, 4);
-    methodCost2.addCostSource(new MethodInvocationCost(81, methodCost1, NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(1)));
+    methodCost2.addCostSource(new MethodInvocationCost(new SourceLocation(null, 81), methodCost1,
+        NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(1)));
     methodCost2.link();
     printer.print("", methodCost2, MAX_VALUE);
     assertStringEquals("", out.toString());
@@ -128,7 +137,8 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   public void testSupressPartialWhenMinCostIs2() throws Exception {
     DrillDownReportGenerator printer =
       new DrillDownReportGenerator(new PrintStream(out), costModel, null, MAX_VALUE, 2);
-    methodCost2.addCostSource(new MethodInvocationCost(81, methodCost1, NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(1)));
+    methodCost2.addCostSource(new MethodInvocationCost(new SourceLocation(null, 81), methodCost1,
+        NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(1)));
     methodCost2.link();
     printer.print("", methodCost2, Integer.MAX_VALUE);
     assertStringEquals("c.g.t.A.method2()V [CC: 3 / CC: 2]\n", out.toString());
@@ -137,8 +147,10 @@ public class DrillDownReportTest extends AutoFieldClearTestCase {
   public void testSecondLevelRecursive() throws Exception {
     DrillDownReportGenerator printer =
       new DrillDownReportGenerator(new PrintStream(out), costModel, null, MAX_VALUE, 0);
-    methodCost3.addCostSource(new MethodInvocationCost(1, methodCost2, NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(2)));
-    methodCost2.addCostSource(new MethodInvocationCost(2, methodCost2, NON_OVERRIDABLE_METHOD_CALL, new Cost()));
+    methodCost3.addCostSource(new MethodInvocationCost(new SourceLocation(null, 1), methodCost2,
+        NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(2)));
+    methodCost2.addCostSource(new MethodInvocationCost(new SourceLocation(null, 2), methodCost2,
+        NON_OVERRIDABLE_METHOD_CALL, new Cost()));
     methodCost3.link();
     printer.print("", methodCost3, 10);
     assertStringEquals("c.g.t.A.method3()V [CC: 5 / CC: 3]\n" +

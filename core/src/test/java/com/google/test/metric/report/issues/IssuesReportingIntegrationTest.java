@@ -52,7 +52,7 @@ public class IssuesReportingIntegrationTest extends TestCase {
     List<Issue> issues = classIssues.getConstructionIssues().get(COMPLEXITY.toString());
     assertEquals(1, issues.size());
     Issue issue = issues.get(0);
-    assertEquals(22, issue.getLineNumber());
+    assertEquals(22, issue.getLocation().getLineNumber());
     assertFalse(issue.isLineNumberApproximate());
     assertEquals("Cost2ToConstruct()", issue.getElement());
     assertEquals(1.0f, issue.getContributionToClassCost());
@@ -64,7 +64,7 @@ public class IssuesReportingIntegrationTest extends TestCase {
     List<Issue> issues = classIssues.getConstructionIssues().get(STATIC_METHOD.toString());
     assertEquals(1, issues.size());
     Issue issue = issues.get(0);
-    assertEquals(31, issue.getLineNumber());
+    assertEquals(31, issue.getLocation().getLineNumber());
     assertFalse(issue.isLineNumberApproximate());
     assertEquals("boolean staticCost2()", issue.getElement());
     assertEquals(1.0f, issue.getContributionToClassCost());
@@ -76,7 +76,7 @@ public class IssuesReportingIntegrationTest extends TestCase {
     List<Issue> issues = classIssues.getConstructionIssues().get(NON_MOCKABLE.toString());
     assertEquals(1, issues.size());
     Issue issue = issues.get(0);
-    assertEquals(25, issue.getLineNumber());
+    assertEquals(25, issue.getLocation().getLineNumber());
     assertFalse(issue.isLineNumberApproximate());
     assertEquals("Cost2ToConstruct()", issue.getElement());
     assertEquals(1f, issue.getContributionToClassCost());
@@ -101,7 +101,7 @@ public class IssuesReportingIntegrationTest extends TestCase {
     // run this:
     // javap -classpath target/core-1.3.1-SNAPSHOT.jar -c -l com.google.test.metric.example.Lessons.Primeness
     // Only answer is to look at the source... :(
-    assertEquals(21, issue.getLineNumber());
+    assertEquals(21, issue.getLocation().getLineNumber());
     assertTrue(issue.isLineNumberApproximate());
     assertEquals(1.0f, issue.getContributionToClassCost());
     assertEquals("boolean isPrime(int)", issue.getElement());
@@ -113,7 +113,7 @@ public class IssuesReportingIntegrationTest extends TestCase {
     List<Issue> issues = classIssues.getCollaboratorIssues().get(NON_MOCKABLE.toString());
     assertEquals(1, issues.size());
     Issue issue = issues.get(0);
-    assertEquals(25, issue.getLineNumber());
+    assertEquals(25, issue.getLocation().getLineNumber());
     assertFalse(issue.isLineNumberApproximate());
     // TODO: we'd rather see "Primeness primeness" on line 20 as the root issue here
     assertEquals("boolean isPrime(int)", issue.getElement());
@@ -127,7 +127,7 @@ public class IssuesReportingIntegrationTest extends TestCase {
 
     assertEquals(1, issues.size());
     Issue issue = issues.get(0);
-    assertEquals(46, issue.getLineNumber());
+    assertEquals(46, issue.getLocation().getLineNumber());
     assertFalse(issue.isLineNumberApproximate());
     assertEquals("boolean isGreat()", issue.getElement());
     assertEquals(1.0f, issue.getContributionToClassCost());
@@ -144,10 +144,10 @@ public class IssuesReportingIntegrationTest extends TestCase {
     Issue issue2 = issues.get(1);
     //TODO: we'd rather see "FinalGlobalExample$Gadget finalInstance" on line 68 as the root issue
     assertEquals("int increment()", issue1.getElement());
-    assertEquals(88, issue1.getLineNumber());
+    assertEquals(88, issue1.getLocation().getLineNumber());
     assertEquals(0.5f, issue1.getContributionToClassCost());
     assertEquals("int getCount()", issue2.getElement());
-    assertEquals(84, issue2.getLineNumber());
+    assertEquals(84, issue2.getLocation().getLineNumber());
     assertEquals(0.5f, issue2.getContributionToClassCost());
   }
 

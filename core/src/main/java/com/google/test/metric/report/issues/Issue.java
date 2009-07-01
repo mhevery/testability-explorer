@@ -17,6 +17,7 @@ package com.google.test.metric.report.issues;
 
 import com.google.common.base.Nullable;
 import com.google.common.base.Predicate;
+import com.google.test.metric.SourceLocation;
 
 import java.util.Comparator;
 
@@ -26,24 +27,16 @@ import java.util.Comparator;
  * @author alexeagle@google.com (Alex Eagle)
  */
 public class Issue implements IssueHolder {
-  private final int lineNumber;
   private final String element;
   private float contributionToClassCost;
   private boolean isLineNumberApproximate;
   private IssueType type;
   private IssueSubType subType;
+  private SourceLocation location;
 
-  public Issue(int lineNumber, String element, float contributionToClassCost) {
-    this(lineNumber, element, contributionToClassCost, null, null);
-  }
-
-  public Issue(int lineNumber, String element) {
-    this(lineNumber, element, 0f, null, null);
-  }
-
-  public Issue(int lineNumber, String element, float contributionToClassCost,
+  public Issue(SourceLocation location, String element, float contributionToClassCost,
                IssueType type, IssueSubType subType) {
-    this.lineNumber = lineNumber;
+    this.location = location;
     this.element = element;
     this.contributionToClassCost = contributionToClassCost;
     this.type = type;
@@ -52,10 +45,6 @@ public class Issue implements IssueHolder {
 
   public void setContributionToClassCost(float contributionToClassCost) {
     this.contributionToClassCost = contributionToClassCost;
-  }
-
-  public int getLineNumber() {
-    return lineNumber;
   }
 
   public String getElement() {
@@ -77,7 +66,7 @@ public class Issue implements IssueHolder {
   @Override
   public String toString() {
     return String.format("On line %d, element %s with contribution %f (%s/%s)",
-        lineNumber, element, contributionToClassCost, type, subType);
+        location.getLineNumber(), element, contributionToClassCost, type, subType);
   }
 
   public void setType(IssueType type) {
@@ -102,6 +91,10 @@ public class Issue implements IssueHolder {
 
   public float getTotalCost() {
     return contributionToClassCost;
+  }
+
+  public SourceLocation getLocation() {
+    return location;
   }
 
   public static Predicate<? super Issue> isType(final IssueType issueType,

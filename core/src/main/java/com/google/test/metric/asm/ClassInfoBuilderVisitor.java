@@ -45,8 +45,18 @@ public class ClassInfoBuilderVisitor extends NoopClassVisitor {
       interfaceList.add(repository.getClass(interfaze));
     }
     boolean isInterface = (access & Opcodes.ACC_INTERFACE) == Opcodes.ACC_INTERFACE;
-    classInfo = new ClassInfo(name, isInterface, superClass, interfaceList);
+    classInfo = new ClassInfo(name, isInterface, superClass, interfaceList, guessSourceFileName(name));
     repository.addClass(classInfo);
+  }
+
+  public String guessSourceFileName(String className) {
+    className = className.replace('.', '/');
+
+    int internalClassDelim = className.indexOf('$');
+    if (internalClassDelim > -1) {
+      className = className.substring(0, internalClassDelim );
+    }
+    return className + ".java";
   }
 
   @Override

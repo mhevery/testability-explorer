@@ -1,4 +1,4 @@
-<#macro costDetailBox issues classFilePath issueType>
+<#macro costDetailBox issues issueType>
   <#list issues?keys as issueSubType>
     <#assign typeIssues = issues[issueSubType] />
     <#if typeIssues?size gt 0>
@@ -24,7 +24,7 @@
                 <#else/>
                 ${message("report.explain.onLine")}
               </#if>
-              ${sourceLink(classFilePath, issue.lineNumber?c, issue.lineNumber)},
+              ${sourceLink(issue.location.file, issue.location.lineNumber?c, issue.location.lineNumber)},
 
             </td>
             <td>

@@ -62,14 +62,6 @@ public class ClassIssues implements IssueHolder {
     return className;
   }
 
-  public String getPath() {
-    String outerClass = className;
-    if (outerClass.contains("$")) {
-      outerClass = outerClass.substring(0, outerClass.indexOf("$"));
-    }
-    return outerClass.replaceAll("\\.", "/");
-  }
-
   Map<String, List<Issue>> bucketize(IssueType issueType) {
     List<Issue> mostImportantIssues = getMostImportantIssues();
     Map<String, List<Issue>> theseIssues = Maps.newHashMap();

@@ -28,9 +28,9 @@ public class MethodInvocationCost extends ViolationCost {
   private Reason costSourceType;
 
   //TODO(misko): only need to pass the name of the method here??
-  public MethodInvocationCost(int lineNumber, MethodCost methodCost,
+  public MethodInvocationCost(SourceLocation location, MethodCost methodCost,
                               Reason costSourceType, Cost invocationCost) {
-    super(lineNumber, invocationCost);
+    super(location, invocationCost);
     this.methodCost = methodCost;
     this.costSourceType = costSourceType;
   }

@@ -22,8 +22,8 @@ public class LoDViolation extends ViolationCost {
   private final String methodName;
   private final int distance;
 
-  public LoDViolation(int lineNumber, String methodName, Cost lod, int distance) {
-    super(lineNumber, lod);
+  public LoDViolation(SourceLocation sourceLocation, String methodName, Cost lod, int distance) {
+    super(sourceLocation, lod);
     this.methodName = methodName;
     this.distance = distance;
   }

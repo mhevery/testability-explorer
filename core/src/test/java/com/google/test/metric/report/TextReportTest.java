@@ -22,6 +22,7 @@ import com.google.test.metric.Cost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.CyclomaticCost;
 import com.google.test.metric.MethodCost;
+import com.google.test.metric.SourceLocation;
 
 import junit.framework.TestCase;
 
@@ -49,7 +50,7 @@ public class TextReportTest extends TestCase {
     List<MethodCost> methods = new ArrayList<MethodCost>();
     MethodCost methodCost = new MethodCost("method_" + cost, 1, false, false, false);
     for (int i = 0; i < cost; i++) {
-      methodCost.addCostSource(new CyclomaticCost(i, Cost.cyclomatic(1)));
+      methodCost.addCostSource(new CyclomaticCost(new SourceLocation(null, i), Cost.cyclomatic(1)));
     }
     methodCost.link();
     methods.add(methodCost);

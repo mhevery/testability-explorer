@@ -41,7 +41,7 @@ public class TestabilityVisitorTest extends TestCase {
   Variable dst = new Variable("dst", null, false, false);
   Variable dstField = new FieldInfo(null, "dstField", null, false, false, false);
   @SuppressWarnings("unchecked")
-  ClassInfo classInfo = new ClassInfo("c.g.t.A", false, null, EMPTY_LIST);
+  ClassInfo classInfo = new ClassInfo("c.g.t.A", false, null, EMPTY_LIST, null);
   MethodInfo method =
       new MethodInfo(classInfo, "method", 0, "()V", null, null, null, null, cost1, null, false);
 

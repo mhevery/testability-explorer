@@ -19,30 +19,32 @@ import java.util.Map;
 
 public abstract class ViolationCost {
 
-  private final int lineNumber;
+  private final SourceLocation sourceLocation;
   protected final Cost cost;
 
   /**
-   * @param lineNumber
+   * @param sourceLocation
    *          that the {@code methodCost} was called on for the class that
    *          contains this cost.
    * @param cost
    *          the cost of the method getting called from this {@code LineNumber}
    */
-  public ViolationCost(int lineNumber, Cost cost) {
-    this.lineNumber = lineNumber;
+  public ViolationCost(SourceLocation sourceLocation, Cost cost) {
+    this.sourceLocation = sourceLocation;
     this.cost = cost;
-  }
-
-  public int getLineNumber() {
-    return lineNumber;
   }
 
   public abstract String getReason();
 
   @Override
   public String toString() {
-    return "Line " + lineNumber + ": " + getDescription() + " (" + getReason() + ")";
+    StringBuilder str = new StringBuilder("Line ");
+    if (isImplicit()) {
+      str.append(sourceLocation.getFile()).append(":");
+    }
+    str.append(sourceLocation.getLineNumber()).append(": ");
+    str.append(getDescription()).append(" (").append(getReason()).append(")");
+    return str.toString();
   }
 
   // TODO: (misko) get rid of this method
@@ -58,11 +60,16 @@ public abstract class ViolationCost {
     Map<String, Object> atts = cost.getAttributes();
 
     atts.put("reason", getReason());
-    atts.put("line", getLineNumber());
+    atts.put("line", getLocation().getLineNumber());
+    atts.put("file", getLocation().getFile());
     return atts;
   }
 
   public boolean isImplicit() {
     return false;
+  }
+
+  public SourceLocation getLocation() {
+    return sourceLocation;
   }
 }

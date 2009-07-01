@@ -56,21 +56,25 @@ public class TestabilityVisitor {
     @Override
     protected void addCyclomaticCost(int lineNumber) {
       super.addCyclomaticCost(lineNumber);
-      ViolationCost cost = new CyclomaticCost(lineNumber, Cost.cyclomatic(1));
+      SourceLocation location = new SourceLocation(method.getClassInfo().getFileName(), lineNumber);
+      ViolationCost cost = new CyclomaticCost(location, Cost.cyclomatic(1));
       methodCost.addCostSource(cost);
     }
 
     @Override
     protected void addGlobalCost(int lineNumber, Variable variable) {
       super.addGlobalCost(lineNumber, variable);
-      ViolationCost cost = new GlobalCost(lineNumber, variable, Cost.global(1));
+      SourceLocation location = new SourceLocation(method.getClassInfo().getFileName(), lineNumber);
+      ViolationCost cost = new GlobalCost(location, variable, Cost.global(1));
       methodCost.addCostSource(cost);
     }
 
     @Override
     protected void addLoDCost(int lineNumber, MethodInfo method, int distance) {
       super.addLoDCost(lineNumber, method, distance);
-      ViolationCost cost = new LoDViolation(lineNumber, method.getFullName(),
+      SourceLocation location = new SourceLocation(this.method.getClassInfo().getFileName(),
+          lineNumber);
+      ViolationCost cost = new LoDViolation(location, method.getFullName(),
           Cost.lod(distance), distance);
       methodCost.addCostSource(cost);
     }
@@ -80,8 +84,10 @@ public class TestabilityVisitor {
         Cost methodInvocationCost, Reason reason) {
       super.addMethodInvocationCost(lineNumber, to, methodInvocationCost, reason);
       if (!methodInvocationCost.isEmpty()) {
-        ViolationCost cost = new MethodInvocationCost(lineNumber,
-            getMethodCostCache(to), reason,
+        String fileName = (reason.isImplicit() ? to.getClassInfo().getFileName() :
+                           this.method.getClassInfo().getFileName());
+        SourceLocation location = new SourceLocation(fileName, lineNumber);
+        ViolationCost cost = new MethodInvocationCost(location, getMethodCostCache(to), reason,
             methodInvocationCost);
         methodCost.addCostSource(cost);
       }

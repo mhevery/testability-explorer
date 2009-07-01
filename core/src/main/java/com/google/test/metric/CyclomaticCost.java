@@ -18,8 +18,8 @@ package com.google.test.metric;
 
 public class CyclomaticCost extends ViolationCost {
 
-  public CyclomaticCost(int lineNumber, Cost cyclomaticCost) {
-    super(lineNumber, cyclomaticCost);
+  public CyclomaticCost(SourceLocation sourceLocation, Cost cyclomaticCost) {
+    super(sourceLocation, cyclomaticCost);
   }
 
   public String getReason() {

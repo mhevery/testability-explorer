@@ -25,6 +25,7 @@ import com.google.test.metric.MethodInvocationCost;
 import static com.google.test.metric.Reason.IMPLICIT_STATIC_INIT;
 import static com.google.test.metric.Reason.NON_OVERRIDABLE_METHOD_CALL;
 import com.google.test.metric.ViolationCost;
+import com.google.test.metric.SourceLocation;
 
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
@@ -67,12 +68,12 @@ public class XMLReportTest extends TestCase {
     XMLReportGenerator report = new XMLReportGenerator(handler, costModel, 0, 0, 0);
 
     MethodCost methodCost = new MethodCost("methodName", 1, false, false, false);
-    methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
-    methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
-    ViolationCost violation = new MethodInvocationCost(123, methodCost,
+    methodCost.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
+    methodCost.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
+    ViolationCost violation = new MethodInvocationCost(new SourceLocation("source.file", 123), methodCost,
         IMPLICIT_STATIC_INIT, Cost.cyclomatic(2).add(Cost.global(3)));
     report.writeCost(violation);
-    assertXMLEquals("<cost cyclomatic=\"2\" global=\"3\" line=\"123\" "
+    assertXMLEquals("<cost cyclomatic=\"2\" file=\"source.file\" global=\"3\" line=\"123\" "
         + "lod=\"0\" method=\"methodName\" overall=\"32\" "
         + "reason=\"implicit cost from static initialization\"/>");
   }
@@ -82,12 +83,12 @@ public class XMLReportTest extends TestCase {
     XMLReportGenerator report = new XMLReportGenerator(handler, costModel, 0, 0, 0);
 
     MethodCost methodCost = new MethodCost("methodName", 1, false, false, false);
-    methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
-    methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
-    ViolationCost violation = new MethodInvocationCost(123, methodCost,
+    methodCost.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
+    methodCost.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
+    ViolationCost violation = new MethodInvocationCost(new SourceLocation("source.file", 123), methodCost,
         NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(2).add(Cost.global(3)));
     report.writeCost(violation);
-    assertXMLEquals("<cost cyclomatic=\"2\" global=\"3\" line=\"123\" "
+    assertXMLEquals("<cost cyclomatic=\"2\" file=\"source.file\" global=\"3\" line=\"123\" "
         + "lod=\"0\" method=\"methodName\" overall=\"32\" "
         + "reason=\"" + NON_OVERRIDABLE_METHOD_CALL + "\"/>");
   }
@@ -96,15 +97,15 @@ public class XMLReportTest extends TestCase {
     XMLReportGenerator report = new XMLReportGenerator(handler, costModel, 0, 0, 0) {
       @Override
       public void writeCost(ViolationCost violation) throws SAXException {
-        write("L" + violation.getLineNumber() + ",");
+        write("L" + violation.getLocation().getLineNumber() + ",");
       }
 
     };
     MethodCost methodCost = new MethodCost("methodName", 123, false, false, false);
-    methodCost.addCostSource(new GlobalCost(123, null, Cost.global(1)));
-    methodCost.addCostSource(new CyclomaticCost(234, Cost.cyclomatic(1)));
-    methodCost.addCostSource(new CyclomaticCost(345, Cost.cyclomatic(1)));
-    methodCost.addCostSource(new GlobalCost(456, null, Cost.global(1)));
+    methodCost.addCostSource(new GlobalCost(new SourceLocation(null, 123), null, Cost.global(1)));
+    methodCost.addCostSource(new CyclomaticCost(new SourceLocation(null, 234), Cost.cyclomatic(1)));
+    methodCost.addCostSource(new CyclomaticCost(new SourceLocation(null, 345), Cost.cyclomatic(1)));
+    methodCost.addCostSource(new GlobalCost(new SourceLocation(null, 456), null, Cost.global(1)));
     methodCost.link();
     report.writeCost(methodCost);
     assertXMLEquals("<method cyclomatic=\"2\" global=\"2\" line=\"123\" "
@@ -119,10 +120,10 @@ public class XMLReportTest extends TestCase {
       }
     };
     MethodCost m1 = new MethodCost("M1", -1, false, false, false);
-    m1.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
-    m1.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
+    m1.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
+    m1.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
     MethodCost m2 = new MethodCost("M2", -1, false, false, false);
-    m2.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
+    m2.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
     m1.link();
     m2.link();
     ClassCost classCost = new ClassCost("className", asList(m1, m2));
@@ -139,8 +140,8 @@ public class XMLReportTest extends TestCase {
     };
     report.printHeader();
     MethodCost m1 = new MethodCost("M1", -1, false, false, false);
-    m1.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
-    m1.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
+    m1.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
+    m1.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
     m1.link();
     ClassCost c1 = new ClassCost("C1", asList(m1));
     ClassCost c2 = new ClassCost("C2", asList(m1));

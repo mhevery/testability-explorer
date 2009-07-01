@@ -17,6 +17,7 @@ package com.google.test.metric.report.html;
 
 import com.google.common.collect.Lists;
 import com.google.test.metric.ReportGeneratorBuilder;
+import com.google.test.metric.SourceLocation;
 import com.google.test.metric.report.ClassPathTemplateLoader;
 import com.google.test.metric.report.SourceLinker;
 import com.google.test.metric.report.issues.ClassIssues;
@@ -56,6 +57,7 @@ public class MessagesForCostDetailBoxTest extends TestCase {
   private Map<String, Object> model;
   private Queue<Issue> issueQueue;
   private String foo = "foo()";
+  private final SourceLocation location = new SourceLocation("com/google/Foo.java", 12);
 
   @Override
   protected void setUp() throws Exception {
@@ -74,7 +76,8 @@ public class MessagesForCostDetailBoxTest extends TestCase {
   }
 
   public void testWorkInConstructorMessages() throws Exception {
-    issueQueue.offer(new Issue(12, foo, 1.0f, IssueType.CONSTRUCTION, IssueSubType.COMPLEXITY));
+    issueQueue.offer(new Issue(location, foo, 1.0f, IssueType.CONSTRUCTION,
+        IssueSubType.COMPLEXITY));
     ClassIssues issues = new ClassIssues("Foo", 100, issueQueue);
     model.put("issues", issues.getConstructionIssues());
     model.put("issueType", "construction");
@@ -82,7 +85,8 @@ public class MessagesForCostDetailBoxTest extends TestCase {
   }
 
   public void testStaticMethodCalledInConstructorMessages() throws Exception {
-    issueQueue.offer(new Issue(12, foo, 1.0f, IssueType.CONSTRUCTION, IssueSubType.STATIC_METHOD));
+    issueQueue.offer(new Issue(location, foo, 1.0f, IssueType.CONSTRUCTION,
+        IssueSubType.STATIC_METHOD));
     ClassIssues issues = new ClassIssues("Foo", 100, issueQueue);
     model.put("issues", issues.getConstructionIssues());
     model.put("issueType", "construction");
@@ -90,7 +94,8 @@ public class MessagesForCostDetailBoxTest extends TestCase {
   }
 
   public void testCollaboratorInConstructorMessages() throws Exception {
-    issueQueue.offer(new Issue(12, foo, 1.0f, IssueType.CONSTRUCTION, IssueSubType.NON_MOCKABLE));
+    issueQueue.offer(new Issue(location, foo, 1.0f, IssueType.CONSTRUCTION,
+        IssueSubType.NON_MOCKABLE));
     ClassIssues issues = new ClassIssues("Foo", 100, issueQueue);
     model.put("issues", issues.getConstructionIssues());
     model.put("issueType", "construction");
@@ -98,7 +103,8 @@ public class MessagesForCostDetailBoxTest extends TestCase {
   }
 
   public void testStaticInitializationMessages() throws Exception {
-    issueQueue.offer(new Issue(12, foo, 1.0f, IssueType.CONSTRUCTION, IssueSubType.STATIC_INIT));
+    issueQueue.offer(new Issue(location, foo, 1.0f, IssueType.CONSTRUCTION,
+        IssueSubType.STATIC_INIT));
     ClassIssues issues = new ClassIssues("Foo", 100, issueQueue);
     model.put("issues", issues.getConstructionIssues());
     model.put("issueType", "construction");
@@ -106,7 +112,8 @@ public class MessagesForCostDetailBoxTest extends TestCase {
   }
 
   public void testComplexSetterMessages() throws Exception {
-    issueQueue.offer(new Issue(12, foo, 1.0f, IssueType.CONSTRUCTION, IssueSubType.SETTER));
+    issueQueue.offer(new Issue(location, foo, 1.0f, IssueType.CONSTRUCTION,
+        IssueSubType.SETTER));
     ClassIssues issues = new ClassIssues("Foo", 100, issueQueue);
     model.put("issues", issues.getConstructionIssues());
     model.put("issueType", "construction");
@@ -114,7 +121,8 @@ public class MessagesForCostDetailBoxTest extends TestCase {
   }
 
   public void testCollaboratorNewOperatorMessages() throws Exception {
-    issueQueue.offer(new Issue(12, foo, 1.0f, IssueType.COLLABORATOR, IssueSubType.NON_MOCKABLE));
+    issueQueue.offer(new Issue(location, foo, 1.0f, IssueType.COLLABORATOR,
+        IssueSubType.NON_MOCKABLE));
     ClassIssues issues = new ClassIssues("Foo", 100, issueQueue);
     model.put("issues", issues.getConstructionIssues());
     model.put("issueType", "collaborator");
@@ -122,7 +130,8 @@ public class MessagesForCostDetailBoxTest extends TestCase {
   }
 
   public void testCollaboratorStaticMethodCallMessages() throws Exception {
-    issueQueue.offer(new Issue(12, foo, 1.0f, IssueType.COLLABORATOR, IssueSubType.STATIC_METHOD));
+    issueQueue.offer(new Issue(location, foo, 1.0f, IssueType.COLLABORATOR,
+        IssueSubType.STATIC_METHOD));
     ClassIssues issues = new ClassIssues("Foo", 100, issueQueue);
     model.put("issues", issues.getConstructionIssues());
     model.put("issueType", "collaborator");
@@ -130,7 +139,8 @@ public class MessagesForCostDetailBoxTest extends TestCase {
   }
 
   public void testDirectCostMessages() throws Exception {
-    issueQueue.offer(new Issue(12, foo, 1.0f, IssueType.DIRECT_COST, IssueSubType.COMPLEXITY));
+    issueQueue.offer(new Issue(location, foo, 1.0f, IssueType.DIRECT_COST,
+        IssueSubType.COMPLEXITY));
     ClassIssues issues = new ClassIssues("Foo", 100, issueQueue);
     model.put("issues", issues.getConstructionIssues());
     model.put("issueType", "direct_cost");

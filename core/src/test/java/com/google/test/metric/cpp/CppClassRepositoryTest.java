@@ -44,7 +44,7 @@ public class CppClassRepositoryTest extends TestCase {
   public void testRepositoryAddClass() throws Exception {
     CppClassRepository repository = new CppClassRepository();
     ClassInfo classInfo = new ClassInfo("A", false, null,
-        new ArrayList<ClassInfo>());
+        new ArrayList<ClassInfo>(), null);
     repository.addClass(classInfo);
     assertNotNull(repository.getClass("A"));
   }

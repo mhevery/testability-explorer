@@ -257,14 +257,14 @@ public class ClassInfoTest extends AutoFieldClearTestCase {
 
   public void testGetSettersShouldReturnItemsInAlphabeticalOrderAndIncludeSuperClasses() throws Exception {
     List<ClassInfo> emptyInterfaces = Collections.emptyList();
-    ClassInfo superClass = new ClassInfo("super", false, null, emptyInterfaces);
+    ClassInfo superClass = new ClassInfo("super", false, null, emptyInterfaces, null);
     List<ParameterInfo> params = Collections.emptyList();
     List<LocalVariableInfo> locals = Collections.emptyList();
     List<Operation> operations = Collections.emptyList();
     superClass.addMethod(new MethodInfo(superClass, "setB", -1, "()V", null, params, locals,Visibility.PUBLIC, Collections.<Integer>emptyList(), operations, false));
     superClass.addMethod(new MethodInfo(superClass, "setA", -1, "()V", null, params, locals,Visibility.PRIVATE, Collections.<Integer>emptyList(), operations, false));
     superClass.addMethod(new MethodInfo(superClass, "X", -1, "()V", null, params, locals,Visibility.PUBLIC, Collections.<Integer>emptyList(), operations, false));
-    ClassInfo clazz = new ClassInfo("super", false, superClass, emptyInterfaces);
+    ClassInfo clazz = new ClassInfo("super", false, superClass, emptyInterfaces, null);
     clazz.addMethod(new MethodInfo(clazz, "setD", -1, "()V", null, params, locals,Visibility.PUBLIC, Collections.<Integer>emptyList(), operations, false));
     clazz.addMethod(new MethodInfo(clazz, "setC", -1, "()V", null, params, locals,Visibility.PUBLIC, Collections.<Integer>emptyList(), operations, false));
 

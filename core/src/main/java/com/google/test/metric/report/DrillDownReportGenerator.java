@@ -29,6 +29,9 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+/**
+ * @deprecated remove this report as it's not very useful
+ */
 public class DrillDownReportGenerator implements ReportGenerator {
   public static final String NEW_LINE = getProperty("line.separator");
 
@@ -104,7 +107,7 @@ public class DrillDownReportGenerator implements ReportGenerator {
     if (shouldPrint(method, maxDepth, alreadSeen)) {
       out.print(prefix);
       out.print("line ");
-      out.print(line.getLineNumber());
+      out.print(line.getLocation());
       out.print(": ");
       out.print(method);
       out.println(" " + line.getReason());

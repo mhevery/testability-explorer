@@ -78,17 +78,17 @@
 
     <#if numConstructionIssues != 0>
       <p class="issueType header">${message("report.explain.class.construction")}</p>
-      <@costDetailBox classIssues.constructionIssues classIssues.path "construction"/>
+      <@costDetailBox classIssues.constructionIssues "construction"/>
     </#if>
 
     <#if numCollaboratorIssues != 0>
       <p class="issueType header">${message("report.explain.class.collaborator")}</p>
-      <@costDetailBox classIssues.collaboratorIssues classIssues.path "collaborator" />
+      <@costDetailBox classIssues.collaboratorIssues "collaborator" />
     </#if>
 
     <#if numDirectCostIssues != 0>
       <p class="issueType header">${message("report.explain.class.directCost")}</p>
-      <@costDetailBox classIssues.directCostIssues classIssues.path "directCost" />
+      <@costDetailBox classIssues.directCostIssues "directCost" />
     </#if>
 
     <!--input type="button" value="Show more suggestions"/><br/-->

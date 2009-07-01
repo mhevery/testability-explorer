@@ -411,13 +411,13 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
     int methodStartingLine = cost.getMethodLineNumber();
 
     assertEquals(0, line0.getMethodCost().getTotalCost().getCyclomaticComplexityCost());
-    assertEquals(methodStartingLine + 0, line0.getLineNumber());
+    assertEquals(methodStartingLine + 0, line0.getLocation().getLineNumber());
 
     assertEquals(1, line1.getMethodCost().getTotalCost().getCyclomaticComplexityCost());
-    assertEquals(methodStartingLine + 1, line1.getLineNumber());
+    assertEquals(methodStartingLine + 1, line1.getLocation().getLineNumber());
 
     assertEquals(2, line2.getMethodCost().getTotalCost().getCyclomaticComplexityCost());
-    assertEquals(methodStartingLine + 2, line2.getLineNumber());
+    assertEquals(methodStartingLine + 2, line2.getLocation().getLineNumber());
   }
 
   public static class WhiteListTest {

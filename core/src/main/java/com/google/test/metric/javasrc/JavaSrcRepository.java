@@ -28,55 +28,55 @@ import com.google.test.metric.ClassRepository;
 
 public class JavaSrcRepository implements ClassRepository {
 
-	private final ClassPath classPath;
-	private Map<String, ClassInfo> classes = new HashMap<String, ClassInfo>();
+  private final ClassPath classPath;
+  private Map<String, ClassInfo> classes = new HashMap<String, ClassInfo>();
   private final ClassRepository parentRepository;
 
-	public JavaSrcRepository(ClassRepository parentRepository, ClassPath classPath) {
-		this.parentRepository = parentRepository;
+  public JavaSrcRepository(ClassRepository parentRepository, ClassPath classPath) {
+    this.parentRepository = parentRepository;
     this.classPath = classPath;
-	}
+  }
 
-	public ClassInfo getClass(String clazzName) {
-		ClassInfo info = getCachedClass(clazzName);
-		if (info != null) {
-			return info;
-		}
-		parse(clazzName);
-		info = classes.get(clazzName);
-		if (info != null) {
-			return info;
-		}
-		return parentRepository.getClass(clazzName);
-	}
+  public ClassInfo getClass(String clazzName) {
+    ClassInfo info = getCachedClass(clazzName);
+    if (info != null) {
+      return info;
+    }
+    parse(clazzName);
+    info = classes.get(clazzName);
+    if (info != null) {
+      return info;
+    }
+    return parentRepository.getClass(clazzName);
+  }
 
-	private void parse(String clazzName) {
-		String src = clazzName.replace('.', '/').replaceAll("\\$.*", "") + ".java";
-		InputStream srcStream = classPath.getResourceAsStream(src);
-		if (srcStream == null) {
-			return;
-		}
-		JavaLexer lexer = new JavaLexer(srcStream);
-		JavaRecognizer recognizer = new JavaRecognizer(lexer);
-		recognizer.getASTFactory().setASTNodeClass(CommonASTWithLine.class);
-		JavaTreeParser treeParser = new JavaTreeParser();
-		Qualifier qualifier = new Qualifier();
-    treeParser.builder = new CompilationUnitBuilder(this, qualifier);
-		try {
-			recognizer.compilationUnit();
-			qualifier.compilationUnit(recognizer.getAST());
-			treeParser.compilationUnit(recognizer.getAST());
-		} catch (RecognitionException e) {
-			throw new RuntimeException(e);
-		} catch (TokenStreamException e) {
-			throw new RuntimeException(e);
-		}
-	}
+  private void parse(String clazzName) {
+    String src = clazzName.replace('.', '/').replaceAll("\\$.*", "") + ".java";
+    InputStream srcStream = classPath.getResourceAsStream(src);
+    if (srcStream == null) {
+      return;
+    }
+    JavaLexer lexer = new JavaLexer(srcStream);
+    JavaRecognizer recognizer = new JavaRecognizer(lexer);
+    recognizer.getASTFactory().setASTNodeClass(CommonASTWithLine.class);
+    JavaTreeParser treeParser = new JavaTreeParser();
+    Qualifier qualifier = new Qualifier();
+    treeParser.builder = new CompilationUnitBuilder(this, qualifier, src);
+    try {
+      recognizer.compilationUnit();
+      qualifier.compilationUnit(recognizer.getAST());
+      treeParser.compilationUnit(recognizer.getAST());
+    } catch (RecognitionException e) {
+      throw new RuntimeException(e);
+    } catch (TokenStreamException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-	@Override
-	public String toString() {
-		return classes.toString();
-	}
+  @Override
+  public String toString() {
+    return classes.toString();
+  }
 
   public void addClass(ClassInfo info) {
     classes.put(info.getName(), info);
