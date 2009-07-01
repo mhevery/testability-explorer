@@ -16,13 +16,31 @@
 package com.google.test.metric;
 
 import com.google.classpath.ClassPath;
-import com.google.test.metric.report.*;
+import com.google.test.metric.report.ClassPathTemplateLoader;
+import com.google.test.metric.report.DrillDownReportGenerator;
+import com.google.test.metric.report.FreemarkerReportGenerator;
+import com.google.test.metric.report.GradeCategories;
+import com.google.test.metric.report.PropertiesReportGenerator;
+import com.google.test.metric.report.ReportGenerator;
+import com.google.test.metric.report.ReportModel;
+import com.google.test.metric.report.ReportOptions;
+import com.google.test.metric.report.SourceLinker;
+import com.google.test.metric.report.SourceLoader;
+import com.google.test.metric.report.SourceReportGenerator;
+import com.google.test.metric.report.TextReportGenerator;
+import com.google.test.metric.report.XMLReportGenerator;
 import com.google.test.metric.report.about.AboutTestabilityReport;
 import com.google.test.metric.report.html.HtmlReportModel;
 import com.google.test.metric.report.html.SourceLinkerModel;
 import com.google.test.metric.report.issues.ClassIssues;
+import com.google.test.metric.report.issues.HypotheticalCostModel;
 import com.google.test.metric.report.issues.IssuesReporter;
 import com.google.test.metric.report.issues.TriageIssuesQueue;
+
+import freemarker.ext.beans.BeansWrapper;
+import freemarker.ext.beans.ResourceBundleModel;
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
 
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
@@ -32,11 +50,6 @@ import java.io.PrintStream;
 import java.util.Date;
 import java.util.List;
 import static java.util.ResourceBundle.getBundle;
-
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.ext.beans.BeansWrapper;
-import freemarker.ext.beans.ResourceBundleModel;
 
 /**
  * Builds a Report, using various formats, and given all of the needed options.
@@ -141,7 +154,8 @@ public class ReportGeneratorBuilder {
             options.getWorstOffenderCount(), new ClassIssues.TotalCostComparator());
     SourceLoader sourceLoader = new SourceLoader(classPath);
 
-    IssuesReporter issuesReporter = new IssuesReporter(mostImportantIssues, costModel);
+    HypotheticalCostModel hypotheticalCostModel = new HypotheticalCostModel(costModel, null);
+    IssuesReporter issuesReporter = new IssuesReporter(mostImportantIssues, hypotheticalCostModel);
     AnalysisModel analysisModel = new AnalysisModel(issuesReporter);
     ReportModel reportModel;
 

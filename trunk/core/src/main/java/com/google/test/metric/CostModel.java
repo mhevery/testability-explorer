@@ -53,34 +53,14 @@ public class CostModel {
   }
 
   public int computeClass(ClassCost classCost) {
-    return computeClassWithoutMethod(classCost, null, null);
-  }
-
-  private int computeClassWithoutMethod(ClassCost classCost, MethodCost adjustedMethod,
-                                        Cost replacementCost) {
-    WeightedAverage average = new WeightedAverage(weightToEmphasizeExpensiveMethods);
+    WeightedAverage average = createWeighedAverage();
     for (MethodCost methodCost : classCost.getMethods()) {
-      Cost cost = (adjustedMethod == methodCost ? replacementCost : methodCost.getTotalCost());
-      average.addValue(computeOverall(cost));
+      average.addValue(computeOverall(methodCost.getTotalCost()));
     }
     return (int) average.getAverage();
   }
 
-
-  public float computeContributionFromIssue(ClassCost classCost, MethodCost violationMethodCost,
-                                            ViolationCost violationCost) {
-    Cost adjustedCost = violationMethodCost.getTotalCost().add(violationCost.getCost().negate());
-    return 1 - computeClassWithoutMethod(classCost, violationMethodCost, adjustedCost) /
-               (float)computeClass(classCost);
-  }
-
-  public float computeDirectCostContributionFromMethod(ClassCost classCost,
-                                                       MethodCost violationMethodCost) {
-
-    final float costWithoutIssue =
-        computeClassWithoutMethod(classCost, violationMethodCost,
-            violationMethodCost.getDependentCost());
-    final float totalCost = (float) computeClass(classCost);
-    return 1 - costWithoutIssue / totalCost;
+  public WeightedAverage createWeighedAverage() {
+    return new WeightedAverage(weightToEmphasizeExpensiveMethods);
   }
 }

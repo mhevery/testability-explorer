@@ -15,17 +15,13 @@
  */
 package com.google.test.metric;
 
-import com.google.classpath.ClassPath;
 import com.google.classpath.RegExpResourceFilter;
 import static com.google.classpath.RegExpResourceFilter.ANY;
 import static com.google.classpath.RegExpResourceFilter.ENDS_WITH_CLASS;
-import com.google.test.metric.report.ReportGenerator;
 import com.google.test.metric.report.issues.IssuesReporter;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import static java.util.Arrays.asList;
-import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -37,46 +33,37 @@ import java.util.TreeSet;
  */
 public class JavaTestabilityRunner implements Runnable {
 
-  private final List<String> entryList;
-  private final ClassPath classPath;
-  private final WhiteList whitelist;
-  private final ReportGenerator report;
-  private final PrintStream err;
-  private final int printDepth;
+  private final JavaTestabilityConfig config;
 
   public JavaTestabilityRunner(JavaTestabilityConfig config) {
-    this.entryList = config.getEntryList();
-    this.classPath = config.getClassPath();
-    this.whitelist = config.getWhitelist();
-    this.report = config.getReport();
-    this.err = config.getErr();
-    this.printDepth = config.getPrintDepth();
+    this.config = config;
   }
 
   public AnalysisModel generateModel(IssuesReporter issuesReporter) {
-    ClassRepository classRepository = new JavaClassRepository(classPath);
-    MetricComputer computer = new MetricComputer(classRepository, err, whitelist, printDepth);
+    ClassRepository classRepository = new JavaClassRepository(config.getClassPath());
+    MetricComputer computer = new MetricComputer(classRepository, config.getErr(),
+        config.getWhitelist(), config.getPrintDepth());
 
     SortedSet<String> classNames = new TreeSet<String>();
     RegExpResourceFilter resourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
     AnalysisModel model = new AnalysisModel(issuesReporter);
-    for (String entry : entryList) {
+    for (String entry : config.getEntryList()) {
       if (entry.equals(".")) {
         entry = "";
       }
       // TODO(jonathan) seems too complicated, replacing "." with "/" using the resource filter, then right below replace all "/" with "."
-      classNames.addAll(asList(classPath.findResources(entry.replace(".", "/"), resourceFilter)));
+      classNames.addAll(asList(config.getClassPath().findResources(entry.replace(".", "/"), resourceFilter)));
     }
     for (String resource : classNames) {
       String className = resource.replace(".class", "").replace("/", ".");
       try {
-        if (!whitelist.isClassWhiteListed(className)) {
+        if (!config.getWhitelist().isClassWhiteListed(className)) {
           ClassInfo clazz = classRepository.getClass(className);
           ClassCost classCost = computer.compute(clazz);
           model.addClassCost(classCost);
         }
       } catch (ClassNotFoundException e) {
-        err.println("WARNING: can not analyze class '" + className
+        config.getErr().println("WARNING: can not analyze class '" + className
             + "' since class '" + e.getClassName() + "' was not found. Chain: " + e.getMessage());
       }
     }
@@ -86,13 +73,13 @@ public class JavaTestabilityRunner implements Runnable {
 
   public void renderReport(AnalysisModel model) {
     try {
-      report.printHeader();
+      config.getReport().printHeader();
 
       for (ClassCost classCost : model.getClassCosts()) {
-        report.addClassCost(classCost);
+        config.getReport().addClassCost(classCost);
       }
 
-      report.printFooter();
+      config.getReport().printFooter();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

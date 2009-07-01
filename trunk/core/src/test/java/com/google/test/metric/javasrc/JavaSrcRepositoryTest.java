@@ -15,15 +15,7 @@
  */
 package com.google.test.metric.javasrc;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import junit.framework.TestCase;
-
-import com.google.classpath.DirectoryClassPath;
+import com.google.classpath.ClassPathFactory;
 import com.google.test.metric.ClassInfo;
 import com.google.test.metric.ClassNotFoundException;
 import com.google.test.metric.ClassRepository;
@@ -32,11 +24,18 @@ import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.JavaType;
 import com.google.test.metric.javasrc.JavaSrcRepositoryTest.InnerClass.InnerInnerClass;
 
+import junit.framework.TestCase;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 public class JavaSrcRepositoryTest extends TestCase {
 
   ClassRepository parent = new JavaClassRepository();
   JavaSrcRepository repo = new JavaSrcRepository(parent,
-      new DirectoryClassPath(new File("src/test/java")));
+      new ClassPathFactory().createFromPaths("core/src/test/java", "src/test/java"));
 
   @Override
   protected void setUp() throws Exception {
@@ -121,7 +120,7 @@ public class JavaSrcRepositoryTest extends TestCase {
     }
   }
 
-  public void testTypeDeclareation() throws Exception {
+  public void testTypeDeclaration() throws Exception {
     repo.getClass(TypeQualifications.class.getName());
     ClassInfo info = repo.getCachedClass(TypeQualifications.class.getName());
     Iterator<FieldInfo> iterator = info.getFields().iterator();

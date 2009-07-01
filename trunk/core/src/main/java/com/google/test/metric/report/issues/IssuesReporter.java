@@ -16,15 +16,14 @@
 package com.google.test.metric.report.issues;
 
 import com.google.test.metric.ClassCost;
-import com.google.test.metric.CostModel;
 import com.google.test.metric.GlobalCost;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvocationCost;
 import static com.google.test.metric.Reason.IMPLICIT_CONSTRUCTOR;
 import static com.google.test.metric.Reason.IMPLICIT_SETTER;
 import static com.google.test.metric.Reason.IMPLICIT_STATIC_INIT;
-import com.google.test.metric.ViolationCost;
 import com.google.test.metric.SourceLocation;
+import com.google.test.metric.ViolationCost;
 import static com.google.test.metric.report.issues.IssueSubType.COMPLEXITY;
 import static com.google.test.metric.report.issues.IssueSubType.NON_MOCKABLE;
 import static com.google.test.metric.report.issues.IssueSubType.SETTER;
@@ -49,9 +48,9 @@ public class IssuesReporter {
 
   private static final Logger logger = Logger.getLogger(IssuesReporter.class.getCanonicalName());
   private final Queue<ClassIssues> mostImportantIssues;
-  private final CostModel costModel;
+  private final HypotheticalCostModel costModel;
 
-  public IssuesReporter(Queue<ClassIssues> mostImportantIssues, CostModel costModel) {
+  public IssuesReporter(Queue<ClassIssues> mostImportantIssues, HypotheticalCostModel costModel) {
     this.mostImportantIssues = mostImportantIssues;
     this.costModel = costModel;
   }
@@ -110,7 +109,7 @@ public class IssuesReporter {
 
   private void addDirectCostIssue(ClassIssues classIssues, MethodCost methodCost,
                                   ClassCost classCost) {
-    float contributionToClassCost = costModel.computeDirectCostContributionFromMethod(classCost, methodCost);
+    float contributionToClassCost = costModel.computeContributionFromMethod(classCost, methodCost);
     Issue issue = new Issue(new SourceLocation(classCost.getClassName(), methodCost.getMethodLineNumber()),
         methodCost.getDescription(), contributionToClassCost, null, null);
     if (methodCost.isConstructor()) {
