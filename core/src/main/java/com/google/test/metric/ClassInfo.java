@@ -154,4 +154,12 @@ public class ClassInfo {
   public String getFileName() {
     return fileName;
   }
+
+  public ClassInfo copy() {
+    ClassInfo clazz = new ClassInfo(name, isInterface, superClass, interfaces, fileName);
+    for (MethodInfo methodInfo : getMethods()) {
+      clazz.addMethod(methodInfo);
+    }
+    return clazz;
+  }
 }

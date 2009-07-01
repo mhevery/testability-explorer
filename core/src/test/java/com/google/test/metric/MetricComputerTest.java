@@ -454,7 +454,7 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
         .withWhitelist(customWhitelist).build();
     computer = new MetricComputerJavaDecorator(toDecorate, repo);
     ClassCost cost = computer.compute(TestEnum1.class);
-    assertEquals(0, cost.getMethodCost(cost.getClassName() + "()").getTotalCost().getGlobalCost());
+    assertEquals(0, cost.getMethodCost(cost.getClassName() + ".<static init>").getTotalCost().getGlobalCost());
   }
 
   public void testSyntheticEnumValuesAccessorClassIsZero() throws Exception {
@@ -469,7 +469,7 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
       // Eclipse names its enumerations differently
       cost = computer.compute("com.google.test.metric.InnerEnumHolder$NodeType");
     }
-    assertEquals(0, cost.getMethodCost(cost.getClassName() + "()").getTotalCost().getGlobalCost());
+    assertEquals(0, cost.getMethodCost(cost.getClassName() + ".<static init>").getTotalCost().getGlobalCost());
   }
 
   private final String testValue = null;

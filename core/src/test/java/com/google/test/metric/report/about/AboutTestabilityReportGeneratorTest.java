@@ -17,6 +17,7 @@ package com.google.test.metric.report.about;
 
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
+import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.ReportGeneratorBuilder;
 import com.google.test.metric.report.ClassPathTemplateLoader;
@@ -26,6 +27,8 @@ import com.google.test.metric.report.Source;
 import com.google.test.metric.report.Source.Line;
 import com.google.test.metric.report.SourceLoader;
 import com.google.test.metric.report.issues.ClassIssues;
+import com.google.test.metric.report.issues.ClassMunger;
+import com.google.test.metric.report.issues.HypotheticalCostModel;
 import com.google.test.metric.report.issues.IssuesReporter;
 
 import freemarker.ext.beans.BeansWrapper;
@@ -49,9 +52,10 @@ import static java.util.ResourceBundle.getBundle;
 public class AboutTestabilityReportGeneratorTest extends TestCase {
   FreemarkerReportGenerator generator;
   ByteArrayOutputStream out = new ByteArrayOutputStream();
+  HypotheticalCostModel costModel = new HypotheticalCostModel(new CostModel(), new ClassMunger(new JavaClassRepository()));
 
   public void testExample() throws Exception {
-    IssuesReporter reporter = new IssuesReporter(new LinkedList<ClassIssues>(), new CostModel());
+    IssuesReporter reporter = new IssuesReporter(new LinkedList<ClassIssues>(), costModel);
     ReportModel model = new AboutTestabilityReport(reporter, new SourceLoader(null) {
       @Override
       public Source load(String name) {

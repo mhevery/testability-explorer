@@ -19,6 +19,7 @@ import com.google.test.metric.AnalysisModel;
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.Cost;
 import com.google.test.metric.CostModel;
+import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvocationCost;
 import com.google.test.metric.Reason;
@@ -30,6 +31,8 @@ import static com.google.test.metric.report.FreemarkerReportGenerator.HTML_REPOR
 import com.google.test.metric.report.ReportOptions;
 import com.google.test.metric.report.SourceLinker;
 import com.google.test.metric.report.issues.ClassIssues;
+import com.google.test.metric.report.issues.ClassMunger;
+import com.google.test.metric.report.issues.HypotheticalCostModel;
 import com.google.test.metric.report.issues.Issue;
 import com.google.test.metric.report.issues.IssuesReporter;
 
@@ -60,7 +63,10 @@ public class HtmlReportTest extends TestCase {
     super.setUp();
     out = new ByteArrayOutputStream();
     CostModel costModel = new CostModel();
-    IssuesReporter issuesReporter = new IssuesReporter(new LinkedList<ClassIssues>(), costModel);
+    HypotheticalCostModel hypotheticalCostModel =
+        new HypotheticalCostModel(costModel, new ClassMunger(new JavaClassRepository()));
+    IssuesReporter issuesReporter = new IssuesReporter(new LinkedList<ClassIssues>(),
+        hypotheticalCostModel);
     ReportOptions options = new ReportOptions(1, 10, 10, 20, 5, 100, 100, 1, 10, "", "");
     linker = new SourceLinker("http://code.repository/basepath/{path}&line={line}",
                               "http://code.repository/basepath/{path}");

@@ -22,12 +22,13 @@ import static com.google.common.collect.Lists.newArrayList;
 import com.google.test.metric.method.op.turing.Operation;
 
 import java.util.Collection;
+import java.util.Collections;
 import static java.util.Collections.unmodifiableList;
 import java.util.List;
 
 public class MethodInfo implements Comparable<MethodInfo> {
 
-  final ClassInfo classInfo;
+  private final ClassInfo classInfo;
   private final String name;
   private final Variable methodThis;
   private final List<ParameterInfo> parameters;
@@ -83,7 +84,9 @@ public class MethodInfo implements Comparable<MethodInfo> {
     String params = desc.substring(1, paramsEnd);
     String methodName = name;
 
-    if (isStaticConstructor() || isConstructor()) {
+    if (isStaticConstructor()) {
+      return classInfo.getName() + ".<static init>";
+    } else if (isConstructor()) {
       returnValue = "";
       methodName = classInfo.getName();
     }
@@ -234,5 +237,15 @@ public class MethodInfo implements Comparable<MethodInfo> {
 
   public boolean isPrivate() {
     return getVisibility() == Visibility.PRIVATE;
+  }
+
+  /**
+   * produces a copy of this method, which has
+   * @return
+   */
+  public MethodInfo copyWithNoOperations(ClassInfo parent) {
+    List<Operation> operations = Collections.emptyList();
+    return new MethodInfo(parent, name, startingLineNumber, desc, methodThis,
+        parameters, localVariables, visibility, linesOfComplexity, operations, isFinal);
   }
 }

@@ -15,10 +15,10 @@
  */
 package com.google.test.metric;
 
+import junit.framework.TestCase;
+
 import java.util.Arrays;
 import java.util.List;
-
-import junit.framework.TestCase;
 
 public class MethodInfoTest extends TestCase {
 
@@ -38,7 +38,7 @@ public class MethodInfoTest extends TestCase {
 
     method = new MethodInfo(new ClassInfo("c.b.ui.UI$ViewHandler", false, null,
         null, null), "<clinit>", 0, "()V", null, null, null, null, cost1, null, false);
-    assertEquals("c.b.ui.UI$ViewHandler()", method.getFullName());
+    assertEquals("c.b.ui.UI$ViewHandler.<static init>", method.getFullName());
 
     method = new MethodInfo(new ClassInfo("c.b.ui.UI$ViewHandler", false, null,
         null, null), "<init>", -1, "(I)V", null, null, null, null, cost1, null, false);
