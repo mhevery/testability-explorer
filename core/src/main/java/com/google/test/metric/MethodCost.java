@@ -47,8 +47,13 @@ public class MethodCost {
     return dependentCost;
   }
 
+  public Cost getConstructorDependentCost() {
+    return constructorDependentCost;
+  }
+
   private final Cost directCost = new Cost();
   private final Cost dependentCost = new Cost();
+  private final Cost constructorDependentCost = new Cost();
   public static final String METHOD_NAME_ATTRIBUTE = "name";
 
   /**
@@ -67,7 +72,7 @@ public class MethodCost {
   }
 
   public Cost getTotalCost() {
-    return new Cost().add(directCost).add(dependentCost);
+    return new Cost().add(directCost).add(dependentCost).add(constructorDependentCost);
   }
 
   public String getMethodName() {
@@ -75,7 +80,7 @@ public class MethodCost {
   }
 
   public void addCostSource(ViolationCost costSource) {
-    costSource.link(directCost, dependentCost);
+    costSource.link(directCost, dependentCost, constructorDependentCost);
     costSources.add(costSource);
   }
 
@@ -137,4 +142,5 @@ public class MethodCost {
   public boolean isStaticInit() {
     return staticInit;
   }
+
 }
