@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
- package com.google.test.metric.javasrc;
+package com.google.test.metric.javasrc;
 
 import java.util.ArrayList;
 
@@ -28,25 +28,25 @@ public class JavaClassInfoBuilderTest extends TestCase {
   ClassRepository parent = new JavaClassRepository();
   JavaSrcRepository repository = new JavaSrcRepository(parent, null);
   Qualifier qualifier = new Qualifier();
-	CompilationUnitBuilder builder = new CompilationUnitBuilder(repository, qualifier);
+  CompilationUnitBuilder builder = new CompilationUnitBuilder(repository, qualifier, "");
 
-	public void testClassNameIsConcatinationOfPackageAndType() throws Exception {
-		qualifier.setPackage("pkg");
-		builder.startType(0, "A", null, new ArrayList<Type>());
-		builder.endType();
-		assertNull(builder.type);
-		assertEquals("pkg.A", repository.getClass("pkg.A").getName());
-	}
+  public void testClassNameIsConcatinationOfPackageAndType() throws Exception {
+    qualifier.setPackage("pkg");
+    builder.startType(0, "A", null, new ArrayList<Type>());
+    builder.endType();
+    assertNull(builder.type);
+    assertEquals("pkg.A", repository.getClass("pkg.A").getName());
+  }
 
-	public void testInnerClass() throws Exception {
-	  qualifier.setPackage("pkg");
-	  qualifier.addAlias("B", "pkg.A$B");
-		builder.startType(0, "A", null, new ArrayList<Type>());
-		builder.startType(0, "B", null, new ArrayList<Type>());
-		builder.endType();
-		builder.endType();
-		assertNull(builder.type);
-		assertEquals("pkg.A$B", repository.getClass("pkg.A$B").getName());
-	}
+  public void testInnerClass() throws Exception {
+    qualifier.setPackage("pkg");
+    qualifier.addAlias("B", "pkg.A$B");
+    builder.startType(0, "A", null, new ArrayList<Type>());
+    builder.startType(0, "B", null, new ArrayList<Type>());
+    builder.endType();
+    builder.endType();
+    assertNull(builder.type);
+    assertEquals("pkg.A$B", repository.getClass("pkg.A$B").getName());
+  }
 
 }

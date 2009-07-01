@@ -15,6 +15,8 @@
  */
 package com.google.test.metric.report.issues;
 
+import com.google.test.metric.SourceLocation;
+
 import junit.framework.TestCase;
 
 import java.util.Iterator;
@@ -34,9 +36,9 @@ public class TriageIssuesQueueTest extends TestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    queue = new TriageIssuesQueue(maxExcellentCost, maxOffenders,
+    queue = new TriageIssuesQueue<ClassIssues>(maxExcellentCost, maxOffenders,
         new ClassIssues.TotalCostComparator());
-    issue = new Issue(1, null, 1f);
+    issue = new Issue(new SourceLocation(null, 1), null, 1f, null, null);
   }
 
   public void testEmptyClassIssuesAreDiscarded() throws Exception {
@@ -84,7 +86,7 @@ public class TriageIssuesQueueTest extends TestCase {
   }
 
   public void testQueueWorksWithIssuesAlso() throws Exception {
-    Issue issue = new Issue(1, null, 1f);
+    Issue issue = new Issue(new SourceLocation(null, 1), null, 1f, null, null);
     TriageIssuesQueue<Issue> issueQueue = new TriageIssuesQueue<Issue>(.5f, 20,
         new Issue.TotalCostComparator());
     issueQueue.offer(issue);

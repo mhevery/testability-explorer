@@ -23,6 +23,7 @@ import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvocationCost;
 import com.google.test.metric.Reason;
 import com.google.test.metric.ReportGeneratorBuilder;
+import com.google.test.metric.SourceLocation;
 import com.google.test.metric.report.ClassPathTemplateLoader;
 import com.google.test.metric.report.FreemarkerReportGenerator;
 import static com.google.test.metric.report.FreemarkerReportGenerator.HTML_REPORT_TEMPLATE;
@@ -64,8 +65,8 @@ public class HtmlReportTest extends TestCase {
     linker = new SourceLinker("http://code.repository/basepath/{path}&line={line}",
                               "http://code.repository/basepath/{path}");
     MethodCost methodCost = new MethodCost("methodFoo", 1, false, false, false);
-    methodCost.addCostSource(new MethodInvocationCost(1, methodCost, Reason.IMPLICIT_SETTER,
-        new Cost(100, 1, new int[0])));
+    methodCost.addCostSource(new MethodInvocationCost(new SourceLocation("com/google/FooClass.java", 1), methodCost,
+        Reason.IMPLICIT_SETTER, new Cost(100, 1, new int[0])));
     cost = new ClassCost("com.google.FooClass", Arrays.asList(methodCost));
     report = new HtmlReportModel(costModel, new AnalysisModel(issuesReporter), options);
     BeansWrapper objectWrapper = new DefaultObjectWrapper();
@@ -90,7 +91,7 @@ public class HtmlReportTest extends TestCase {
     assertTrue(text, text.contains("function toggle(element)"));
     assertTrue(text, text.contains("function clickHandler(event)"));
     assertTrue(text, text
-        .contains("<a href=\"http://code.repository/basepath/com/google/FooClass&line"));
+        .contains("<a href=\"http://code.repository/basepath/com/google/FooClass.java&line"));
   }
 
   public void testConstructorCosts() throws Exception {
@@ -99,7 +100,7 @@ public class HtmlReportTest extends TestCase {
         new ClassCost("classFoo", Arrays.asList(new MethodCost("methodFoo", 1, false, false, false)));
     generator.addClassCost(cost);
     ClassIssues classIssues = new ClassIssues(cost.getClassName(), 0);
-    classIssues.add(new Issue(1, null, 1f));
+    classIssues.add(new Issue(new SourceLocation("", 1), null, 1f, null, null));
     report.getWorstOffenders().add(classIssues);
     generator.printFooter();
     String text = out.toString();

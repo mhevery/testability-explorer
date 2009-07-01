@@ -39,10 +39,10 @@ public class ClassCostTest extends TestCase {
   protected void setUp() throws Exception {
     super.setUp();
 
-    methodCost1.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
+    methodCost1.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
 
-    methodCost2.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
-    methodCost2.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
+    methodCost2.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
+    methodCost2.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
 
     methodCost0.link();
     methodCost1.link();

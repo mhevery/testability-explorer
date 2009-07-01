@@ -25,7 +25,7 @@ import com.google.test.metric.Visibility;
 public class MethodVisitorBuilderTest extends TestCase {
 
   public void testSwap() throws Exception {
-    ClassInfo classInfo = new ClassInfo("TestClass", false, null, null);
+    ClassInfo classInfo = new ClassInfo("TestClass", false, null, null, null);
     MethodVisitorBuilder builder = new MethodVisitorBuilder(null , classInfo , "test",
         "()V", null, null, true, false, Visibility.PUBLIC);
     builder.visitInsn(Opcodes.ICONST_0);
@@ -35,7 +35,7 @@ public class MethodVisitorBuilderTest extends TestCase {
   }
 
   public void testNoop() throws Exception {
-    ClassInfo classInfo = new ClassInfo("TestClass", false, null, null);
+    ClassInfo classInfo = new ClassInfo("TestClass", false, null, null, null);
     MethodVisitorBuilder builder = new MethodVisitorBuilder(null , classInfo , "test",
         "()V", null, null, true, false, Visibility.PUBLIC);
     builder.visitInsn(Opcodes.NOP);

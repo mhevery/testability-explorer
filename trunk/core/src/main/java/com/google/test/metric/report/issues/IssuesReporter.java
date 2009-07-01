@@ -24,6 +24,7 @@ import static com.google.test.metric.Reason.IMPLICIT_CONSTRUCTOR;
 import static com.google.test.metric.Reason.IMPLICIT_SETTER;
 import static com.google.test.metric.Reason.IMPLICIT_STATIC_INIT;
 import com.google.test.metric.ViolationCost;
+import com.google.test.metric.SourceLocation;
 import static com.google.test.metric.report.issues.IssueSubType.COMPLEXITY;
 import static com.google.test.metric.report.issues.IssueSubType.NON_MOCKABLE;
 import static com.google.test.metric.report.issues.IssueSubType.SETTER;
@@ -102,22 +103,21 @@ public class IssuesReporter {
                                              ClassCost classCost) {
     for (ViolationCost violationCost : methodCost.getViolationCosts()) {
       float contribution = costModel.computeContributionFromIssue(classCost, methodCost, violationCost);
-      classIssues.add(new Issue(violationCost.getLineNumber(), violationCost.getDescription(),
+      classIssues.add(new Issue(violationCost.getLocation(), violationCost.getDescription(),
           contribution, CONSTRUCTION, STATIC_INIT));
     }
   }
 
   private void addDirectCostIssue(ClassIssues classIssues, MethodCost methodCost,
                                   ClassCost classCost) {
-    Issue issue = new Issue(methodCost.getMethodLineNumber(), methodCost.getDescription());
     float contributionToClassCost = costModel.computeDirectCostContributionFromMethod(classCost, methodCost);
+    Issue issue = new Issue(new SourceLocation(classCost.getClassName(), methodCost.getMethodLineNumber()),
+        methodCost.getDescription(), contributionToClassCost, null, null);
     if (methodCost.isConstructor()) {
-      issue.setContributionToClassCost(contributionToClassCost);
       issue.setType(CONSTRUCTION);
       issue.setSubType(COMPLEXITY);
     } else {
       issue.setLineNumberIsApproximate(true);
-      issue.setContributionToClassCost(contributionToClassCost);
       issue.setType(DIRECT_COST);
       issue.setSubType(COMPLEXITY);
     }
@@ -154,7 +154,8 @@ public class IssuesReporter {
         }
         break;
     }
-    classIssues.add(new Issue(invocationCost.getLineNumber(), invocationCost.getDescription(),
+
+    classIssues.add(new Issue(invocationCost.getLocation(), invocationCost.getDescription(),
         costModel.computeContributionFromIssue(classCost, methodCost, invocationCost),
         type, subType));
     return collaboratorIssuesFound;

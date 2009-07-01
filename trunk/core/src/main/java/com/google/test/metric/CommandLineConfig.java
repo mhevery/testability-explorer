@@ -59,7 +59,7 @@ public class CommandLineConfig {
   @Option(name = "-print", usage = "summary: (default) print package summary information.\n"
       + "html: print package summary information in html format.\n"
       + "source: write out annotated source into directory.\n"
-      + "detail: print detail drill down information for each method call.\n"
+      + "detail: print detail drill down information for each method call. (DEPRECATED)\n"
       + "xml: print computer readable XML format.")
   String printer = "summary";
 

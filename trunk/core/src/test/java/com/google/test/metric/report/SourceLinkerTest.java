@@ -33,22 +33,12 @@ public class SourceLinkerTest extends TestCase {
 
   }
 
-  public void testBuildLineLink() {
-    assertEquals(
-        "<a href=\"pre//a.java#1234\" target=\"source\">fin.FinUI</a>",
-        linker.buildLineLink("//a.java", 1234, "fin.FinUI"));
-
-
+  public void testBuildLineLink() throws Exception {
     String generatedLink = linker.buildLineLink("//class.java", 1234, " void methodA()");
     assertEquals(
         "<a href=\"pre//class.java#1234\" target=\"source\"> void methodA()</a>",
         generatedLink);
   }
-
-  public void testGetOriginalFilePath() {
-    assertEquals("java/lang/String.java", linker.getOriginalFilePath("java.lang.String"));
-  }
-
 
   SourceLinker emptyLinker = new SourceLinker("", "");
 
@@ -57,4 +47,5 @@ public class SourceLinkerTest extends TestCase {
 
     assertEquals("anchor", emptyLinker.buildLineLink("", 1000, "anchor"));
   }
+
 }

@@ -20,6 +20,4 @@ public interface SourceLinkGenerator {
   public String buildClassLink(String filePath, String anchorText);
 
   public String buildLineLink(String filePath, int lineNumber, String anchorText);
-
-  public String getOriginalFilePath(String className);
 }

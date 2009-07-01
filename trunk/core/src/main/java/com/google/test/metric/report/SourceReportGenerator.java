@@ -194,7 +194,7 @@ public class SourceReportGenerator implements ReportGenerator {
       Line line = source.getLine(method.getMethodLineNumber());
       line.addMethodCost(method);
       for (ViolationCost violation : method.getExplicitViolationCosts()) {
-        line = source.getLine(violation.getLineNumber());
+        line = source.getLine(violation.getLocation().getLineNumber());
         line.addCost(violation.getCost());
       }
     }

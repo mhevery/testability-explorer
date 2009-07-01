@@ -25,14 +25,30 @@ import com.google.test.metric.MethodCost;
 import com.google.test.metric.MetricComputer;
 import com.google.test.metric.RegExpWhiteList;
 import com.google.test.metric.report.Source.Line;
+import com.google.test.metric.report.issues.HasSetterCost;
 
 import freemarker.template.Configuration;
 
 import junit.framework.TestCase;
 
 import java.util.Date;
+import java.util.List;
 
 public class SourceReportTest extends TestCase {
+
+  private SourceReportGenerator report;
+  private MetricComputer computer;
+
+  protected void setUp() throws Exception {
+    super.setUp();
+    ClassPath classPath =
+        new ClassPathFactory().createFromPaths("src/test/java", "core/src/test/java");
+    SourceLoader loader = new SourceLoader(classPath);
+    report = new SourceReportGenerator(new GradeCategories(0, 0), loader, null, new CostModel(),
+            new Date(), 10, new Configuration());
+    computer = new MetricComputer(new JavaClassRepository(), null,
+            new RegExpWhiteList(), 1);
+  }
 
   static class TestClass {
     void m1 () {
@@ -46,12 +62,6 @@ public class SourceReportTest extends TestCase {
   }
 
   public void testCreateSourceReport() throws Exception {
-    ClassPath classPath = new ClassPathFactory().createFromPaths("src/test/java", "core/src/test/java");
-    SourceLoader loader = new SourceLoader(classPath);
-    SourceReportGenerator report = new SourceReportGenerator(new GradeCategories(0, 0), loader, null, new CostModel(),
-            new Date(), 10, new Configuration());
-    MetricComputer computer = new MetricComputer(new JavaClassRepository(), null,
-            new RegExpWhiteList(), 1);
     ClassCost classCost = computer.compute(TestClass.class.getName());
 
     ClassReport classReport = report.createClassReport(classCost);
@@ -67,4 +77,17 @@ public class SourceReportTest extends TestCase {
     assertEquals(3, l2.getCost().getCyclomaticComplexityCost());
   }
 
+  static class HasImplicitCostFromOtherClass extends HasSetterCost {
+
+    // next line needs to stay at line 83!!
+    public void doThing() {} // LINE 83
+  }
+
+  public void testImplicitMethodInvocationIndicatesTheFileMatchingLineNumber() throws Exception {
+    ClassCost classCost = computer.compute(HasImplicitCostFromOtherClass.class.getName());
+    ClassReport classReport = report.createClassReport(classCost);
+    List<MethodCost> methodCostList = classReport.getSource().getLine(83).getMethodCosts();
+    String violationText = methodCostList.get(0).getViolationCosts().get(0).toString();
+    assertTrue(violationText, violationText.contains("HasSetterCost"));
+  }
 }

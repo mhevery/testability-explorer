@@ -20,6 +20,7 @@ import com.google.test.metric.Cost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.CyclomaticCost;
 import com.google.test.metric.MethodCost;
+import com.google.test.metric.SourceLocation;
 
 import junit.framework.TestCase;
 
@@ -38,7 +39,7 @@ public class PropertiesReportTest extends TestCase {
   public void testReport() throws Exception {
 
     MethodCost methodCost = new MethodCost("doThing", 3, false, false, false);
-    methodCost.addCostSource(new CyclomaticCost(0, Cost.cyclomatic(1)));
+    methodCost.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
     methodCost.link();
     final ClassCost classCost = new ClassCost(CLASS_NAME, Arrays.asList(methodCost));
     report.addClassCost(classCost);

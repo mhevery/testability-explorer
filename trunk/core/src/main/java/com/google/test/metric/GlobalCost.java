@@ -25,8 +25,8 @@ public class GlobalCost extends ViolationCost {
 
   private final Variable variable;
 
-  public GlobalCost(int lineNumber, Variable variable, Cost globalCost) {
-    super(lineNumber, globalCost);
+  public GlobalCost(SourceLocation sourceLocation, Variable variable, Cost globalCost) {
+    super(sourceLocation, globalCost);
     this.variable = variable;
   }
 

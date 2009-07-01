@@ -19,6 +19,7 @@ import static com.google.test.metric.report.issues.IssueSubType.COMPLEXITY;
 import static com.google.test.metric.report.issues.IssueSubType.STATIC_METHOD;
 import static com.google.test.metric.report.issues.IssueType.COLLABORATOR;
 import static com.google.test.metric.report.issues.IssueType.DIRECT_COST;
+import com.google.test.metric.SourceLocation;
 
 import junit.framework.TestCase;
 
@@ -31,12 +32,13 @@ import java.util.Map;
  */
 public class ClassIssuesTest extends TestCase {
   private String foo = "foo()";
+  private SourceLocation location = new SourceLocation("foo", 1);
 
   public void testIssuesAreSortedByContribution() throws Exception {
     ClassIssues classIssues = new ClassIssues("Foo", 100);
-    classIssues.add(new Issue(1, foo, 0.1f, COLLABORATOR, COMPLEXITY));
-    classIssues.add(new Issue(2, foo, 0.9f, COLLABORATOR, COMPLEXITY));
-    classIssues.add(new Issue(3, foo, 0.5f, COLLABORATOR, COMPLEXITY));
+    classIssues.add(new Issue(location, foo, 0.1f, COLLABORATOR, COMPLEXITY));
+    classIssues.add(new Issue(location, foo, 0.9f, COLLABORATOR, COMPLEXITY));
+    classIssues.add(new Issue(location, foo, 0.5f, COLLABORATOR, COMPLEXITY));
 
     List<Issue> list = classIssues.getCollaboratorIssues().get(COMPLEXITY.toString());
     assertEquals(3, list.size());
@@ -48,10 +50,10 @@ public class ClassIssuesTest extends TestCase {
 
   public void testBucketizationOfIssuesIntoSubTypes() throws Exception {
     ClassIssues classIssues = new ClassIssues("Foo", 100);
-    classIssues.add(new Issue(1, foo, 0.1f, COLLABORATOR, COMPLEXITY));
-    classIssues.add(new Issue(2, foo, 0.9f, DIRECT_COST, COMPLEXITY));
-    classIssues.add(new Issue(3, foo, 0.5f, DIRECT_COST, COMPLEXITY));
-    classIssues.add(new Issue(4, foo, 0.5f, DIRECT_COST, STATIC_METHOD));
+    classIssues.add(new Issue(location, foo, 0.1f, COLLABORATOR, COMPLEXITY));
+    classIssues.add(new Issue(location, foo, 0.9f, DIRECT_COST, COMPLEXITY));
+    classIssues.add(new Issue(location, foo, 0.5f, DIRECT_COST, COMPLEXITY));
+    classIssues.add(new Issue(location, foo, 0.5f, DIRECT_COST, STATIC_METHOD));
 
     Map<String, List<Issue>> issueMap = classIssues.bucketize(IssueType.DIRECT_COST);
     assertEquals(2, issueMap.keySet().size());
@@ -59,10 +61,5 @@ public class ClassIssuesTest extends TestCase {
     assertEquals(1, issueMap.get(STATIC_METHOD.toString()).size());
 
 
-  }
-
-  public void testPathInnerClassIsStripped() throws Exception {
-    ClassIssues classIssues = new ClassIssues("com.google.Foo$1", 100);
-    assertEquals("com/google/Foo", classIssues.getPath());
   }
 }

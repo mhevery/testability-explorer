@@ -30,12 +30,14 @@ public class ClassInfo {
   private final boolean isInterface;
   private final ClassInfo superClass;
   private final List<ClassInfo> interfaces;
+  private final String fileName;
 
   public ClassInfo(String name, boolean isInterface, ClassInfo superClass,
-      List<ClassInfo> interfaces) {
+                   List<ClassInfo> interfaces, String fileName) {
     this.isInterface = isInterface;
     this.superClass = superClass;
     this.interfaces = interfaces;
+    this.fileName = fileName;
     this.name = name.replace("/", ".");
   }
 
@@ -149,4 +151,7 @@ public class ClassInfo {
     return constructors;
   }
 
+  public String getFileName() {
+    return fileName;
+  }
 }

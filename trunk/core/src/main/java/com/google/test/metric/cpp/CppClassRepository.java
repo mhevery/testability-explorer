@@ -130,8 +130,10 @@ public class CppClassRepository implements ClassRepository {
 
     @Override
     public void beginVisit(ClassDeclaration classDeclaration) {
+      //TODO: when the class repository is actually wired, the name of the source file should
+      // be provided in the constructor
       ClassInfo classInfo = new ClassInfo(classDeclaration.getName(), false,
-          null, new ArrayList<ClassInfo>());
+          null, new ArrayList<ClassInfo>(), "[unknown source]");
       classes.put(classDeclaration.getName(), classInfo);
       stack.push(classInfo);
     }

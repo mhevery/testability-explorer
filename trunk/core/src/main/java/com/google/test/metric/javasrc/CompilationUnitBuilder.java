@@ -32,13 +32,15 @@ public class CompilationUnitBuilder {
 
   private final Stack<TypeBuilder> typeStack = new Stack<TypeBuilder>();
   private final Qualifier qualifier;
+  private final String src;
 
   public TypeBuilder type;
 
   public CompilationUnitBuilder(JavaSrcRepository repository,
-      Qualifier qualifier) {
+                                Qualifier qualifier, String src) {
     this.repository = repository;
     this.qualifier = qualifier;
+    this.src = src;
   }
 
   public void startType(int line, String name, Type superType,
@@ -50,7 +52,7 @@ public class CompilationUnitBuilder {
       interfaceClasses.add(toClassInfo(interfaceType));
     }
     ClassInfo info = new ClassInfo(className,
-        isInterface, toClassInfo(superType), interfaceClasses);
+        isInterface, toClassInfo(superType), interfaceClasses, src);
     repository.addClass(info);
     pushType(new TypeBuilder(info));
   }

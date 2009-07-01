@@ -157,4 +157,20 @@ public class IssuesReporterTest extends TestCase {
     assertEquals(classIssues.toString(), 2, classIssues.getSize());
     assertEquals(classIssues.toString(), 1, classIssues.getIssues(CONSTRUCTION, SETTER).size());
   }
+
+  static class SubclassOfSetterCost extends HasSetterCost {
+    public void doThing() {
+
+    }
+  }
+
+  public void testImplicitCostFromSuperClassHasSourceLocationInOtherFile() throws Exception {
+    ClassIssues classIssues =
+        issuesReporter.determineIssues(decoratedComputer.compute(SubclassOfSetterCost.class));
+    List<Issue> issues = classIssues.getIssues(CONSTRUCTION, IssueSubType.SETTER);
+    assertEquals(1, issues.size());
+    assertEquals("com/google/test/metric/report/issues/HasSetterCost.java",
+        issues.get(0).getLocation().getFile());
+  }
+
 }
