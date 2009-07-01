@@ -35,7 +35,7 @@ public class GlobalCost extends ViolationCost {
   }
 
   @Override
-  public void link(Cost directCost, Cost dependentCost, Cost constructorDependentCost) {
+  public void link(Cost directCost, Cost dependentCost) {
     directCost.add(getCost());
   }
 

@@ -69,13 +69,13 @@ public class ReportGeneratorBuilder {
     html,
     about
   }
-  
+
   /**
    * Method to allow retaining a handle on preconfigured model objects.
-   * 
+   *
    * @param costModel Cost Model for the {@link ReportGenerator}
    * @param reportModel Can be {@code null} if {@link ReportFormat} is not
-   *    {@link ReportFormat#html} or {@link ReportFormat#about} 
+   *    {@link ReportFormat#html} or {@link ReportFormat#about}
    * @param sourceLoader Source Loader used by {@link ReportFormat#source} reports.
    * @return a ready to use {@link ReportGenerator}
    */
@@ -135,21 +135,21 @@ public class ReportGeneratorBuilder {
 
   public ReportGenerator build() {
     CostModel costModel = new CostModel(options.getCyclomaticMultiplier(),
-        options.getGlobalMultiplier(), options.getConstructorDoesWorkMultiplier());
+        options.getGlobalMultiplier());
     TriageIssuesQueue<ClassIssues> mostImportantIssues =
         new TriageIssuesQueue<ClassIssues>(options.getMaxExcellentCost(),
             options.getWorstOffenderCount(), new ClassIssues.TotalCostComparator());
     SourceLoader sourceLoader = new SourceLoader(classPath);
 
     IssuesReporter issuesReporter = new IssuesReporter(mostImportantIssues, costModel);
-    AnalysisModel analysisModel = new AnalysisModel(issuesReporter);    
+    AnalysisModel analysisModel = new AnalysisModel(issuesReporter);
     ReportModel reportModel;
 
     switch (printer) {
       case html:
         reportModel = new HtmlReportModel(costModel, analysisModel, options);
         break;
-        
+
       case about:
         reportModel = new AboutTestabilityReport(issuesReporter, sourceLoader);
         break;

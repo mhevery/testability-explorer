@@ -87,15 +87,8 @@ public class TestabilityVisitor {
         String fileName = (reason.isImplicit() ? to.getClassInfo().getFileName() :
                            this.method.getClassInfo().getFileName());
         SourceLocation location = new SourceLocation(fileName, lineNumber);
-        ViolationCost cost;
-        if (to.isConstructor()) {
-          cost = new ConstructorInvokationCost(location,
-              getMethodCostCache(to), reason,
-              methodInvocationCost);
-        } else {
-          cost = new MethodInvocationCost(location, getMethodCostCache(to), reason,
-              methodInvocationCost);
-        }
+        ViolationCost cost = new MethodInvocationCost(location, getMethodCostCache(to), reason,
+            methodInvocationCost);
         methodCost.addCostSource(cost);
       }
     }
