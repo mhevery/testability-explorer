@@ -51,7 +51,7 @@ public class JavaTestabilityConfig {
     printDepth = config.printDepth;
     convertEntryListValues();
     ReportOptions options = new ReportOptions(config.cyclomaticMultiplier,
-        config.globalMultiplier, config.maxExcellentCost,
+        config.globalMultiplier, config.constructorDoesWorkMultiplier, config.maxExcellentCost,
         config.maxAcceptableCost, config.worstOffenderCount,
         config.maxMethodCount, config.maxLineCount, config.printDepth,
         config.minCost, config.srcFileLineUrl, config.srcFileUrl);

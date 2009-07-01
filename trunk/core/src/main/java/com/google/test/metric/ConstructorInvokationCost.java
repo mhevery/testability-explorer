@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Google Inc.
+ * Copyright 2009 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,25 +15,15 @@
  */
 package com.google.test.metric;
 
-
-public class CyclomaticCost extends ViolationCost {
-
-  public CyclomaticCost(SourceLocation sourceLocation, Cost cyclomaticCost) {
-    super(sourceLocation, cyclomaticCost);
+public class ConstructorInvokationCost extends MethodInvocationCost {
+  
+  public ConstructorInvokationCost(SourceLocation location, MethodCost methodCost,
+      Reason costSourceType, Cost invocationCost) {
+    super(location, methodCost, costSourceType, invocationCost);
   }
-
-  public String getReason() {
-    return "cyclomatic complexity";
-  }
-
-  @Override
-  public String getDescription() {
-    return "Conditional cost";
-  }
-
+  
   @Override
   public void link(Cost directCost, Cost dependentCost, Cost constructorDependentCost) {
-    directCost.addWithoutLod(getCost());
+    constructorDependentCost.addWithoutLod(cost);
   }
-
 }
