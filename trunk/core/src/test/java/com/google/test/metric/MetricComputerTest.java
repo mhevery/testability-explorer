@@ -15,13 +15,13 @@
  */
 package com.google.test.metric;
 
-import com.google.test.metric.report.DrillDownReportGenerator;
-import com.google.test.metric.testing.MetricComputerBuilder;
-import com.google.test.metric.testing.MetricComputerJavaDecorator;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.List;
+
+import com.google.test.metric.report.DrillDownReportGenerator;
+import com.google.test.metric.testing.MetricComputerBuilder;
+import com.google.test.metric.testing.MetricComputerJavaDecorator;
 
 public class MetricComputerTest extends AutoFieldClearTestCase {
 
@@ -82,9 +82,9 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
   }
 
   public void testMediumCost1() throws Exception {
-    MethodInfo method = repo.getClass(Medium.class.getName()).getMethod("statiCost1()I");
+    MethodInfo method = repo.getClass(Medium.class.getCanonicalName()).getMethod("int statiCost1()");
     assertFalse(method.canOverride());
-    MethodCost cost = computer.compute(Medium.class, "statiCost1()I");
+    MethodCost cost = computer.compute(Medium.class, "int statiCost1()");
     assertEquals(1l, cost.getTotalCost().getCyclomaticComplexityCost());
   }
 
@@ -94,14 +94,14 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
    * adds 2. So the total cost is 3.
    */
   public void testMediumCost2() throws Exception {
-    MethodInfo method = repo.getClass(Medium.class.getName()).getMethod("cost2()I");
+    MethodInfo method = repo.getClass(Medium.class.getCanonicalName()).getMethod("int cost2()");
     assertTrue(method.canOverride());
-    MethodCost cost = computer.compute(Medium.class, "cost2()I");
+    MethodCost cost = computer.compute(Medium.class, "int cost2()");
     assertEquals(3l, cost.getTotalCost().getCyclomaticComplexityCost());
   }
 
   public void testMediumFinalCost2() throws Exception {
-    MethodInfo method = repo.getClass(Medium.class.getName()).getMethod("finalCost2()I");
+    MethodInfo method = repo.getClass(Medium.class.getCanonicalName()).getMethod("int finalCost2()");
     assertFalse(method.canOverride());
   }
 
@@ -111,9 +111,9 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
    * overridden in a subclass.
    */
   public void testMediumInit() throws Exception {
-    MethodInfo method = repo.getClass(Medium.class.getName()).getMethod("<init>()V");
+    MethodInfo method = repo.getClass(Medium.class.getCanonicalName()).getMethod("Medium()");
     assertFalse(method.canOverride());
-    MethodCost cost = computer.compute(Medium.class, "<init>()V");
+    MethodCost cost = computer.compute(Medium.class, "Medium()");
     assertEquals(1l, cost.getTotalCost().getCyclomaticComplexityCost());
   }
 
@@ -126,7 +126,7 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
    */
   public void testMediumMethod4() throws Exception {
     MethodCost cost = computer.compute(Medium.class,
-        "testMethod4()Ljava/lang/Object;");
+        "java.lang.Object testMethod4()");
     assertEquals(5l, cost.getTotalCost().getCyclomaticComplexityCost());
   }
 
@@ -164,26 +164,27 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
   }
 
   public void testTreeConstructorHasZeroCost() throws Exception {
-    MethodCost cost = computer.compute(TreeInjection.class, "<init>()V");
+    MethodCost cost = computer.compute(TreeInjection.class,
+        "TreeInjection(com.google.test.metric.MetricComputerTest.Node)");
     assertEquals(0l, cost.getTotalCost().getCyclomaticComplexityCost());
     assertEquals(0l, cost.getTotalCost().getGlobalCost());
   }
 
   public void testTreeTitleTcc0CostIsZeroBecauseInjectable() throws Exception {
     MethodCost cost = computer.compute(TreeInjection.class,
-        "titleTcc0()Ljava/lang/String;");
+        "java.lang.String titleTcc0()");
     assertEquals(0l, cost.getTotalCost().getCyclomaticComplexityCost());
   }
 
   public void testTreeSubTitleTcc1CostIsOneBecauseNonInjectable() throws Exception {
     MethodCost cost = computer.compute(TreeInjection.class,
-        "subTitleTcc1()Ljava/lang/String;");
+        "java.lang.String subTitleTcc1()");
     assertEquals(1l, cost.getTotalCost().getCyclomaticComplexityCost());
   }
 
   public void testTreeFootnoteTcc0CostIsZeroBecauseInjectable() throws Exception {
     MethodCost cost = computer.compute(TreeInjection.class,
-        "footnoteTcc0()Ljava/lang/String;");
+        "java.lang.String footnoteTcc0()");
     assertEquals(0l, cost.getTotalCost().getCyclomaticComplexityCost());
   }
 
@@ -202,10 +203,9 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
   }
 
   public void testChooseConstructorWithMostNonPrimitiveParameters() throws Exception {
-    ClassInfo classInfo = repo.getClass(ChoseConstructor.class.getName());
+    ClassInfo classInfo = repo.getClass(ChoseConstructor.class.getCanonicalName());
     MethodInfo constructor = classInfo.getConstructorWithMostNonPrimitiveParameters();
-    assertEquals("<init>(Ljava/lang/Object;Ljava/lang/Object;)V", constructor
-        .getNameDesc());
+    assertEquals("ChoseConstructor(java.lang.Object, java.lang.Object)", constructor.getName());
   }
 
   static class Singleton {
@@ -219,8 +219,8 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
   }
 
   public void testIgnoreConstructorsIfAllConstructorsArePrivate() throws Exception {
-    assertEquals(2L, computer.compute(Singleton.class, "doWork()V").getTotalCost().getCyclomaticComplexityCost());
-    ClassInfo classInfo = repo.getClass(Singleton.class.getName());
+    assertEquals(2L, computer.compute(Singleton.class, "void doWork()").getTotalCost().getCyclomaticComplexityCost());
+    ClassInfo classInfo = repo.getClass(Singleton.class.getCanonicalName());
     MethodInfo constructor = classInfo
         .getConstructorWithMostNonPrimitiveParameters();
     assertNull("Constructor should not be found when private",  constructor);
@@ -237,7 +237,7 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
   }
 
   public void testAddStaticInitializationCost() throws Exception {
-    assertEquals(3L, computer.compute(StaticInit.class, "doWork()V").getTotalCost().getCyclomaticComplexityCost());
+    assertEquals(3L, computer.compute(StaticInit.class, "void doWork()").getTotalCost().getCyclomaticComplexityCost());
   }
 
   static class Setters {
@@ -253,7 +253,7 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
   }
 
   public void testSetterInjection() throws Exception {
-    MethodCost cost = computer.compute(Setters.class, "doWork()V");
+    MethodCost cost = computer.compute(Setters.class, "void doWork()");
     assertEquals(0L, cost.getTotalCost().getCyclomaticComplexityCost());
   }
 
@@ -283,7 +283,7 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
 
   public void testArray() throws Exception {
     repo.getClass(String[].class.getName());
-    computer.compute(repo.getClass(Array.class.getName()).getMethod("method()V"));
+    computer.compute(repo.getClass(Array.class.getCanonicalName()).getMethod("void method()"));
   }
 
   static class InjectableClass {
@@ -305,11 +305,11 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
   }
 
   public void testInjectabilityIsTransitive() throws Exception {
-    MethodCost callCost0 = computer.compute(InjectableClass.class, "callCost0("
-        + "Lcom/google/test/metric/MetricComputerTest$InjectableClass;)V");
+    MethodCost callCost0 = computer.compute(InjectableClass.class, "void callCost0("
+        + "com.google.test.metric.MetricComputerTest.InjectableClass)");
     assertEquals(0L, callCost0.getTotalCost().getCyclomaticComplexityCost());
 
-    MethodCost callCost4 = computer.compute(InjectableClass.class, "callCost4()V");
+    MethodCost callCost4 = computer.compute(InjectableClass.class, "void callCost4()");
     assertEquals(4L, callCost4.getTotalCost().getCyclomaticComplexityCost());
   }
 
@@ -373,13 +373,13 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
   }
 
   public void testGlobalLoadAccessStateShouldBeOne() {
-    MethodCost cost = computer.compute(GlobalStateUser.class, "accessCount()V");
+    MethodCost cost = computer.compute(GlobalStateUser.class, "void accessCount()");
     assertEquals(1L, cost.getTotalCost().getGlobalCost());
   }
 
   public void testGlobalLoadAccessStateThroughFinalShouldBeOne() {
     MethodCost cost =
-        computer.compute(GlobalStateUser.class, "accessMutableState()V");
+        computer.compute(GlobalStateUser.class, "void accessMutableState()");
     new DrillDownReportGenerator(new PrintStream(new ByteArrayOutputStream()), new CostModel(),
         null, Integer.MAX_VALUE, 0).print("", cost, 10);
     assertEquals("Expecting one for read and one for write", 2L,
@@ -387,7 +387,7 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
   }
 
   public void testJavaLangObjectParsesCorrectly() throws Exception {
-    repo.getClass(Object.class.getName());
+    repo.getClass(Object.class.getCanonicalName());
   }
 
   public static class CostPerLine {
@@ -399,7 +399,7 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
   }
 
   public void testCostPerLine() throws Exception {
-    MethodCost cost = computer.compute(CostPerLine.class, "main()V");
+    MethodCost cost = computer.compute(CostPerLine.class, "void main()");
     assertEquals(3, cost.getTotalCost().getCyclomaticComplexityCost());
     List<? extends ViolationCost> lineNumberCosts = cost.getViolationCosts();
     assertEquals(3, lineNumberCosts.size());
@@ -432,7 +432,7 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
         .withWhitelist(customWhitelist).build();
     computer = new MetricComputerJavaDecorator(toDecorate, repo);
 
-    MethodCost cost = computer.compute(WhiteListTest.class, "testMethod()V");
+    MethodCost cost = computer.compute(WhiteListTest.class, "void testMethod()");
     assertEquals(0L, cost.getTotalCost().getGlobalCost());
   }
 
@@ -444,7 +444,7 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
   }
   public void testDoubleCountClassConst() throws Exception {
     ClassCost cost = computer.compute(DoubleCountClassConst.class);
-    assertEquals(1, cost.getMethodCost(cost.getClassName() + "()").getTotalCost().getGlobalCost());
+    assertEquals(1, cost.getMethodCost("DoubleCountClassConst()").getTotalCost().getGlobalCost());
   }
 
   static enum TestEnum1{ ONE }
@@ -454,7 +454,7 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
         .withWhitelist(customWhitelist).build();
     computer = new MetricComputerJavaDecorator(toDecorate, repo);
     ClassCost cost = computer.compute(TestEnum1.class);
-    assertEquals(0, cost.getMethodCost(cost.getClassName() + ".<static init>").getTotalCost().getGlobalCost());
+    assertEquals(0, cost.getMethodCost("<static init>()").getTotalCost().getGlobalCost());
   }
 
   public void testSyntheticEnumValuesAccessorClassIsZero() throws Exception {
@@ -464,12 +464,12 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
     computer = new MetricComputerJavaDecorator(toDecorate, repo);
     ClassCost cost;
     try {
-      cost = computer.compute("com.google.test.metric.InnerEnumHolder$1");
+      cost = computer.compute("com.google.test.metric.InnerEnumHolder.1");
     } catch (ClassNotFoundException e) {
       // Eclipse names its enumerations differently
-      cost = computer.compute("com.google.test.metric.InnerEnumHolder$NodeType");
+      cost = computer.compute("com.google.test.metric.InnerEnumHolder.NodeType");
     }
-    assertEquals(0, cost.getMethodCost(cost.getClassName() + ".<static init>").getTotalCost().getGlobalCost());
+    assertEquals(0, cost.getMethodCost("<static init>()").getTotalCost().getGlobalCost());
   }
 
   private final String testValue = null;
@@ -479,7 +479,7 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
     }
   }
   public void XtestInnerClassInjectability() throws Exception {
-    MethodCost cost = computer.compute(InnerClassTest.class, "test()V");
+    MethodCost cost = computer.compute(InnerClassTest.class, "void test()");
     assertEquals(0, cost.getTotalCost().getCyclomaticComplexityCost());
   }
 
@@ -503,7 +503,7 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
 
   public void testReturnValueFromInjectableIsInjectable() throws Exception {
     MethodCost cost = computer.compute(ScoreTooHigh.class,
-        "doMockery(Lcom/google/test/metric/MetricComputerTest$ScoreTooHigh$Builder;)V");
+        "void doMockery(com.google.test.metric.MetricComputerTest.ScoreTooHigh.Builder)");
     assertEquals(0, cost.getTotalCost().getCyclomaticComplexityCost());
   }
 
@@ -531,7 +531,7 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
   public void testWhenLeftAndRightSideOfTrinaryReturnDifferentCostUseHigherOne()
       throws Exception {
     MethodCost cost = computer.compute(NonDeterministicCostUtil.class,
-        "test()V");
+        "void test()");
     assertEquals(1, cost.getTotalCost().getGlobalCost());
   }
 
@@ -551,7 +551,7 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
   }
 
   public void testZeroImplicitCostNotCounted() throws Exception {
-    MethodCost cost = computer.compute(HasIrrelevantImplicitCost.class, "execute()V");
+    MethodCost cost = computer.compute(HasIrrelevantImplicitCost.class, "void execute()");
     List<? extends ViolationCost> implicitViolationCosts = cost.getImplicitViolationCosts();
 
     assertEquals(2, implicitViolationCosts.size());
@@ -569,7 +569,7 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
 
   public void testConstructorDoesntCountSetters() throws Exception {
     MethodCost cost = computer.compute(HasIrrelevantImplicitCost.class,
-      "<init>()V");
+      "HasIrrelevantImplicitCost()");
     assertEquals(0, cost.getImplicitViolationCosts().size());
   }
 }

@@ -29,6 +29,7 @@ public class ClassInfoBuilderVisitor extends NoopClassVisitor {
 
   private final JavaClassRepository repository;
   private ClassInfo classInfo;
+  private JavaNamer namer = new JavaNamer();
 
   public ClassInfoBuilderVisitor(JavaClassRepository repository) {
     this.repository = repository;
@@ -38,14 +39,15 @@ public class ClassInfoBuilderVisitor extends NoopClassVisitor {
   public void visit(int version, int access, String name, String signature,
       String superName, String[] interfaces) {
     ClassInfo superClass = null;
-    superClass = superName == null ? null : repository.getClass(superName);
+    superClass = superName == null ? null : repository.getClass(namer.nameClass(superName));
 
     List<ClassInfo> interfaceList = new ArrayList<ClassInfo>();
     for (String interfaze : interfaces) {
-      interfaceList.add(repository.getClass(interfaze));
+      interfaceList.add(repository.getClass(namer.nameClass(interfaze)));
     }
     boolean isInterface = (access & Opcodes.ACC_INTERFACE) == Opcodes.ACC_INTERFACE;
-    classInfo = new ClassInfo(name, isInterface, superClass, interfaceList, guessSourceFileName(name));
+    classInfo = new ClassInfo(namer.nameClass(name), isInterface, superClass,
+        interfaceList, guessSourceFileName(name));
     repository.addClass(classInfo);
   }
 
@@ -54,7 +56,7 @@ public class ClassInfoBuilderVisitor extends NoopClassVisitor {
 
     int internalClassDelim = className.indexOf('$');
     if (internalClassDelim > -1) {
-      className = className.substring(0, internalClassDelim );
+      className = className.substring(0, internalClassDelim);
     }
     return className + ".java";
   }
@@ -64,15 +66,16 @@ public class ClassInfoBuilderVisitor extends NoopClassVisitor {
       String signature, String[] exceptions) {
     boolean isStatic = (access & Opcodes.ACC_STATIC) == Opcodes.ACC_STATIC;
     boolean isFinal = (access & Opcodes.ACC_FINAL) == Opcodes.ACC_FINAL;
-    return new MethodVisitorBuilder(repository, classInfo, name, desc, signature,
-        exceptions, isStatic, isFinal, JavaVisibility.valueFromJavaBytecode(access));
+    return new MethodVisitorBuilder(repository, classInfo, name, desc,
+        signature, exceptions, isStatic, isFinal, JavaVisibility
+            .valueFromJavaBytecode(access));
   }
 
   @Override
   public FieldVisitor visitField(int access, String name, String desc,
       String signature, Object value) {
-    return new FieldVisitorBuilder(classInfo, access, name, desc,
-        signature, value);
+    return new FieldVisitorBuilder(classInfo, access, name, desc, signature,
+        value);
   }
 
   public ClassInfo getClassInfo() {

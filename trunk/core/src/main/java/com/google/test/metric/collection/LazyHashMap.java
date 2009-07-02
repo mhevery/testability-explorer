@@ -15,10 +15,11 @@
  */
 package com.google.test.metric.collection;
 
-import com.google.common.collect.ForwardingMap;
-import com.google.common.base.Supplier;
+import java.util.HashMap;
+import java.util.Map;
 
-import java.util.*;
+import com.google.common.base.Supplier;
+import com.google.common.collect.ForwardingMap;
 
 /**
  * Wrap a Map to provide lazy creation of its values.

@@ -15,11 +15,11 @@
  */
 package com.google.test.metric.method.op.stack;
 
+import java.util.List;
+
 import com.google.test.metric.Type;
 import com.google.test.metric.Variable;
 import com.google.test.metric.method.Constant;
-
-import java.util.List;
 
 public class ArrayLoad extends StackOperation {
 

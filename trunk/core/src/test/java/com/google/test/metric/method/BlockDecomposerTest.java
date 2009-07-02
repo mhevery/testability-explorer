@@ -446,7 +446,7 @@ public class BlockDecomposerTest extends TestCase {
 
   public void testExperiment() throws Exception {
     JavaClassRepository repo = new JavaClassRepository();
-    repo.getClass(TestClass.class.getName());
+    repo.getClass(TestClass.class.getCanonicalName());
   }
 
 }

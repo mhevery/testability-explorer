@@ -15,12 +15,13 @@
  */
 package com.google.test.metric.report;
 
+import java.io.FileReader;
+import java.io.FileWriter;
+
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.w3c.dom.Document;
-
-import java.io.*;
 
 import freemarker.template.Configuration;
 

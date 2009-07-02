@@ -15,6 +15,10 @@
  */
 package com.google.test.metric.method.op.stack;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.google.test.metric.JavaType;
 import com.google.test.metric.Type;
 import com.google.test.metric.Variable;
@@ -22,26 +26,20 @@ import com.google.test.metric.method.Constant;
 import com.google.test.metric.method.op.turing.MethodInvocation;
 import com.google.test.metric.method.op.turing.Operation;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 public class Invoke extends StackOperation {
 
   private final String clazz;
   private final String name;
-  private final String signature;
   private final boolean isStatic;
   private final Type returnType;
   private final List<Type> params;
   private final Variable returnValue;
 
-  public Invoke(int lineNumber, String clazz, String name, String signature,
+  public Invoke(int lineNumber, String clazz, String name,
       List<Type> params, boolean isStatic, Type returnType) {
     super(lineNumber);
     this.clazz = clazz;
     this.name = name;
-    this.signature = signature;
     this.params = params;
     this.isStatic = isStatic;
     this.returnType = returnType;
@@ -70,7 +68,7 @@ public class Invoke extends StackOperation {
   public Operation toOperation(List<Variable> input) {
     List<Variable> parameters = removeDuplicateSlots(input);
     Variable methodThis = isStatic ? null : parameters.remove(0);
-    return new MethodInvocation(lineNumber, clazz, name, signature,
+    return new MethodInvocation(lineNumber, clazz, name,
         methodThis, parameters, returnValue);
   }
 
@@ -92,8 +90,8 @@ public class Invoke extends StackOperation {
 
   @Override
   public String toString() {
-    return (isStatic ? "invokestatic " : "invoke ") + clazz + "." + name
-        + signature + (returnType == null ? "" : " : " + returnType);
+    return (isStatic ? "invokestatic " : "invoke ") + clazz + ":" + name
+        + (returnType == null ? "" : " : " + returnType);
   }
 
 }

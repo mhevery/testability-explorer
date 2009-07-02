@@ -46,20 +46,20 @@ public class ClassInfoTest extends AutoFieldClearTestCase {
   }
 
   public void testParseEmptyClass() throws Exception {
-    ClassInfo clazz = repo.getClass(EmptyClass.class.getName());
-    assertEquals(EmptyClass.class.getName(), clazz.getName());
-    assertEquals(EmptyClass.class.getName(), clazz.toString());
-    assertSame(clazz, repo.getClass(EmptyClass.class.getName()));
+    ClassInfo clazz = repo.getClass(EmptyClass.class.getCanonicalName());
+    assertEquals(EmptyClass.class.getCanonicalName(), clazz.getName());
+    assertEquals(EmptyClass.class.getCanonicalName(), clazz.toString());
+    assertSame(clazz, repo.getClass(EmptyClass.class.getCanonicalName()));
   }
 
   public void testMethodNotFoundException() throws Exception {
-    ClassInfo clazz = repo.getClass(EmptyClass.class.getName());
+    ClassInfo clazz = repo.getClass(EmptyClass.class.getCanonicalName());
     try {
       clazz.getMethod("IDontExistMethod()V");
       fail();
     } catch (MethodNotFoundException e) {
       assertTrue(e.getMessage().contains("IDontExistMethod()V"));
-      assertTrue(e.getMessage().contains(EmptyClass.class.getName()));
+      assertTrue(e.getMessage().contains(EmptyClass.class.getCanonicalName()));
       assertEquals("IDontExistMethod()V", e.getMethodName());
       assertEquals(clazz, e.getClassInfo());
     }
@@ -71,21 +71,20 @@ public class ClassInfoTest extends AutoFieldClearTestCase {
   }
 
   public void testParseSingleMethodClass() throws Exception {
-    ClassInfo clazz = repo.getClass(SingleMethodClass.class.getName());
-    MethodInfo method = clazz.getMethod("methodA()V");
-    assertEquals("methodA()V", method.getNameDesc());
+    ClassInfo clazz = repo.getClass(SingleMethodClass.class.getCanonicalName());
+    MethodInfo method = clazz.getMethod("void methodA()");
     assertEquals("void methodA()", method.toString());
-    assertSame(method, clazz.getMethod("methodA()V"));
+    assertSame(method, clazz.getMethod("void methodA()"));
   }
 
   public void testFiledNotFound() throws Exception {
-    ClassInfo clazz = repo.getClass(EmptyClass.class.getName());
+    ClassInfo clazz = repo.getClass(EmptyClass.class.getCanonicalName());
     try {
       clazz.getField("IDontExistField");
       fail();
     } catch (FieldNotFoundException e) {
       assertTrue(e.getMessage().contains("IDontExistField"));
-      assertTrue(e.getMessage().contains(EmptyClass.class.getName()));
+      assertTrue(e.getMessage().contains(EmptyClass.class.getCanonicalName()));
       assertEquals("IDontExistField", e.getFieldName());
       assertEquals(clazz, e.getClassInfo());
     }
@@ -96,10 +95,10 @@ public class ClassInfoTest extends AutoFieldClearTestCase {
   }
 
   public void testParseFields() throws Exception {
-    ClassInfo clazz = repo.getClass(SingleFieldClass.class.getName());
+    ClassInfo clazz = repo.getClass(SingleFieldClass.class.getCanonicalName());
     FieldInfo field = clazz.getField("fieldA");
     assertEquals("fieldA", field.getName());
-    assertEquals(SingleFieldClass.class.getName()
+    assertEquals(SingleFieldClass.class.getCanonicalName()
         + ".fieldA{java.lang.Object}", field.toString());
     assertSame(field, clazz.getField("fieldA"));
   }
@@ -123,25 +122,25 @@ public class ClassInfoTest extends AutoFieldClearTestCase {
   }
 
   public void testLocalVarsMethod() throws Exception {
-    assertLocalVars("method()V", params(), locals("this"));
+    assertLocalVars("void method()", params(), locals("this"));
   }
 
   public void testLocalVarsStaticMethod() throws Exception {
-    assertLocalVars("staticMethod()V", params(), locals());
+    assertLocalVars("void staticMethod()", params(), locals());
   }
 
   public void testLocalVarsMethod3() throws Exception {
-    assertLocalVars("method3(Ljava/lang/Object;I[I)V",
+    assertLocalVars("void method3(java.lang.Object, int, int[])",
         params("a", "b", "c"), locals("this", "d"));
   }
 
   public void testLocalVarsStaticMethod3() throws Exception {
-    assertLocalVars("staticMethod3(Ljava/lang/Object;I[I)V", params("a",
+    assertLocalVars("void staticMethod3(java.lang.Object, int, int[])", params("a",
         "b", "c"), locals("d"));
   }
 
   private void assertLocalVars(String method, String[] params, String[] locals) {
-    ClassInfo classInfo = repo.getClass(LocalVarsClass.class.getName());
+    ClassInfo classInfo = repo.getClass(LocalVarsClass.class.getCanonicalName());
     MethodInfo methodInfo = classInfo.getMethod(method);
     List<ParameterInfo> paramsParse = methodInfo.getParameters();
     List<LocalVariableInfo> localsParse = methodInfo.getLocalVariables();
@@ -166,15 +165,15 @@ public class ClassInfoTest extends AutoFieldClearTestCase {
   }
 
   public void testJavaLangObject() throws Exception {
-    repo.getClass(Object.class.getName());
+    repo.getClass(Object.class.getCanonicalName());
   }
 
   public void testJavaLangString() throws Exception {
-    repo.getClass(String.class.getName());
+    repo.getClass(String.class.getCanonicalName());
   }
 
   public void testJavaUtilBitSet() throws Exception {
-    repo.getClass(BitSet.class.getName());
+    repo.getClass(BitSet.class.getCanonicalName());
   }
 
   static class BitSetGetMethod {
@@ -189,7 +188,7 @@ public class ClassInfoTest extends AutoFieldClearTestCase {
   }
 
   public void testJavaUtilBitSetGetMethod() throws Exception {
-    repo.getClass(BitSetGetMethod.class.getName());
+    repo.getClass(BitSetGetMethod.class.getCanonicalName());
   }
 
   private static class Monitor {
@@ -209,11 +208,11 @@ public class ClassInfoTest extends AutoFieldClearTestCase {
   }
 
   public void testMonitor() throws Exception {
-    repo.getClass(Monitor.class.getName());
+    repo.getClass(Monitor.class.getCanonicalName());
   }
 
   public void testJSRinstructionInTryCatchFinally() throws Exception {
-    repo.getClass(InetAddress.class.getName());
+    repo.getClass(InetAddress.class.getCanonicalName());
   }
 
   interface TestInterface {
@@ -230,18 +229,18 @@ public class ClassInfoTest extends AutoFieldClearTestCase {
   }
 
   public void testMethodInSuperInterface() throws Exception {
-    ClassInfo interfaceClassInfo = repo.getClass(SubTestInterface.class.getName());
-    assertEquals(repo.getClass(Object.class.getName()), interfaceClassInfo.getSuperClass());
+    ClassInfo interfaceClassInfo = repo.getClass(SubTestInterface.class.getCanonicalName());
+    assertEquals(repo.getClass(Object.class.getCanonicalName()), interfaceClassInfo.getSuperClass());
     List<ClassInfo> superInterfaces = interfaceClassInfo.getInterfaces();
     assertEquals(1, superInterfaces.size());
-    assertEquals(repo.getClass(TestInterface.class.getName()), superInterfaces.get(0));
-    assertNotNull(interfaceClassInfo.getMethod("get(Ljava/lang/Object;)Ljava/lang/Object;"));
+    assertEquals(repo.getClass(TestInterface.class.getCanonicalName()), superInterfaces.get(0));
+    assertNotNull(interfaceClassInfo.getMethod("java.lang.Object get(java.lang.Object)"));
   }
 
   public void testPickConcreteMethodOverInterfaceMethod() throws Exception {
-    ClassInfo classInfo = repo.getClass(ImplementsSubTestInterface.class.getName());
-    ClassInfo interfaceClassInfo = repo.getClass(SubTestInterface.class.getName());
-    MethodInfo method = classInfo.getMethod("get(Ljava/lang/Object;)Ljava/lang/Object;");
+    ClassInfo classInfo = repo.getClass(ImplementsSubTestInterface.class.getCanonicalName());
+    ClassInfo interfaceClassInfo = repo.getClass(SubTestInterface.class.getCanonicalName());
+    MethodInfo method = classInfo.getMethod("java.lang.Object get(java.lang.Object)");
     assertSame(classInfo, method.getClassInfo());
     assertNotSame(interfaceClassInfo, method.getClassInfo());
   }
@@ -261,19 +260,19 @@ public class ClassInfoTest extends AutoFieldClearTestCase {
     List<ParameterInfo> params = Collections.emptyList();
     List<LocalVariableInfo> locals = Collections.emptyList();
     List<Operation> operations = Collections.emptyList();
-    superClass.addMethod(new MethodInfo(superClass, "setB", -1, "()V", null, params, locals,Visibility.PUBLIC, Collections.<Integer>emptyList(), operations, false));
-    superClass.addMethod(new MethodInfo(superClass, "setA", -1, "()V", null, params, locals,Visibility.PRIVATE, Collections.<Integer>emptyList(), operations, false));
-    superClass.addMethod(new MethodInfo(superClass, "X", -1, "()V", null, params, locals,Visibility.PUBLIC, Collections.<Integer>emptyList(), operations, false));
+    superClass.addMethod(new MethodInfo(superClass, "void setB()", -1, null, params, locals,Visibility.PUBLIC, operations, false, false, Collections.<Integer>emptyList()));
+    superClass.addMethod(new MethodInfo(superClass, "void setA()", -1, null, params, locals,Visibility.PRIVATE, operations, false, false, Collections.<Integer>emptyList()));
+    superClass.addMethod(new MethodInfo(superClass, "voidX()", -1, null, params, locals,Visibility.PUBLIC, operations, false, false, Collections.<Integer>emptyList()));
     ClassInfo clazz = new ClassInfo("super", false, superClass, emptyInterfaces, null);
-    clazz.addMethod(new MethodInfo(clazz, "setD", -1, "()V", null, params, locals,Visibility.PUBLIC, Collections.<Integer>emptyList(), operations, false));
-    clazz.addMethod(new MethodInfo(clazz, "setC", -1, "()V", null, params, locals,Visibility.PUBLIC, Collections.<Integer>emptyList(), operations, false));
+    clazz.addMethod(new MethodInfo(clazz, "void setD()", -1, null, params, locals,Visibility.PUBLIC, operations, false, false, Collections.<Integer>emptyList()));
+    clazz.addMethod(new MethodInfo(clazz, "void setC()", -1, null, params, locals,Visibility.PUBLIC, operations, false, false, Collections.<Integer>emptyList()));
 
     Collection<MethodInfo> setters = clazz.getSetters();
     assertEquals(3, setters.size());
     Iterator<MethodInfo> iterator = setters.iterator();
-    assertEquals("setB", iterator.next().getName());
-    assertEquals("setC", iterator.next().getName());
-    assertEquals("setD", iterator.next().getName());
+    assertEquals("void setB()", iterator.next().getName());
+    assertEquals("void setC()", iterator.next().getName());
+    assertEquals("void setD()", iterator.next().getName());
   }
 
 }

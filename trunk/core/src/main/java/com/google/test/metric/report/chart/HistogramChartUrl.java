@@ -15,13 +15,14 @@
  */
 package com.google.test.metric.report.chart;
 
+import static java.lang.Math.pow;
+import static java.lang.String.format;
+
+import java.util.List;
+
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.test.metric.report.chart.Histogram.Logarithmic;
-
-import static java.lang.Math.pow;
-import static java.lang.String.format;
-import java.util.List;
 
 public class HistogramChartUrl extends GoogleChartAPI {
 

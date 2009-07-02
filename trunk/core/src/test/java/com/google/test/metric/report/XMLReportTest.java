@@ -15,6 +15,18 @@
  */
 package com.google.test.metric.report;
 
+import static com.google.test.metric.Reason.IMPLICIT_STATIC_INIT;
+import static com.google.test.metric.Reason.NON_OVERRIDABLE_METHOD_CALL;
+import static java.util.Arrays.asList;
+
+import java.io.StringWriter;
+
+import junit.framework.TestCase;
+
+import org.apache.xml.serialize.OutputFormat;
+import org.apache.xml.serialize.XMLSerializer;
+import org.xml.sax.SAXException;
+
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.Cost;
 import com.google.test.metric.CostModel;
@@ -22,20 +34,8 @@ import com.google.test.metric.CyclomaticCost;
 import com.google.test.metric.GlobalCost;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvocationCost;
-import static com.google.test.metric.Reason.IMPLICIT_STATIC_INIT;
-import static com.google.test.metric.Reason.NON_OVERRIDABLE_METHOD_CALL;
-import com.google.test.metric.ViolationCost;
 import com.google.test.metric.SourceLocation;
-
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
-
-import junit.framework.TestCase;
-
-import org.xml.sax.SAXException;
-
-import java.io.StringWriter;
-import static java.util.Arrays.asList;
+import com.google.test.metric.ViolationCost;
 
 public class XMLReportTest extends TestCase {
 

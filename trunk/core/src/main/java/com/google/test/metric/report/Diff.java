@@ -15,9 +15,9 @@
  */
 package com.google.test.metric.report;
 
-import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * Simple bean to store a difference between two testability reports.

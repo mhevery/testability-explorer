@@ -15,10 +15,9 @@
  */
 package com.google.test.metric.collection;
 
-import junit.framework.TestCase;
-
 import java.util.Map;
-import java.util.HashMap;
+
+import junit.framework.TestCase;
 
 import com.google.common.base.Supplier;
 

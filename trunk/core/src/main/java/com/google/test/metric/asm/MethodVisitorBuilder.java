@@ -80,6 +80,7 @@ public class MethodVisitorBuilder implements MethodVisitor {
   private final List<ParameterInfo> parameters = new ArrayList<ParameterInfo>();
   private final List<LocalVariableInfo> localVariables = new ArrayList<LocalVariableInfo>();
   private final boolean isFinal;
+  private final JavaNamer namer = new JavaNamer();
 
   public MethodVisitorBuilder(ClassRepository repository, ClassInfo classInfo,
       String name, String desc, String signature, String[] exceptions,
@@ -270,9 +271,11 @@ public class MethodVisitorBuilder implements MethodVisitor {
     }
     block.decomposeIntoBlocks();
     try {
-      MethodInfo methodInfo = new MethodInfo(classInfo, name, startingLineNumber,
-          desc, methodThis, parameters, localVariables, visibility,
-          cyclomaticComplexity, block.getOperations(), isFinal);
+      String javaName = namer.nameMethod(classInfo.getName(), name, desc);
+      boolean isConstructor = name.equals("<init>") || name.equals("<clinit>");
+      MethodInfo methodInfo = new MethodInfo(classInfo, javaName, startingLineNumber,
+          methodThis, parameters, localVariables, visibility,
+          block.getOperations(), isFinal, isConstructor, cyclomaticComplexity);
       classInfo.addMethod(methodInfo);
     } catch (IllegalStateException e) {
       throw new IllegalStateException("Error in " + classInfo + "." + name
@@ -794,8 +797,9 @@ public class MethodVisitorBuilder implements MethodVisitor {
     });
   }
 
-  public void visitFieldInsn(final int opcode, final String owner,
+  public void visitFieldInsn(final int opcode, String owner,
       final String name, final String desc) {
+    owner = namer.nameClass(owner);
     switch (opcode) {
       case Opcodes.PUTSTATIC :
           recorder.add(new PutFieldRunnable(repository, owner, name, desc, true));
@@ -819,7 +823,8 @@ public class MethodVisitorBuilder implements MethodVisitor {
     final Type returnType = signature.getReturnType();
     recorder.add(new Runnable() {
       public void run() {
-        block.addOp(new Invoke(lineNumber, clazz.replace('/', '.'), name, desc,
+        String className = namer.nameClass(clazz);
+        block.addOp(new Invoke(lineNumber, className, namer.nameMethod(className, name, desc),
             params, opcode == Opcodes.INVOKESTATIC, returnType));
       }
     });

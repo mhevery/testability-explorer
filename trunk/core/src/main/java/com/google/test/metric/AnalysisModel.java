@@ -15,11 +15,11 @@
  */
 package com.google.test.metric;
 
-import com.google.test.metric.report.issues.ClassIssues;
-import com.google.test.metric.report.issues.IssuesReporter;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.test.metric.report.issues.ClassIssues;
+import com.google.test.metric.report.issues.IssuesReporter;
 
 /**
  * @author shyamseshadri@google.com (Shyam Seshadri)

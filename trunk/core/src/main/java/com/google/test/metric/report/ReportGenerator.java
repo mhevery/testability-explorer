@@ -15,9 +15,9 @@
  */
 package com.google.test.metric.report;
 
-import com.google.test.metric.ClassCost;
-
 import java.io.IOException;
+
+import com.google.test.metric.ClassCost;
 
 public interface ReportGenerator {
 

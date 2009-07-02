@@ -19,12 +19,13 @@ import static com.google.test.metric.report.issues.IssueSubType.COMPLEXITY;
 import static com.google.test.metric.report.issues.IssueSubType.STATIC_METHOD;
 import static com.google.test.metric.report.issues.IssueType.COLLABORATOR;
 import static com.google.test.metric.report.issues.IssueType.DIRECT_COST;
-import com.google.test.metric.SourceLocation;
-
-import junit.framework.TestCase;
 
 import java.util.List;
 import java.util.Map;
+
+import junit.framework.TestCase;
+
+import com.google.test.metric.SourceLocation;
 
 /**
  * Tests for {@link com.google.test.metric.report.issues.ClassIssues}

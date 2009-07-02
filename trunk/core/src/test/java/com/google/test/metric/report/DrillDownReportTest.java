@@ -15,6 +15,15 @@
  */
 package com.google.test.metric.report;
 
+import static com.google.test.metric.Reason.NON_OVERRIDABLE_METHOD_CALL;
+import static com.google.test.metric.report.DrillDownReportGenerator.NEW_LINE;
+import static java.lang.Integer.MAX_VALUE;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.test.metric.AutoFieldClearTestCase;
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.Cost;
@@ -24,14 +33,6 @@ import com.google.test.metric.GlobalCost;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvocationCost;
 import com.google.test.metric.SourceLocation;
-import static com.google.test.metric.Reason.NON_OVERRIDABLE_METHOD_CALL;
-import static com.google.test.metric.report.DrillDownReportGenerator.NEW_LINE;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import static java.lang.Integer.MAX_VALUE;
-import java.util.ArrayList;
-import java.util.List;
 
 public class DrillDownReportTest extends AutoFieldClearTestCase {
 

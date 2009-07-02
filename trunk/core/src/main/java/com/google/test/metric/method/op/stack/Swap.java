@@ -15,9 +15,9 @@
  */
 package com.google.test.metric.method.op.stack;
 
-import com.google.test.metric.Variable;
-
 import java.util.List;
+
+import com.google.test.metric.Variable;
 
 public class Swap extends StackOperation {
 

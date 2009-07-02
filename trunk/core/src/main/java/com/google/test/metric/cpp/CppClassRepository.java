@@ -156,13 +156,12 @@ public class CppClassRepository implements ClassRepository {
           functionDefinition.getName(),
           functionDefinition.getLine(),
           null,
-          null,
           functionDefinition.getParameters(),
           localVariablesExtractor.getResult(),
           functionDefinition.getVisibility(),
-          new ArrayList<Integer>(),
           operationBuilder.getResult(),
-          false));
+          false,
+          false, new ArrayList<Integer>()));
     }
   }
 

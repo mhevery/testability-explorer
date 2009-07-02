@@ -53,13 +53,13 @@ public class MethodBlockTest extends TestCase {
   }
 
   public void testConstructor() throws Exception {
-    MethodInfo method = getMethod("<init>()V", Simple.class);
+    MethodInfo method = getMethod("Simple()", Simple.class);
     List<Operation> operations = method.getOperations();
     assertOperations(
         operations,
-        "java.lang.Object.<init>()V",
-        "java.lang.Object.<init>()V",
-        "com.google.test.metric.method.MethodBlockTest$Simple.a{java.lang.Object} <- new{java.lang.Object}");
+        "java.lang.Object:Object()",
+        "java.lang.Object:Object()",
+        "com.google.test.metric.method.MethodBlockTest.Simple.a{java.lang.Object} <- new{java.lang.Object}");
   }
 
   public static class TryCatchFinally {
@@ -79,7 +79,7 @@ public class MethodBlockTest extends TestCase {
 
   public void testTryCatchBlock() throws Exception {
 
-    MethodInfo method = getMethod("method()V", TryCatchFinally.class);
+    MethodInfo method = getMethod("void method()", TryCatchFinally.class);
     String operations = method.getOperations().toString();
 
     assertTrue(operations.contains("b{int} <- 1{int}"));
@@ -104,19 +104,19 @@ public class MethodBlockTest extends TestCase {
 
   private MethodInfo getMethod(String methodName, Class<?> clazz) {
     ClassRepository repo = new JavaClassRepository();
-    repo.getClass(Object.class.getName()); // pre-cache for easier debugging.
-    ClassInfo classInfo = repo.getClass(clazz.getName());
+    repo.getClass(Object.class.getCanonicalName()); // pre-cache for easier debugging.
+    ClassInfo classInfo = repo.getClass(clazz.getCanonicalName());
     return classInfo.getMethod(methodName);
   }
 
   public void testMethodWithIIF() throws Exception {
     Class<IIF> clazz = IIF.class;
-    MethodInfo method = getMethod("method()V", clazz);
+    MethodInfo method = getMethod("void method()", clazz);
     assertOperations(method.getOperations(),
         "b{int} <- 1{int}",
-        "java.lang.Object.<init>()V",
-        clazz.getName() + ".a{java.lang.Object} <- new{java.lang.Object}",
-        clazz.getName() + ".a{java.lang.Object} <- null{java.lang.Object}",
+        "java.lang.Object:Object()",
+        clazz.getCanonicalName() + ".a{java.lang.Object} <- new{java.lang.Object}",
+        clazz.getCanonicalName() + ".a{java.lang.Object} <- null{java.lang.Object}",
         "b{int} <- 2{int}");
   }
 
@@ -141,7 +141,7 @@ public class MethodBlockTest extends TestCase {
   }
 
   public void testSwitchTable() throws Exception {
-    MethodInfo method = getMethod("method()V", SwitchTable.class);
+    MethodInfo method = getMethod("void method()", SwitchTable.class);
     assertOperations(method.getOperations(), "a{int} <- 0{int}",
         "a{int} <- 1{int}", "a{int} <- 2{int}", "a{int} <- 3{int}",
         "a{int} <- 4{int}", "a{int} <- 5{int}");
@@ -161,13 +161,13 @@ public class MethodBlockTest extends TestCase {
   }
 
   public void testCallMethodsLength() throws Exception {
-    MethodInfo method = getMethod("length()I", CallMethods.class);
-    assertOperations(method.getOperations(), "java.lang.String.length()I", "return ?{int}");
+    MethodInfo method = getMethod("int length()", CallMethods.class);
+    assertOperations(method.getOperations(), "java.lang.String:int length()", "return ?{int}");
   }
 
   public void testCallMethodsStaticLength() throws Exception {
-    MethodInfo method = getMethod("staticLength()I", CallMethods.class);
-    assertOperations(method.getOperations(), "java.lang.String.length()I", "return ?{int}");
+    MethodInfo method = getMethod("int staticLength()", CallMethods.class);
+    assertOperations(method.getOperations(), "java.lang.String:int length()", "return ?{int}");
   }
 
   static class Foreach {
@@ -180,7 +180,7 @@ public class MethodBlockTest extends TestCase {
 
   public void testForEach() throws Exception {
     ClassRepository repo = new JavaClassRepository();
-    repo.getClass(Foreach.class.getName()).getMethod("method()V");
+    repo.getClass(Foreach.class.getCanonicalName()).getMethod("void method()");
   }
 
 }

@@ -32,73 +32,73 @@ public class CostUtilTest extends TestCase {
   }
 
   public void testInstanceCost0() {
-    assertEquals(1, totalGlobalCost("instanceCost0()Z"));
-    assertEquals(0, cyclomaticCost("instanceCost0()Z"));
-    assertEquals(0, globalCost("instanceCost0()Z"));
-    assertEquals(0, totalComplexityCost("instanceCost0()Z"));
+    assertEquals(1, totalGlobalCost("boolean instanceCost0()"));
+    assertEquals(0, cyclomaticCost("boolean instanceCost0()"));
+    assertEquals(0, globalCost("boolean instanceCost0()"));
+    assertEquals(0, totalComplexityCost("boolean instanceCost0()"));
   }
 
   public void testStaticCost0() {
-    assertEquals(0, cyclomaticCost("staticCost0()Z"));
-    assertEquals(0, globalCost("staticCost0()Z"));
-    assertEquals(0, totalComplexityCost("staticCost0()Z"));
-    assertEquals(1, totalGlobalCost("staticCost0()Z"));
+    assertEquals(0, cyclomaticCost("boolean staticCost0()"));
+    assertEquals(0, globalCost("boolean staticCost0()"));
+    assertEquals(0, totalComplexityCost("boolean staticCost0()"));
+    assertEquals(1, totalGlobalCost("boolean staticCost0()"));
   }
 
   public void testInstanceCost1() {
-    assertEquals(1, totalGlobalCost("instanceCost1()Z"));
-    assertEquals(1, cyclomaticCost("instanceCost1()Z"));
-    assertEquals(0, globalCost("instanceCost1()Z"));
-    assertEquals(1, totalComplexityCost("instanceCost1()Z"));
+    assertEquals(1, totalGlobalCost("boolean instanceCost1()"));
+    assertEquals(1, cyclomaticCost("boolean instanceCost1()"));
+    assertEquals(0, globalCost("boolean instanceCost1()"));
+    assertEquals(1, totalComplexityCost("boolean instanceCost1()"));
   }
 
   public void testStaticCost1() {
-    assertEquals(1, cyclomaticCost("staticCost1()Z"));
-    assertEquals(0, globalCost("staticCost1()Z"));
-    assertEquals(1, totalComplexityCost("staticCost1()Z"));
-    assertEquals(1, totalGlobalCost("staticCost1()Z"));
+    assertEquals(1, cyclomaticCost("boolean staticCost1()"));
+    assertEquals(0, globalCost("boolean staticCost1()"));
+    assertEquals(1, totalComplexityCost("boolean staticCost1()"));
+    assertEquals(1, totalGlobalCost("boolean staticCost1()"));
   }
 
   public void testInstanceCost2() {
-    assertEquals(2, cyclomaticCost("instanceCost2()Z"));
-    assertEquals(0, globalCost("instanceCost2()Z"));
-    assertEquals(2, totalComplexityCost("instanceCost2()Z"));
-    assertEquals(1, totalGlobalCost("instanceCost2()Z"));
+    assertEquals(2, cyclomaticCost("boolean instanceCost2()"));
+    assertEquals(0, globalCost("boolean instanceCost2()"));
+    assertEquals(2, totalComplexityCost("boolean instanceCost2()"));
+    assertEquals(1, totalGlobalCost("boolean instanceCost2()"));
   }
 
   public void testStatcCost2() {
-    assertEquals(2, cyclomaticCost("staticCost2()Z"));
-    assertEquals(0, globalCost("staticCost2()Z"));
-    assertEquals(2, totalComplexityCost("staticCost2()Z"));
-    assertEquals(1, totalGlobalCost("staticCost2()Z"));
+    assertEquals(2, cyclomaticCost("boolean staticCost2()"));
+    assertEquals(0, globalCost("boolean staticCost2()"));
+    assertEquals(2, totalComplexityCost("boolean staticCost2()"));
+    assertEquals(1, totalGlobalCost("boolean staticCost2()"));
   }
 
   public void testInstanceCost3() {
-    assertEquals(3, cyclomaticCost("instanceCost3()Z"));
-    assertEquals(0, globalCost("instanceCost3()Z"));
-    assertEquals(3, totalComplexityCost("instanceCost3()Z"));
-    assertEquals(1, totalGlobalCost("instanceCost3()Z"));
+    assertEquals(3, cyclomaticCost("boolean instanceCost3()"));
+    assertEquals(0, globalCost("boolean instanceCost3()"));
+    assertEquals(3, totalComplexityCost("boolean instanceCost3()"));
+    assertEquals(1, totalGlobalCost("boolean instanceCost3()"));
   }
 
   public void testStaticCost3() {
-    assertEquals(3, cyclomaticCost("staticCost3()Z"));
-    assertEquals(0, globalCost("staticCost3()Z"));
-    assertEquals(3, totalComplexityCost("staticCost3()Z"));
-    assertEquals(1, totalGlobalCost("staticCost3()Z"));
+    assertEquals(3, cyclomaticCost("boolean staticCost3()"));
+    assertEquals(0, globalCost("boolean staticCost3()"));
+    assertEquals(3, totalComplexityCost("boolean staticCost3()"));
+    assertEquals(1, totalGlobalCost("boolean staticCost3()"));
   }
 
   public void testInstanceCost4() {
-    assertEquals(4, cyclomaticCost("instanceCost4()Z"));
-    assertEquals(0, globalCost("instanceCost4()Z"));
-    assertEquals(4, totalComplexityCost("instanceCost4()Z"));
-    assertEquals(1, totalGlobalCost("instanceCost4()Z"));
+    assertEquals(4, cyclomaticCost("boolean instanceCost4()"));
+    assertEquals(0, globalCost("boolean instanceCost4()"));
+    assertEquals(4, totalComplexityCost("boolean instanceCost4()"));
+    assertEquals(1, totalGlobalCost("boolean instanceCost4()"));
   }
 
   public void testStaticCost4() {
-    assertEquals(4, cyclomaticCost("staticCost4()Z"));
-    assertEquals(0, globalCost("staticCost4()Z"));
-    assertEquals(4, totalComplexityCost("staticCost4()Z"));
-    assertEquals(1, totalGlobalCost("staticCost4()Z"));
+    assertEquals(4, cyclomaticCost("boolean staticCost4()"));
+    assertEquals(0, globalCost("boolean staticCost4()"));
+    assertEquals(4, totalComplexityCost("boolean staticCost4()"));
+    assertEquals(1, totalGlobalCost("boolean staticCost4()"));
   }
 
   public void testCostUtilClassCost() throws Exception {

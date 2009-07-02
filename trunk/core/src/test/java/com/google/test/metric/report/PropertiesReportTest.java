@@ -15,19 +15,19 @@
  */
 package com.google.test.metric.report;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
+import java.util.Properties;
+
+import junit.framework.TestCase;
+
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.Cost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.CyclomaticCost;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.SourceLocation;
-
-import junit.framework.TestCase;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
-import java.util.Properties;
 
 public class PropertiesReportTest extends TestCase {
 

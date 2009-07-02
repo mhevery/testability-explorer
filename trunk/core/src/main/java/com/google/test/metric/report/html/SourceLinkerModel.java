@@ -15,11 +15,12 @@
  */
 package com.google.test.metric.report.html;
 
+import java.util.List;
+
 import com.google.test.metric.report.SourceLinker;
+
 import freemarker.template.TemplateMethodModel;
 import freemarker.template.TemplateModelException;
-
-import java.util.List;
 
 /**
  * Wrap the {@link com.google.test.metric.report.SourceLinker#buildLineLink(String, int, String)}

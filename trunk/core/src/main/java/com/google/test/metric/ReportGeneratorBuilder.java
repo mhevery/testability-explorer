@@ -15,6 +15,16 @@
  */
 package com.google.test.metric;
 
+import static java.util.ResourceBundle.getBundle;
+
+import java.io.File;
+import java.io.PrintStream;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.xml.serialize.OutputFormat;
+import org.apache.xml.serialize.XMLSerializer;
+
 import com.google.classpath.ClassPath;
 import com.google.test.metric.report.ClassPathTemplateLoader;
 import com.google.test.metric.report.DrillDownReportGenerator;
@@ -41,15 +51,6 @@ import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.ResourceBundleModel;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
-
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
-
-import java.io.File;
-import java.io.PrintStream;
-import java.util.Date;
-import java.util.List;
-import static java.util.ResourceBundle.getBundle;
 
 /**
  * Builds a Report, using various formats, and given all of the needed options.

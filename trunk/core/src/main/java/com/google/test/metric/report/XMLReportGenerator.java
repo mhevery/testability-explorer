@@ -15,17 +15,18 @@
  */
 package com.google.test.metric.report;
 
-import com.google.test.metric.ClassCost;
-import com.google.test.metric.CostModel;
-import com.google.test.metric.MethodCost;
-import com.google.test.metric.ViolationCost;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeSet;
+
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeSet;
+import com.google.test.metric.ClassCost;
+import com.google.test.metric.CostModel;
+import com.google.test.metric.MethodCost;
+import com.google.test.metric.ViolationCost;
 
 public class XMLReportGenerator extends SummaryReportModel implements ReportGenerator {
 

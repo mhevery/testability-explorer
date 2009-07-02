@@ -1,6 +1,7 @@
 package com.google.test.metric.report;
 
 import com.google.test.metric.ClassCost;
+
 import freemarker.template.TemplateMethodModel;
 
 /**

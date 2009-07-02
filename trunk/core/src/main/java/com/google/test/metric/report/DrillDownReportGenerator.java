@@ -15,19 +15,20 @@
  */
 package com.google.test.metric.report;
 
-import com.google.test.metric.ClassCost;
-import com.google.test.metric.CostModel;
-import com.google.test.metric.MethodCost;
-import com.google.test.metric.MethodInvocationCost;
-import com.google.test.metric.ViolationCost;
+import static java.lang.System.getProperty;
 
 import java.io.PrintStream;
-import static java.lang.System.getProperty;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import com.google.test.metric.ClassCost;
+import com.google.test.metric.CostModel;
+import com.google.test.metric.MethodCost;
+import com.google.test.metric.MethodInvocationCost;
+import com.google.test.metric.ViolationCost;
 
 /**
  * @deprecated remove this report as it's not very useful

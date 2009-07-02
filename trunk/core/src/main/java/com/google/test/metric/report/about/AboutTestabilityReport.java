@@ -15,6 +15,11 @@
  */
 package com.google.test.metric.report.about;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import com.google.common.base.Supplier;
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.collection.LazyHashMap;
 import com.google.test.metric.report.ReportModel;
@@ -22,11 +27,6 @@ import com.google.test.metric.report.Source;
 import com.google.test.metric.report.SourceLoader;
 import com.google.test.metric.report.issues.ClassIssues;
 import com.google.test.metric.report.issues.IssuesReporter;
-import com.google.common.base.Supplier;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A report which shows classes issues, their name, and their source code.

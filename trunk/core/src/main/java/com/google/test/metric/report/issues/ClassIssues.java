@@ -15,12 +15,8 @@
  */
 package com.google.test.metric.report.issues;
 
-import com.google.common.base.Nullable;
-import com.google.common.base.Predicate;
 import static com.google.common.collect.Iterables.filter;
-import com.google.common.collect.Lists;
 import static com.google.common.collect.Lists.newArrayList;
-import com.google.common.collect.Maps;
 import static com.google.test.metric.report.issues.Issue.isType;
 
 import java.util.ArrayList;
@@ -28,6 +24,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+
+import com.google.common.base.Nullable;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * Data model for the issues we want to explain in a class.
@@ -130,7 +131,7 @@ public class ClassIssues implements IssueHolder {
    */
   public List<String> getTypes() {
     List<String> types = Lists.newArrayList();
-    for (Enum enumVal : IssueType.values()) {
+    for (Enum<IssueType> enumVal : IssueType.values()) {
       types.add(enumVal.toString());
     }
     return types;
@@ -138,14 +139,14 @@ public class ClassIssues implements IssueHolder {
 
   public List<String> getSubTypes() {
     List<String> types = Lists.newArrayList();
-    for (Enum enumVal : IssueSubType.values()) {
+    for (Enum<IssueSubType> enumVal : IssueSubType.values()) {
       types.add(enumVal.toString());
     }
     return types;
   }
 
   public List<Issue> getMostImportantIssues() {
-    if (issues instanceof TriageIssuesQueue) {
+    if (issues instanceof TriageIssuesQueue<?>) {
       return ((TriageIssuesQueue<Issue>)issues).asList();
     }
     return new ArrayList<Issue>(issues);

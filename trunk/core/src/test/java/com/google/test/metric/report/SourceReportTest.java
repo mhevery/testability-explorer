@@ -15,6 +15,11 @@
  */
 package com.google.test.metric.report;
 
+import java.util.Date;
+import java.util.List;
+
+import junit.framework.TestCase;
+
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 import com.google.test.metric.ClassCost;
@@ -28,11 +33,6 @@ import com.google.test.metric.report.Source.Line;
 import com.google.test.metric.report.issues.HasSetterCost;
 
 import freemarker.template.Configuration;
-
-import junit.framework.TestCase;
-
-import java.util.Date;
-import java.util.List;
 
 public class SourceReportTest extends TestCase {
 
@@ -62,7 +62,7 @@ public class SourceReportTest extends TestCase {
   }
 
   public void testCreateSourceReport() throws Exception {
-    ClassCost classCost = computer.compute(TestClass.class.getName());
+    ClassCost classCost = computer.compute(TestClass.class.getCanonicalName());
 
     ClassReport classReport = report.createClassReport(classCost);
     Source source = classReport.getSource();
@@ -84,7 +84,7 @@ public class SourceReportTest extends TestCase {
   }
 
   public void testImplicitMethodInvocationIndicatesTheFileMatchingLineNumber() throws Exception {
-    ClassCost classCost = computer.compute(HasImplicitCostFromOtherClass.class.getName());
+    ClassCost classCost = computer.compute(HasImplicitCostFromOtherClass.class.getCanonicalName());
     ClassReport classReport = report.createClassReport(classCost);
     List<MethodCost> methodCostList = classReport.getSource().getLine(83).getMethodCosts();
     String violationText = methodCostList.get(0).getViolationCosts().get(0).toString();

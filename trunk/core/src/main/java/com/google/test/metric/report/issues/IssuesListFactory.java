@@ -1,9 +1,9 @@
 package com.google.test.metric.report.issues;
 
-import com.google.common.base.Supplier;
-
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
+
+import com.google.common.base.Supplier;
 
 /**
  * Simple supplier that returns empty lists of issues.

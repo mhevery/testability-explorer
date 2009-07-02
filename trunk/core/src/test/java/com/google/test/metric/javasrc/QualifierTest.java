@@ -41,7 +41,7 @@ public class QualifierTest extends TestCase {
   }
 
   public void testJavaQualified() throws Exception {
-    assertEquals(String.class.getName(), qualifier.qualify("", "String"));
+    assertEquals(String.class.getCanonicalName(), qualifier.qualify("", "String"));
   }
 
   public void testInnerClassResolution() throws Exception {

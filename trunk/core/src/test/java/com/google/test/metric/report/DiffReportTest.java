@@ -6,8 +6,10 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import junit.framework.TestCase;
-import freemarker.template.Configuration;
+
 import com.google.test.metric.ReportGeneratorBuilder;
+
+import freemarker.template.Configuration;
 
 /**
  * Tests for HTML generation of the Diff report

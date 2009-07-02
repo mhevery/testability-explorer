@@ -28,7 +28,7 @@ public class CyclomaticComplexityTest extends AutoFieldClearTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    classInfo = repo.getClass(CyclomaticMethods.class.getName());
+    classInfo = repo.getClass(CyclomaticMethods.class.getCanonicalName());
   }
 
   public static class CyclomaticMethods {
@@ -134,7 +134,7 @@ public class CyclomaticComplexityTest extends AutoFieldClearTestCase {
       String name = method.getName();
       int _Index = name.lastIndexOf('_');
       if (_Index > 0) {
-        long expectedCC = Long.parseLong(name.substring(_Index + 1));
+        long expectedCC = Long.parseLong(name.substring(_Index + 1, name.indexOf('(')));
         long actualCC = method.getLinesOfComplexity().size() + 1;
         if (expectedCC != actualCC) {
           errors += "\n" + method.getName()
@@ -221,48 +221,48 @@ public class CyclomaticComplexityTest extends AutoFieldClearTestCase {
   }
 
   public void testLineNumbersForConditionals() throws Exception {
-    ClassInfo classInfo = repo.getClass(LineNumbersForConditionals.class.getName());
-    MethodInfo methodInfo = classInfo.getMethod("method()V");
+    ClassInfo classInfo = repo.getClass(LineNumbersForConditionals.class.getCanonicalName());
+    MethodInfo methodInfo = classInfo.getMethod("void method()");
     List<Integer> linesOfComplexity = methodInfo.getLinesOfComplexity();
     int firstExpectedComplexityLine = methodInfo.getStartingLineNumber();
     assertEquals(asList(firstExpectedComplexityLine, firstExpectedComplexityLine + 1), linesOfComplexity);
   }
 
   public void testLineNumbersForTryCatch() throws Exception {
-    ClassInfo classInfo = repo.getClass(LineNumbersForConditionals.class.getName());
-    MethodInfo methodInfo = classInfo.getMethod("tryCatch()V");
+    ClassInfo classInfo = repo.getClass(LineNumbersForConditionals.class.getCanonicalName());
+    MethodInfo methodInfo = classInfo.getMethod("void tryCatch()");
     List<Integer> linesOfComplexity = methodInfo.getLinesOfComplexity();
     int firstExpectedComplexityLine = methodInfo.getStartingLineNumber();
     assertEquals(asList(firstExpectedComplexityLine + 1), linesOfComplexity);
   }
 
   public void testLineNumbersForNestedTryCatch() throws Exception {
-    ClassInfo classInfo = repo.getClass(LineNumbersForConditionals.class.getName());
-    MethodInfo methodInfo = classInfo.getMethod("nestedTryCatch()V");
+    ClassInfo classInfo = repo.getClass(LineNumbersForConditionals.class.getCanonicalName());
+    MethodInfo methodInfo = classInfo.getMethod("void nestedTryCatch()");
     List<Integer> linesOfComplexity = methodInfo.getLinesOfComplexity();
     int methodLine = methodInfo.getStartingLineNumber();
     assertEquals(asList(methodLine + 1, methodLine + 6), linesOfComplexity);
   }
 
   public void testLineNumbersForTryCatchCatch() throws Exception {
-    ClassInfo classInfo = repo.getClass(LineNumbersForConditionals.class.getName());
-    MethodInfo methodInfo = classInfo.getMethod("tryCatchCatch()V");
+    ClassInfo classInfo = repo.getClass(LineNumbersForConditionals.class.getCanonicalName());
+    MethodInfo methodInfo = classInfo.getMethod("void tryCatchCatch()");
     List<Integer> linesOfComplexity = methodInfo.getLinesOfComplexity();
     int methodLine = methodInfo.getStartingLineNumber();
     assertEquals(asList(methodLine + 1, methodLine + 3), linesOfComplexity);
   }
 
   public void testLineNumbersForTableSwitch() throws Exception {
-    ClassInfo classInfo = repo.getClass(LineNumbersForConditionals.class.getName());
-    MethodInfo methodInfo = classInfo.getMethod("tableSwitchMethod()V");
+    ClassInfo classInfo = repo.getClass(LineNumbersForConditionals.class.getCanonicalName());
+    MethodInfo methodInfo = classInfo.getMethod("void tableSwitchMethod()");
     List<Integer> linesOfComplexity = methodInfo.getLinesOfComplexity();
     int methodLine = methodInfo.getStartingLineNumber();
     assertEquals(asList(methodLine + 2), linesOfComplexity);
   }
 
   public void testLineNumbersForLookupSwitch() throws Exception {
-    ClassInfo classInfo = repo.getClass(LineNumbersForConditionals.class.getName());
-    MethodInfo methodInfo = classInfo.getMethod("lookupSwitchMethod()V");
+    ClassInfo classInfo = repo.getClass(LineNumbersForConditionals.class.getCanonicalName());
+    MethodInfo methodInfo = classInfo.getMethod("void lookupSwitchMethod()");
     List<Integer> linesOfComplexity = methodInfo.getLinesOfComplexity();
     int methodLine = methodInfo.getStartingLineNumber();
     assertEquals(asList(methodLine + 2, methodLine + 5), linesOfComplexity);

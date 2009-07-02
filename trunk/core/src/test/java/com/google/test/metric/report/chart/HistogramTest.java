@@ -15,13 +15,14 @@
  */
 package com.google.test.metric.report.chart;
 
-import com.google.test.metric.report.chart.Histogram.Linear;
-import com.google.test.metric.report.chart.Histogram.Logarithmic;
+import static java.lang.Integer.MAX_VALUE;
+
+import java.util.Arrays;
 
 import junit.framework.TestCase;
 
-import static java.lang.Integer.MAX_VALUE;
-import java.util.Arrays;
+import com.google.test.metric.report.chart.Histogram.Linear;
+import com.google.test.metric.report.chart.Histogram.Logarithmic;
 
 public class HistogramTest extends TestCase {
 

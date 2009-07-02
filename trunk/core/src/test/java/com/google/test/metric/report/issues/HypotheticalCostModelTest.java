@@ -2,6 +2,12 @@
 
 package com.google.test.metric.report.issues;
 
+import static com.google.test.metric.Reason.NON_OVERRIDABLE_METHOD_CALL;
+
+import java.util.Arrays;
+
+import junit.framework.TestCase;
+
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.ClassInfo;
 import com.google.test.metric.ClassRepository;
@@ -13,13 +19,8 @@ import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvocationCost;
 import com.google.test.metric.MetricComputer;
-import static com.google.test.metric.Reason.NON_OVERRIDABLE_METHOD_CALL;
 import com.google.test.metric.SourceLocation;
 import com.google.test.metric.testing.MetricComputerBuilder;
-
-import junit.framework.TestCase;
-
-import java.util.Arrays;
 
 /**
  * @author alexeagle@google.com (Alex Eagle)
@@ -72,7 +73,7 @@ public class HypotheticalCostModelTest extends TestCase {
   }
 
   public void testHypotheticalModelGivesTheSameNumberWithNoOverrides() throws Exception {
-    ClassInfo aClass = repo.getClass(Example.class.getName());
+    ClassInfo aClass = repo.getClass(Example.class.getCanonicalName());
     ClassCost cost = computer.compute(aClass);
     int originalCost = costModel.computeClass(cost);
     int newCost = hypotheticalCostModel.computeClass(cost);

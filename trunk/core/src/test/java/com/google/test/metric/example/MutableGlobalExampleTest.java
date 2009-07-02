@@ -21,8 +21,8 @@ import com.google.test.metric.ClassRepository;
 import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MetricComputer;
-import com.google.test.metric.example.MutableGlobalState.FinalGlobalExample.Gadget;
 import com.google.test.metric.example.MutableGlobalState.MutableGlobalExample;
+import com.google.test.metric.example.MutableGlobalState.FinalGlobalExample.Gadget;
 import com.google.test.metric.example.MutableGlobalState.MutableGlobalExample.MutableGlobal;
 import com.google.test.metric.testing.MetricComputerBuilder;
 import com.google.test.metric.testing.MetricComputerJavaDecorator;
@@ -46,7 +46,7 @@ public class MutableGlobalExampleTest extends AutoFieldClearTestCase {
 
   public void testAccessingMutableStaticItselfDirectlyDoesntCountAgainstYou() throws Exception {
     MethodCost methodCost = decoratedComputer.compute(MutableGlobalExample.class,
-        "getInstance()Lcom/google/test/metric/example/MutableGlobalState/MutableGlobalExample$Gadget;");
+        "com.google.test.metric.example.MutableGlobalState.MutableGlobalExample.Gadget getInstance()");
     assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
 
     // Noteworthy: code which exposes global state to others does not have the cost itself.
@@ -59,7 +59,7 @@ public class MutableGlobalExampleTest extends AutoFieldClearTestCase {
   public void testAccessingAFinalFieldDoesNotCountAgainstYouButInitialGlobalDoes() throws Exception {
     // This method goes into mutable global state (cost +1) and reads a final value (cost +0)
     MethodCost methodCost = decoratedComputer.compute(MutableGlobalExample.class,
-        "getGlobalId()Ljava/lang/String;");
+        "java.lang.String getGlobalId()");
     assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
     assertEquals(0, methodCost.getCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getCyclomaticComplexityCost());
@@ -69,7 +69,7 @@ public class MutableGlobalExampleTest extends AutoFieldClearTestCase {
 
   public void testAccessingANonFinalFieldCountsAgainstYou() throws Exception {
     // This method goes into mutable global state (cost +1) and reads a mutable value (cost +1)
-    MethodCost methodCost = decoratedComputer.compute(MutableGlobalExample.class, "getGlobalCount()I");
+    MethodCost methodCost = decoratedComputer.compute(MutableGlobalExample.class, "int getGlobalCount()");
     assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
     assertEquals(0, methodCost.getCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getCyclomaticComplexityCost());
@@ -78,7 +78,7 @@ public class MutableGlobalExampleTest extends AutoFieldClearTestCase {
 
   public void testWritingANonFinalFieldCountsAgainstYou() throws Exception {
     // This method goes into mutable global state (cost +1) and changes a mutable value (cost +1)
-    MethodCost methodCost = decoratedComputer.compute(MutableGlobalExample.class, "globalIncrement()I");
+    MethodCost methodCost = decoratedComputer.compute(MutableGlobalExample.class, "int globalIncrement()");
     assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
     assertEquals(0, methodCost.getCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getCyclomaticComplexityCost());

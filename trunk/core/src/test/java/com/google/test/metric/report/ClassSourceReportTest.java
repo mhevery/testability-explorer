@@ -30,6 +30,7 @@ import com.google.test.metric.MetricComputer;
 import com.google.test.metric.RegExpWhiteList;
 import com.google.test.metric.Testability;
 import com.google.test.metric.WeightedAverage;
+
 import freemarker.template.Configuration;
 
 public class ClassSourceReportTest extends TestCase {

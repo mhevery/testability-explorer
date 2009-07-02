@@ -15,6 +15,16 @@
  */
 package com.google.test.metric.report.html;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Queue;
+import java.util.ResourceBundle;
+
+import junit.framework.TestCase;
+
 import com.google.common.collect.Lists;
 import com.google.test.metric.ReportGeneratorBuilder;
 import com.google.test.metric.SourceLocation;
@@ -30,16 +40,6 @@ import freemarker.ext.beans.ResourceBundleModel;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
-
-import junit.framework.TestCase;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Queue;
-import java.util.ResourceBundle;
 
 /**
  * Test that all the messages we might want to show are defined.

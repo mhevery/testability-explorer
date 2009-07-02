@@ -15,12 +15,13 @@
  */
 package com.google.test.metric;
 
-import junit.framework.TestCase;
+import static java.util.Arrays.asList;
 
 import java.util.ArrayList;
-import static java.util.Arrays.asList;
 import java.util.Collections;
 import java.util.List;
+
+import junit.framework.TestCase;
 
 public class ClassCostTest extends TestCase {
 
