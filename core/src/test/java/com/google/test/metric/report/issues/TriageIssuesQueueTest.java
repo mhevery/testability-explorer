@@ -15,12 +15,12 @@
  */
 package com.google.test.metric.report.issues;
 
-import com.google.test.metric.SourceLocation;
+import java.util.Iterator;
+import java.util.List;
 
 import junit.framework.TestCase;
 
-import java.util.Iterator;
-import java.util.List;
+import com.google.test.metric.SourceLocation;
 
 /**
  * Tests for {@link TriageIssuesQueue}

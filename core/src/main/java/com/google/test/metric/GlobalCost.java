@@ -17,9 +17,9 @@
 
 package com.google.test.metric;
 
-import com.google.test.metric.report.RemovePackageFormatter;
-
 import static java.lang.String.format;
+
+import com.google.test.metric.report.RemovePackageFormatter;
 
 public class GlobalCost extends ViolationCost {
 

@@ -2,12 +2,12 @@
 
 package com.google.test.metric.report;
 
-import com.google.test.metric.ClassCost;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import com.google.test.metric.ClassCost;
 
 /**
  * A report that directs metric recording into several delegated reports.

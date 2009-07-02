@@ -16,8 +16,6 @@
 package com.google.test.metric;
 
 import static com.google.test.metric.Reason.NON_OVERRIDABLE_METHOD_CALL;
-import com.google.test.metric.method.Constant;
-import com.google.test.metric.method.op.turing.Operation;
 
 import java.io.PrintStream;
 import java.util.HashMap;
@@ -25,6 +23,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.google.test.metric.method.Constant;
+import com.google.test.metric.method.op.turing.Operation;
 
 public class TestabilityVisitor {
 
@@ -74,7 +75,7 @@ public class TestabilityVisitor {
       super.addLoDCost(lineNumber, method, distance);
       SourceLocation location = new SourceLocation(this.method.getClassInfo().getFileName(),
           lineNumber);
-      ViolationCost cost = new LoDViolation(location, method.getFullName(),
+      ViolationCost cost = new LoDViolation(location, method.getName(),
           Cost.lod(distance), distance);
       methodCost.addCostSource(cost);
     }
@@ -106,7 +107,7 @@ public class TestabilityVisitor {
     protected MethodCost getMethodCostCache(MethodInfo method) {
       MethodCost methodCost = methodCosts.get(method);
       if (methodCost == null) {
-        methodCost = new MethodCost(method.getFullName(), method.getStartingLineNumber(),
+        methodCost = new MethodCost(method.getName(), method.getStartingLineNumber(),
             method.isConstructor(), method.isStatic(), method.isStaticConstructor());
         methodCosts.put(method, methodCost);
       }

@@ -56,13 +56,13 @@ public class MultipleMethodsDifferentCostsTest extends AutoFieldClearTestCase {
   }
 
   public void testOverridableTcc0Cost() throws Exception {
-    MethodCost methodCost = cost("methodOverridableTcc4()V");
+    MethodCost methodCost = cost("void methodOverridableTcc4()");
     assertEquals(4, methodCost.getCost().getCyclomaticComplexityCost());
     assertEquals(0, methodCost.getCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getGlobalCost());
     assertEquals(4, methodCost.getTotalCost().getCyclomaticComplexityCost());
 
-    methodCost = cost("methodTcc0BecauseOverridableMethodCalls()V");
+    methodCost = cost("void methodTcc0BecauseOverridableMethodCalls()");
     assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
     assertEquals(0, methodCost.getCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getGlobalCost());
@@ -70,13 +70,13 @@ public class MultipleMethodsDifferentCostsTest extends AutoFieldClearTestCase {
   }
 
   public void testStaticTcc4Cost() throws Exception {
-    MethodCost methodCost = cost("methodStaticTcc4()V");
+    MethodCost methodCost = cost("void methodStaticTcc4()");
     assertEquals(4, methodCost.getCost().getCyclomaticComplexityCost());
     assertEquals(0, methodCost.getCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getGlobalCost());
     assertEquals(4, methodCost.getTotalCost().getCyclomaticComplexityCost());
 
-    methodCost = cost("methodTcc4BecauseStaticMethodCalls()V");
+    methodCost = cost("void methodTcc4BecauseStaticMethodCalls()");
     assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
     assertEquals(0, methodCost.getCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getGlobalCost());
@@ -85,13 +85,13 @@ public class MultipleMethodsDifferentCostsTest extends AutoFieldClearTestCase {
   }
 
   public void testPrivateTcc4Cost() throws Exception {
-    MethodCost methodCost = cost("methodPrivateTcc4()V");
+    MethodCost methodCost = cost("void methodPrivateTcc4()");
     assertEquals(4, methodCost.getCost().getCyclomaticComplexityCost());
     assertEquals(0, methodCost.getCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getGlobalCost());
     assertEquals(4, methodCost.getTotalCost().getCyclomaticComplexityCost());
 
-    methodCost = cost("methodTcc4BecausePrivateMethodCalls()V");
+    methodCost = cost("void methodTcc4BecausePrivateMethodCalls()");
     assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
     assertEquals(0, methodCost.getCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getGlobalCost());
@@ -100,13 +100,13 @@ public class MultipleMethodsDifferentCostsTest extends AutoFieldClearTestCase {
   }
 
   public void testFinalTcc4Cost() throws Exception {
-    MethodCost methodCost = cost("methodFinalTcc4()V");
+    MethodCost methodCost = cost("void methodFinalTcc4()");
     assertEquals(4, methodCost.getCost().getCyclomaticComplexityCost());
     assertEquals(0, methodCost.getCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getGlobalCost());
     assertEquals(4, methodCost.getTotalCost().getCyclomaticComplexityCost());
 
-    methodCost = cost("methodTcc4BecauseFinalMethodCalls()V");
+    methodCost = cost("void methodTcc4BecauseFinalMethodCalls()");
     assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
     assertEquals(0, methodCost.getCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getGlobalCost());
@@ -115,7 +115,7 @@ public class MultipleMethodsDifferentCostsTest extends AutoFieldClearTestCase {
   }
 
   public void testMultipleDifferentNonOverridibleMethodsTcc12Cost() throws Exception {
-    MethodCost methodCost = cost("methodTcc12BecauseMultipleDifferentNonOverridableMethodCalls()V");
+    MethodCost methodCost = cost("void methodTcc12BecauseMultipleDifferentNonOverridableMethodCalls()");
     assertEquals(0, methodCost.getCost().getCyclomaticComplexityCost());
     assertEquals(0, methodCost.getCost().getGlobalCost());
     assertEquals(0, methodCost.getTotalCost().getGlobalCost());

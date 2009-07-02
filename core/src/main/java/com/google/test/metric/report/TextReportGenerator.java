@@ -16,11 +16,11 @@
 
 package com.google.test.metric.report;
 
+import java.io.PrintStream;
+
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.report.chart.PieGraph;
-
-import java.io.PrintStream;
 
 
 public class TextReportGenerator extends SummaryReportModel implements ReportGenerator {

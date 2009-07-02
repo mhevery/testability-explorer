@@ -15,12 +15,14 @@
  */
 package com.google.test.metric.report;
 
-import com.google.test.metric.ClassCost;
-import freemarker.template.*;
-
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+
+import com.google.test.metric.ClassCost;
+
+import freemarker.template.Configuration;
+import freemarker.template.TemplateException;
 
 /**
  * The base class for ReportGenerator's that use Freemarker for rendering.

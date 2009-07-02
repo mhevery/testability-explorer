@@ -15,6 +15,12 @@
  */
 package com.google.test.metric;
 
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import org.kohsuke.args4j.CmdLineException;
+
 import com.google.test.metric.TestabilityTest.WatchedOutputStream;
 import com.google.test.metric.report.DrillDownReportGenerator;
 import com.google.test.metric.report.FreemarkerReportGenerator;
@@ -22,12 +28,6 @@ import com.google.test.metric.report.PropertiesReportGenerator;
 import com.google.test.metric.report.SourceReportGenerator;
 import com.google.test.metric.report.TextReportGenerator;
 import com.google.test.metric.report.XMLReportGenerator;
-
-import org.kohsuke.args4j.CmdLineException;
-
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class CommandLineConfigTest extends AutoFieldClearTestCase {
 

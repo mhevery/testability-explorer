@@ -1,14 +1,14 @@
 package com.google.test.metric;
 
+import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.List;
+
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 import com.google.test.metric.TestabilityTest.WatchedOutputStream;
 import com.google.test.metric.report.ReportGenerator;
 import com.google.test.metric.report.TextReportGenerator;
-
-import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.List;
 
 public class TestabilityRunnerTest extends AutoFieldClearTestCase {
   /**
@@ -51,7 +51,7 @@ public class TestabilityRunnerTest extends AutoFieldClearTestCase {
     assertTrue(errStr, errStr.startsWith("WARNING: can not analyze class "));
     assertTrue(errStr, errStr.contains("'com.google.test.metric.ClassInfoTest'"));
     assertTrue(errStr, errStr.contains("'com.google.test.metric.x.SelfTest'"));
-    assertTrue(errStr, errStr.contains("'com/google/test/metric/ClassRepositoryTestCase'"));
+    assertTrue(errStr, errStr.contains("'com.google.test.metric.ClassRepositoryTestCase'"));
   }
 
   /*

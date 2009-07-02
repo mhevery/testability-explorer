@@ -15,27 +15,25 @@
  */
 package com.google.test.metric.method.op.turing;
 
+import java.util.List;
+
 import com.google.test.metric.TestabilityVisitor;
 import com.google.test.metric.Variable;
-
-import java.util.List;
 
 public class MethodInvocation extends Operation {
 
   private final String name;
   private final String clazzName;
-  private final String signature;
   private final Variable methodThis;
   private final List<Variable> parameters;
   private final Variable returnVariable;
 
   public MethodInvocation(int lineNumber, String clazz, String name,
-      String signature, Variable methodThis, List<Variable> parameters,
+      Variable methodThis, List<Variable> parameters,
       Variable returnVariable) {
     super(lineNumber);
     this.clazzName = clazz;
     this.name = name;
-    this.signature = signature;
     this.methodThis = methodThis;
     this.parameters = parameters;
     this.returnVariable = returnVariable;
@@ -43,10 +41,6 @@ public class MethodInvocation extends Operation {
 
   public List<Variable> getParameters() {
     return parameters;
-  }
-
-  public String getMethodName() {
-    return clazzName + "." + name;
   }
 
   public String getName() {
@@ -59,12 +53,12 @@ public class MethodInvocation extends Operation {
 
   @Override
   public String toString() {
-    return getMethodName() + signature;
+    return clazzName + ":" + name;
   }
 
   @Override
   public void visit(TestabilityVisitor.Frame visitor) {
-    visitor.recordMethodCall(clazzName, getLineNumber(), name + signature,
+    visitor.recordMethodCall(clazzName, getLineNumber(), name,
         methodThis, parameters, returnVariable);
   }
 

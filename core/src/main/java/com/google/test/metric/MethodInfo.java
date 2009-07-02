@@ -15,16 +15,17 @@
  */
 package com.google.test.metric;
 
-import com.google.common.base.Nullable;
-import com.google.common.base.Predicate;
 import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Lists.newArrayList;
-import com.google.test.metric.method.op.turing.Operation;
+import static java.util.Collections.unmodifiableList;
 
 import java.util.Collection;
 import java.util.Collections;
-import static java.util.Collections.unmodifiableList;
 import java.util.List;
+
+import com.google.common.base.Nullable;
+import com.google.common.base.Predicate;
+import com.google.test.metric.method.op.turing.Operation;
 
 public class MethodInfo implements Comparable<MethodInfo> {
 
@@ -33,7 +34,6 @@ public class MethodInfo implements Comparable<MethodInfo> {
   private final Variable methodThis;
   private final List<ParameterInfo> parameters;
   private final List<LocalVariableInfo> localVariables;
-  private final String desc;
   private final List<Integer> linesOfComplexity;
   private final Visibility visibility;
   private final List<Operation> operations;
@@ -41,113 +41,37 @@ public class MethodInfo implements Comparable<MethodInfo> {
   private final boolean isFinal;
 
   private Predicate<? super MethodInfo> notSelf = new Predicate<MethodInfo>() {
-      public boolean apply(@Nullable MethodInfo methodInfo) {
-        return methodInfo != MethodInfo.this;
-      }
-    };
+    public boolean apply(@Nullable MethodInfo methodInfo) {
+      return methodInfo != MethodInfo.this;
+    }
+  };
+  private final boolean isConstructor;
 
   public MethodInfo(ClassInfo classInfo, String methodName,
-      int startingLineNumber, String desc, Variable methodThis,
+      int startingLineNumber, Variable methodThis,
       List<ParameterInfo> parameters, List<LocalVariableInfo> localVariables,
-      Visibility visibility, List<Integer> linesOfComplexity,
-      List<Operation> operations, boolean isFinal) {
+      Visibility visibility, List<Operation> operations, boolean isFinal,
+      boolean isConstructor, List<Integer> linesOfComplexity) {
     this.classInfo = classInfo;
     this.name = methodName;
     this.startingLineNumber = startingLineNumber;
-    this.desc = desc;
     this.methodThis = methodThis;
     this.parameters = parameters;
     this.localVariables = localVariables;
+    this.isConstructor = isConstructor;
     this.linesOfComplexity = linesOfComplexity;
     this.visibility = visibility;
     this.operations = operations;
     this.isFinal = isFinal;
   }
 
-  public String getNameDesc() {
-    return name + desc;
-  }
-
   @Override
   public String toString() {
-    return getFullName();
+    return name;
   }
 
   public String getName() {
     return name;
-  }
-
-  //TODO: Refactor this!
-  public String getFullName() {
-    int paramsEnd = desc.indexOf(')');
-    String returnValue = deconstructParameters(desc.substring(paramsEnd + 1)) + " ";
-    String params = desc.substring(1, paramsEnd);
-    String methodName = name;
-
-    if (isStaticConstructor()) {
-      return classInfo.getName() + ".<static init>";
-    } else if (isConstructor()) {
-      returnValue = "";
-      methodName = classInfo.getName();
-    }
-    return returnValue + methodName + "(" + deconstructParameters(params) + ")";
-  }
-
-  public String deconstructParameters(String params) {
-    StringBuilder paramStr = new StringBuilder();
-    int i = 0;
-    String sep = "";
-    String arrayRefs = "";
-    while (i < params.length()) {
-      switch (params.charAt(i)) {
-      case 'B':
-        paramStr.append(sep + "byte" + arrayRefs);
-        break;
-      case 'C':
-        paramStr.append(sep + "char" + arrayRefs);
-        break;
-      case 'D':
-        paramStr.append(sep + "double" + arrayRefs);
-        break;
-      case 'F':
-        paramStr.append(sep + "float" + arrayRefs);
-        break;
-      case 'I':
-        paramStr.append(sep + "int" + arrayRefs);
-        break;
-      case 'J':
-        paramStr.append(sep + "long" + arrayRefs);
-        break;
-      case 'L':
-        // Object becomes L/java/lang/Object; in internal nomenclature
-        String internalClassName = params.substring(i + 1, params.indexOf(';',
-            i));
-        String className = internalClassName.replace('/', '.');
-        paramStr.append(sep + className + arrayRefs);
-        i = params.indexOf(';', i);
-        break;
-      case 'S':
-        paramStr.append(sep + "short" + arrayRefs);
-        break;
-      case 'Z':
-        paramStr.append(sep + "boolean" + arrayRefs);
-        break;
-      case 'V':
-        paramStr.append("void");
-        break;
-      case '[':
-        arrayRefs += "[]";
-        break;
-      default:
-        throw new UnsupportedOperationException();
-      }
-      if (params.charAt(i) != '[') {
-        arrayRefs = "";
-        sep = ", ";
-      }
-      i++;
-    }
-    return paramStr.toString();
   }
 
   public List<ParameterInfo> getParameters() {
@@ -159,7 +83,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
   }
 
   public boolean isConstructor() {
-    return name.equals("<init>");
+    return isConstructor && !isStatic();
   }
 
   public Visibility getVisibility() {
@@ -200,15 +124,16 @@ public class MethodInfo implements Comparable<MethodInfo> {
   }
 
   public boolean isStaticConstructor() {
-    return name.equals("<clinit>");
+    return isConstructor && isStatic();
   }
 
   public boolean isSetter() {
-    return visibility != Visibility.PRIVATE && getName().startsWith("set");
+    return visibility != Visibility.PRIVATE && getName().startsWith("void set");
   }
 
   /**
-   * @return Returns all methods in the same class which are setters, other than this setter
+   * @return Returns all methods in the same class which are setters, other than
+   *         this setter
    */
   public Collection<MethodInfo> getSiblingSetters() {
     return newArrayList(filter(classInfo.getSetters(), notSelf));
@@ -218,7 +143,7 @@ public class MethodInfo implements Comparable<MethodInfo> {
     if (o == null) {
       return -1;
     }
-    return getFullName().compareTo(o.getFullName());
+    return name.compareTo(o.name);
   }
 
   public int getNonPrimitiveArgCount() {
@@ -241,11 +166,45 @@ public class MethodInfo implements Comparable<MethodInfo> {
 
   /**
    * produces a copy of this method, which has
+   *
    * @return
    */
   public MethodInfo copyWithNoOperations(ClassInfo parent) {
     List<Operation> operations = Collections.emptyList();
-    return new MethodInfo(parent, name, startingLineNumber, desc, methodThis,
-        parameters, localVariables, visibility, linesOfComplexity, operations, isFinal);
+    return new MethodInfo(parent, name, startingLineNumber, methodThis,
+        parameters, localVariables, visibility, operations, isFinal,
+        isConstructor, linesOfComplexity);
   }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((classInfo == null) ? 0 : classInfo.hashCode());
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    MethodInfo other = (MethodInfo) obj;
+    if (classInfo == null) {
+      if (other.classInfo != null)
+        return false;
+    } else if (!classInfo.equals(other.classInfo))
+      return false;
+    if (name == null) {
+      if (other.name != null)
+        return false;
+    } else if (!name.equals(other.name))
+      return false;
+    return true;
+  }
+
 }

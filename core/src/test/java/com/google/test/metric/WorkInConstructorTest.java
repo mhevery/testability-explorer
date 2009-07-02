@@ -35,7 +35,7 @@ public class WorkInConstructorTest extends AutoFieldClearTestCase {
 
   public void testWorkInConstructorGetsPenalized() throws Exception {
     ClassCost classCost = computer.compute(ConstructorDoesWork.class);
-    MethodCost constCost = classCost.getMethodCost("com.google.test.metric.WorkInConstructorTest$ConstructorDoesWork()");
+    MethodCost constCost = classCost.getMethodCost("ConstructorDoesWork()");
     assertNotNull(constCost);
     assertEquals(3, constCost.getTotalCost().getCyclomaticComplexityCost());
     assertEquals(0, constCost.getDirectCost().getCyclomaticComplexityCost());
@@ -60,7 +60,7 @@ public class WorkInConstructorTest extends AutoFieldClearTestCase {
 
   public void testWorkInDependantConstructorDoesNotGetPenalized() throws Exception {
     ClassCost classCost = computer.compute(DependantConstructorDoesWork.class);
-    MethodCost constCost = classCost.getMethodCost("com.google.test.metric.WorkInConstructorTest$DependantConstructorDoesWork()");
+    MethodCost constCost = classCost.getMethodCost("DependantConstructorDoesWork()");
     assertNotNull(constCost);
     assertEquals(0, constCost.getTotalCost().getCyclomaticComplexityCost());
     assertEquals(0, constCost.getDirectCost().getCyclomaticComplexityCost());

@@ -18,7 +18,6 @@ package com.google.test.metric.report.chart;
 import static com.google.test.metric.report.chart.GoogleChartAPI.GREEN;
 import static com.google.test.metric.report.chart.GoogleChartAPI.RED;
 import static com.google.test.metric.report.chart.GoogleChartAPI.YELLOW;
-
 import junit.framework.TestCase;
 
 public class HistogramChartUrlTest extends TestCase {

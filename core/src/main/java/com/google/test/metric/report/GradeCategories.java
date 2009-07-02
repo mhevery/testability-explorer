@@ -15,22 +15,23 @@
  */
 package com.google.test.metric.report;
 
-import com.google.common.base.Function;
-import com.google.test.metric.report.chart.GoodnessChart;
 import static com.google.test.metric.report.chart.GoogleChartAPI.GREEN;
 import static com.google.test.metric.report.chart.GoogleChartAPI.RED;
 import static com.google.test.metric.report.chart.GoogleChartAPI.YELLOW;
-import com.google.test.metric.report.chart.Histogram;
-import com.google.test.metric.report.chart.Histogram.Linear;
-import com.google.test.metric.report.chart.HistogramChartUrl;
-import com.google.test.metric.report.chart.PieChartUrl;
-
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.ceil;
 import static java.lang.Math.log;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+
 import java.util.List;
+
+import com.google.common.base.Function;
+import com.google.test.metric.report.chart.GoodnessChart;
+import com.google.test.metric.report.chart.Histogram;
+import com.google.test.metric.report.chart.HistogramChartUrl;
+import com.google.test.metric.report.chart.PieChartUrl;
+import com.google.test.metric.report.chart.Histogram.Linear;
 
 public class GradeCategories {
   private static final int MAX_HISTOGRAM_BINS = 30;

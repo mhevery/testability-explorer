@@ -2,10 +2,10 @@
 
 package com.google.test.metric.asm;
 
-import com.google.test.metric.JavaClassRepository;
-import com.google.test.metric.ClassInfo;
-
 import junit.framework.TestCase;
+
+import com.google.test.metric.ClassInfo;
+import com.google.test.metric.JavaClassRepository;
 
 /**
  * @author alexeagle@google.com (Alex Eagle)

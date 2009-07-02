@@ -15,6 +15,15 @@
  */
 package com.google.test.metric.report.about;
 
+import static java.util.Arrays.asList;
+import static java.util.ResourceBundle.getBundle;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.LinkedList;
+
+import junit.framework.TestCase;
+
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.JavaClassRepository;
@@ -24,8 +33,8 @@ import com.google.test.metric.report.ClassPathTemplateLoader;
 import com.google.test.metric.report.FreemarkerReportGenerator;
 import com.google.test.metric.report.ReportModel;
 import com.google.test.metric.report.Source;
-import com.google.test.metric.report.Source.Line;
 import com.google.test.metric.report.SourceLoader;
+import com.google.test.metric.report.Source.Line;
 import com.google.test.metric.report.issues.ClassIssues;
 import com.google.test.metric.report.issues.ClassMunger;
 import com.google.test.metric.report.issues.HypotheticalCostModel;
@@ -35,14 +44,6 @@ import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.ResourceBundleModel;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
-
-import junit.framework.TestCase;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import static java.util.Arrays.asList;
-import java.util.LinkedList;
-import static java.util.ResourceBundle.getBundle;
 
 /**
  * Tests that the About report can be generated.

@@ -57,7 +57,7 @@ public class MetricComputerJavaDecorator {
 
   /** used for testing */
   public MethodCost compute(Class<?> clazz, String method) {
-    return compute(clazz.getName(), method);
+    return compute(clazz.getCanonicalName(), method);
   }
 
   /** used for testing   */
@@ -67,7 +67,7 @@ public class MetricComputerJavaDecorator {
 
   /** used for testing   */
   public ClassCost compute(Class<?> clazz) {
-    return metricComputer.compute(classRepository.getClass(clazz.getName()));
+    return metricComputer.compute(classRepository.getClass(clazz.getCanonicalName()));
   }
 
   public MetricComputer getDecoratedComputer() {

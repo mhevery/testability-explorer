@@ -32,9 +32,7 @@ public class SourceLoader {
   }
 
   public Source load(String name) {
-    name = name.replaceAll("\\$.*", "");
-    String resource = name.replace(".", "/") + ".java";
-    InputStream is = classPath.getResourceAsStream(resource);
+    InputStream is = getStream(name);
     if (is == null) {
       return new Source(new ArrayList<Source.Line>());
     }
@@ -53,6 +51,19 @@ public class SourceLoader {
       throw new RuntimeException(e);
     }
 
+  }
+
+  private InputStream getStream(String name) {
+    String resource = name.replace(".", "/");
+    InputStream is = null;
+    while (is == null && !resource.equals("")) {
+      is = classPath.getResourceAsStream(resource + ".java");
+      if (is == null) {
+        int index = resource.lastIndexOf('/');
+        resource = index == -1 ? "" : resource.substring(0, index);
+      }
+    }
+    return is;
   }
 
 }

@@ -1,14 +1,24 @@
 package com.google.test.metric.report;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
+import static com.google.test.metric.report.XMLReportGenerator.CLASS_COST_ATTRIBUTE;
+import static com.google.test.metric.report.XMLReportGenerator.CLASS_NAME_ATTRIBUTE;
+import static com.google.test.metric.report.XMLReportGenerator.CLASS_NODE;
+import static com.google.test.metric.report.XMLReportGenerator.METHOD_NAME_ATTRIBUTE;
+import static com.google.test.metric.report.XMLReportGenerator.METHOD_OVERALL_COST_ATTRIBUTE;
 
-import java.util.logging.Logger;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
-import java.util.*;
+import java.util.logging.Logger;
 
-import static com.google.test.metric.report.XMLReportGenerator.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Calculate the differences between classes and methods in two XML

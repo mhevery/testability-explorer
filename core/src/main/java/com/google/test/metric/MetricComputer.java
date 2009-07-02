@@ -15,13 +15,16 @@
  */
 package com.google.test.metric;
 
+import static com.google.test.metric.Reason.IMPLICIT_CONSTRUCTOR;
+import static com.google.test.metric.Reason.IMPLICIT_SETTER;
+import static com.google.test.metric.Reason.IMPLICIT_STATIC_INIT;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.google.test.metric.TestabilityVisitor.CostRecordingFrame;
 import com.google.test.metric.TestabilityVisitor.Frame;
-import static com.google.test.metric.Reason.*;
 
 public class MetricComputer {
 
@@ -121,7 +124,7 @@ public class MetricComputer {
       return;
     }
     for (MethodInfo method : baseMethod.getClassInfo().getMethods()) {
-      if (method.getName().startsWith("<clinit>")) {
+      if (method.isStaticConstructor()) {
         frame.applyImplicitCost(method, IMPLICIT_STATIC_INIT);
       }
     }

@@ -1,11 +1,13 @@
 package com.google.test.metric.report;
 
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Date;
+import java.util.List;
+
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-
-import java.io.*;
-import java.util.*;
 
 /**
  * Represents a report on the difference between two reports, suitable for

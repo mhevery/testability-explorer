@@ -15,10 +15,10 @@
  */
 package com.google.test.metric.report;
 
+import junit.framework.TestCase;
+
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
-
-import junit.framework.TestCase;
 
 public class SourceLoaderTest extends TestCase {
 
@@ -35,7 +35,7 @@ public class SourceLoaderTest extends TestCase {
 
   public void testReadInnerSourceFile() throws Exception {
     SourceLoader loader = new SourceLoader(classPath);
-    Source source = loader.load(InnerClass.class.getName());
+    Source source = loader.load(InnerClass.class.getCanonicalName());
     assertEquals(" * Copyright 2007 Google Inc.", source.getLine(2).getText());
   }
 

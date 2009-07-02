@@ -15,6 +15,13 @@
  */
 package com.google.test.metric.report.html;
 
+import static com.google.test.metric.report.chart.GoogleChartAPI.GREEN;
+import static com.google.test.metric.report.chart.GoogleChartAPI.RED;
+import static com.google.test.metric.report.chart.GoogleChartAPI.YELLOW;
+
+import java.util.Date;
+import java.util.List;
+
 import com.google.test.metric.AnalysisModel;
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.CostModel;
@@ -22,16 +29,10 @@ import com.google.test.metric.report.GradeCategories;
 import com.google.test.metric.report.ReportOptions;
 import com.google.test.metric.report.SummaryReportModel;
 import com.google.test.metric.report.chart.GoodnessChart;
-import static com.google.test.metric.report.chart.GoogleChartAPI.GREEN;
-import static com.google.test.metric.report.chart.GoogleChartAPI.RED;
-import static com.google.test.metric.report.chart.GoogleChartAPI.YELLOW;
-import com.google.test.metric.report.chart.Histogram.Logarithmic;
 import com.google.test.metric.report.chart.HistogramChartUrl;
 import com.google.test.metric.report.chart.PieChartUrl;
+import com.google.test.metric.report.chart.Histogram.Logarithmic;
 import com.google.test.metric.report.issues.ClassIssues;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * This model provides the data that backs the HTML report.

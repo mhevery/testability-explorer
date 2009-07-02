@@ -15,13 +15,13 @@
  */
 package com.google.test.metric.report.chart;
 
-import com.google.common.base.Function;
-import com.google.common.base.Nullable;
-
 import static java.lang.Math.ceil;
 import static java.lang.Math.log10;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+
+import com.google.common.base.Function;
+import com.google.common.base.Nullable;
 
 public class Histogram {
 

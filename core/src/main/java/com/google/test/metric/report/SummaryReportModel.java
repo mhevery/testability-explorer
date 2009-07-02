@@ -15,14 +15,14 @@
  */
 package com.google.test.metric.report;
 
-import com.google.test.metric.ClassCost;
-import com.google.test.metric.CostModel;
-import com.google.test.metric.WeightedAverage;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import com.google.test.metric.ClassCost;
+import com.google.test.metric.CostModel;
+import com.google.test.metric.WeightedAverage;
 
 public abstract class SummaryReportModel extends ReportModel {
 

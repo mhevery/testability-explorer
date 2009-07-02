@@ -1,11 +1,12 @@
 package com.google.test.metric.report;
 
-import junit.framework.TestCase;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
 import java.io.Reader;
 import java.io.StringReader;
+
+import junit.framework.TestCase;
+
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 /**
  * Tests for {@link XMLReportLoader}.

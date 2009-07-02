@@ -15,15 +15,9 @@
  */
 package com.google.test.metric.report.issues;
 
-import com.google.test.metric.ClassCost;
-import com.google.test.metric.GlobalCost;
-import com.google.test.metric.MethodCost;
-import com.google.test.metric.MethodInvocationCost;
 import static com.google.test.metric.Reason.IMPLICIT_CONSTRUCTOR;
 import static com.google.test.metric.Reason.IMPLICIT_SETTER;
 import static com.google.test.metric.Reason.IMPLICIT_STATIC_INIT;
-import com.google.test.metric.SourceLocation;
-import com.google.test.metric.ViolationCost;
 import static com.google.test.metric.report.issues.IssueSubType.COMPLEXITY;
 import static com.google.test.metric.report.issues.IssueSubType.NON_MOCKABLE;
 import static com.google.test.metric.report.issues.IssueSubType.SETTER;
@@ -38,6 +32,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.logging.Logger;
+
+import com.google.test.metric.ClassCost;
+import com.google.test.metric.GlobalCost;
+import com.google.test.metric.MethodCost;
+import com.google.test.metric.MethodInvocationCost;
+import com.google.test.metric.SourceLocation;
+import com.google.test.metric.ViolationCost;
 
 /**
  * Looks at ClassCost models and infers the coding issue that incurred the cost.

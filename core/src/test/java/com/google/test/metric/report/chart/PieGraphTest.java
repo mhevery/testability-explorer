@@ -16,6 +16,7 @@
 package com.google.test.metric.report.chart;
 
 import junit.framework.TestCase;
+
 import com.google.test.metric.report.CharMarker;
 
 public class PieGraphTest extends TestCase {

@@ -15,6 +15,9 @@
  */
 package com.google.test.metric.method;
 
+import static com.google.test.metric.Reason.IMPLICIT_STATIC_INIT;
+import junit.framework.TestCase;
+
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.Cost;
 import com.google.test.metric.CostModel;
@@ -24,11 +27,8 @@ import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvocationCost;
 import com.google.test.metric.MetricComputer;
-import static com.google.test.metric.Reason.IMPLICIT_STATIC_INIT;
 import com.google.test.metric.RegExpWhiteList;
 import com.google.test.metric.SourceLocation;
-
-import junit.framework.TestCase;
 
 public class MethodCostTest extends TestCase {
 
@@ -59,7 +59,7 @@ public class MethodCostTest extends TestCase {
 
   public void testImplicitSetterCostShouldNotBeDoubleCounted() throws Exception {
     MetricComputer computer = new MetricComputer(new JavaClassRepository(), null, new RegExpWhiteList(), 1);
-    ClassCost cost = computer.compute(Setters.class.getName());
+    ClassCost cost = computer.compute(Setters.class.getCanonicalName());
     MethodCost cost1 = cost.getMethodCost("void setFoo(java.lang.String)");
     assertEquals(1, cost1.getTotalCost().getCyclomaticComplexityCost());
   }

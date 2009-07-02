@@ -15,11 +15,11 @@
  */
 package com.google.test.metric.report.issues;
 
+import java.util.Comparator;
+
 import com.google.common.base.Nullable;
 import com.google.common.base.Predicate;
 import com.google.test.metric.SourceLocation;
-
-import java.util.Comparator;
 
 /**
  * A model of a single reportable issue with the class under analysis.

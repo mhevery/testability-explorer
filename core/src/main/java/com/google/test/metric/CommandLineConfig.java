@@ -15,13 +15,13 @@
  */
 package com.google.test.metric;
 
-import org.kohsuke.args4j.Argument;
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.Option;
-
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.Option;
 
 /**
  * Holds fields that Args4J sets by parsing the command line options. After the args are parsed,

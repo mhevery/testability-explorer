@@ -1,6 +1,9 @@
 package com.google.test.metric;
 
+import java.util.Map;
+
 import junit.framework.TestCase;
+
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 
@@ -21,7 +24,7 @@ public class JavaClassRepositoryTest extends TestCase {
    * @throws Exception
    */
   public void testParseFinishes() throws Exception {
-    repository.getClass(DeeplyNestedIfStatements.class.getName());
+    repository.getClass(DeeplyNestedIfStatements.class.getCanonicalName());
     assertTrue(true);
   }
 
@@ -46,4 +49,20 @@ public class JavaClassRepositoryTest extends TestCase {
           (x ? 1 : 0);
     }
   }
+
+  static class MyClass {
+    static class MyInnerClass {
+    }
+  }
+
+  public void testSearchForInnerClasses() throws Exception {
+    String name = "com.google.test.metric.JavaClassRepositoryTest.MyClass.MyInnerClass";
+    assertEquals(name, repository.getClass(name).getName());
+  }
+
+  public void testSearchForInnerClassesInPremordialClassloader() throws Exception {
+    String name = "java.util.Map.Entry";
+    assertEquals(name, repository.getClass(name).getName());
+  }
+
 }

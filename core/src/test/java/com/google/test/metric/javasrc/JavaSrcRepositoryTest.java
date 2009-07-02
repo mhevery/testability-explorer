@@ -15,6 +15,13 @@
  */
 package com.google.test.metric.javasrc;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import junit.framework.TestCase;
+
 import com.google.classpath.ClassPathFactory;
 import com.google.test.metric.ClassInfo;
 import com.google.test.metric.ClassNotFoundException;
@@ -23,13 +30,6 @@ import com.google.test.metric.FieldInfo;
 import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.JavaType;
 import com.google.test.metric.javasrc.JavaSrcRepositoryTest.InnerClass.InnerInnerClass;
-
-import junit.framework.TestCase;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
 public class JavaSrcRepositoryTest extends TestCase {
 
@@ -62,11 +62,11 @@ public class JavaSrcRepositoryTest extends TestCase {
   }
 
   public void testCanParseInnerClass() throws Exception {
-    ClassInfo info = repo.getClass(InnerClass.class.getName());
-    assertEquals(InnerClass.class.getName(), info.getName());
+    ClassInfo info = repo.getClass(InnerClass.class.getCanonicalName());
+    assertEquals(InnerClass.class.getCanonicalName(), info.getName());
 
-    ClassInfo info2 = repo.getClass(InnerInnerClass.class.getName());
-    assertEquals(InnerInnerClass.class.getName(), info2.getName());
+    ClassInfo info2 = repo.getClass(InnerInnerClass.class.getCanonicalName());
+    assertEquals(InnerInnerClass.class.getCanonicalName(), info2.getName());
   }
 
   static class ClassExtendsAndImplements extends ArrayList<Object> implements
@@ -75,11 +75,11 @@ public class JavaSrcRepositoryTest extends TestCase {
   }
 
   public void testClassExtendsAndImplements() throws Exception {
-    ClassInfo info = repo.getClass(ClassExtendsAndImplements.class.getName());
-    assertEquals(ArrayList.class.getName(), info.getSuperClass().getName());
+    ClassInfo info = repo.getClass(ClassExtendsAndImplements.class.getCanonicalName());
+    assertEquals(ArrayList.class.getCanonicalName(), info.getSuperClass().getName());
     assertEquals(2, info.getInterfaces().size());
-    assertEquals(Set.class.getName(), info.getInterfaces().get(0).getName());
-    assertEquals(List.class.getName(), info.getInterfaces().get(1).getName());
+    assertEquals(Set.class.getCanonicalName(), info.getInterfaces().get(0).getName());
+    assertEquals(List.class.getCanonicalName(), info.getInterfaces().get(1).getName());
   }
 
   static class FieldDeclaration {
@@ -88,14 +88,14 @@ public class JavaSrcRepositoryTest extends TestCase {
   }
 
   public void testFieldDeclareation() throws Exception {
-    ClassInfo info = repo.getClass(FieldDeclaration.class.getName());
+    ClassInfo info = repo.getClass(FieldDeclaration.class.getCanonicalName());
     Iterator<FieldInfo> iterator = info.getFields().iterator();
     FieldInfo field1 = iterator.next();
     FieldInfo field2 = iterator.next();
     assertFalse(iterator.hasNext());
 
     assertEquals("field1", field1.getName());
-    assertEquals(String.class.getName(), field1.getType().toString());
+    assertEquals(String.class.getCanonicalName(), field1.getType().toString());
     assertEquals(false, field1.isPrivate());
     assertEquals(true, field1.isFinal());
     assertEquals(true, field1.isGlobal());

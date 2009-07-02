@@ -15,14 +15,14 @@
  */
 package com.google.test.metric.report;
 
+import junit.framework.TestCase;
+
 import com.google.test.metric.FieldInfo;
 import com.google.test.metric.JavaType;
 import com.google.test.metric.LocalField;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.Type;
 import com.google.test.metric.Variable;
-
-import junit.framework.TestCase;
 
 /**
  * @author alexeagle@google.com (Alex Eagle)

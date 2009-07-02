@@ -15,15 +15,16 @@
  */
 package com.google.test.metric;
 
-import com.google.classpath.RegExpResourceFilter;
 import static com.google.classpath.RegExpResourceFilter.ANY;
 import static com.google.classpath.RegExpResourceFilter.ENDS_WITH_CLASS;
-import com.google.test.metric.report.issues.IssuesReporter;
+import static java.util.Arrays.asList;
 
 import java.io.IOException;
-import static java.util.Arrays.asList;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import com.google.classpath.RegExpResourceFilter;
+import com.google.test.metric.report.issues.IssuesReporter;
 
 /**
  * Has the responsibility of kicking off the analysis. A programmatic interface into using

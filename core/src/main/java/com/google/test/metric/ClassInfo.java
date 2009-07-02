@@ -71,7 +71,7 @@ public class ClassInfo {
   }
 
   public void addMethod(MethodInfo methodInfo) {
-    methods.put(methodInfo.getNameDesc(), methodInfo);
+    methods.put(methodInfo.getName(), methodInfo);
   }
 
   @Override

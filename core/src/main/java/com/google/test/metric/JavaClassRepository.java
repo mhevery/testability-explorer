@@ -15,15 +15,15 @@
  */
 package com.google.test.metric;
 
-import com.google.classpath.ClassPath;
-import com.google.test.metric.asm.ClassInfoBuilderVisitor;
-
-import org.objectweb.asm.ClassReader;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.objectweb.asm.ClassReader;
+
+import com.google.classpath.ClassPath;
+import com.google.test.metric.asm.ClassInfoBuilderVisitor;
 
 public class JavaClassRepository implements ClassRepository {
 
@@ -37,37 +37,50 @@ public class JavaClassRepository implements ClassRepository {
     this.classpathRoots = classpathRoots;
   }
 
-  public ClassInfo getClass(String clazzName) {
-    if (clazzName.startsWith("[")) {
-      return getClass(Object.class.getName());
+  public ClassInfo getClass(String name) {
+    if (name.startsWith("[")) {
+      return getClass(Object.class.getCanonicalName());
     }
-    ClassInfo classInfo = classes.get(clazzName.replace('/', '.'));
+    if (name.contains("$") || name.contains("/")) {
+      throw new IllegalStateException();
+    }
+    ClassInfo classInfo = classes.get(name);
     if (classInfo == null) {
         try {
-          classInfo = parseClass(inputStreamForClass(clazzName));
+          classInfo = parseClass(inputStreamForClass(name));
         } catch (ArrayIndexOutOfBoundsException e) {
-          throw new ClassNotFoundException(clazzName);
+          throw new ClassNotFoundException(name);
         } catch (ClassNotFoundException e) {
-          throw new ClassNotFoundException(clazzName, e);
+          throw new ClassNotFoundException(name, e);
         }
     }
     return classInfo;
   }
 
   private InputStream inputStreamForClass(String clazzName) {
-    String classResource = clazzName.replace(".", "/") + ".class";
-    InputStream classBytes;
+    String resource = clazzName.replace(".", "/");
+    InputStream classBytes = null;
+    while (true) {
+      classBytes = getResource(resource + ".class");
+      if (classBytes != null) {
+        return classBytes;
+      }
+      int index = resource.lastIndexOf('/');
+      if (index == -1) {
+        throw new ClassNotFoundException(clazzName);
+      }
+      resource = resource.substring(0, index) + "$" + resource.substring(index + 1);
+    }
+  }
+
+  private InputStream getResource(String classResource) {
+    InputStream classBytes = null;
     if (classpathRoots != null) {
       classBytes = classpathRoots.getResourceAsStream(classResource);
-      if (classBytes == null) {
-        //Perhaps it is a JDK Class
-        classBytes = ClassLoader.getSystemResourceAsStream(classResource);
-      }
-    } else {
-      classBytes = ClassLoader.getSystemResourceAsStream(classResource);
     }
     if (classBytes == null) {
-      throw new ClassNotFoundException(clazzName);
+      //Perhaps it is a JDK Class
+      classBytes = ClassLoader.getSystemResourceAsStream(classResource);
     }
     return classBytes;
   }
@@ -87,7 +100,11 @@ public class JavaClassRepository implements ClassRepository {
    * @see com.google.test.metric.ClassRepository#addClass(com.google.test.metric.ClassInfo)
    */
   public void addClass(ClassInfo classInfo) {
-    classes.put(classInfo.getName(), classInfo);
+    String name = classInfo.getName();
+    if (name.contains("$") || name.contains("/")) {
+      throw new IllegalStateException();
+    }
+    classes.put(name, classInfo);
   }
 
 }

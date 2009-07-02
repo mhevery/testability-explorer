@@ -15,9 +15,9 @@
  */
 package com.google.test.metric.report;
 
-import com.google.test.metric.report.chart.PieGraph;
-
 import java.util.Formatter;
+
+import com.google.test.metric.report.chart.PieGraph;
 
 public class TextHistogram {
 

@@ -15,10 +15,13 @@
  */
 package com.google.test.metric.report.issues;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
+
 import com.google.common.collect.ForwardingQueue;
 import com.google.common.collect.Lists;
-
-import java.util.*;
 
 /**
  * A queue of IssueHolders that only keeps issues that are important enough to show, and sorts

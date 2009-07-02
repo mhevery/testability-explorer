@@ -15,11 +15,11 @@
  */
 package com.google.test.metric;
 
-import com.google.test.metric.report.RemovePackageFormatter;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import com.google.test.metric.report.RemovePackageFormatter;
 
 public class MethodCost {
 

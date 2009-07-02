@@ -15,6 +15,9 @@
  */
 package com.google.test.metric;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class JavaType extends Type {
 
   public static final Type VOID = new Type("void", "V");
@@ -72,32 +75,68 @@ public class JavaType extends Type {
   public static Type fromDesc(String desc) {
     char ch = desc.charAt(0);
     switch (ch) {
-      case 'V':
-        return VOID;
-      case 'B':
-        return BYTE;
-      case 'S':
-        return SHORT;
-      case 'Z':
-        return BOOLEAN;
-      case 'C':
-        return CHAR;
-      case 'I':
-        return INT;
-      case 'J':
-        return LONG;
-      case 'F':
-        return FLOAT;
-      case 'D':
-        return DOUBLE;
-      case '[':
-        return fromDesc(desc.substring(1)).toArray();
-      case 'L':
-        String javaClass = desc.substring(1, desc.length() - 1);
-        javaClass = javaClass.replace('/', '.');
-        return new Type(0, javaClass, desc);
-      default:
-        throw new IllegalArgumentException(desc);
+    case 'V':
+      return VOID;
+    case 'B':
+      return BYTE;
+    case 'S':
+      return SHORT;
+    case 'Z':
+      return BOOLEAN;
+    case 'C':
+      return CHAR;
+    case 'I':
+      return INT;
+    case 'J':
+      return LONG;
+    case 'F':
+      return FLOAT;
+    case 'D':
+      return DOUBLE;
+    case '[':
+      return fromDesc(desc.substring(1)).toArray();
+    case 'L':
+      String javaClass = desc.substring(1, desc.length() - 1);
+      javaClass = javaClass.replace('/', '.').replace('$', '.');
+      return new Type(0, javaClass, desc);
+    default:
+      throw new IllegalArgumentException(desc);
     }
+  }
+
+  public static Type fromDescReturn(String desc) {
+    return fromDesc(desc.split("\\(.*\\)")[1]);
+  }
+
+  public static List<Type> fromDescParameters(String desc) {
+    ArrayList<Type> list = new ArrayList<Type>();
+    int start = 1;
+    int end = 1;
+    while (end < desc.length()) {
+      char ch = desc.charAt(end);
+      if (ch == ')') {
+        if (start != end) {
+          list.add(fromDesc(desc.substring(start, end)));
+        }
+        return list;
+      } else if (ch == 'L') {
+        while (desc.charAt(end) != ';') {
+          end++;
+          if (end == desc.length()) {
+            throw new IllegalArgumentException("Did you forget closing ';'");
+          }
+        }
+        end++;
+        list.add(fromDesc(desc.substring(start, end)));
+        start = end;
+      } else if (ch == '[') {
+        end++;
+      } else {
+        end++;
+        list.add(fromDesc(desc.substring(start, end)));
+        start = end;
+      }
+    }
+    throw new IllegalArgumentException("Did you forget closing ')'");
   }
 }

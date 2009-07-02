@@ -15,6 +15,12 @@
  */
 package com.google.test.metric.method;
 
+import static java.util.Arrays.asList;
+
+import java.util.List;
+
+import junit.framework.TestCase;
+
 import com.google.test.metric.FieldInfo;
 import com.google.test.metric.JavaType;
 import com.google.test.metric.Type;
@@ -25,11 +31,6 @@ import com.google.test.metric.method.op.stack.Load;
 import com.google.test.metric.method.op.stack.PutField;
 import com.google.test.metric.method.op.turing.MethodInvocation;
 import com.google.test.metric.method.op.turing.Operation;
-
-import junit.framework.TestCase;
-
-import static java.util.Arrays.asList;
-import java.util.List;
 
 public class BlockTest extends TestCase {
 
@@ -83,13 +84,13 @@ public class BlockTest extends TestCase {
         false, true, false)));
     block.addOp(new GetField(-1, new FieldInfo(null, "p2", OBJECT,
         false, true, false)));
-    block.addOp(new Invoke(-1, null, "methodA", "(II)A", asList(JavaType.INT,
+    block.addOp(new Invoke(-1, null, "int methodA(int, int)", asList(JavaType.INT,
         JavaType.INT), false, OBJECT));
     block.addOp(new PutField(-1, new FieldInfo(null, "dst", OBJECT,
         false, true, false)));
 
     List<Operation> operations = new Stack2Turing(block).translate();
-    assertEquals("[null.methodA(II)A, null.dst{java.lang.Object} <- ?{java.lang.Object}]",
+    assertEquals("[null:int methodA(int, int), null.dst{java.lang.Object} <- ?{java.lang.Object}]",
         operations.toString());
   }
 
@@ -112,7 +113,7 @@ public class BlockTest extends TestCase {
     branchA.addOp(new Load(-1, var("A")));
     branchB.addOp(new Load(-1, var("B")));
     joined.addOp(new Load(-1, var("joined")));
-    joined.addOp(new Invoke(-1, null, "m", "(III)V", asList(JavaType.INT,
+    joined.addOp(new Invoke(-1, null, "void m(int, int, int)", asList(JavaType.INT,
         JavaType.INT, JavaType.INT), false, JavaType.VOID));
 
     List<Operation> operations = new Stack2Turing(root).translate();

@@ -15,10 +15,10 @@
  */
 package com.google.test.metric.method.op.stack;
 
-import com.google.test.metric.Variable;
-
 import java.util.LinkedList;
 import java.util.List;
+
+import com.google.test.metric.Variable;
 
 public class Duplicate extends StackOperation {
 

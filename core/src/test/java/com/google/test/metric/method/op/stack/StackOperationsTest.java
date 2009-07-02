@@ -14,7 +14,7 @@ public class StackOperationsTest extends TestCase {
   private void assertOperations(Class<?> clazz, String... expectedOps) {
     LinkedList<Operation> actualOps =
         new LinkedList<Operation>(methodForClass(clazz).getOperations());
-    assertEquals("java.lang.Object.<init>()V", actualOps.remove(0).toString());
+    assertEquals("java.lang.Object:Object()", actualOps.remove(0).toString());
     String error = "\nExpected: " + Arrays.toString(expectedOps)
         + "\n   Actual: " + actualOps;
     assertEquals(error, expectedOps.length, actualOps.size());
@@ -24,7 +24,7 @@ public class StackOperationsTest extends TestCase {
   }
 
   private MethodInfo methodForClass(Class<?> clazz) {
-    return new JavaClassRepository().getClass(clazz.getName()).getMethod("<init>()V");
+    return new JavaClassRepository().getClass(clazz.getCanonicalName()).getMethod(clazz.getSimpleName() + "()");
   }
 
   private static class LoadClass {
@@ -35,7 +35,7 @@ public class StackOperationsTest extends TestCase {
   }
 
   public void testLoad() throws Exception {
-    assertOperations(LoadClass.class, "java.lang.Object.hashCode()I");
+    assertOperations(LoadClass.class, "java.lang.Object:int hashCode()");
     assertEquals("load null", new Load(-1, null).toString());
   }
 
@@ -56,7 +56,7 @@ public class StackOperationsTest extends TestCase {
     assertOperations(PopClass.class,
         "a{long} <- 1{long}",
         "b{double} <- 2.0{double}",
-        getClass().getName() + ".add(JD)D");
+        getClass().getName() + ":double add(long, double)");
     assertEquals("pop", new Pop(-1, 1).toString());
   }
 
