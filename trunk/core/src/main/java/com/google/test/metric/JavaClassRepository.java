@@ -42,7 +42,7 @@ public class JavaClassRepository implements ClassRepository {
       return getClass(Object.class.getCanonicalName());
     }
     if (name.contains("$") || name.contains("/")) {
-      throw new IllegalStateException();
+      throw new IllegalStateException("Class name can not contain '$' or '/' in a name: " + name);
     }
     ClassInfo classInfo = classes.get(name);
     if (classInfo == null) {

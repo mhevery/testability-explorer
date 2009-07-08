@@ -56,7 +56,7 @@ public class JavaTestabilityRunner implements Runnable {
       classNames.addAll(asList(config.getClassPath().findResources(entry.replace(".", "/"), resourceFilter)));
     }
     for (String resource : classNames) {
-      String className = resource.replace(".class", "").replace("/", ".");
+      String className = resource.replace(".class", "").replace("/", ".").replace('$', '.');
       try {
         if (!config.getWhitelist().isClassWhiteListed(className)) {
           ClassInfo clazz = classRepository.getClass(className);
