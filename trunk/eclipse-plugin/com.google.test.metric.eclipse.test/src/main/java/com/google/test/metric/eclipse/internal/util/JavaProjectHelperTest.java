@@ -72,7 +72,7 @@ public class JavaProjectHelperTest extends TestCase {
     assertTrue("Resource's Package visitor not the right type",
         resource.visitor instanceof JavaPackageVisitor);
   }
-  
+
   private class TestablePackageFragmentRoot implements IPackageFragmentRoot {
     public boolean archive;
     public IResource resource;
@@ -245,7 +245,7 @@ public class JavaProjectHelperTest extends TestCase {
     public void save(IProgressMonitor progress, boolean force) {
     }
   }
-  
+
   private class ListeningResource implements IResource {
 
     public boolean isAcceptCalled = false;
@@ -507,6 +507,14 @@ public class JavaProjectHelperTest extends TestCase {
       return false;
     }
 
+    public boolean isHidden(int options) {
+      throw new UnsupportedOperationException();
+    }
+
+    public boolean isTeamPrivateMember(int options) {
+      throw new UnsupportedOperationException();
+    }
+
   }
 
   private class TestableClassPathEntry implements IClasspathEntry {
@@ -567,7 +575,7 @@ public class JavaProjectHelperTest extends TestCase {
       return false;
     }
   }
-  
+
   private class TestableJavaProject implements IJavaProject {
 
     public IPackageFragmentRoot[] roots;
