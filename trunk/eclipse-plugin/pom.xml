@@ -1,14 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.google.code.testability-explorer</groupId>
+  <parent>
+    <groupId>com.google.testability-explorer</groupId>
+    <artifactId>testability-explorer</artifactId>
+    <version>1.3.2-SNAPSHOT</version>
+  </parent>
+
   <artifactId>eclipse-plugin</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <modules>
-    <module>Testability Explorer</module>
-    <module>com.google.test.metric.eclipse.core</module>
-    <module>com.google.test.metric.eclipse.feature</module>
-    <module>com.google.test.metric.eclipse.ui</module>
-  </modules>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>compile</id>
+            <phase>compile</phase>
+            <configuration>
+              <tasks>
+                <ant/>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>clean</id>
+            <phase>clean</phase>
+            <configuration>
+              <tasks>
+                <ant target="clean"/>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
