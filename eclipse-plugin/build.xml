@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="project" default="default">
+  <property name="eclipse.dir" value="/usr/local/google/users/shyamseshadri/eclipse34/stable"/>
+  <property name="eclipse.launcher.jar" value="${eclipse.dir}/plugins/org.eclipse.equinox.launcher_1.0.101.R34x_v20081125.jar"/>
+  <property name="eclipse.pde.xml" value="${eclipse.dir}/plugins/org.eclipse.pde.build_3.4.1.R34x_v20081217/scripts/build.xml"/>
+  <target name="default">
+    <java jar="${eclipse.launcher.jar}" fork="true">
+      <env key="JAVA_HOME" value="/usr/local/buildtools/java/jdk1.6.0_01_gg1"/>
+      <arg value="-application"/>
+      <arg value="org.eclipse.ant.core.antRunner"/>
+      <arg value="-buildfile"/>
+      <arg value="${eclipse.pde.xml}"/>
+      <arg value="-Dbuilder=${basedir}"/>
+   </java>
+ </target>
+ <target name="clean">
+  <delete includeemptydirs="true" failonerror="false" verbose="true">
+    <fileset dir="target" id="targetFolder"/>
+    <fileset dir="tmp" id="tmpFolder"/>
+    <fileset dir="." id="assembleFiles" includes="assemble*"/>
+    <fileset dir="." id="finalFiles" includes="final*"/>
+    <fileset dir="." id="packageFiles" includes="package*"/>
+    <fileset dir="plugins/com.google.test.metric.eclipse.doc/@dot" id="docDotFolder"/>
+    <fileset dir="plugins/com.google.test.metric.eclipse.doc/temp.folder" id="docTmpFolder"/>
+    <fileset dir="plugins/com.google.test.metric.eclipse.core/@dot" id="coreDotFolder"/>
+    <fileset dir="plugins/com.google.test.metric.eclipse.core/temp.folder" id="coreTmpFolder"/>
+    <fileset dir="plugins/com.google.test.metric.eclipse.ui/@dot" id="uiDotFolder"/>
+    <fileset dir="plugins/com.google.test.metric.eclipse.ui/temp.folder" id="uiTmpFolder"/>
+    <fileset dir="." id="compilerArgs" includes="**/javaCompiler...args"/>
+    <fileset dir="plugins" id="genPluginsBuildXml" includes="**/build.xml"/>
+    <fileset dir="features" id="genFeaturesBuildXml" includes="**/build.xml"/>
+    <fileset dir="features" id="genFeaturesZip" includes="**/*.zip"/>
+  </delete>
+ </target>
+</project>
