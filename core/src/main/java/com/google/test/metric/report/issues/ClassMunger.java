@@ -20,6 +20,7 @@ public class ClassMunger {
 
   public ClassInfo getClassWithoutMethod(String className, MethodInfo method) {
     ClassInfo munged = repo.getClass(className).copy();
+    // MethodInfo method = munged.getMethod(methodName);
     munged.addMethod(method.copyWithNoOperations(munged));
     return munged;
   }

@@ -1,14 +1,14 @@
 package com.google.test.metric;
 
+import com.google.classpath.ClassPath;
+import com.google.classpath.ClassPathFactory;
+import com.google.test.metric.report.ReportGenerator;
+import com.google.test.metric.report.TextReportGenerator;
+
+import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
-
-import com.google.classpath.ClassPath;
-import com.google.classpath.ClassPathFactory;
-import com.google.test.metric.TestabilityTest.WatchedOutputStream;
-import com.google.test.metric.report.ReportGenerator;
-import com.google.test.metric.report.TextReportGenerator;
 
 public class TestabilityRunnerTest extends AutoFieldClearTestCase {
   /**
@@ -36,8 +36,8 @@ public class TestabilityRunnerTest extends AutoFieldClearTestCase {
    */
   public static final String CLASSES_EXTERNAL_DEPS_NO_SUPERCLASSES = CLASSES_FOR_TEST + "/root3";
 
-  private WatchedOutputStream out = new WatchedOutputStream();
-  private WatchedOutputStream err = new WatchedOutputStream();
+  private ByteArrayOutputStream out = new ByteArrayOutputStream();
+  private ByteArrayOutputStream err = new ByteArrayOutputStream();
   private List<String> allEntryList = Arrays.asList("");
   private ReportGenerator report = new TextReportGenerator(new PrintStream(out), new CostModel(), 0, 0, 0);
   private RegExpWhiteList whiteList = new RegExpWhiteList("java.");

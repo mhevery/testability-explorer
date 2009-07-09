@@ -15,16 +15,16 @@
  */
 package com.google.test.metric;
 
+import com.google.classpath.RegExpResourceFilter;
 import static com.google.classpath.RegExpResourceFilter.ANY;
 import static com.google.classpath.RegExpResourceFilter.ENDS_WITH_CLASS;
-import static java.util.Arrays.asList;
+import com.google.inject.Inject;
+import com.google.test.metric.report.issues.IssuesReporter;
 
 import java.io.IOException;
+import static java.util.Arrays.asList;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import com.google.classpath.RegExpResourceFilter;
-import com.google.test.metric.report.issues.IssuesReporter;
 
 /**
  * Has the responsibility of kicking off the analysis. A programmatic interface into using
@@ -36,6 +36,7 @@ public class JavaTestabilityRunner implements Runnable {
 
   private final JavaTestabilityConfig config;
 
+  @Inject
   public JavaTestabilityRunner(JavaTestabilityConfig config) {
     this.config = config;
   }
