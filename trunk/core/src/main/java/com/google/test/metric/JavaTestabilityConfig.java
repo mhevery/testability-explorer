@@ -15,16 +15,13 @@
  */
 package com.google.test.metric;
 
-import java.io.PrintStream;
-import java.util.List;
-
-import org.kohsuke.args4j.CmdLineException;
-
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
-import com.google.test.metric.ReportGeneratorBuilder.ReportFormat;
 import com.google.test.metric.report.ReportGenerator;
 import com.google.test.metric.report.ReportOptions;
+
+import java.io.PrintStream;
+import java.util.List;
 
 /**
  * Value object which represents the simple configuration needed to make Testability Explorer reports.
@@ -44,7 +41,7 @@ public class JavaTestabilityConfig {
   private final PrintStream err;
   private final int printDepth;
 
-  public JavaTestabilityConfig(CommandLineConfig config) throws CmdLineException {
+  public JavaTestabilityConfig(CommandLineConfig config) {
     entryList = config.entryList;
     classPath = new ClassPathFactory().createFromPath(config.cp);
     err = config.err;
@@ -55,13 +52,8 @@ public class JavaTestabilityConfig {
         config.maxAcceptableCost, config.worstOffenderCount,
         config.maxMethodCount, config.maxLineCount, config.printDepth,
         config.minCost, config.srcFileLineUrl, config.srcFileUrl);
-    ReportFormat format;
-    try {
-      format = ReportFormat.valueOf(config.printer);
-    } catch (Exception e) {
-      throw new CmdLineException("Don't understand '-print' option '" + config.printer + "'");
-    }
-    report = new ReportGeneratorBuilder(classPath, options, format, config.out, entryList).build();
+
+    report = new ReportGeneratorBuilder(classPath, options, config.format, config.out, entryList).build();
     RegExpWhiteList regExpWhitelist = new RegExpWhiteList("java.");
     for (String packageName : config.wl == null ? new String[] {} : config.wl.split("[,:]")) {
       regExpWhitelist.addPackage(packageName);

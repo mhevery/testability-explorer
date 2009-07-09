@@ -15,13 +15,15 @@
  */
 package com.google.test.metric;
 
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
+import com.google.test.metric.ReportGeneratorBuilder.ReportFormat;
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.Option;
+
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Holds fields that Args4J sets by parsing the command line options. After the args are parsed,
@@ -95,6 +97,7 @@ public class CommandLineConfig {
       + "Matches any class starting with these.\n"
       + "Ex. com.example.analyze.these com.google.and.these.packages " + "com.google.AClass")
   List<String> entryList = new ArrayList<String>();
+  ReportFormat format;
 
   PrintStream out;
   PrintStream err;
@@ -104,12 +107,13 @@ public class CommandLineConfig {
     this.err = err;
   }
 
-  public JavaTestabilityConfig buildTestabilityConfig() throws CmdLineException {
+  public JavaTestabilityConfig buildTestabilityConfig() {
     // This responsibility might belong in a new class.
     cp = (cp != null ? cp : System.getProperty("java.class.path", "."));
     if (entryList.isEmpty()) {
       entryList.add(".");
     }
+    format = ReportFormat.valueOf(printer);
     return new JavaTestabilityConfig(this);
   }
 
@@ -117,6 +121,11 @@ public class CommandLineConfig {
     if (cp == null && entryList.isEmpty()) {
       throw new CmdLineException("You must supply either the -cp flag, " +
           "or the argument \"classes and packages to analyze\".");
+    }
+    try {
+      ReportFormat.valueOf(printer);
+    } catch (IllegalArgumentException e) {
+      throw new CmdLineException("Don't understand '-print' option '" + printer + "'");
     }
   }
 }
