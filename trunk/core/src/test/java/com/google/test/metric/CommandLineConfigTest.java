@@ -15,6 +15,13 @@
  */
 package com.google.test.metric;
 
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import org.kohsuke.args4j.CmdLineException;
+
+import com.google.test.metric.TestabilityTest.WatchedOutputStream;
 import com.google.test.metric.report.DrillDownReportGenerator;
 import com.google.test.metric.report.FreemarkerReportGenerator;
 import com.google.test.metric.report.PropertiesReportGenerator;
@@ -22,20 +29,12 @@ import com.google.test.metric.report.SourceReportGenerator;
 import com.google.test.metric.report.TextReportGenerator;
 import com.google.test.metric.report.XMLReportGenerator;
 
-import org.kohsuke.args4j.CmdLineException;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class CommandLineConfigTest extends AutoFieldClearTestCase {
 
-  private ByteArrayOutputStream out = new ByteArrayOutputStream();
-  private ByteArrayOutputStream err = new ByteArrayOutputStream();
+  private WatchedOutputStream out = new WatchedOutputStream();
+  private WatchedOutputStream err = new WatchedOutputStream();
   private CommandLineConfig commandLineConfig;
 
-  @Override
   public void setUp() {
     commandLineConfig = new CommandLineConfig(new PrintStream(out), new PrintStream(err));
   }
@@ -77,10 +76,9 @@ public class CommandLineConfigTest extends AutoFieldClearTestCase {
   }
 
   public void testCreateNonexistantReportThrowsException() throws Exception {
-    commandLineConfig.cp = "";
     commandLineConfig.printer = "i-dont-exist";
     try {
-      commandLineConfig.validate();
+      commandLineConfig.buildTestabilityConfig();
       fail("CmdLineException exception expected but did not get thrown");
     } catch (CmdLineException expected) {
       assertTrue(expected.getMessage().startsWith("Don't understand"));
@@ -89,7 +87,7 @@ public class CommandLineConfigTest extends AutoFieldClearTestCase {
   
   
   public void testBuildTestabilityConfig() throws Exception {
-    PrintStream errStream = new PrintStream(new ByteArrayOutputStream());
+    PrintStream errStream = new PrintStream(new WatchedOutputStream());
     commandLineConfig = new CommandLineConfig(null, errStream);
     commandLineConfig.entryList = Arrays.asList("com.example.io", "com.example.ext");
     commandLineConfig.cp = "fake/path";

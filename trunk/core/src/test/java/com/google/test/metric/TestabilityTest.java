@@ -15,31 +15,22 @@
  */
 package com.google.test.metric;
 
-import org.kohsuke.args4j.CmdLineParser;
-
-import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TestabilityTest extends AutoFieldClearTestCase {
 
-  private ByteArrayOutputStream out = new ByteArrayOutputStream();
-  private ByteArrayOutputStream err = new ByteArrayOutputStream();
+  private WatchedOutputStream out = new WatchedOutputStream();
+  private WatchedOutputStream err = new WatchedOutputStream();
   private CommandLineConfig commandLineConfig;
   private Testability testability;
 
   @Override
-  protected void setUp() {    
+  protected void setUp() {
     commandLineConfig = new CommandLineConfig(new PrintStream(out), new PrintStream(err));
-    CmdLineParser parser = new CmdLineParser(commandLineConfig);
-    testability = new Testability(parser, commandLineConfig, new PrintStream(err), new Runnable() {
-      public void run() {
-        // this call modifies the commandLineConfig
-        commandLineConfig.buildTestabilityConfig();
-      }
-    });
-
+    testability = new Testability(new PrintStream(err), commandLineConfig);
   }
 
   public void testParseNoArgs() {
@@ -61,20 +52,20 @@ public class TestabilityTest extends AutoFieldClearTestCase {
   }
 
   public void testParseMultipleClassesAndPackages() throws Exception {
-    testability.run("-cp", "not/default/path",
-                "com.google.FirstClass",
-                "com.google.second.package",
-                "com.google.third.package");
+	    testability.run("-cp", "not/default/path",
+	    		"com.google.FirstClass",
+	    		"com.google.second.package",
+	    		"com.google.third.package");
 
-    assertEquals("", err.toString());
-    assertEquals("not/default/path", commandLineConfig.cp);
-    List<String> expectedArgs = new ArrayList<String>();
-    expectedArgs.add("com.google.FirstClass");
-    expectedArgs.add("com.google.second.package");
-    expectedArgs.add("com.google.third.package");
-    assertNotNull(commandLineConfig.entryList);
-    assertEquals(expectedArgs, commandLineConfig.entryList);
-  }
+	    assertEquals("", err.toString());
+	    assertEquals("not/default/path", commandLineConfig.cp);
+	    List<String> expectedArgs = new ArrayList<String>();
+	    expectedArgs.add("com.google.FirstClass");
+	    expectedArgs.add("com.google.second.package");
+	    expectedArgs.add("com.google.third.package");
+	    assertNotNull(commandLineConfig.entryList);
+	    assertEquals(expectedArgs, commandLineConfig.entryList);
+	  }
 
   /*
    * If the main() method is called directly by another class,
@@ -83,37 +74,37 @@ public class TestabilityTest extends AutoFieldClearTestCase {
    * separated by spaces (" ")
    */
   public void testParseMultipleClassesAndPackagesSingleArg() throws Exception {
-    testability.run("-cp", "not/default/path",
-                "com.google.FirstClass com.google.second.package com.google.third.package");
+	    testability.run("-cp", "not/default/path",
+	    		"com.google.FirstClass com.google.second.package com.google.third.package");
 
-    assertEquals("", err.toString());
-    assertEquals("not/default/path", commandLineConfig.cp);
-    List<String> expectedArgs = new ArrayList<String>();
-    expectedArgs.add("com.google.FirstClass");
-    expectedArgs.add("com.google.second.package");
-    expectedArgs.add("com.google.third.package");
-    assertNotNull(commandLineConfig.entryList);
-    assertEquals(expectedArgs, commandLineConfig.entryList);
-  }
+	    assertEquals("", err.toString());
+	    assertEquals("not/default/path", commandLineConfig.cp);
+	    List<String> expectedArgs = new ArrayList<String>();
+	    expectedArgs.add("com.google.FirstClass");
+	    expectedArgs.add("com.google.second.package");
+	    expectedArgs.add("com.google.third.package");
+	    assertNotNull(commandLineConfig.entryList);
+	    assertEquals(expectedArgs, commandLineConfig.entryList);
+	  }
 
   public void testParseComplexityAndGlobal() throws Exception {
-    testability.run("-cp", "not/default/path",
-                "-cyclomatic", "10",
-                "-global", "1",
-                "com.google.TestClass");
+	    testability.run("-cp", "not/default/path",
+	    		"-cyclomatic", "10",
+	    		"-global", "1",
+	    		"com.google.TestClass");
 
-    assertEquals("", err.toString());
-    assertEquals("Classpath", "not/default/path", commandLineConfig.cp);
-    List<String> expectedArgs = new ArrayList<String>();
-    expectedArgs.add("com.google.TestClass");
-    assertNotNull(commandLineConfig.entryList);
-    assertEquals(expectedArgs, commandLineConfig.entryList);
-    assertEquals("Cyclomatic", 10.0, commandLineConfig.cyclomaticMultiplier);
-    assertEquals("Global", 1.0, commandLineConfig.globalMultiplier);
-  }
+	    assertEquals("", err.toString());
+	    assertEquals("Classpath", "not/default/path", commandLineConfig.cp);
+	    List<String> expectedArgs = new ArrayList<String>();
+	    expectedArgs.add("com.google.TestClass");
+	    assertNotNull(commandLineConfig.entryList);
+	    assertEquals(expectedArgs, commandLineConfig.entryList);
+	    assertEquals("Cyclomatic", 10.0, commandLineConfig.cyclomaticMultiplier);
+	    assertEquals("Global", 1.0, commandLineConfig.globalMultiplier);
+	  }
 
   public void testJarFileNoClasspath() throws Exception {
-    testability.run("junit.runner", "-cp");
+    Testability.main(new PrintStream(err), commandLineConfig, "junit.runner", "-cp");
     /**
      * we expect the error to say something about proper usage of the arguments.
      * The -cp needs a value
@@ -128,5 +119,34 @@ public class TestabilityTest extends AutoFieldClearTestCase {
     testability.run("-srcFileLineUrl", lineUrl, "-srcFileUrl", fileUrl);
     assertEquals(lineUrl, commandLineConfig.srcFileLineUrl);
     assertEquals(fileUrl, commandLineConfig.srcFileUrl);
+  }
+
+  public static class WatchedOutputStream extends OutputStream {
+    StringBuffer sb = new StringBuffer(5000);
+
+    @Override
+    public void write(int ch) {
+      sb.append(ch);
+    }
+
+    @Override
+    public void write(byte[] b) {
+      sb.append(new String(b));
+    }
+
+    @Override
+    public void write(byte[] b, int off, int len) {
+      sb.append(new String(b, off, len));
+    }
+
+    @Override
+    public String toString() {
+      return sb.toString();
+    }
+
+    public void clear() {
+      sb = new StringBuffer(5000);
+    }
+
   }
 }

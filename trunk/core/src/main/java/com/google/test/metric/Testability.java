@@ -21,38 +21,35 @@ package com.google.test.metric;
  * Delegates to Args4J for the responsibility of parsing options.
  * Delegates to TestabilityRunner to actually run the analysis.
  */
-
-import com.google.inject.Guice;
-import com.google.inject.Inject;
+import java.io.PrintStream;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
-import java.io.PrintStream;
-
 public class Testability {
-
-  private final Runnable runner;
-  private final CommandLineConfig commandLineConfig;
   private final PrintStream err;
-  private final CmdLineParser parser;
+  private final CommandLineConfig commandLineConfig;
 
-  @Inject
-  public Testability(CmdLineParser parser, CommandLineConfig commandLineConfig, PrintStream err, Runnable runner) {
-    this.parser = parser;
-    this.runner = runner;
-    this.commandLineConfig = commandLineConfig;
+  public Testability(PrintStream err, CommandLineConfig commandLineConfig) {
     this.err = err;
+    this.commandLineConfig = commandLineConfig;
   }
 
   public static void main(String... args) {
-    Guice.createInjector(new TestabilityModule()).getInstance(Testability.class).run(args);
+    main(System.err, new CommandLineConfig(System.out, System.err), args);
+  }
+
+  public static void main(PrintStream err, CommandLineConfig commandLineConfig, String... args) {
+    new Testability(err, commandLineConfig).run(args);
   }
 
   public void run(String... args) {
+    CmdLineParser parser = new CmdLineParser(commandLineConfig);
     try {
       parser.parseArgument(args);
       commandLineConfig.validate();
+      TestabilityFactory factory = new TestabilityFactory();
+      Runnable runner = factory.createRunner(commandLineConfig);
       runner.run();
     } catch (CmdLineException e) {
       err.println(e.getMessage() + "\n");
