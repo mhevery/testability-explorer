@@ -89,13 +89,13 @@ public class TestabilityReportLaunchListener implements TestabilityLaunchListene
       }
     }
     for (ClassIssues classIssue : classIssues) {
-      IResource resource = getAbsolutePathFromJavaFile(classIssue.getPath(), sourceFolderPaths,
+      IResource resource = getAbsolutePathFromJavaFile(classIssue.getClassName(), sourceFolderPaths,
           javaProject.getProject());
       if (resource != null) {
         for (Issue issue : classIssue.getMostImportantIssues()) {
           Map<String, Object> attributes = new HashMap<String, Object>();
           attributes.put(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
-          attributes.put(IMarker.LINE_NUMBER, issue.getLineNumber());
+          attributes.put(IMarker.LINE_NUMBER, issue.getLocation().getLineNumber());
           attributes.put(IMarker.MESSAGE,
               retriever.getSuggestion(issue.getType(), issue.getSubType()));
           IssueType issueType = issue.getType(); 
@@ -113,13 +113,14 @@ public class TestabilityReportLaunchListener implements TestabilityLaunchListene
           }
         }
       } else {
-        logger.logException("No Resource found for Class : " + classIssue.getPath(), null);
+        logger.logException("No Resource found for Class : " + classIssue.getClassName(), null);
       }
     }
   }
 
-  private IResource getAbsolutePathFromJavaFile(String path, List<IPath> sourceFolderPaths,
-      IProject project) {
+  private IResource getAbsolutePathFromJavaFile(String completeClassName,
+      List<IPath> sourceFolderPaths, IProject project) {
+    String path = completeClassName.replaceAll("\\.", "/");
     for (IPath sourceFolderPath : sourceFolderPaths) {
       IPath totalPath = sourceFolderPath.append(path + ".java");
       if (project.exists(totalPath)) {

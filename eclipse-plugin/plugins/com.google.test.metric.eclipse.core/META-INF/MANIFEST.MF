@@ -9,7 +9,6 @@ Require-Bundle:
  org.eclipse.core.runtime;bundle-version="3.4.0",
  org.eclipse.debug.core;bundle-version="3.4.0",
  org.eclipse.jdt.core;bundle-version="3.4.0"
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ClassPath: .,
  te.jar
 Eclipse-AutoStart: true
@@ -19,3 +18,4 @@ Export-Package: com.google.test.metric,
  com.google.test.metric.eclipse.internal.util,
  com.google.test.metric.report,
  com.google.test.metric.report.issues
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

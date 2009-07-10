@@ -7,8 +7,15 @@
     <version>1.3.2-SNAPSHOT</version>
   </parent>
 
+  <dependencies>
+    <dependency>
+      <artifactId>core</artifactId>
+      <version>${version}</version>
+    </dependency>
+  </dependencies>
   <artifactId>eclipse-plugin</artifactId>
-  <packaging>pom</packaging>
+  <name>Testability Explorer Eclipse Plugin</name>
+  <packaging>jar</packaging>
   <build>
     <plugins>
       <plugin>
