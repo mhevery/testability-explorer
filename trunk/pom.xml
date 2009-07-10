@@ -23,6 +23,7 @@
     <module>core</module>
     <module>ant-task</module>
     <module>maven-testability-plugin</module>
+    <module>eclipse-plugin</module>
   </modules>
 
   <build>
