@@ -9,6 +9,7 @@
 
   <dependencies>
     <dependency>
+      <groupId>com.google.testability-explorer</groupId>
       <artifactId>core</artifactId>
       <version>${version}</version>
     </dependency>
