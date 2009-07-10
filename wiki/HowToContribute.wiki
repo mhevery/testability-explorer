@@ -26,3 +26,14 @@ As a someone who has sent us a lot of patches and who follows our guidelines we 
   * Global Variables / State / Singletons.
   * Code without test.
   * Code whose Testability Cost is greater then 30.
+
+== Developing on Testability Explorer ==
+  * Checkout from google code - http://code.google.com/p/testability-explorer/source/checkout
+  * Install Maven - 
+  * Set some environment variables, so the Eclipse plugin will build:
+   * ECLIPSE_LAUNCHER_JAR=/opt/eclipse34/plugins/org.eclipse.equinox.launcher_1.0.101.R34x_v20081125.jar
+   * ECLIPSE_PDE_XML=/opt/eclipse34/plugins/org.eclipse.pde.build_3.4.1.R34x_v20081217/scripts/build.xml
+   * ECLIPSE_BASE_DIR=/opt/eclipse34/
+   * Make sure your JAVA_HOME contains a jre/ folder
+  * From the root folder, run mvn install. This should build everything and copy to your local maven repository (~/.m2)
+  * To set up your IDE:
