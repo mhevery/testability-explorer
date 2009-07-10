@@ -11,6 +11,10 @@
       <arg value="-buildfile"/>
       <arg value="${env.ECLIPSE_PDE_XML}"/>
       <arg value="-Dbuilder=${basedir}"/>
+      <arg value="-DbuildDirectory=${basedir}"/>
+      <arg value="-DbaseLocation=${env.ECLIPSE_BASE_DIR}"/>
+      <arg value="-Dbase=${env.ECLIPSE_BASE_DIR}"/>
+      <arg value="-DJ2SE-1.5=${env.JAVA_HOME}/jre/lib/rt.jar"/>
    </java>
  </target>
  <target name="clean">
