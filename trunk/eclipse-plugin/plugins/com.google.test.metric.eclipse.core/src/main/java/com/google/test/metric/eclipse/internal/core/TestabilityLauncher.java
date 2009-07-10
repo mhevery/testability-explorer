@@ -19,6 +19,7 @@ import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 import com.google.test.metric.AnalysisModel;
 import com.google.test.metric.CostModel;
+import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.JavaTestabilityConfig;
 import com.google.test.metric.JavaTestabilityRunner;
 import com.google.test.metric.RegExpWhiteList;
@@ -35,6 +36,8 @@ import com.google.test.metric.report.ReportOptions;
 import com.google.test.metric.report.SourceLoader;
 import com.google.test.metric.report.html.HtmlReportModel;
 import com.google.test.metric.report.issues.ClassIssues;
+import com.google.test.metric.report.issues.ClassMunger;
+import com.google.test.metric.report.issues.HypotheticalCostModel;
 import com.google.test.metric.report.issues.IssuesReporter;
 import com.google.test.metric.report.issues.TriageIssuesQueue;
 
@@ -158,9 +161,11 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
       }
       
       CostModel costModel = new CostModel(cyclomaticCost, globalCost);
+      HypotheticalCostModel hypotheticalCostModel = new HypotheticalCostModel(costModel, 
+          new ClassMunger(new JavaClassRepository(classPath)));
       IssuesReporter issuesReporter = new IssuesReporter(
           new TriageIssuesQueue<ClassIssues>(maxAcceptableCost,
-              maxClassesInReport, new ClassIssues.TotalCostComparator()), costModel);
+              maxClassesInReport, new ClassIssues.TotalCostComparator()), hypotheticalCostModel);
       ReportOptions options = new ReportOptions(cyclomaticCost, globalCost, maxExcellentCost,
           maxAcceptableCost, maxClassesInReport, -1, -1, printDepth, -1, "", "");
       SourceLoader sourceLoader = new SourceLoader(classPath);

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="project" default="default">
-  <property name="eclipse.dir" value="/usr/local/google/users/shyamseshadri/eclipse34/stable"/>
-  <property name="eclipse.launcher.jar" value="${eclipse.dir}/plugins/org.eclipse.equinox.launcher_1.0.101.R34x_v20081125.jar"/>
-  <property name="eclipse.pde.xml" value="${eclipse.dir}/plugins/org.eclipse.pde.build_3.4.1.R34x_v20081217/scripts/build.xml"/>
+  <property environment="env"/>
   <target name="default">
-    <java jar="${eclipse.launcher.jar}" fork="true">
-      <env key="JAVA_HOME" value="/usr/local/buildtools/java/jdk1.6.0_01_gg1"/>
+    <copy tofile="plugins/com.google.test.metric.eclipse.core/te.jar">
+      <fileset dir="../core/target" includes="core*-with-deps.jar"/>
+    </copy>
+    <java jar="${env.ECLIPSE_LAUNCHER_JAR}" fork="true">
       <arg value="-application"/>
       <arg value="org.eclipse.ant.core.antRunner"/>
       <arg value="-buildfile"/>
-      <arg value="${eclipse.pde.xml}"/>
+      <arg value="${env.ECLIPSE_PDE_XML}"/>
       <arg value="-Dbuilder=${basedir}"/>
    </java>
  </target>
