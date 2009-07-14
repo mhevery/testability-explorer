@@ -16,20 +16,27 @@
 
 package com.google.ant;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Arrays;
+import com.google.classpath.ClassPath;
+import com.google.classpath.ClassPathFactory;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.test.metric.JavaTestabilityConfig;
+import com.google.test.metric.JavaTestabilityRunner;
+import com.google.test.metric.RegExpWhiteList;
+import com.google.test.metric.ReportGeneratorProvider.ReportFormat;
+import com.google.test.metric.TestabilityModule;
+import com.google.test.metric.WhiteList;
+import com.google.test.metric.report.ReportOptions;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Path;
-import com.google.test.metric.*;
-import com.google.test.metric.ReportGeneratorBuilder.ReportFormat;
-import com.google.test.metric.report.ReportGenerator;
-import com.google.test.metric.report.ReportOptions;
-import com.google.classpath.ClassPath;
-import com.google.classpath.ClassPathFactory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class TestabilityTask extends Task {
 
@@ -117,25 +124,25 @@ public class TestabilityTask extends Task {
   private void runTestabilityExplorer() {
     List<String> entries = Arrays.asList(model.getFilter());
     WhiteList packageWhiteList = new RegExpWhiteList(model.getWhiteList());
-    ReportOptions options = setOptions();
+    final ReportOptions options = setOptions();
     ClassPath classPath = new ClassPathFactory().createFromPath(model.getClassPath());
-    ReportGenerator report = new ReportGeneratorBuilder(classPath, options,
-        ReportFormat.valueOf(model.getPrint()), model.getResultPrintStream(), entries).build();
-    JavaTestabilityConfig config = new JavaTestabilityConfig(entries, classPath, packageWhiteList,
-        report, model.getErrorPrintStream(), model.getPrintDepth());
-    new JavaTestabilityRunner(config).run();
+    final JavaTestabilityConfig config = new JavaTestabilityConfig(entries, packageWhiteList,
+        model.getErrorPrintStream(), model.getPrintDepth(), ReportFormat.valueOf(model.getPrint()));
+    AbstractModule configModule = new AbstractModule() {
+      @Override
+      protected void configure() {
+        bind(ReportOptions.class).toInstance(options);
+        bind(JavaTestabilityConfig.class).toInstance(config);
+      }
+    };
+    Injector injector = Guice.createInjector(configModule, new TestabilityModule());
+    injector.getInstance(JavaTestabilityRunner.class).run();
   }
 
   private ReportOptions setOptions() {
-    ReportOptions options = new ReportOptions();
-    options.setPrintDepth(model.getPrintDepth());
-    options.setMinCost(model.getMinCost());
-    options.setMaxAcceptableCost(model.getMaxAcceptableCost());
-    options.setMaxExcellentCost(model.getMaxExcellentCost());
-    options.setCyclomaticMultiplier(model.getCyclomatic());
-    options.setGlobalMultiplier(model.getGlobal());
-    options.setWorstOffenderCount(model.getWorstOffenderCount());
-    return options;
+    return new ReportOptions(model.getCyclomatic(), model.getGlobal(), model.getMaxExcellentCost(),
+        model.getMaxAcceptableCost(), model.getWorstOffenderCount(), 0, 0, model.getPrintDepth(),
+        model.getMinCost(), null, null);
   }
 
   private void logParameters() {

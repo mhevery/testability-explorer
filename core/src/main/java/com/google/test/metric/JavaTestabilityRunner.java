@@ -15,16 +15,18 @@
  */
 package com.google.test.metric;
 
+import com.google.classpath.ClassPath;
+import com.google.classpath.RegExpResourceFilter;
 import static com.google.classpath.RegExpResourceFilter.ANY;
 import static com.google.classpath.RegExpResourceFilter.ENDS_WITH_CLASS;
-import static java.util.Arrays.asList;
+import com.google.inject.Inject;
+import com.google.test.metric.report.ReportGenerator;
+import com.google.test.metric.report.issues.IssuesReporter;
 
 import java.io.IOException;
+import static java.util.Arrays.asList;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import com.google.classpath.RegExpResourceFilter;
-import com.google.test.metric.report.issues.IssuesReporter;
 
 /**
  * Has the responsibility of kicking off the analysis. A programmatic interface into using
@@ -35,13 +37,20 @@ import com.google.test.metric.report.issues.IssuesReporter;
 public class JavaTestabilityRunner implements Runnable {
 
   private final JavaTestabilityConfig config;
+  private final ReportGenerator report;
+  private final ClassPath classPath;
+  private final ClassRepository classRepository;
 
-  public JavaTestabilityRunner(JavaTestabilityConfig config) {
+  @Inject
+  public JavaTestabilityRunner(JavaTestabilityConfig config, ReportGenerator report,
+                               ClassPath classPath, ClassRepository classRepository) {
     this.config = config;
+    this.report = report;
+    this.classPath = classPath;
+    this.classRepository = classRepository;
   }
 
   public AnalysisModel generateModel(IssuesReporter issuesReporter) {
-    ClassRepository classRepository = new JavaClassRepository(config.getClassPath());
     MetricComputer computer = new MetricComputer(classRepository, config.getErr(),
         config.getWhitelist(), config.getPrintDepth());
 
@@ -53,7 +62,7 @@ public class JavaTestabilityRunner implements Runnable {
         entry = "";
       }
       // TODO(jonathan) seems too complicated, replacing "." with "/" using the resource filter, then right below replace all "/" with "."
-      classNames.addAll(asList(config.getClassPath().findResources(entry.replace(".", "/"), resourceFilter)));
+      classNames.addAll(asList(classPath.findResources(entry.replace(".", "/"), resourceFilter)));
     }
     for (String resource : classNames) {
       String className = resource.replace(".class", "").replace("/", ".").replace('$', '.');
@@ -74,13 +83,13 @@ public class JavaTestabilityRunner implements Runnable {
 
   public void renderReport(AnalysisModel model) {
     try {
-      config.getReport().printHeader();
+      report.printHeader();
 
       for (ClassCost classCost : model.getClassCosts()) {
-        config.getReport().addClassCost(classCost);
+        report.addClassCost(classCost);
       }
 
-      config.getReport().printFooter();
+      report.printFooter();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

@@ -15,70 +15,73 @@
  */
 package com.google.test.metric;
 
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
+import com.google.test.metric.ReportGeneratorProvider.ReportFormat;
 
 import org.kohsuke.args4j.CmdLineException;
 
-import com.google.test.metric.TestabilityTest.WatchedOutputStream;
-import com.google.test.metric.report.DrillDownReportGenerator;
-import com.google.test.metric.report.FreemarkerReportGenerator;
-import com.google.test.metric.report.PropertiesReportGenerator;
-import com.google.test.metric.report.SourceReportGenerator;
-import com.google.test.metric.report.TextReportGenerator;
-import com.google.test.metric.report.XMLReportGenerator;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.Arrays;
 
 public class CommandLineConfigTest extends AutoFieldClearTestCase {
 
-  private WatchedOutputStream out = new WatchedOutputStream();
-  private WatchedOutputStream err = new WatchedOutputStream();
+  private ByteArrayOutputStream out = new ByteArrayOutputStream();
+  private ByteArrayOutputStream err = new ByteArrayOutputStream();
   private CommandLineConfig commandLineConfig;
 
+  @Override
   public void setUp() {
     commandLineConfig = new CommandLineConfig(new PrintStream(out), new PrintStream(err));
   }
 
   public void testCreateSummaryReport2() throws Exception {
-    commandLineConfig.printer = "summary"; 
-    JavaTestabilityConfig config = commandLineConfig.buildTestabilityConfig();
-    assertEquals(TextReportGenerator.class, config.getReport().getClass());
+    commandLineConfig.printer = "summary";
+    commandLineConfig.cp = "a";
+    commandLineConfig.validate();
+    assertEquals(ReportFormat.summary, commandLineConfig.format);
   }
 
   public void testCreateHtmlReport() throws Exception {
     commandLineConfig.printer = "html"; 
-    JavaTestabilityConfig config = commandLineConfig.buildTestabilityConfig();
-    assertEquals(FreemarkerReportGenerator.class, config.getReport().getClass());
+    commandLineConfig.cp = "a";
+    commandLineConfig.validate();
+    assertEquals(ReportFormat.html, commandLineConfig.format);
   }
 
   public void testCreateDetailReport() throws Exception {
     commandLineConfig.printer = "detail"; 
-    JavaTestabilityConfig config = commandLineConfig.buildTestabilityConfig();
-    assertEquals(DrillDownReportGenerator.class, config.getReport().getClass());
+    commandLineConfig.cp = "a";
+    commandLineConfig.validate();
+    assertEquals(ReportFormat.detail, commandLineConfig.format);
   }
   
   public void testCreatePropertiesReport() throws Exception {
     commandLineConfig.printer = "props"; 
-    JavaTestabilityConfig config = commandLineConfig.buildTestabilityConfig();
-    assertEquals(PropertiesReportGenerator.class, config.getReport().getClass());
+    commandLineConfig.cp = "a";
+    commandLineConfig.validate();
+    assertEquals(ReportFormat.props, commandLineConfig.format);
   }
 
   public void testCreateSourceReport() throws Exception {
     commandLineConfig.printer = "source"; 
-    JavaTestabilityConfig config = commandLineConfig.buildTestabilityConfig();
-    assertEquals(SourceReportGenerator.class, config.getReport().getClass());
+    commandLineConfig.cp = "a";
+    commandLineConfig.validate();
+    assertEquals(ReportFormat.source, commandLineConfig.format);
   }
 
   public void testCreateXmlReport() throws Exception {
     commandLineConfig.printer = "xml"; 
-    JavaTestabilityConfig config = commandLineConfig.buildTestabilityConfig();
-    assertEquals(XMLReportGenerator.class, config.getReport().getClass());
+    commandLineConfig.cp = "a";
+    commandLineConfig.validate();
+    JavaTestabilityConfig config = new JavaTestabilityConfig(commandLineConfig);
+    assertEquals(ReportFormat.xml, config.getFormat());
   }
 
   public void testCreateNonexistantReportThrowsException() throws Exception {
+    commandLineConfig.cp = "";
     commandLineConfig.printer = "i-dont-exist";
     try {
-      commandLineConfig.buildTestabilityConfig();
+      commandLineConfig.validate();
       fail("CmdLineException exception expected but did not get thrown");
     } catch (CmdLineException expected) {
       assertTrue(expected.getMessage().startsWith("Don't understand"));
@@ -87,36 +90,23 @@ public class CommandLineConfigTest extends AutoFieldClearTestCase {
   
   
   public void testBuildTestabilityConfig() throws Exception {
-    PrintStream errStream = new PrintStream(new WatchedOutputStream());
+    PrintStream errStream = new PrintStream(new ByteArrayOutputStream());
     commandLineConfig = new CommandLineConfig(null, errStream);
     commandLineConfig.entryList = Arrays.asList("com.example.io", "com.example.ext");
     commandLineConfig.cp = "fake/path";
     commandLineConfig.printDepth = 3;
     commandLineConfig.printer = "summary";
     commandLineConfig.wl = "com.foo:org.bar";
-    JavaTestabilityConfig testabilityConfig = commandLineConfig.buildTestabilityConfig();
+    commandLineConfig.validate();
+    JavaTestabilityConfig testabilityConfig = new JavaTestabilityConfig(commandLineConfig);
     assertEquals(2, testabilityConfig.getEntryList().size());
-    
     assertTrue(testabilityConfig.getWhitelist().isClassWhiteListed("com.foo.Hash"));
     assertTrue(testabilityConfig.getWhitelist().isClassWhiteListed("org.bar.BiMap"));
     assertTrue(testabilityConfig.getWhitelist().isClassWhiteListed("java.lang"));
     assertFalse(testabilityConfig.getWhitelist().isClassWhiteListed("com.example"));
-    
-    assertEquals(TextReportGenerator.class, testabilityConfig.getReport().getClass());
-    
+    assertEquals(ReportFormat.summary, testabilityConfig.getFormat());
     assertEquals(errStream, testabilityConfig.getErr());
-    
     assertEquals(3, testabilityConfig.getPrintDepth());
-    
-    assertNotNull(testabilityConfig.getClassPath());
   }
   
-  @SuppressWarnings("serial")
-  public void testConvertEntryListValues() throws Exception {
-    commandLineConfig.entryList = 
-        new ArrayList<String>() {{ add("com/example/one com/example/two"); }};
-    JavaTestabilityConfig config = commandLineConfig.buildTestabilityConfig();
-    assertEquals(Arrays.<String>asList("com.example.one", "com.example.two"), config.getEntryList());
-  }
-   
 }

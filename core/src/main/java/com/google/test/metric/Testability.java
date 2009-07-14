@@ -21,42 +21,29 @@ package com.google.test.metric;
  * Delegates to Args4J for the responsibility of parsing options.
  * Delegates to TestabilityRunner to actually run the analysis.
  */
-import java.io.PrintStream;
 
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
+import com.google.inject.Guice;
+import com.google.inject.Inject;
 
 public class Testability {
-  private final PrintStream err;
-  private final CommandLineConfig commandLineConfig;
 
-  public Testability(PrintStream err, CommandLineConfig commandLineConfig) {
-    this.err = err;
-    this.commandLineConfig = commandLineConfig;
+  private final Runnable runner;
+
+  @Inject
+  public Testability(Runnable runner) {
+    this.runner = runner;
   }
 
   public static void main(String... args) {
-    main(System.err, new CommandLineConfig(System.out, System.err), args);
+    Guice.createInjector(
+        new ConfigModule(args, System.out, System.err),
+        new TestabilityModule()).
+        getInstance(Testability.class).
+        run();
   }
 
-  public static void main(PrintStream err, CommandLineConfig commandLineConfig, String... args) {
-    new Testability(err, commandLineConfig).run(args);
-  }
-
-  public void run(String... args) {
-    CmdLineParser parser = new CmdLineParser(commandLineConfig);
-    try {
-      parser.parseArgument(args);
-      commandLineConfig.validate();
-      TestabilityFactory factory = new TestabilityFactory();
-      Runnable runner = factory.createRunner(commandLineConfig);
-      runner.run();
-    } catch (CmdLineException e) {
-      err.println(e.getMessage() + "\n");
-      parser.setUsageWidth(120);
-      parser.printUsage(err);
-      err.println("Exiting...");
-    }
+  public void run() {
+    runner.run();
   }
 
 }

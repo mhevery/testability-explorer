@@ -15,13 +15,18 @@
  */
 package com.google.test.metric;
 
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
+import com.google.inject.Inject;
+import com.google.test.metric.ConfigModule.Error;
+import com.google.test.metric.ConfigModule.Output;
+import com.google.test.metric.ReportGeneratorProvider.ReportFormat;
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.Option;
+
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Holds fields that Args4J sets by parsing the command line options. After the args are parsed,
@@ -95,28 +100,30 @@ public class CommandLineConfig {
       + "Matches any class starting with these.\n"
       + "Ex. com.example.analyze.these com.google.and.these.packages " + "com.google.AClass")
   List<String> entryList = new ArrayList<String>();
+  ReportFormat format;
 
   PrintStream out;
   PrintStream err;
 
-  public CommandLineConfig(PrintStream out, PrintStream err) {
+  @Inject
+  public CommandLineConfig(@Output PrintStream out, @Error PrintStream err) {
     this.out = out;
     this.err = err;
-  }
-
-  public JavaTestabilityConfig buildTestabilityConfig() throws CmdLineException {
-    // This responsibility might belong in a new class.
-    cp = (cp != null ? cp : System.getProperty("java.class.path", "."));
-    if (entryList.isEmpty()) {
-      entryList.add(".");
-    }
-    return new JavaTestabilityConfig(this);
   }
 
   public void validate() throws CmdLineException {
     if (cp == null && entryList.isEmpty()) {
       throw new CmdLineException("You must supply either the -cp flag, " +
           "or the argument \"classes and packages to analyze\".");
+    }
+    cp = (cp != null ? cp : System.getProperty("java.class.path", "."));
+    if (entryList.isEmpty()) {
+      entryList.add(".");
+    }
+    try {
+      format = ReportFormat.valueOf(printer);
+    } catch (IllegalArgumentException e) {
+      throw new CmdLineException("Don't understand '-print' option '" + printer + "'");
     }
   }
 }

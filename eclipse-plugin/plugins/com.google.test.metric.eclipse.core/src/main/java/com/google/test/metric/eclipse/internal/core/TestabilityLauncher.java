@@ -23,8 +23,8 @@ import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.JavaTestabilityConfig;
 import com.google.test.metric.JavaTestabilityRunner;
 import com.google.test.metric.RegExpWhiteList;
-import com.google.test.metric.ReportGeneratorBuilder;
-import com.google.test.metric.ReportGeneratorBuilder.ReportFormat;
+import com.google.test.metric.ReportGeneratorProvider;
+import com.google.test.metric.ReportGeneratorProvider.ReportFormat;
 import com.google.test.metric.eclipse.core.TestabilityLaunchListener;
 import com.google.test.metric.eclipse.core.plugin.Activator;
 import com.google.test.metric.eclipse.internal.util.JavaProjectHelper;
@@ -161,8 +161,9 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
       }
       
       CostModel costModel = new CostModel(cyclomaticCost, globalCost);
+      JavaClassRepository classRepository = new JavaClassRepository(classPath);
       HypotheticalCostModel hypotheticalCostModel = new HypotheticalCostModel(costModel, 
-          new ClassMunger(new JavaClassRepository(classPath)));
+          new ClassMunger(classRepository));
       IssuesReporter issuesReporter = new IssuesReporter(
           new TriageIssuesQueue<ClassIssues>(maxAcceptableCost,
               maxClassesInReport, new ClassIssues.TotalCostComparator()), hypotheticalCostModel);
@@ -172,13 +173,13 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
 
       AnalysisModel analysisModel = new AnalysisModel(issuesReporter);
       ReportModel reportModel = new HtmlReportModel(costModel, analysisModel, options);
-      ReportGenerator report = new ReportGeneratorBuilder(classPath, options, ReportFormat.html,
-          reportStream, allJavaPackages).build(costModel, reportModel, sourceLoader);
-      
       JavaTestabilityConfig testabilityConfig =
-          new JavaTestabilityConfig(allJavaPackages, classPath, whitelist, report, errorStream,
-              printDepth);
-      new JavaTestabilityRunner(testabilityConfig).run();
+          new JavaTestabilityConfig(allJavaPackages, whitelist, errorStream,
+              printDepth, ReportFormat.html);
+      ReportGenerator report = new ReportGeneratorProvider(classPath, options, testabilityConfig,
+          reportStream, hypotheticalCostModel).build(costModel, reportModel, sourceLoader);
+
+      new JavaTestabilityRunner(testabilityConfig, report, classPath, classRepository).run();
 
       boolean runningInCompilationMode = configuration.getAttribute(
           TestabilityConstants.CONFIGURATION_ATTR_RUNNING_IN_COMPILATION_MODE, false);

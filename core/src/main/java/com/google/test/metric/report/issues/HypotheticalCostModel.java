@@ -2,6 +2,7 @@
 
 package com.google.test.metric.report.issues;
 
+import com.google.inject.Inject;
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.Cost;
 import com.google.test.metric.CostModel;
@@ -17,6 +18,7 @@ public class HypotheticalCostModel {
   private final CostModel costModel;
   private final ClassMunger classMunger;
 
+  @Inject
   public HypotheticalCostModel(CostModel costModel, ClassMunger classMunger) {
     this.costModel = costModel;
     this.classMunger = classMunger;
