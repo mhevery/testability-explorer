@@ -2,11 +2,11 @@
 
 package com.google.test.metric.report.issues;
 
-import junit.framework.TestCase;
-
 import com.google.test.metric.ClassInfo;
 import com.google.test.metric.CostUtil;
 import com.google.test.metric.JavaClassRepository;
+
+import junit.framework.TestCase;
 
 /**
  * @author alexeagle@google.com (Alex Eagle)
@@ -30,7 +30,7 @@ public class ClassMungerTest extends TestCase {
 
   public void testClassMungerCanRemoveAMethodCall() throws Exception {
     ClassInfo aClass = javaClassRepository.getClass(StaticInit.class.getCanonicalName());
-    ClassInfo mungedClass = classMunger.getClassWithoutMethod(aClass.getName(), aClass.getMethod("<static init>()"));
+    ClassInfo mungedClass = classMunger.getClassWithoutMethod(aClass.getName(), "<static init>()");
     assertEquals(0, mungedClass.getMethod("<static init>()").getOperations().size());
   }
 
@@ -47,7 +47,7 @@ public class ClassMungerTest extends TestCase {
   public void testMungeSuperclassSetterEliminatesSetterCost() throws Exception {
     ClassInfo aClass = javaClassRepository.getClass(SuperClassHasSetterCost.class.getCanonicalName());
     assertEquals(2, aClass.getMethod("void setInt(int)").getOperations().size());
-    ClassInfo mungedClass = classMunger.getClassWithoutMethod(aClass.getName(), aClass.getMethod("void setInt(int)"));
+    ClassInfo mungedClass = classMunger.getClassWithoutMethod(aClass.getName(), "void setInt(int)");
     assertEquals(0, mungedClass.getMethod("void setInt(int)").getOperations().size());
   }
 

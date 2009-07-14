@@ -2,12 +2,6 @@
 
 package com.google.test.metric.report.issues;
 
-import static com.google.test.metric.Reason.NON_OVERRIDABLE_METHOD_CALL;
-
-import java.util.Arrays;
-
-import junit.framework.TestCase;
-
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.ClassInfo;
 import com.google.test.metric.ClassRepository;
@@ -19,8 +13,13 @@ import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvocationCost;
 import com.google.test.metric.MetricComputer;
+import static com.google.test.metric.Reason.NON_OVERRIDABLE_METHOD_CALL;
 import com.google.test.metric.SourceLocation;
 import com.google.test.metric.testing.MetricComputerBuilder;
+
+import junit.framework.TestCase;
+
+import java.util.Arrays;
 
 /**
  * @author alexeagle@google.com (Alex Eagle)
@@ -34,6 +33,7 @@ public class HypotheticalCostModelTest extends TestCase {
   private HypotheticalCostModel hypotheticalCostModel = new HypotheticalCostModel(costModel, classMunger);
   private MetricComputer computer = new MetricComputerBuilder().withClassRepository(repo).build();
 
+  @Override
   protected void setUp() throws Exception {
     super.setUp();
     doThingMethod = new MethodCost("doThing()", 1, false, false, false);
@@ -57,8 +57,9 @@ public class HypotheticalCostModelTest extends TestCase {
     MethodCost methodCost = doThingMethod;
     float costWithoutDoThing = (0 + (50 + 33)) / 2;
     float costWithDoThing = (100 + (50 + 33)) / 2;
+    float actual = hypotheticalCostModel.computeContributionFromMethod(classCost, methodCost);
     assertEquals(1 - costWithoutDoThing / costWithDoThing,
-        hypotheticalCostModel.computeContributionFromMethod(classCost, methodCost));
+        actual);
   }
 
   private static class Example {
@@ -79,5 +80,19 @@ public class HypotheticalCostModelTest extends TestCase {
     int newCost = hypotheticalCostModel.computeClass(cost);
     assertEquals(originalCost, newCost);
   }
-  
+
+  public void testMethodCostGoesDownWhenADependentCostIsRemoved() throws Exception {
+    ClassInfo aClass = repo.getClass(Example.class.getCanonicalName());
+    ClassCost classCost = computer.compute(aClass);
+    float costWithWorkInConstructor = (4 + 7) / 2;
+    float costWithoutWorkInConstructor = (0 + 3) / 2;
+    MethodCost constructorCost = classCost.getMethodCost("Example()");
+    MethodInvocationCost instanceCost4Invocation =
+        (MethodInvocationCost) constructorCost.getViolationCosts().get(0);
+    float actual = hypotheticalCostModel.computeContributionFromIssue(classCost, constructorCost,
+        instanceCost4Invocation);
+    // TODO
+    //assertEquals(1 - costWithoutWorkInConstructor / costWithWorkInConstructor,
+      //  actual);
+  }
 }

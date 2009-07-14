@@ -15,16 +15,11 @@
  */
 package com.google.test.metric;
 
+import com.google.inject.Inject;
+import com.google.test.metric.ReportGeneratorProvider.ReportFormat;
+
 import java.io.PrintStream;
 import java.util.List;
-
-import org.kohsuke.args4j.CmdLineException;
-
-import com.google.classpath.ClassPath;
-import com.google.classpath.ClassPathFactory;
-import com.google.test.metric.ReportGeneratorBuilder.ReportFormat;
-import com.google.test.metric.report.ReportGenerator;
-import com.google.test.metric.report.ReportOptions;
 
 /**
  * Value object which represents the simple configuration needed to make Testability Explorer reports.
@@ -34,34 +29,24 @@ import com.google.test.metric.report.ReportOptions;
  * TestabilityRunner.
  * @author Jonathan Andrew Wolter <jaw@jawspeak.com>
  */
+// TODO: this whole class should become a Guice module
 public class JavaTestabilityConfig {
 
   // TODO I could be persuaded to make all fields public, since this is just a data holder.
   private final List<String> entryList;
-  private final ClassPath classPath;
   private final WhiteList whitelist;
-  private final ReportGenerator report;
   private final PrintStream err;
   private final int printDepth;
+  private final ReportFormat format;
 
-  public JavaTestabilityConfig(CommandLineConfig config) throws CmdLineException {
+  @Inject
+  public JavaTestabilityConfig(CommandLineConfig config) {
     entryList = config.entryList;
-    classPath = new ClassPathFactory().createFromPath(config.cp);
     err = config.err;
+    format = config.format;
     printDepth = config.printDepth;
     convertEntryListValues();
-    ReportOptions options = new ReportOptions(config.cyclomaticMultiplier,
-        config.globalMultiplier, config.maxExcellentCost,
-        config.maxAcceptableCost, config.worstOffenderCount,
-        config.maxMethodCount, config.maxLineCount, config.printDepth,
-        config.minCost, config.srcFileLineUrl, config.srcFileUrl);
-    ReportFormat format;
-    try {
-      format = ReportFormat.valueOf(config.printer);
-    } catch (Exception e) {
-      throw new CmdLineException("Don't understand '-print' option '" + config.printer + "'");
-    }
-    report = new ReportGeneratorBuilder(classPath, options, format, config.out, entryList).build();
+
     RegExpWhiteList regExpWhitelist = new RegExpWhiteList("java.");
     for (String packageName : config.wl == null ? new String[] {} : config.wl.split("[,:]")) {
       regExpWhitelist.addPackage(packageName);
@@ -69,35 +54,21 @@ public class JavaTestabilityConfig {
     whitelist = regExpWhitelist;
   }
 
-  public JavaTestabilityConfig(
-      List<String> entryList, 
-      ClassPath classPath,
-      WhiteList whitelist,
-      ReportGenerator report, 
-      PrintStream err, 
-      int printDepth) {
-        this.entryList = entryList;
-        this.classPath = classPath;
-        this.whitelist = whitelist;
-        this.report = report;
-        this.err = err;
-        this.printDepth = printDepth;
+  public JavaTestabilityConfig(List<String> entryList, WhiteList whitelist,
+                               PrintStream err, int printDepth, ReportFormat format) {
+    this.entryList = entryList;
+    this.whitelist = whitelist;
+    this.err = err;
+    this.printDepth = printDepth;
+    this.format = format;
   }
 
   public List<String> getEntryList() {
     return entryList;
   }
 
-  public ClassPath getClassPath() {
-    return classPath;
-  }
-
   public WhiteList getWhitelist() {
     return whitelist;
-  }
-
-  public ReportGenerator getReport() {
-    return report;
   }
 
   public PrintStream getErr() {
@@ -107,7 +78,11 @@ public class JavaTestabilityConfig {
   public int getPrintDepth() {
     return printDepth;
   }
-  
+
+  public ReportFormat getFormat() {
+    return format;
+  }
+
   /*
    * Converts entryList class and package values into paths by replacing any "." with a "/" Also
    * checks for entries that contain multiple values separated by a space (" "), and splits them out

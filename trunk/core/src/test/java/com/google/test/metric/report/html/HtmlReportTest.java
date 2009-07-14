@@ -15,18 +15,6 @@
  */
 package com.google.test.metric.report.html;
 
-import static com.google.test.metric.report.FreemarkerReportGenerator.HTML_REPORT_TEMPLATE;
-import static java.text.MessageFormat.format;
-import static java.util.ResourceBundle.getBundle;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.ResourceBundle;
-
-import junit.framework.TestCase;
-
 import com.google.test.metric.AnalysisModel;
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.Cost;
@@ -35,10 +23,11 @@ import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvocationCost;
 import com.google.test.metric.Reason;
-import com.google.test.metric.ReportGeneratorBuilder;
+import com.google.test.metric.ReportGeneratorProvider;
 import com.google.test.metric.SourceLocation;
 import com.google.test.metric.report.ClassPathTemplateLoader;
 import com.google.test.metric.report.FreemarkerReportGenerator;
+import static com.google.test.metric.report.FreemarkerReportGenerator.HTML_REPORT_TEMPLATE;
 import com.google.test.metric.report.ReportOptions;
 import com.google.test.metric.report.SourceLinker;
 import com.google.test.metric.report.issues.ClassIssues;
@@ -51,6 +40,16 @@ import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.ResourceBundleModel;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
+
+import junit.framework.TestCase;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import static java.text.MessageFormat.format;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.ResourceBundle;
+import static java.util.ResourceBundle.getBundle;
 
 public class HtmlReportTest extends TestCase {
   private HtmlReportModel report;
@@ -80,7 +79,7 @@ public class HtmlReportTest extends TestCase {
     Configuration configuration = new Configuration();
     configuration.setObjectWrapper(objectWrapper);
     ResourceBundleModel bundleModel = new ResourceBundleModel(getBundle("messages"), objectWrapper);
-    configuration.setTemplateLoader(new ClassPathTemplateLoader(ReportGeneratorBuilder.PREFIX));
+    configuration.setTemplateLoader(new ClassPathTemplateLoader(ReportGeneratorProvider.PREFIX));
     report.setMessageBundle(bundleModel);
     report.setSourceLinker(new SourceLinkerModel(linker));
     generator = new FreemarkerReportGenerator(report, new PrintStream(out),

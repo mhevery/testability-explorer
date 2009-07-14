@@ -1,15 +1,15 @@
 package com.google.test.metric.report;
 
+import com.google.test.metric.ReportGeneratorProvider;
+
+import freemarker.template.Configuration;
+
+import junit.framework.TestCase;
+
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.Collections;
-
-import junit.framework.TestCase;
-
-import com.google.test.metric.ReportGeneratorBuilder;
-
-import freemarker.template.Configuration;
 
 /**
  * Tests for HTML generation of the Diff report
@@ -25,7 +25,7 @@ public class DiffReportTest extends TestCase {
     super.setUp();
     out = new StringWriter();
     cfg = new Configuration();
-    cfg.setTemplateLoader(new ClassPathTemplateLoader(ReportGeneratorBuilder.PREFIX));
+    cfg.setTemplateLoader(new ClassPathTemplateLoader(ReportGeneratorProvider.PREFIX));
   }
 
   @SuppressWarnings("unchecked")
