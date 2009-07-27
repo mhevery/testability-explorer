@@ -52,7 +52,8 @@ import static java.util.ResourceBundle.getBundle;
 public class AboutTestabilityReportGeneratorTest extends TestCase {
   FreemarkerReportGenerator generator;
   ByteArrayOutputStream out = new ByteArrayOutputStream();
-  HypotheticalCostModel costModel = new HypotheticalCostModel(new CostModel(), new ClassMunger(new JavaClassRepository()));
+  private ClassMunger classMunger = new ClassMunger(new JavaClassRepository());
+  HypotheticalCostModel costModel = new HypotheticalCostModel(new CostModel(), classMunger, null);
 
   public void testExample() throws Exception {
     IssuesReporter reporter = new IssuesReporter(new LinkedList<ClassIssues>(), costModel);

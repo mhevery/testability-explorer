@@ -6,6 +6,9 @@ import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 import com.google.inject.AbstractModule;
 import com.google.inject.BindingAnnotation;
+import com.google.inject.TypeLiteral;
+import com.google.inject.name.Names;
+import com.google.test.metric.ReportGeneratorProvider.ReportFormat;
 import com.google.test.metric.report.ReportOptions;
 
 import org.kohsuke.args4j.CmdLineException;
@@ -14,6 +17,7 @@ import org.kohsuke.args4j.CmdLineParser;
 import java.io.PrintStream;
 import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.util.List;
 
 /**
  * @author alexeagle@google.com (Alex Eagle)
@@ -46,6 +50,7 @@ public class ConfigModule extends AbstractModule {
       parser.parseArgument(args);
       config.validate();
       bind(ClassPath.class).toInstance(new ClassPathFactory().createFromPath(config.cp));
+      bind(ReportFormat.class).toInstance(config.format);      
     } catch (CmdLineException e) {
       err.println(e.getMessage() + "\n");
       parser.setUsageWidth(120);
@@ -60,5 +65,10 @@ public class ConfigModule extends AbstractModule {
         config.maxExcellentCost, config.maxAcceptableCost, config.worstOffenderCount,
         config.maxMethodCount, config.maxLineCount, config.printDepth, config.minCost,
         config.srcFileLineUrl, config.srcFileUrl));
+    bindConstant().annotatedWith(Names.named("printDepth")).to(config.printDepth);
+    bind(new TypeLiteral<List<String>>() {}).toInstance(config.entryList);
+
+    //TODO: install the appropriate language-specific module
+    install(new JavaTestabilityModule(config));
   }
 }

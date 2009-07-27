@@ -15,19 +15,6 @@
  */
 package com.google.test.metric.report.issues;
 
-import static com.google.test.metric.report.issues.IssueSubType.COMPLEXITY;
-import static com.google.test.metric.report.issues.IssueSubType.NON_MOCKABLE;
-import static com.google.test.metric.report.issues.IssueSubType.SETTER;
-import static com.google.test.metric.report.issues.IssueSubType.STATIC_INIT;
-import static com.google.test.metric.report.issues.IssueSubType.STATIC_METHOD;
-import static com.google.test.metric.report.issues.IssueType.CONSTRUCTION;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import junit.framework.TestCase;
-
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.ClassInfo;
 import com.google.test.metric.ClassRepository;
@@ -35,8 +22,20 @@ import com.google.test.metric.CostModel;
 import com.google.test.metric.CostUtil;
 import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MetricComputer;
+import static com.google.test.metric.report.issues.IssueSubType.COMPLEXITY;
+import static com.google.test.metric.report.issues.IssueSubType.NON_MOCKABLE;
+import static com.google.test.metric.report.issues.IssueSubType.SETTER;
+import static com.google.test.metric.report.issues.IssueSubType.STATIC_INIT;
+import static com.google.test.metric.report.issues.IssueSubType.STATIC_METHOD;
+import static com.google.test.metric.report.issues.IssueType.CONSTRUCTION;
 import com.google.test.metric.testing.MetricComputerBuilder;
 import com.google.test.metric.testing.MetricComputerJavaDecorator;
+
+import junit.framework.TestCase;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Tests for {@link com.google.test.metric.report.issues.IssuesReporterTest}
@@ -56,7 +55,7 @@ public class IssuesReporterTest extends TestCase {
     MetricComputer toDecorate = new MetricComputerBuilder().withClassRepository(repo).build();
     decoratedComputer = new MetricComputerJavaDecorator(toDecorate, repo);
     HypotheticalCostModel costModel =
-        new HypotheticalCostModel(new CostModel(), new ClassMunger(repo));
+        new HypotheticalCostModel(new CostModel(), new ClassMunger(repo), toDecorate);
     issuesReporter = new IssuesReporter(new LinkedList<ClassIssues>(), costModel);
   }
 

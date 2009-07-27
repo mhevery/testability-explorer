@@ -2,7 +2,6 @@ package com.google.test.metric;
 
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
-import com.google.test.metric.ReportGeneratorProvider.ReportFormat;
 import com.google.test.metric.report.ReportGenerator;
 import com.google.test.metric.report.TextReportGenerator;
 
@@ -42,12 +41,11 @@ public class TestabilityRunnerTest extends AutoFieldClearTestCase {
   private List<String> allEntryList = Arrays.asList("");
   private ReportGenerator report = new TextReportGenerator(new PrintStream(out), new CostModel(), 0, 0, 0);
   private RegExpWhiteList whiteList = new RegExpWhiteList("java.");
-  private ClassPath classPath;
-  private ClassRepository classRepository;
+  private PrintStream errStream = new PrintStream(err);
 
   public void testClassesNotInClasspath() throws Exception {
-    JavaTestabilityConfig testabilityConfig = configFor(CLASSES_EXTERNAL_DEPS_AND_SUPERCLASSES);
-    new JavaTestabilityRunner(testabilityConfig, report, classPath, classRepository).run();
+    JavaTestabilityRunner runner = runnerFor(CLASSES_EXTERNAL_DEPS_AND_SUPERCLASSES);
+    runner.run();
     assertTrue(out.toString().length() > 0);
     final String errStr = err.toString();
     assertTrue(errStr, errStr.length() > 0);
@@ -65,8 +63,8 @@ public class TestabilityRunnerTest extends AutoFieldClearTestCase {
    * classes that it <em>does</em> find.
    */
   public void testIncompleteClasspath() throws Exception {
-    JavaTestabilityConfig testabilityConfig = configFor(CLASSES_EXTERNAL_DEPS_AND_SUPERCLASSES);
-    new JavaTestabilityRunner(testabilityConfig, report, classPath, classRepository).run();
+    JavaTestabilityRunner runner = runnerFor(CLASSES_EXTERNAL_DEPS_AND_SUPERCLASSES);
+    runner.run();
     assertTrue(out.toString(), out.toString().length() > 0);
     assertTrue(err.toString(), err.toString().length() > 0);
   }
@@ -77,8 +75,8 @@ public class TestabilityRunnerTest extends AutoFieldClearTestCase {
    */
   public void testForWarningWhenClassesRecurseToIncludeClassesOutOfClasspath()
       throws Exception {
-    JavaTestabilityConfig testabilityConfig = configFor(CLASSES_EXTERNAL_DEPS_NO_SUPERCLASSES);
-    new JavaTestabilityRunner(testabilityConfig, report, classPath, classRepository).run();
+    JavaTestabilityRunner runner = runnerFor(CLASSES_EXTERNAL_DEPS_NO_SUPERCLASSES);
+    runner.run();
 
     assertTrue(out.toString(), out.toString().length() > 0);
     assertTrue(err.toString(), err.toString().length() > 0);
@@ -91,8 +89,8 @@ public class TestabilityRunnerTest extends AutoFieldClearTestCase {
    */
   public void testForWarningWhenClassExtendsFromClassOutOfClasspath()
       throws Exception {
-    JavaTestabilityConfig testabilityConfig = configFor(CLASSES_EXTERNAL_DEPS_AND_SUPERCLASSES);
-    new JavaTestabilityRunner(testabilityConfig, report, classPath, classRepository).run();
+    JavaTestabilityRunner runner = runnerFor(CLASSES_EXTERNAL_DEPS_AND_SUPERCLASSES);
+    runner.run();
 
     assertTrue(out.toString().length() > 0);
     assertTrue(err.toString().length() > 0);
@@ -100,11 +98,12 @@ public class TestabilityRunnerTest extends AutoFieldClearTestCase {
   }
 
 
-  private JavaTestabilityConfig configFor(String path) {
-    classPath = new ClassPathFactory().createFromPaths(path, "core/" + path);
-    classRepository = new JavaClassRepository(classPath);
-    return new JavaTestabilityConfig(
-        allEntryList, whiteList, new PrintStream(err), 1, ReportFormat.html);
+  private JavaTestabilityRunner runnerFor(String path) {
+    ClassPath classPath = new ClassPathFactory().createFromPaths(path, "core/" + path);
+    ClassRepository classRepository = new JavaClassRepository(classPath);
+    MetricComputer computer = new MetricComputer(classRepository, errStream, whiteList, 0);
+    return new JavaTestabilityRunner(report, classPath, classRepository, computer,
+        allEntryList, whiteList, new PrintStream(err));
   }
 
 }

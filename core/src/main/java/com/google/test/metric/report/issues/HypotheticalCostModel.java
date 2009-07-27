@@ -7,6 +7,7 @@ import com.google.test.metric.ClassCost;
 import com.google.test.metric.Cost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.MethodCost;
+import com.google.test.metric.MetricComputer;
 import com.google.test.metric.ViolationCost;
 import com.google.test.metric.WeightedAverage;
 
@@ -17,19 +18,18 @@ public class HypotheticalCostModel {
 
   private final CostModel costModel;
   private final ClassMunger classMunger;
+  private final MetricComputer computer;
 
   @Inject
-  public HypotheticalCostModel(CostModel costModel, ClassMunger classMunger) {
+  public HypotheticalCostModel(CostModel costModel, ClassMunger classMunger,
+                               MetricComputer computer) {
     this.costModel = costModel;
     this.classMunger = classMunger;
+    this.computer = computer;
   }
 
-  int computeClass(ClassCost classCost) {
-    return costModel.computeClass(classCost);
-  }
   private int computeClassWithoutMethod(ClassCost classCost, MethodCost adjustedMethod,
                                         Cost replacementCost) {
-
     WeightedAverage average = costModel.createWeighedAverage();
     for (MethodCost methodCost : classCost.getMethods()) {
       Cost cost = (adjustedMethod == methodCost ? replacementCost : methodCost.getTotalCost());
@@ -43,7 +43,7 @@ public class HypotheticalCostModel {
                                             ViolationCost violationCost) {
     Cost adjustedCost = violationMethodCost.getTotalCost().add(violationCost.getCost().negate());
     return 1 - computeClassWithoutMethod(classCost, violationMethodCost, adjustedCost) /
-               (float)computeClass(classCost);
+               (float) computeClass(classCost);
   }
 
   public float computeContributionFromMethod(ClassCost classCost, MethodCost violationMethodCost) {
@@ -54,6 +54,10 @@ public class HypotheticalCostModel {
             violationMethodCost.getDependentCost());
     final float totalCost = (float) computeClass(classCost);
     return 1 - costWithoutIssue / totalCost;
+  }
+
+  public int computeClass(ClassCost costWithoutMethod) {
+    return costModel.computeClass(costWithoutMethod);
   }
 
 }

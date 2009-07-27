@@ -7,11 +7,14 @@ import com.google.classpath.ClassPathFactory;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.google.inject.TypeLiteral;
+import com.google.inject.name.Names;
 import com.google.test.metric.ConfigModule.Error;
 import com.google.test.metric.ConfigModule.Output;
-import com.google.test.metric.JavaTestabilityConfig;
+import com.google.test.metric.JavaTestabilityModule;
 import com.google.test.metric.RegExpWhiteList;
 import com.google.test.metric.ReportGeneratorProvider.ReportFormat;
+import com.google.test.metric.WhiteList;
 import com.google.test.metric.report.ReportOptions;
 
 import java.io.File;
@@ -19,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author alexeagle@google.com (Alex Eagle)
@@ -45,15 +49,18 @@ public class MavenConfigModule extends AbstractModule {
         testabilityExplorerMojo.minCost, "", ""));
     bind(PrintStream.class).annotatedWith(Output.class).toProvider(OutputProvider.class);
     bind(PrintStream.class).annotatedWith(Error.class).toProvider(ErrorProvider.class);
-    bind(JavaTestabilityConfig.class).toProvider(ConfigProvider.class);
     bind(TestabilityExplorerMojo.class).toInstance(testabilityExplorerMojo);
+    bind(WhiteList.class).toInstance(new RegExpWhiteList(testabilityExplorerMojo.whiteList));
+    bind(ReportFormat.class).toInstance(ReportFormat.valueOf(testabilityExplorerMojo.format));
+    bindConstant().annotatedWith(Names.named("printDepth")).to(testabilityExplorerMojo.printDepth);
+    bind(new TypeLiteral<List<String>>() {}).toInstance(Arrays.asList(testabilityExplorerMojo.filter));
+
   }
 
   public static class OutputProvider implements Provider<PrintStream> {
     @Inject TestabilityExplorerMojo mojo;
-    @Inject JavaTestabilityConfig config;
+    @Inject ReportFormat format;
     public PrintStream get() {
-      ReportFormat format = config.getFormat();
       File directory = (format == ReportFormat.html ? mojo.outputDirectory : mojo.targetDirectory);
       if (!directory.exists()) {
         directory.mkdirs();
@@ -81,12 +88,11 @@ public class MavenConfigModule extends AbstractModule {
     }
   }
 
-  public static class ConfigProvider implements Provider<JavaTestabilityConfig> {
+  public static class ConfigProvider implements Provider<JavaTestabilityModule> {
     @Inject TestabilityExplorerMojo mojo;
     @Inject @Error PrintStream err;
-    public JavaTestabilityConfig get() {
-      return new JavaTestabilityConfig(Arrays.asList(mojo.filter),
-          new RegExpWhiteList(mojo.whiteList),
+    public JavaTestabilityModule get() {
+      return new JavaTestabilityModule(Arrays.asList(mojo.filter),
           err, mojo.printDepth, ReportFormat.valueOf(mojo.format));
     }
   }

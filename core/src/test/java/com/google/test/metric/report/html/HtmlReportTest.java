@@ -64,7 +64,7 @@ public class HtmlReportTest extends TestCase {
     out = new ByteArrayOutputStream();
     CostModel costModel = new CostModel();
     HypotheticalCostModel hypotheticalCostModel =
-        new HypotheticalCostModel(costModel, new ClassMunger(new JavaClassRepository()));
+        new HypotheticalCostModel(costModel, new ClassMunger(new JavaClassRepository()), null);
     IssuesReporter issuesReporter = new IssuesReporter(new LinkedList<ClassIssues>(),
         hypotheticalCostModel);
     ReportOptions options = new ReportOptions(1, 10, 10, 20, 5, 100, 100, 1, 10, "", "");

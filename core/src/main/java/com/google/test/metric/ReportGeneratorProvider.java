@@ -20,7 +20,6 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.test.metric.ConfigModule.Output;
 import com.google.test.metric.report.ClassPathTemplateLoader;
-import com.google.test.metric.report.DrillDownReportGenerator;
 import com.google.test.metric.report.FreemarkerReportGenerator;
 import com.google.test.metric.report.GradeCategories;
 import com.google.test.metric.report.PropertiesReportGenerator;
@@ -64,18 +63,19 @@ public class ReportGeneratorProvider implements Provider<ReportGenerator> {
   private final ClassPath classPath;
   private final ReportOptions options;
   private final PrintStream out;
-  private final JavaTestabilityConfig config;
   private final HypotheticalCostModel hypotheticalCostModel;
+  private final ReportFormat reportFormat;
 
   @Inject
   public ReportGeneratorProvider(ClassPath classPath, ReportOptions options,
-                                JavaTestabilityConfig config, @Output PrintStream out,
-                                HypotheticalCostModel hypotheticalCostModel) {
+                                 @Output PrintStream out,
+                                 HypotheticalCostModel hypotheticalCostModel,
+                                 ReportFormat reportFormat) {
     this.classPath = classPath;
     this.options = options;
-    this.config = config;
     this.hypotheticalCostModel = hypotheticalCostModel;
     this.out = out;
+    this.reportFormat = reportFormat;
   }
 
   public enum ReportFormat {
@@ -109,7 +109,7 @@ public class ReportGeneratorProvider implements Provider<ReportGenerator> {
         objectWrapper);
 
     ReportGenerator report;
-    switch (config.getFormat()) {
+    switch (reportFormat) {
       case summary:
         report = new TextReportGenerator(out, costModel, options);
         break;
@@ -118,10 +118,6 @@ public class ReportGeneratorProvider implements Provider<ReportGenerator> {
         reportModel.setSourceLinker(new SourceLinkerModel(linker));
         report = new FreemarkerReportGenerator(reportModel, out,
             FreemarkerReportGenerator.HTML_REPORT_TEMPLATE, cfg);
-        break;
-      case detail:
-        report = new DrillDownReportGenerator(out, costModel, config.getEntryList(),
-            options.getPrintDepth(), options.getMinCost());
         break;
       case props:
         report = new PropertiesReportGenerator(out, costModel);
@@ -146,7 +142,7 @@ public class ReportGeneratorProvider implements Provider<ReportGenerator> {
         report = new FreemarkerReportGenerator(reportModel, out, "about/Report.html", cfg);
         break;
       default:
-        throw new IllegalStateException("Unknown report format " + config.getFormat());
+        throw new IllegalStateException("Unknown report format " + reportFormat);
     }
     return report;
   }
@@ -163,7 +159,7 @@ public class ReportGeneratorProvider implements Provider<ReportGenerator> {
     AnalysisModel analysisModel = new AnalysisModel(issuesReporter);
     ReportModel reportModel;
 
-    switch (config.getFormat()) {
+    switch (reportFormat) {
       case html:
         reportModel = new HtmlReportModel(costModel, analysisModel, options);
         break;

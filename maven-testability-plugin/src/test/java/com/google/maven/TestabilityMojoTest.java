@@ -26,10 +26,11 @@ public class TestabilityMojoTest extends AbstractMojoTestCase {
     String resultFile = (String) getVariableValueFromObject(mojo, "resultfile");
 
     File results = new File(outputDir, resultFile + ".html");
-    // TODO: wire Guice to allow multiple report outputs in a single run
-    // assertTrue("should exist: " + results.getAbsolutePath(), results.exists());
-    // assertTrue(IOUtil.toString(new FileReader(results)).contains("TestabilityExplorerMojo"));
-    results.delete();
+    assertTrue("should exist: " + results.getAbsolutePath(), results.exists());
+    String content = IOUtil.toString(new FileReader(results));
+    // TODO: wire Guice to allow multiple report outputs in a single run - this report is empty
+    //assertTrue("HTML report content: " + content, content.contains("TestabilityExplorerMojo"));
+    assertTrue(results.delete());
   }
 
   public void testAlsoOutputsXml() throws Exception {
@@ -40,7 +41,7 @@ public class TestabilityMojoTest extends AbstractMojoTestCase {
     File results = new File(outputDir, resultFile + ".xml");
     assertTrue("should exist: " + results.getAbsolutePath(), results.exists());
     assertTrue(IOUtil.toString(new FileReader(results)).contains("TestabilityExplorerMojo"));
-    results.delete();
+    assertTrue(results.delete());
   }
 
   public void testNonJarProject() throws Exception {
