@@ -20,11 +20,14 @@ import com.google.classpath.RegExpResourceFilter;
 import static com.google.classpath.RegExpResourceFilter.ANY;
 import static com.google.classpath.RegExpResourceFilter.ENDS_WITH_CLASS;
 import com.google.inject.Inject;
+import com.google.test.metric.ConfigModule.Error;
 import com.google.test.metric.report.ReportGenerator;
 import com.google.test.metric.report.issues.IssuesReporter;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import static java.util.Arrays.asList;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -36,28 +39,33 @@ import java.util.TreeSet;
  */
 public class JavaTestabilityRunner implements Runnable {
 
-  private final JavaTestabilityConfig config;
   private final ReportGenerator report;
   private final ClassPath classPath;
   private final ClassRepository classRepository;
+  private final MetricComputer computer;
+  private final List<String> entryList;
+  private final WhiteList whiteList;
+  private final PrintStream err;
 
   @Inject
-  public JavaTestabilityRunner(JavaTestabilityConfig config, ReportGenerator report,
-                               ClassPath classPath, ClassRepository classRepository) {
-    this.config = config;
+  public JavaTestabilityRunner(ReportGenerator report,
+                               ClassPath classPath, ClassRepository classRepository,
+                               MetricComputer computer, List<String> entryList, 
+                               WhiteList whiteList, @Error PrintStream err) {
     this.report = report;
     this.classPath = classPath;
     this.classRepository = classRepository;
+    this.computer = computer;
+    this.entryList = entryList;
+    this.whiteList = whiteList;
+    this.err = err;
   }
 
   public AnalysisModel generateModel(IssuesReporter issuesReporter) {
-    MetricComputer computer = new MetricComputer(classRepository, config.getErr(),
-        config.getWhitelist(), config.getPrintDepth());
-
     SortedSet<String> classNames = new TreeSet<String>();
     RegExpResourceFilter resourceFilter = new RegExpResourceFilter(ANY, ENDS_WITH_CLASS);
     AnalysisModel model = new AnalysisModel(issuesReporter);
-    for (String entry : config.getEntryList()) {
+    for (String entry : entryList) {
       if (entry.equals(".")) {
         entry = "";
       }
@@ -67,13 +75,13 @@ public class JavaTestabilityRunner implements Runnable {
     for (String resource : classNames) {
       String className = resource.replace(".class", "").replace("/", ".").replace('$', '.');
       try {
-        if (!config.getWhitelist().isClassWhiteListed(className)) {
+        if (!whiteList.isClassWhiteListed(className)) {
           ClassInfo clazz = classRepository.getClass(className);
           ClassCost classCost = computer.compute(clazz);
           model.addClassCost(classCost);
         }
       } catch (ClassNotFoundException e) {
-        config.getErr().println("WARNING: can not analyze class '" + className
+        err.println("WARNING: can not analyze class '" + className
             + "' since class '" + e.getClassName() + "' was not found. Chain: " + e.getMessage());
       }
     }

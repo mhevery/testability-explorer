@@ -82,8 +82,8 @@ public class ConfigModuleTest extends AutoFieldClearTestCase {
                 "com.google.FirstClass com.google.second.package com.google.third.package"},
         outStream, errStream));
     CommandLineConfig commandLineConfig = injector.getInstance(CommandLineConfig.class);
-    // TODO(alexeagle): this test is really testing the JavaTestabilityConfig
-    new JavaTestabilityConfig(commandLineConfig);
+    // TODO(alexeagle): this test is really testing the JavaTestabilityModule
+    new JavaTestabilityModule(commandLineConfig);
 
     assertEquals("", err.toString());
     assertEquals("not/default/path", commandLineConfig.cp);

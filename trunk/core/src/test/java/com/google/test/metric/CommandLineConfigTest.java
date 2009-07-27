@@ -15,6 +15,7 @@
  */
 package com.google.test.metric;
 
+import com.google.test.metric.JavaTestabilityModule.JavaWhiteListProvider;
 import com.google.test.metric.ReportGeneratorProvider.ReportFormat;
 
 import org.kohsuke.args4j.CmdLineException;
@@ -73,8 +74,8 @@ public class CommandLineConfigTest extends AutoFieldClearTestCase {
     commandLineConfig.printer = "xml"; 
     commandLineConfig.cp = "a";
     commandLineConfig.validate();
-    JavaTestabilityConfig config = new JavaTestabilityConfig(commandLineConfig);
-    assertEquals(ReportFormat.xml, config.getFormat());
+    JavaTestabilityModule module = new JavaTestabilityModule(commandLineConfig);
+    assertEquals(ReportFormat.xml, module.getFormat());
   }
 
   public void testCreateNonexistantReportThrowsException() throws Exception {
@@ -88,7 +89,6 @@ public class CommandLineConfigTest extends AutoFieldClearTestCase {
     }
   }
   
-  
   public void testBuildTestabilityConfig() throws Exception {
     PrintStream errStream = new PrintStream(new ByteArrayOutputStream());
     commandLineConfig = new CommandLineConfig(null, errStream);
@@ -96,17 +96,23 @@ public class CommandLineConfigTest extends AutoFieldClearTestCase {
     commandLineConfig.cp = "fake/path";
     commandLineConfig.printDepth = 3;
     commandLineConfig.printer = "summary";
-    commandLineConfig.wl = "com.foo:org.bar";
     commandLineConfig.validate();
-    JavaTestabilityConfig testabilityConfig = new JavaTestabilityConfig(commandLineConfig);
-    assertEquals(2, testabilityConfig.getEntryList().size());
-    assertTrue(testabilityConfig.getWhitelist().isClassWhiteListed("com.foo.Hash"));
-    assertTrue(testabilityConfig.getWhitelist().isClassWhiteListed("org.bar.BiMap"));
-    assertTrue(testabilityConfig.getWhitelist().isClassWhiteListed("java.lang"));
-    assertFalse(testabilityConfig.getWhitelist().isClassWhiteListed("com.example"));
-    assertEquals(ReportFormat.summary, testabilityConfig.getFormat());
-    assertEquals(errStream, testabilityConfig.getErr());
-    assertEquals(3, testabilityConfig.getPrintDepth());
+    JavaTestabilityModule testabilityModule = new JavaTestabilityModule(commandLineConfig);
+    assertEquals(2, testabilityModule.getEntryList().size());
+    assertEquals(ReportFormat.summary, testabilityModule.getFormat());
+    assertEquals(errStream, testabilityModule.getErr());
+    assertEquals(3, testabilityModule.getPrintDepth());
+  }
+
+  public void testJavaWhitelistProvider() throws Exception {
+    commandLineConfig.wl = "com.foo:org.bar";
+    JavaWhiteListProvider provider = new JavaWhiteListProvider();
+    provider.config = commandLineConfig;
+    WhiteList whiteList = provider.get();
+    assertTrue(whiteList.isClassWhiteListed("com.foo.Hash"));
+    assertTrue(whiteList.isClassWhiteListed("org.bar.BiMap"));
+    assertTrue(whiteList.isClassWhiteListed("java.lang"));
+    assertFalse(whiteList.isClassWhiteListed("com.example"));
   }
   
 }

@@ -15,7 +15,9 @@
  */
 package com.google.test.metric;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.test.metric.ReportGeneratorProvider.ReportFormat;
 
 import java.io.PrintStream;
@@ -29,35 +31,25 @@ import java.util.List;
  * TestabilityRunner.
  * @author Jonathan Andrew Wolter <jaw@jawspeak.com>
  */
-// TODO: this whole class should become a Guice module
-public class JavaTestabilityConfig {
+public class JavaTestabilityModule extends AbstractModule {
 
-  // TODO I could be persuaded to make all fields public, since this is just a data holder.
   private final List<String> entryList;
-  private final WhiteList whitelist;
   private final PrintStream err;
   private final int printDepth;
   private final ReportFormat format;
 
   @Inject
-  public JavaTestabilityConfig(CommandLineConfig config) {
+  public JavaTestabilityModule(CommandLineConfig config) {
     entryList = config.entryList;
     err = config.err;
     format = config.format;
     printDepth = config.printDepth;
     convertEntryListValues();
-
-    RegExpWhiteList regExpWhitelist = new RegExpWhiteList("java.");
-    for (String packageName : config.wl == null ? new String[] {} : config.wl.split("[,:]")) {
-      regExpWhitelist.addPackage(packageName);
-    }
-    whitelist = regExpWhitelist;
   }
 
-  public JavaTestabilityConfig(List<String> entryList, WhiteList whitelist,
+  public JavaTestabilityModule(List<String> entryList,
                                PrintStream err, int printDepth, ReportFormat format) {
     this.entryList = entryList;
-    this.whitelist = whitelist;
     this.err = err;
     this.printDepth = printDepth;
     this.format = format;
@@ -65,10 +57,6 @@ public class JavaTestabilityConfig {
 
   public List<String> getEntryList() {
     return entryList;
-  }
-
-  public WhiteList getWhitelist() {
-    return whitelist;
   }
 
   public PrintStream getErr() {
@@ -83,7 +71,23 @@ public class JavaTestabilityConfig {
     return format;
   }
 
-  /*
+  @Override
+  protected void configure() {
+    bind(WhiteList.class).toProvider(JavaWhiteListProvider.class);
+  }
+
+  static class JavaWhiteListProvider implements Provider<WhiteList> {
+    @Inject CommandLineConfig config;
+    public WhiteList get() {
+      RegExpWhiteList regExpWhitelist = new RegExpWhiteList("java.");
+      for (String packageName : config.wl == null ? new String[] {} : config.wl.split("[,:]")) {
+        regExpWhitelist.addPackage(packageName);
+      }
+      return regExpWhitelist;
+    }
+  }
+
+    /*
    * Converts entryList class and package values into paths by replacing any "." with a "/" Also
    * checks for entries that contain multiple values separated by a space (" "), and splits them out
    * into separate entries. This may happen when main() is called explicitly from another class,

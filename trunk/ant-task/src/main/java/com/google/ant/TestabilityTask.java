@@ -16,12 +16,10 @@
 
 package com.google.ant;
 
-import com.google.classpath.ClassPath;
-import com.google.classpath.ClassPathFactory;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.test.metric.JavaTestabilityConfig;
+import com.google.test.metric.JavaTestabilityModule;
 import com.google.test.metric.JavaTestabilityRunner;
 import com.google.test.metric.RegExpWhiteList;
 import com.google.test.metric.ReportGeneratorProvider.ReportFormat;
@@ -125,14 +123,13 @@ public class TestabilityTask extends Task {
     List<String> entries = Arrays.asList(model.getFilter());
     WhiteList packageWhiteList = new RegExpWhiteList(model.getWhiteList());
     final ReportOptions options = setOptions();
-    ClassPath classPath = new ClassPathFactory().createFromPath(model.getClassPath());
-    final JavaTestabilityConfig config = new JavaTestabilityConfig(entries, packageWhiteList,
+    final JavaTestabilityModule module = new JavaTestabilityModule(entries,
         model.getErrorPrintStream(), model.getPrintDepth(), ReportFormat.valueOf(model.getPrint()));
     AbstractModule configModule = new AbstractModule() {
       @Override
       protected void configure() {
         bind(ReportOptions.class).toInstance(options);
-        bind(JavaTestabilityConfig.class).toInstance(config);
+        bind(JavaTestabilityModule.class).toInstance(module);
       }
     };
     Injector injector = Guice.createInjector(configModule, new TestabilityModule());

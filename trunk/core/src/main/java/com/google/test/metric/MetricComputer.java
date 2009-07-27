@@ -15,16 +15,18 @@
  */
 package com.google.test.metric;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+import com.google.test.metric.ConfigModule.Error;
 import static com.google.test.metric.Reason.IMPLICIT_CONSTRUCTOR;
 import static com.google.test.metric.Reason.IMPLICIT_SETTER;
 import static com.google.test.metric.Reason.IMPLICIT_STATIC_INIT;
+import com.google.test.metric.TestabilityVisitor.CostRecordingFrame;
+import com.google.test.metric.TestabilityVisitor.Frame;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.test.metric.TestabilityVisitor.CostRecordingFrame;
-import com.google.test.metric.TestabilityVisitor.Frame;
 
 public class MetricComputer {
 
@@ -33,8 +35,9 @@ public class MetricComputer {
   private final WhiteList whitelist;
   private final int recordingDepth;
 
-  public MetricComputer(ClassRepository classRepository, PrintStream err,
-      WhiteList whitelist, int recordingDepth) {
+  @Inject
+  public MetricComputer(ClassRepository classRepository, @Error PrintStream err,
+      WhiteList whitelist, @Named("printDepth") int recordingDepth) {
     this.classRepository = classRepository;
     this.err = err;
     this.whitelist = whitelist;

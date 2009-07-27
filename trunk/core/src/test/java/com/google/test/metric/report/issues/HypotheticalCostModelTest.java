@@ -30,8 +30,8 @@ public class HypotheticalCostModelTest extends TestCase {
   private ClassRepository repo = new JavaClassRepository();
   private CostModel costModel = new CostModel();
   private ClassMunger classMunger = new ClassMunger(repo);
-  private HypotheticalCostModel hypotheticalCostModel = new HypotheticalCostModel(costModel, classMunger);
   private MetricComputer computer = new MetricComputerBuilder().withClassRepository(repo).build();
+  private HypotheticalCostModel hypotheticalCostModel = new HypotheticalCostModel(costModel, classMunger, computer);
 
   @Override
   protected void setUp() throws Exception {
