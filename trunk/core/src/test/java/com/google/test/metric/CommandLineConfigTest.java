@@ -112,6 +112,7 @@ public class CommandLineConfigTest extends AutoFieldClearTestCase {
     assertTrue(whiteList.isClassWhiteListed("com.foo.Hash"));
     assertTrue(whiteList.isClassWhiteListed("org.bar.BiMap"));
     assertTrue(whiteList.isClassWhiteListed("java.lang"));
+    assertTrue(whiteList.isClassWhiteListed("javax.swing.plaf"));
     assertFalse(whiteList.isClassWhiteListed("com.example"));
   }
   
