@@ -80,6 +80,7 @@ public class JavaTestabilityModule extends AbstractModule {
     @Inject CommandLineConfig config;
     public WhiteList get() {
       RegExpWhiteList regExpWhitelist = new RegExpWhiteList("java.");
+      regExpWhitelist.addPackage("javax.");
       for (String packageName : config.wl == null ? new String[] {} : config.wl.split("[,:]")) {
         regExpWhitelist.addPackage(packageName);
       }
