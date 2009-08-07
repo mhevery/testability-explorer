@@ -4,8 +4,7 @@ package com.google.test.metric;
 
 import com.google.classpath.ClassPath;
 import com.google.inject.AbstractModule;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
+import com.google.inject.Provides;
 import com.google.test.metric.report.ReportGenerator;
 
 
@@ -20,13 +19,9 @@ public class TestabilityModule extends AbstractModule {
   protected void configure() {
     bind(Runnable.class).to(JavaTestabilityRunner.class);
     bind(ReportGenerator.class).toProvider(ReportGeneratorProvider.class);
-    bind(ClassRepository.class).toProvider(JavaClassRepositoryProvider.class);
   }
 
-  public static class JavaClassRepositoryProvider implements Provider<ClassRepository> {
-    @Inject ClassPath classPath;
-    public ClassRepository get() {
-      return new JavaClassRepository(classPath);
-    }
+  @Provides ClassRepository getClassRepo(ClassPath classPath) {
+    return new JavaClassRepository(classPath);
   }
 }

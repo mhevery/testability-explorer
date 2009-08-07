@@ -7,6 +7,7 @@ import com.google.classpath.ClassPathFactory;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
 import com.google.test.metric.ConfigModule.Error;
@@ -47,8 +48,6 @@ public class MavenConfigModule extends AbstractModule {
         testabilityExplorerMojo.maxAcceptableCost,
         testabilityExplorerMojo.worstOffenderCount, 0, 0, testabilityExplorerMojo.printDepth,
         testabilityExplorerMojo.minCost, "", ""));
-    bind(PrintStream.class).annotatedWith(Output.class).toProvider(OutputProvider.class);
-    bind(PrintStream.class).annotatedWith(Error.class).toProvider(ErrorProvider.class);
     bind(TestabilityExplorerMojo.class).toInstance(testabilityExplorerMojo);
     bind(WhiteList.class).toInstance(new RegExpWhiteList(testabilityExplorerMojo.whiteList));
     bind(ReportFormat.class).toInstance(ReportFormat.valueOf(testabilityExplorerMojo.format));
@@ -57,37 +56,33 @@ public class MavenConfigModule extends AbstractModule {
 
   }
 
-  public static class OutputProvider implements Provider<PrintStream> {
-    @Inject TestabilityExplorerMojo mojo;
-    @Inject ReportFormat format;
-    public PrintStream get() {
-      File directory = (format == ReportFormat.html ? mojo.outputDirectory : mojo.targetDirectory);
-      if (!directory.exists()) {
-        directory.mkdirs();
-      }
+  @Provides @Output PrintStream getOutput(TestabilityExplorerMojo mojo, ReportFormat format) {
+    File directory = (format == ReportFormat.html ? mojo.outputDirectory : mojo.targetDirectory);
+    if (!directory.exists()) {
+      directory.mkdirs();
+    }
+    try {
+      String outFile = mojo.resultfile + "." + format.toString();
+      return new PrintStream(new FileOutputStream(new File(directory, outFile)));
+    } catch (FileNotFoundException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Provides @Error PrintStream getError(TestabilityExplorerMojo mojo) {
+    if (mojo.errorfile != null && mojo.errorfile.exists()) {
       try {
-        String outFile = mojo.resultfile + "." + format.toString();
-        return new PrintStream(new FileOutputStream(new File(directory, outFile)));
+        return new PrintStream(new FileOutputStream(mojo.errorfile));
       } catch (FileNotFoundException e) {
         throw new RuntimeException(e);
       }
     }
+    return System.err;
   }
 
-  public static class ErrorProvider implements Provider<PrintStream> {
-    @Inject TestabilityExplorerMojo mojo;
-    public PrintStream get() {
-      if (mojo.errorfile != null && mojo.errorfile.exists()) {
-        try {
-          return new PrintStream(new FileOutputStream(mojo.errorfile));
-        } catch (FileNotFoundException e) {
-          throw new RuntimeException(e);
-        }
-      }
-      return System.err;
-    }
-  }
-
+  /**
+   * TODO(alex): this seems to be unused. Confirm that the maven plugin works.
+   */
   public static class ConfigProvider implements Provider<JavaTestabilityModule> {
     @Inject TestabilityExplorerMojo mojo;
     @Inject @Error PrintStream err;

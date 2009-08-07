@@ -15,17 +15,18 @@
  */
 package com.google.test.metric;
 
+import com.google.common.base.Nullable;
+import com.google.common.base.Predicate;
 import static com.google.common.collect.Iterables.filter;
+import com.google.common.collect.Lists;
 import static com.google.common.collect.Lists.newArrayList;
-import static java.util.Collections.unmodifiableList;
+import com.google.test.metric.method.op.turing.MethodInvocation;
+import com.google.test.metric.method.op.turing.Operation;
 
 import java.util.Collection;
 import java.util.Collections;
+import static java.util.Collections.unmodifiableList;
 import java.util.List;
-
-import com.google.common.base.Nullable;
-import com.google.common.base.Predicate;
-import com.google.test.metric.method.op.turing.Operation;
 
 public class MethodInfo implements Comparable<MethodInfo> {
 
@@ -171,8 +172,32 @@ public class MethodInfo implements Comparable<MethodInfo> {
    */
   public MethodInfo copyWithNoOperations(ClassInfo parent) {
     List<Operation> operations = Collections.emptyList();
+    List<Integer> linesOfComplexity = Collections.emptyList();
     return new MethodInfo(parent, name, startingLineNumber, methodThis,
         parameters, localVariables, visibility, operations, isFinal,
+        isConstructor, linesOfComplexity);
+  }
+
+  public MethodInfo copyWithNoDirectCost(ClassInfo parent) {
+    List<Integer> linesOfComplexity = Collections.emptyList();
+    return new MethodInfo(parent, name, startingLineNumber, methodThis,
+        parameters, localVariables, visibility, operations, isFinal,
+        isConstructor, linesOfComplexity);
+  }
+
+  public MethodInfo copyWithoutInvocation(ClassInfo parent, String invokedClassName,
+                                          String invokedMethodName) {
+    List<Operation> operationsWithoutInvocation = Lists.newLinkedList();
+    for (Operation operation : operations) {
+      if (operation instanceof MethodInvocation) {
+        if (((MethodInvocation) operation).equals(invokedClassName, invokedMethodName)) {
+          continue;
+        }
+      }
+      operationsWithoutInvocation.add(operation);
+    }
+    return new MethodInfo(parent, name, startingLineNumber, methodThis,
+        parameters, localVariables, visibility, operationsWithoutInvocation, isFinal,
         isConstructor, linesOfComplexity);
   }
 

@@ -15,10 +15,10 @@
  */
 package com.google.test.metric.method.op.turing;
 
-import java.util.List;
-
 import com.google.test.metric.TestabilityVisitor;
 import com.google.test.metric.Variable;
+
+import java.util.List;
 
 public class MethodInvocation extends Operation {
 
@@ -66,4 +66,14 @@ public class MethodInvocation extends Operation {
     return methodThis;
   }
 
+  /**
+   * @return true iff this is an invocation of methodName in a class className
+   */
+  public boolean equals(String className, String methodName) {
+    return className.equals(clazzName) && methodName.equals(name);
+  }
+
+  public String getClazzName() {
+    return clazzName;
+  }
 }

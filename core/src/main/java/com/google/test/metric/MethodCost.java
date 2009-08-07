@@ -15,14 +15,15 @@
  */
 package com.google.test.metric;
 
+import com.google.test.metric.report.RemovePackageFormatter;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.google.test.metric.report.RemovePackageFormatter;
-
 public class MethodCost {
 
+  private final String className;
   private final String methodName;
   private final int lineNumber;
   private final boolean constructor;
@@ -57,13 +58,16 @@ public class MethodCost {
   public static final String METHOD_NAME_ATTRIBUTE = "name";
 
   /**
+   * @param className
    * @param methodName
    *          name of the method, such as {@code void myMethod()}.
    * @param lineNumber
    * @param isStaticInit
    */
-  public MethodCost(String methodName, int lineNumber, boolean isConstructor, boolean isStatic,
+  public MethodCost(String className, String methodName, int lineNumber, boolean isConstructor,
+                    boolean isStatic,
                     boolean isStaticInit) {
+    this.className = className;
     this.methodName = methodName;
     this.lineNumber = lineNumber;
     constructor = isConstructor;
@@ -97,6 +101,10 @@ public class MethodCost {
     return lineNumber;
   }
 
+  public String getClassName() {
+    return className;
+  }
+
   public List<ViolationCost> getViolationCosts() {
     return costSources;
   }
@@ -104,9 +112,11 @@ public class MethodCost {
   public List<ViolationCost> getImplicitViolationCosts() {
     return filterViolationCosts(true);
   }
+
   public List<ViolationCost> getExplicitViolationCosts() {
     return filterViolationCosts(false);
   }
+
   private List<ViolationCost> filterViolationCosts(boolean implicit) {
     List<ViolationCost> result = new ArrayList<ViolationCost>();
     for (ViolationCost cost : getViolationCosts()) {

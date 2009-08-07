@@ -15,13 +15,15 @@
  */
 package com.google.test.metric;
 
+import com.google.test.metric.report.DrillDownReportGenerator;
+import com.google.test.metric.testing.MetricComputerBuilder;
+import com.google.test.metric.testing.MetricComputerJavaDecorator;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.List;
 
-import com.google.test.metric.report.DrillDownReportGenerator;
-import com.google.test.metric.testing.MetricComputerBuilder;
-import com.google.test.metric.testing.MetricComputerJavaDecorator;
+import javax.swing.JLabel;
 
 public class MetricComputerTest extends AutoFieldClearTestCase {
 
@@ -31,7 +33,10 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    MetricComputer toDecorate = new MetricComputerBuilder().withClassRepository(repo).build();
+    RegExpWhiteList regExpWhitelist = new RegExpWhiteList("java.");
+    regExpWhitelist.addPackage("javax.");
+    MetricComputer toDecorate = new MetricComputerBuilder().withWhitelist(regExpWhitelist)
+        .withClassRepository(repo).build();
     computer = new MetricComputerJavaDecorator(toDecorate, repo);
   }
 
@@ -571,5 +576,16 @@ public class MetricComputerTest extends AutoFieldClearTestCase {
     MethodCost cost = computer.compute(HasIrrelevantImplicitCost.class,
       "HasIrrelevantImplicitCost()");
     assertEquals(0, cost.getImplicitViolationCosts().size());
+  }
+
+  static class MyLabel extends JLabel {
+    void doThing() {
+    }
+  }
+
+  public void testJavaXSuperClassSettersArentCountedAgainstMe() throws Exception {
+    ClassCost cost = computer.compute(MyLabel.class);
+    assertEquals(0, cost.getTotalComplexityCost());
+    assertEquals(0, cost.getTotalGlobalCost());
   }
 }

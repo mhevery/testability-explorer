@@ -15,18 +15,6 @@
  */
 package com.google.test.metric.report;
 
-import static com.google.test.metric.Reason.IMPLICIT_STATIC_INIT;
-import static com.google.test.metric.Reason.NON_OVERRIDABLE_METHOD_CALL;
-import static java.util.Arrays.asList;
-
-import java.io.StringWriter;
-
-import junit.framework.TestCase;
-
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
-import org.xml.sax.SAXException;
-
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.Cost;
 import com.google.test.metric.CostModel;
@@ -34,8 +22,19 @@ import com.google.test.metric.CyclomaticCost;
 import com.google.test.metric.GlobalCost;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvocationCost;
+import static com.google.test.metric.Reason.IMPLICIT_STATIC_INIT;
+import static com.google.test.metric.Reason.NON_OVERRIDABLE_METHOD_CALL;
 import com.google.test.metric.SourceLocation;
 import com.google.test.metric.ViolationCost;
+
+import junit.framework.TestCase;
+
+import org.apache.xml.serialize.OutputFormat;
+import org.apache.xml.serialize.XMLSerializer;
+import org.xml.sax.SAXException;
+
+import java.io.StringWriter;
+import static java.util.Arrays.asList;
 
 public class XMLReportTest extends TestCase {
 
@@ -67,7 +66,7 @@ public class XMLReportTest extends TestCase {
   public void testPrintCost() throws Exception {
     XMLReportGenerator report = new XMLReportGenerator(handler, costModel, 0, 0, 0);
 
-    MethodCost methodCost = new MethodCost("methodName", 1, false, false, false);
+    MethodCost methodCost = new MethodCost("", "methodName", 1, false, false, false);
     methodCost.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
     methodCost.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
     ViolationCost violation = new MethodInvocationCost(new SourceLocation("source.file", 123), methodCost,
@@ -82,7 +81,7 @@ public class XMLReportTest extends TestCase {
   public void testPrintCostNullReason() throws Exception {
     XMLReportGenerator report = new XMLReportGenerator(handler, costModel, 0, 0, 0);
 
-    MethodCost methodCost = new MethodCost("methodName", 1, false, false, false);
+    MethodCost methodCost = new MethodCost("", "methodName", 1, false, false, false);
     methodCost.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
     methodCost.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
     ViolationCost violation = new MethodInvocationCost(new SourceLocation("source.file", 123), methodCost,
@@ -101,7 +100,7 @@ public class XMLReportTest extends TestCase {
       }
 
     };
-    MethodCost methodCost = new MethodCost("methodName", 123, false, false, false);
+    MethodCost methodCost = new MethodCost("", "methodName", 123, false, false, false);
     methodCost.addCostSource(new GlobalCost(new SourceLocation(null, 123), null, Cost.global(1)));
     methodCost.addCostSource(new CyclomaticCost(new SourceLocation(null, 234), Cost.cyclomatic(1)));
     methodCost.addCostSource(new CyclomaticCost(new SourceLocation(null, 345), Cost.cyclomatic(1)));
@@ -119,10 +118,10 @@ public class XMLReportTest extends TestCase {
         write(methodCost.getMethodName() + "()");
       }
     };
-    MethodCost m1 = new MethodCost("M1", -1, false, false, false);
+    MethodCost m1 = new MethodCost("", "M1", -1, false, false, false);
     m1.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
     m1.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
-    MethodCost m2 = new MethodCost("M2", -1, false, false, false);
+    MethodCost m2 = new MethodCost("", "M2", -1, false, false, false);
     m2.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
     m1.link();
     m2.link();
@@ -139,7 +138,7 @@ public class XMLReportTest extends TestCase {
       }
     };
     report.printHeader();
-    MethodCost m1 = new MethodCost("M1", -1, false, false, false);
+    MethodCost m1 = new MethodCost("", "M1", -1, false, false, false);
     m1.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
     m1.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
     m1.link();

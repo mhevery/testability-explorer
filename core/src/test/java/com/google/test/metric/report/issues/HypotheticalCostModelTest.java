@@ -5,61 +5,64 @@ package com.google.test.metric.report.issues;
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.ClassInfo;
 import com.google.test.metric.ClassRepository;
-import com.google.test.metric.Cost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.CostUtil;
-import com.google.test.metric.CyclomaticCost;
 import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvocationCost;
 import com.google.test.metric.MetricComputer;
-import static com.google.test.metric.Reason.NON_OVERRIDABLE_METHOD_CALL;
-import com.google.test.metric.SourceLocation;
 import com.google.test.metric.testing.MetricComputerBuilder;
 
 import junit.framework.TestCase;
-
-import java.util.Arrays;
 
 /**
  * @author alexeagle@google.com (Alex Eagle)
  */
 public class HypotheticalCostModelTest extends TestCase {
-  public MethodCost doThingMethod;
-  private MethodCost methodWithIndirectCosts;
-  private ClassRepository repo = new JavaClassRepository();
   private CostModel costModel = new CostModel();
-  private ClassMunger classMunger = new ClassMunger(repo);
+  private ClassRepository repo = new JavaClassRepository();
   private MetricComputer computer = new MetricComputerBuilder().withClassRepository(repo).build();
-  private HypotheticalCostModel hypotheticalCostModel = new HypotheticalCostModel(costModel, classMunger, computer);
+  private HypotheticalCostModel hypotheticalCostModel =
+      new HypotheticalCostModel(costModel, new ClassMunger(repo), computer);
 
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-    doThingMethod = new MethodCost("doThing()", 1, false, false, false);
-    doThingMethod.addCostSource(new CyclomaticCost(new SourceLocation(null, 3), Cost.cyclomatic(100)));
-
-    methodWithIndirectCosts = new MethodCost("hasIndirect()", 2, false, false, false);
-    methodWithIndirectCosts.addCostSource(new CyclomaticCost(new SourceLocation(null, 4), Cost.cyclomatic(50)));
-    methodWithIndirectCosts.addCostSource(new MethodInvocationCost(new SourceLocation(null, 1),
-        doThingMethod, NON_OVERRIDABLE_METHOD_CALL, Cost.cyclomatic(33)));
-    costModel = new CostModel();
+  static class HasDirectCost {
+   void doThing() {
+      new CostUtil().instanceCost4();
+    }
   }
-
   public void testDirectCostOfAMethodCanBeSubtractedFromClassCost() {
-    ClassCost classCost = new ClassCost("com.google.Foo", Arrays.asList(doThingMethod));
-    MethodCost methodCost = doThingMethod;
+    ClassCost classCost = computer.compute(HasDirectCost.class.getCanonicalName());
+    MethodCost methodCost = classCost.getMethodCost("void doThing()");
     assertEquals(1.0f, hypotheticalCostModel.computeContributionFromMethod(classCost, methodCost));
   }
 
+  static class HasCost {
+    void doThing() {
+      new CostUtil().instanceCost4();
+      new CostUtil().instanceCost4();
+    }
+
+    void hasIndirect() {
+      new CostUtil().instanceCost2();
+      new CostUtil().instanceCost2();
+      new OtherClass().method();
+    }
+
+    private class OtherClass {
+      void method() {
+        new CostUtil().instanceCost1();
+        new CostUtil().instanceCost1();
+      }
+    }
+  }
+
   public void testContributionFromOneMethodIsCorrect() {
-    ClassCost classCost = new ClassCost("com.google.Foo", Arrays.asList(doThingMethod, methodWithIndirectCosts));
-    MethodCost methodCost = doThingMethod;
-    float costWithoutDoThing = (0 + (50 + 33)) / 2;
-    float costWithDoThing = (100 + (50 + 33)) / 2;
+    float costWithoutDoThing = (0 + (4 + 2)) / 3;
+    float costWithDoThing = (8 + (4 + 2)) / 3;
+    ClassCost classCost = computer.compute(HasCost.class.getCanonicalName());
+    MethodCost methodCost = classCost.getMethodCost("void doThing()");
     float actual = hypotheticalCostModel.computeContributionFromMethod(classCost, methodCost);
-    assertEquals(1 - costWithoutDoThing / costWithDoThing,
-        actual);
+    assertEquals(1 - costWithoutDoThing / costWithDoThing, actual);
   }
 
   private static class Example {
@@ -89,10 +92,31 @@ public class HypotheticalCostModelTest extends TestCase {
     MethodCost constructorCost = classCost.getMethodCost("Example()");
     MethodInvocationCost instanceCost4Invocation =
         (MethodInvocationCost) constructorCost.getViolationCosts().get(0);
-    float actual = hypotheticalCostModel.computeContributionFromIssue(classCost, constructorCost,
-        instanceCost4Invocation);
+    float actual = hypotheticalCostModel.computeContributionFromMethodInvocation(classCost, constructorCost,
+        instanceCost4Invocation.getMethodCost());
     // TODO
-    //assertEquals(1 - costWithoutWorkInConstructor / costWithWorkInConstructor,
-      //  actual);
+    //assertEquals(1 - costWithoutWorkInConstructor / costWithWorkInConstructor, actual);
+  }
+
+  static class SharedNonInjectableVariable {
+    private CostUtil costUtil;
+
+    public SharedNonInjectableVariable() {
+      costUtil = new CostUtil();
+      costUtil.instanceCost4();
+    }
+
+    public int doThing() {
+      costUtil.instanceCost3();
+      return 1;
+    }
+  }
+
+  public void testFixingThisConstructorRemovesAllCosts() throws Exception {
+    ClassInfo aClass = repo.getClass(SharedNonInjectableVariable.class.getCanonicalName());
+    ClassCost cost = computer.compute(aClass);
+    // TODO: the costUtil variable should be marked as possibly injectable if we fix the constructor
+//    assertEquals(1f, hypotheticalCostModel.computeContributionFromMethod(cost,
+//        cost.getMethodCost("SharedNonInjectableVariable()")));
   }
 }

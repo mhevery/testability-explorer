@@ -16,6 +16,8 @@
 package com.google.test.metric;
 
 import static com.google.test.metric.Reason.NON_OVERRIDABLE_METHOD_CALL;
+import com.google.test.metric.method.Constant;
+import com.google.test.metric.method.op.turing.Operation;
 
 import java.io.PrintStream;
 import java.util.HashMap;
@@ -23,9 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.google.test.metric.method.Constant;
-import com.google.test.metric.method.op.turing.Operation;
 
 public class TestabilityVisitor {
 
@@ -107,7 +106,8 @@ public class TestabilityVisitor {
     protected MethodCost getMethodCostCache(MethodInfo method) {
       MethodCost methodCost = methodCosts.get(method);
       if (methodCost == null) {
-        methodCost = new MethodCost(method.getName(), method.getStartingLineNumber(),
+        methodCost = new MethodCost(method.getClassInfo().getName(), 
+            method.getName(), method.getStartingLineNumber(),
             method.isConstructor(), method.isStatic(), method.isStaticConstructor());
         methodCosts.put(method, methodCost);
       }
@@ -147,6 +147,9 @@ public class TestabilityVisitor {
      * @return
      */
     public void applyImplicitCost(MethodInfo implicitMethod, Reason reason) {
+      if (whitelist != null && whitelist.isClassWhiteListed(implicitMethod.getClassInfo().getName())) {
+        return;
+      }
       if (implicitMethod.getMethodThis() != null) {
         variableState.setInjectable(implicitMethod.getMethodThis());
       }
@@ -366,7 +369,7 @@ public class TestabilityVisitor {
         String methodName, Variable methodThis, List<Variable> parameters,
         Variable returnVariable) {
       try {
-        if (whitelist.isClassWhiteListed(clazzName)) {
+        if (whitelist != null && whitelist.isClassWhiteListed(clazzName)) {
           return;
         }
         MethodInfo toMethod = classRepository.getClass(clazzName).getMethod(

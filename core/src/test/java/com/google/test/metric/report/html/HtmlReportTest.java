@@ -15,11 +15,11 @@
  */
 package com.google.test.metric.report.html;
 
+import com.google.common.collect.Lists;
 import com.google.test.metric.AnalysisModel;
 import com.google.test.metric.ClassCost;
 import com.google.test.metric.Cost;
 import com.google.test.metric.CostModel;
-import com.google.test.metric.JavaClassRepository;
 import com.google.test.metric.MethodCost;
 import com.google.test.metric.MethodInvocationCost;
 import com.google.test.metric.Reason;
@@ -31,9 +31,9 @@ import static com.google.test.metric.report.FreemarkerReportGenerator.HTML_REPOR
 import com.google.test.metric.report.ReportOptions;
 import com.google.test.metric.report.SourceLinker;
 import com.google.test.metric.report.issues.ClassIssues;
-import com.google.test.metric.report.issues.ClassMunger;
-import com.google.test.metric.report.issues.HypotheticalCostModel;
 import com.google.test.metric.report.issues.Issue;
+import com.google.test.metric.report.issues.IssueSubType;
+import com.google.test.metric.report.issues.IssueType;
 import com.google.test.metric.report.issues.IssuesReporter;
 
 import freemarker.ext.beans.BeansWrapper;
@@ -48,33 +48,53 @@ import java.io.PrintStream;
 import static java.text.MessageFormat.format;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ResourceBundle;
 import static java.util.ResourceBundle.getBundle;
 
 public class HtmlReportTest extends TestCase {
-  private HtmlReportModel report;
   private FreemarkerReportGenerator generator;
   private ByteArrayOutputStream out;
   private ClassCost cost;
-  private SourceLinker linker;
+  private List<ClassIssues> importantIssues = Lists.newLinkedList();
 
   @Override
   protected void setUp() throws Exception {
     super.setUp();
     out = new ByteArrayOutputStream();
     CostModel costModel = new CostModel();
-    HypotheticalCostModel hypotheticalCostModel =
-        new HypotheticalCostModel(costModel, new ClassMunger(new JavaClassRepository()), null);
-    IssuesReporter issuesReporter = new IssuesReporter(new LinkedList<ClassIssues>(),
-        hypotheticalCostModel);
-    ReportOptions options = new ReportOptions(1, 10, 10, 20, 5, 100, 100, 1, 10, "", "");
-    linker = new SourceLinker("http://code.repository/basepath/{path}&line={line}",
-                              "http://code.repository/basepath/{path}");
-    MethodCost methodCost = new MethodCost("methodFoo", 1, false, false, false);
-    methodCost.addCostSource(new MethodInvocationCost(new SourceLocation("com/google/FooClass.java", 1), methodCost,
+    SourceLocation location = new SourceLocation("com/google/FooClass.java", 1);
+    final Issue issue =
+        new Issue(location, "void doThing()", 0.5f, IssueType.CONSTRUCTION, IssueSubType.SETTER);
+    final MethodCost methodCost = new MethodCost("", "void setUp()", 1, false, false, false);
+    methodCost.addCostSource(new MethodInvocationCost(location, methodCost,
         Reason.IMPLICIT_SETTER, new Cost(100, 1, new int[0])));
-    cost = new ClassCost("com.google.FooClass", Arrays.asList(methodCost));
-    report = new HtmlReportModel(costModel, new AnalysisModel(issuesReporter), options);
+
+    //TODO: looks like we want IssuesReporter to be an interface
+    IssuesReporter issuesReporter = new IssuesReporter(null, null) {
+      @Override
+      public List<ClassIssues> getMostImportantIssues() {
+        ClassCost aClassCost = new ClassCost("com/google/FooClass", Arrays.asList(methodCost));
+        importantIssues.add(determineIssues(aClassCost));
+        return importantIssues;
+      }
+
+      @Override
+      public void inspectClass(ClassCost classCost) {
+      }
+
+      @Override
+      public ClassIssues determineIssues(ClassCost classCost) {
+        return new ClassIssues("com/google/FooClass", 100, new LinkedList<Issue>(Arrays.asList(issue)));
+      }
+    };
+    ReportOptions options = new ReportOptions(1, 10, 10, 20, 5, 100, 100, 1, 10, "", "");
+    SourceLinker linker = new SourceLinker("http://code.repository/basepath/{path}&line={line}",
+        "http://code.repository/basepath/{path}");
+
+    cost = new ClassCost(getClass().getName(), Arrays.asList(methodCost));
+    HtmlReportModel report =
+        new HtmlReportModel(costModel, new AnalysisModel(issuesReporter), options);
     BeansWrapper objectWrapper = new DefaultObjectWrapper();
     Configuration configuration = new Configuration();
     configuration.setObjectWrapper(objectWrapper);
@@ -101,13 +121,13 @@ public class HtmlReportTest extends TestCase {
   }
 
   public void testConstructorCosts() throws Exception {
-    generator.printHeader();
     ClassCost cost =
-        new ClassCost("classFoo", Arrays.asList(new MethodCost("methodFoo", 1, false, false, false)));
-    generator.addClassCost(cost);
+        new ClassCost("classFoo", Arrays.asList(new MethodCost("", "methodFoo", 1, false, false, false)));
     ClassIssues classIssues = new ClassIssues(cost.getClassName(), 0);
     classIssues.add(new Issue(new SourceLocation("", 1), null, 1f, null, null));
-    report.getWorstOffenders().add(classIssues);
+    importantIssues.add(classIssues);
+    generator.printHeader();
+    generator.addClassCost(cost);
     generator.printFooter();
     String text = out.toString();
     ResourceBundle bundle = ResourceBundle.getBundle("messages");

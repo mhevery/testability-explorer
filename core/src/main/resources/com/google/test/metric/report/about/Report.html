@@ -61,17 +61,17 @@
       <div class="cost">${classIssues.totalCost}</div>
       <#if classIssues.constructionIssues?keys?size != 0>
         <em>${message("report.explain.class.construction")}</em>
-        <@costDetailBox classIssues.constructionIssues classIssues.path "construction" />
+        <@costDetailBox classIssues.constructionIssues "construction" />
       </#if>
 
       <#if classIssues.collaboratorIssues?keys?size != 0>
         <em>${message("report.explain.class.collaborator")}</em>
-        <@costDetailBox classIssues.collaboratorIssues classIssues.path "collaborator" />
+        <@costDetailBox classIssues.collaboratorIssues "collaborator" />
       </#if>
 
       <#if classIssues.directCostIssues?keys?size != 0>
         <em>${message("report.explain.class.directCost")}</em>
-        <@costDetailBox classIssues.directCostIssues classIssues.path "directCost" />
+        <@costDetailBox classIssues.directCostIssues "directCost" />
       </#if>
     </div>
     <p>&nbsp;</p>
