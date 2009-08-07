@@ -17,14 +17,14 @@ package com.google.test.metric;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
+import com.google.inject.Provides;
 import com.google.test.metric.ReportGeneratorProvider.ReportFormat;
 
 import java.io.PrintStream;
 import java.util.List;
 
 /**
- * Value object which represents the simple configuration needed to make Testability Explorer reports.
+ * Module which provides the simple configuration needed to make Testability Explorer reports.
  * 
  * Contrast this class with the CommandLineConfiguration class which takes simple strings (from the
  * command line), and then parses it into this TestabilityConfiguration, for use by the 
@@ -73,19 +73,15 @@ public class JavaTestabilityModule extends AbstractModule {
 
   @Override
   protected void configure() {
-    bind(WhiteList.class).toProvider(JavaWhiteListProvider.class);
   }
 
-  static class JavaWhiteListProvider implements Provider<WhiteList> {
-    @Inject CommandLineConfig config;
-    public WhiteList get() {
-      RegExpWhiteList regExpWhitelist = new RegExpWhiteList("java.");
-      regExpWhitelist.addPackage("javax.");
-      for (String packageName : config.wl == null ? new String[] {} : config.wl.split("[,:]")) {
-        regExpWhitelist.addPackage(packageName);
-      }
-      return regExpWhitelist;
+  @Provides WhiteList getWhiteList(CommandLineConfig config) {
+    RegExpWhiteList regExpWhitelist = new RegExpWhiteList("java.");
+    regExpWhitelist.addPackage("javax.");
+    for (String packageName : config.wl == null ? new String[] {} : config.wl.split("[,:]")) {
+      regExpWhitelist.addPackage(packageName);
     }
+    return regExpWhitelist;
   }
 
     /*

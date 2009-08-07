@@ -80,7 +80,7 @@ public class AboutTestabilityReportGeneratorTest extends TestCase {
             "about/Report.html", configuration);
     generator.printHeader();
     generator.addClassCost(new ClassCost("com.google.test.metric.example.Lessons.SumOfPrimes1",
-        asList(new MethodCost("foo()", 1, false, false, false))));
+        asList(new MethodCost("", "foo()", 1, false, false, false))));
     generator.printFooter();
 
     String text = out.toString();

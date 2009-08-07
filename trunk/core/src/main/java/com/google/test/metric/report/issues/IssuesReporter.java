@@ -15,9 +15,15 @@
  */
 package com.google.test.metric.report.issues;
 
+import com.google.test.metric.ClassCost;
+import com.google.test.metric.GlobalCost;
+import com.google.test.metric.MethodCost;
+import com.google.test.metric.MethodInvocationCost;
 import static com.google.test.metric.Reason.IMPLICIT_CONSTRUCTOR;
 import static com.google.test.metric.Reason.IMPLICIT_SETTER;
 import static com.google.test.metric.Reason.IMPLICIT_STATIC_INIT;
+import com.google.test.metric.SourceLocation;
+import com.google.test.metric.ViolationCost;
 import static com.google.test.metric.report.issues.IssueSubType.COMPLEXITY;
 import static com.google.test.metric.report.issues.IssueSubType.NON_MOCKABLE;
 import static com.google.test.metric.report.issues.IssueSubType.SETTER;
@@ -32,13 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.logging.Logger;
-
-import com.google.test.metric.ClassCost;
-import com.google.test.metric.GlobalCost;
-import com.google.test.metric.MethodCost;
-import com.google.test.metric.MethodInvocationCost;
-import com.google.test.metric.SourceLocation;
-import com.google.test.metric.ViolationCost;
 
 /**
  * Looks at ClassCost models and infers the coding issue that incurred the cost.
@@ -102,7 +101,14 @@ public class IssuesReporter {
   private void addStaticInitializationIssues(ClassIssues classIssues, MethodCost methodCost,
                                              ClassCost classCost) {
     for (ViolationCost violationCost : methodCost.getViolationCosts()) {
-      float contribution = costModel.computeContributionFromIssue(classCost, methodCost, violationCost);
+      float contribution;
+      if (violationCost instanceof MethodInvocationCost) {
+        MethodInvocationCost methodInvocationCost = (MethodInvocationCost) violationCost;
+        contribution = costModel.computeContributionFromMethodInvocation(classCost, methodCost,
+            methodInvocationCost.getMethodCost());
+      } else {
+        contribution = costModel.computeContributionFromIssue(classCost, methodCost, violationCost);
+      }
       classIssues.add(new Issue(violationCost.getLocation(), violationCost.getDescription(),
           contribution, CONSTRUCTION, STATIC_INIT));
     }
@@ -110,7 +116,7 @@ public class IssuesReporter {
 
   private void addDirectCostIssue(ClassIssues classIssues, MethodCost methodCost,
                                   ClassCost classCost) {
-    float contributionToClassCost = costModel.computeContributionFromMethod(classCost, methodCost);
+    float contributionToClassCost = costModel.computeContributionFromMethodDirectCost(classCost, methodCost);
     Issue issue = new Issue(new SourceLocation(classCost.getClassName(), methodCost.getMethodLineNumber()),
         methodCost.getDescription(), contributionToClassCost, null, null);
     if (methodCost.isConstructor()) {
@@ -156,7 +162,7 @@ public class IssuesReporter {
     }
 
     classIssues.add(new Issue(invocationCost.getLocation(), invocationCost.getDescription(),
-        costModel.computeContributionFromIssue(classCost, methodCost, invocationCost),
+        costModel.computeContributionFromMethodInvocation(classCost, methodCost, invocationCost.getMethodCost()),
         type, subType));
     return collaboratorIssuesFound;
   }

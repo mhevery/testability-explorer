@@ -15,7 +15,6 @@
  */
 package com.google.test.metric;
 
-import com.google.test.metric.JavaTestabilityModule.JavaWhiteListProvider;
 import com.google.test.metric.ReportGeneratorProvider.ReportFormat;
 
 import org.kohsuke.args4j.CmdLineException;
@@ -106,9 +105,7 @@ public class CommandLineConfigTest extends AutoFieldClearTestCase {
 
   public void testJavaWhitelistProvider() throws Exception {
     commandLineConfig.wl = "com.foo:org.bar";
-    JavaWhiteListProvider provider = new JavaWhiteListProvider();
-    provider.config = commandLineConfig;
-    WhiteList whiteList = provider.get();
+    WhiteList whiteList = new JavaTestabilityModule(commandLineConfig).getWhiteList(commandLineConfig);
     assertTrue(whiteList.isClassWhiteListed("com.foo.Hash"));
     assertTrue(whiteList.isClassWhiteListed("org.bar.BiMap"));
     assertTrue(whiteList.isClassWhiteListed("java.lang"));

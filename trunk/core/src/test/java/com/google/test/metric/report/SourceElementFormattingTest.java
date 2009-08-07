@@ -15,8 +15,6 @@
  */
 package com.google.test.metric.report;
 
-import junit.framework.TestCase;
-
 import com.google.test.metric.FieldInfo;
 import com.google.test.metric.JavaType;
 import com.google.test.metric.LocalField;
@@ -24,13 +22,15 @@ import com.google.test.metric.MethodCost;
 import com.google.test.metric.Type;
 import com.google.test.metric.Variable;
 
+import junit.framework.TestCase;
+
 /**
  * @author alexeagle@google.com (Alex Eagle)
  */
 public class SourceElementFormattingTest extends TestCase {
 
   public void testMethodFormatting() throws Exception {
-    MethodCost cost = new MethodCost("void translation_unit()", 1, false, false, false);
+    MethodCost cost = new MethodCost("", "void translation_unit()", 1, false, false, false);
     assertEquals("void translation_unit()", cost.getDescription());
   }
 
@@ -47,6 +47,7 @@ public class SourceElementFormattingTest extends TestCase {
 
   public void testDotsInMethodParameters() throws Exception {
     MethodCost cost = new MethodCost(
+        "",
         "com.google.test.metric.cpp.dom.TranslationUnit parse2(java.lang.String, java.lang.String)",
         12, false, false, false);
     assertEquals("TranslationUnit parse2(String, String)", cost.getDescription());
