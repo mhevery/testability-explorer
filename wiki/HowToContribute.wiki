@@ -30,10 +30,11 @@ As a someone who has sent us a lot of patches and who follows our guidelines we 
 == Developing on Testability Explorer ==
   * Checkout from google code - http://code.google.com/p/testability-explorer/source/checkout
   * Install Maven - 
-  * Set some environment variables, so the Eclipse plugin will build:
-   * ECLIPSE_LAUNCHER_JAR=/opt/eclipse34/plugins/org.eclipse.equinox.launcher_1.0.101.R34x_v20081125.jar
-   * ECLIPSE_PDE_XML=/opt/eclipse34/plugins/org.eclipse.pde.build_3.4.1.R34x_v20081217/scripts/build.xml
-   * ECLIPSE_BASE_DIR=/opt/eclipse34/
-   * Make sure your JAVA_HOME contains a jre/ folder
+  * Set some environment variables, so the Eclipse plugin will build. You may want to download the RCP/PDE plugin development version of Eclipse so that the plugin tools are available. Otherwise you'll need to figure out the appropriate plugins to add to an Eclipse install. If you use IDEA, well, I feel your pain here.
+   * ECLIPSE_LAUNCHER_JAR=<eclipse dir>/plugins/org.eclipse.equinox.launcher_1.0.101.R34x_v20081125.jar
+   * ECLIPSE_PDE_XML=<eclipse dir>/plugins/org.eclipse.pde.build_3.4.1.R34x_v20081217/scripts/build.xml
+   * ECLIPSE_BASE_DIR=<eclipse dir>
   * From the root folder, run mvn install. This should build everything and copy to your local maven repository (~/.m2)
   * To set up your IDE:
+    * Eclipse: Run `mvn eclipse:eclipse` to create the .project and .classpath metadata files. Then, in Eclipse, do Import -> Existing projects into workspace, pick the root testability-explorer folder, and add all the suggested projects. You may want to add them to a working set so they are grouped together.
+    * IDEA: Just create a new project using an external model, and point to the Maven pom.xml file in the root testability-explorer folder.
