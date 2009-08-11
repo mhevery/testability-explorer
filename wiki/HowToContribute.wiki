@@ -36,5 +36,5 @@ As a someone who has sent us a lot of patches and who follows our guidelines we 
    * `ECLIPSE_BASE_DIR=<eclipse dir>`
   * From the root folder, run mvn install. This should build everything and copy to your local maven repository (~/.m2)
   * To set up your IDE:
-    * Eclipse: Run `mvn eclipse:eclipse` to create the .project and .classpath metadata files. Then, in Eclipse, do Import -> Existing projects into workspace, pick the root testability-explorer folder, and add all the suggested projects. You may want to add them to a working set so they are grouped together.
+    * Eclipse: Run `mvn eclipse:eclipse` to create the .project and .classpath metadata files. Then, in Eclipse, do Import -> Existing projects into workspace, pick the root testability-explorer folder, and add all the suggested projects. You may want to add them to a working set so they are grouped together. Then, add a Classpath Variable (Preferences -> Java -> Build Path) called M2_REPO and point it to ~/.m2/repository.
     * IDEA: Just create a new project using an external model, and point to the Maven pom.xml file in the root testability-explorer folder.
