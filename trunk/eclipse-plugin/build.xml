@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="project" default="default">
   <property environment="env"/>
+  <!-- Apple JDK separates rt.jar into two jars, classes and ui. So handle that case -->
+  <!-- if Mac OS X -->
+  <condition property="jre.runtime" value="/System/Library/Frameworks/JavaVM.framework/Classes/classes.jar:/System/Library/Frameworks/JavaVM.framework/Classes/ui.jar" else="${env.JAVA_HOME}/jre/lib/rt.jar">
+    <and> <os family="mac"/> <os family="unix"/> </and>
+  </condition>
   <target name="default">
     <copy tofile="plugins/com.google.test.metric.eclipse.core/te.jar">
       <fileset dir="../core/target" includes="core*-with-deps.jar"/>
@@ -14,7 +19,7 @@
       <arg value="-DbuildDirectory=${basedir}"/>
       <arg value="-DbaseLocation=${env.ECLIPSE_BASE_DIR}"/>
       <arg value="-Dbase=${env.ECLIPSE_BASE_DIR}"/>
-      <arg value="-DJ2SE-1.5=${env.JAVA_HOME}/jre/lib/rt.jar"/>
+      <arg value="-DJ2SE-1.5=${jre.runtime}"/>
    </java>
  </target>
  <target name="clean">
