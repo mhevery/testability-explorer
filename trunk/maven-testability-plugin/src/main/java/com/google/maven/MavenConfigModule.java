@@ -5,18 +5,22 @@ package com.google.maven;
 import com.google.classpath.ClassPath;
 import com.google.classpath.ClassPathFactory;
 import com.google.inject.AbstractModule;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
+import com.google.test.metric.ClassRepository;
 import com.google.test.metric.ConfigModule.Error;
 import com.google.test.metric.ConfigModule.Output;
-import com.google.test.metric.JavaTestabilityModule;
+import com.google.test.metric.JavaClassRepository;
+import com.google.test.metric.JavaTestabilityRunner;
 import com.google.test.metric.RegExpWhiteList;
+import com.google.test.metric.ReportGeneratorProvider;
 import com.google.test.metric.ReportGeneratorProvider.ReportFormat;
 import com.google.test.metric.WhiteList;
+import com.google.test.metric.report.MultiReportGenerator;
+import com.google.test.metric.report.ReportGenerator;
 import com.google.test.metric.report.ReportOptions;
+import com.google.test.metric.report.issues.HypotheticalCostModel;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,11 +42,8 @@ public class MavenConfigModule extends AbstractModule {
 
   @Override
   protected void configure() {
-
     bind(ClassPath.class).toInstance(new ClassPathFactory().createFromPath(
         testabilityExplorerMojo.mavenProject.getBuild().getOutputDirectory()));
-    // TODO: also want to generate one with ReportFormat.html
-    // output the reports using getResultPrintStream()
     bind(ReportOptions.class).toInstance(new ReportOptions(testabilityExplorerMojo.cyclomatic,
         testabilityExplorerMojo.global, testabilityExplorerMojo.maxExcellentCost,
         testabilityExplorerMojo.maxAcceptableCost,
@@ -53,7 +54,27 @@ public class MavenConfigModule extends AbstractModule {
     bind(ReportFormat.class).toInstance(ReportFormat.valueOf(testabilityExplorerMojo.format));
     bindConstant().annotatedWith(Names.named("printDepth")).to(testabilityExplorerMojo.printDepth);
     bind(new TypeLiteral<List<String>>() {}).toInstance(Arrays.asList(testabilityExplorerMojo.filter));
+    bind(Runnable.class).to(JavaTestabilityRunner.class);
+  }
 
+  @Provides ReportGenerator generateHtmlReportAsWellAsRequestedFormat(
+      ReportGeneratorProvider requestedReportProvider,
+      ClassPath classPath, ReportOptions options,
+      HypotheticalCostModel hypotheticalCostModel,
+      TestabilityExplorerMojo mojo,
+      ReportFormat requestedFormat) {
+    if (requestedFormat == ReportFormat.html) {
+      return requestedReportProvider.get();
+    }
+    ReportGenerator htmlReportGenerator =
+        new ReportGeneratorProvider(classPath, options, getOutput(mojo, ReportFormat.html),
+            hypotheticalCostModel, ReportFormat.html).get();
+
+    return new MultiReportGenerator(htmlReportGenerator, requestedReportProvider.get());
+  }
+
+  @Provides ClassRepository getClassRepo(ClassPath classPath) {
+    return new JavaClassRepository(classPath);
   }
 
   @Provides @Output PrintStream getOutput(TestabilityExplorerMojo mojo, ReportFormat format) {
@@ -78,17 +99,5 @@ public class MavenConfigModule extends AbstractModule {
       }
     }
     return System.err;
-  }
-
-  /**
-   * TODO(alex): this seems to be unused. Confirm that the maven plugin works.
-   */
-  public static class ConfigProvider implements Provider<JavaTestabilityModule> {
-    @Inject TestabilityExplorerMojo mojo;
-    @Inject @Error PrintStream err;
-    public JavaTestabilityModule get() {
-      return new JavaTestabilityModule(Arrays.asList(mojo.filter),
-          err, mojo.printDepth, ReportFormat.valueOf(mojo.format));
-    }
   }
 }

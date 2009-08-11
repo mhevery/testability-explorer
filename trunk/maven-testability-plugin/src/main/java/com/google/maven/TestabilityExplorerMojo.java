@@ -2,7 +2,6 @@ package com.google.maven;
 
 import com.google.inject.Guice;
 import com.google.test.metric.JavaTestabilityRunner;
-import com.google.test.metric.TestabilityModule;
 
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.reporting.AbstractMavenReport;
@@ -165,7 +164,7 @@ public class TestabilityExplorerMojo extends AbstractMavenReport {
           "because it is a \"pom\" packaging", mavenProject.getName()));
       return;
     }
-    Guice.createInjector(new MavenConfigModule(this), new TestabilityModule()).
+    Guice.createInjector(new MavenConfigModule(this)).
         getInstance(JavaTestabilityRunner.class).
         run();
   }
