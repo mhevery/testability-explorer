@@ -145,6 +145,9 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
     double cyclomaticCost =
         configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_CYCLOMATIC_COST,
             TestabilityConstants.CYCLOMATIC_COST);
+    double constructorMultiplier =
+        configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_CONSTRUCTOR_MULT,
+            TestabilityConstants.CONSTRUCTOR_MULT);
     int printDepth = TestabilityConstants.RECORDING_DEPTH;
     List<String> whitelistPackages = 
         configuration.getAttribute(TestabilityConstants.CONFIGURATION_ATTR_WHITELIST,
@@ -161,7 +164,7 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
         whitelist.addPackage(packageName);
       }
       
-      CostModel costModel = new CostModel(cyclomaticCost, globalCost);
+      CostModel costModel = new CostModel(cyclomaticCost, globalCost, constructorMultiplier);
       JavaClassRepository classRepository = new JavaClassRepository(classPath);
       MetricComputer computer = new MetricComputer(classRepository, errorStream, whitelist, printDepth);
       HypotheticalCostModel hypotheticalCostModel = new HypotheticalCostModel(costModel, 
@@ -169,8 +172,8 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
       IssuesReporter issuesReporter = new IssuesReporter(
           new TriageIssuesQueue<ClassIssues>(maxAcceptableCost,
               maxClassesInReport, new ClassIssues.TotalCostComparator()), hypotheticalCostModel);
-      ReportOptions options = new ReportOptions(cyclomaticCost, globalCost, maxExcellentCost,
-          maxAcceptableCost, maxClassesInReport, -1, -1, printDepth, -1, "", "");
+      ReportOptions options = new ReportOptions(cyclomaticCost, globalCost, constructorMultiplier,
+          maxExcellentCost, maxAcceptableCost, maxClassesInReport, -1, -1, printDepth, -1, "", "");
       SourceLoader sourceLoader = new SourceLoader(classPath);
 
       AnalysisModel analysisModel = new AnalysisModel(issuesReporter);

@@ -1,14 +1,14 @@
 package com.google.ant;
 
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.types.Path;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Vector;
-
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.types.Path;
 
 public class TaskModel {
 
@@ -57,6 +57,7 @@ public class TaskModel {
   private String print = null;
   private int cyclomatic = -1;
   private int global = -1;
+  private int constructor = 1;
 
   public int getCyclomatic() {
     return cyclomatic;
@@ -150,6 +151,10 @@ public class TaskModel {
     global = glob;
   }
 
+  public double getConstructor() {
+    return constructor;
+  }
+
   public String getFilter() {
     return filter;
   }
@@ -221,9 +226,7 @@ public class TaskModel {
     return os;
   }
 
-
-  public boolean validate(List<String> messages)
-  {
+  public boolean validate(List<String> messages) {
     boolean allOk = true;
 
     if (! isPrintDepthSet()) {
@@ -344,6 +347,7 @@ public class TaskModel {
   private boolean isFileSetSet() {
     return classPaths.size() > 0;
   }
+
   private boolean isFilterSet() {
     return filter != null;
   }

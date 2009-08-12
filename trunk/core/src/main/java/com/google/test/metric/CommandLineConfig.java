@@ -96,6 +96,9 @@ public class CommandLineConfig {
       + "This represents the weight of the global state cost.")
   double globalMultiplier = 10;
 
+  @Option(name = "-constructor", metaVar = "work in constructor multiplier", usage = "Additional multiplier on costs that are incurred in a constructor")
+  double constructorMultiplier = 1;
+
   @Argument(metaVar = "classes and packages to analyze", usage = "Classes or packages to analyze. "
       + "Matches any class starting with these.\n"
       + "Ex. com.example.analyze.these com.google.and.these.packages " + "com.google.AClass")

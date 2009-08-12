@@ -14,6 +14,7 @@
           <whiteList>foo</whiteList>
           <cyclomatic>1</cyclomatic>
           <global>10</global>
+          <constructor>1</constructor>
           <printDepth>2</printDepth>
           <minCost>1</minCost>
           <worstOffenderCount>20</worstOffenderCount>

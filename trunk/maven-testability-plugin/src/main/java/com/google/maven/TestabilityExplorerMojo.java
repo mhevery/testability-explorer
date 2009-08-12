@@ -76,6 +76,13 @@ public class TestabilityExplorerMojo extends AbstractMavenReport {
   Integer global;
 
   /**
+   * Extra multiplier applied to any costs where work is in a constructor
+   *
+   * @parameter default-value=1
+   */
+  Integer constructor;
+
+  /**
    * Maximum recursion depth of printed result
    *
    * @parameter default-value=2
@@ -137,7 +144,6 @@ public class TestabilityExplorerMojo extends AbstractMavenReport {
    * @component
    */
   private SiteRenderer siteRenderer;
-
   private static final String BUNDLE_NAME = "testability";
   private static final String NAME_KEY = "report.testability.name";
   private static final String DESCRIPTION_KEY = "report.testability.description";

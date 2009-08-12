@@ -149,7 +149,7 @@ public class ReportGeneratorProvider implements Provider<ReportGenerator> {
 
   public ReportGenerator get() {
     CostModel costModel = new CostModel(options.getCyclomaticMultiplier(),
-        options.getGlobalMultiplier());
+        options.getGlobalMultiplier(), options.getConstructorMultiplier());
     TriageIssuesQueue<ClassIssues> mostImportantIssues =
         new TriageIssuesQueue<ClassIssues>(options.getMaxExcellentCost(),
             options.getWorstOffenderCount(), new ClassIssues.TotalCostComparator());
