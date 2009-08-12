@@ -55,6 +55,7 @@ public class MethodCost {
   private final Cost directCost = new Cost();
   private final Cost dependentCost = new Cost();
   private final Cost constructorDependentCost = new Cost();
+
   public static final String METHOD_NAME_ATTRIBUTE = "name";
 
   /**
@@ -77,6 +78,10 @@ public class MethodCost {
 
   public Cost getTotalCost() {
     return new Cost().add(directCost).add(dependentCost).add(constructorDependentCost);
+  }
+
+  public Cost getNonConstructorCost() {
+    return new Cost().add(directCost).add(dependentCost);
   }
 
   public String getMethodName() {
@@ -152,5 +157,4 @@ public class MethodCost {
   public boolean isStaticInit() {
     return staticInit;
   }
-
 }

@@ -26,20 +26,24 @@ public class CostModel {
   public static final double WEIGHT_TO_EMPHASIZE_EXPENSIVE_METHODS = 1.5;
   private static final int DEFAULT_CYCLOMATIC_MULTIPLIER = 1;
   private static final int DEFAULT_GLOBAL_MULTIPLIER = 10;
+  private static final int DEFAULT_CONSTRUCTOR_MULTIPLIER = 1;
+
   private final double cyclomaticMultiplier;
   private final double globalMultiplier;
+  private final double constructorMultiplier;
 
   public double weightToEmphasizeExpensiveMethods = WEIGHT_TO_EMPHASIZE_EXPENSIVE_METHODS;
 
   /* For testing only */
   public CostModel() {
-    this(DEFAULT_CYCLOMATIC_MULTIPLIER, DEFAULT_GLOBAL_MULTIPLIER);
+    this(DEFAULT_CYCLOMATIC_MULTIPLIER, DEFAULT_GLOBAL_MULTIPLIER, DEFAULT_CONSTRUCTOR_MULTIPLIER);
     weightToEmphasizeExpensiveMethods = 0;
   }
 
-  public CostModel(double cyclomaticMultiplier, double globalMultiplier) {
+  public CostModel(double cyclomaticMultiplier, double globalMultiplier, double constructorMultiplier) {
     this.cyclomaticMultiplier = cyclomaticMultiplier;
     this.globalMultiplier = globalMultiplier;
+    this.constructorMultiplier = constructorMultiplier;
   }
 
   public int computeOverall(Cost cost) {
@@ -55,7 +59,16 @@ public class CostModel {
   public int computeClass(ClassCost classCost) {
     WeightedAverage average = createWeighedAverage();
     for (MethodCost methodCost : classCost.getMethods()) {
-      average.addValue(computeOverall(methodCost.getTotalCost()));
+      double overallCost;
+      if (methodCost.isConstructor()) {
+        overallCost = computeOverall(methodCost.getTotalCost()) * constructorMultiplier;
+      } else {
+        Cost constructorCost = methodCost.getConstructorDependentCost();
+        Cost nonConstructorCost = methodCost.getNonConstructorCost();
+        overallCost = computeOverall(nonConstructorCost)
+                           + constructorMultiplier * computeOverall(constructorCost);
+      }
+      average.addValue((long) overallCost);
     }
     return (int) average.getAverage();
   }

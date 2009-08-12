@@ -61,7 +61,7 @@ public class ConfigModule extends AbstractModule {
     }
     bind(CommandLineConfig.class).toInstance(config);
     bind(ReportOptions.class).toInstance(new ReportOptions(
-        config.cyclomaticMultiplier, config.globalMultiplier,
+        config.cyclomaticMultiplier, config.globalMultiplier, config.constructorMultiplier,
         config.maxExcellentCost, config.maxAcceptableCost, config.worstOffenderCount,
         config.maxMethodCount, config.maxLineCount, config.printDepth, config.minCost,
         config.srcFileLineUrl, config.srcFileUrl));

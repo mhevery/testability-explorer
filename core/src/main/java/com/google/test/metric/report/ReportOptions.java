@@ -23,6 +23,7 @@ package com.google.test.metric.report;
 public class ReportOptions {
   private double cyclomaticMultiplier;
   private double globalMultiplier;
+  private double constructorMultiplier;
   private int maxExcellentCost;
   private int maxAcceptableCost;
   private int worstOffenderCount;
@@ -33,12 +34,14 @@ public class ReportOptions {
   private String srcFileLineUrl;
   private String srcFileUrl;
 
-  public ReportOptions(double cyclomaticMultiplier, double globalMultiplier, int maxExcellentCost,
+  public ReportOptions(double cyclomaticMultiplier, double globalMultiplier,
+                       double constructorMultiplier, int maxExcellentCost,
                        int maxAcceptableCost, int worstOffenderCount, int maxMethodCount,
                        int maxLineCount, int printDepth, int minCost, String srcFileLineUrl,
                        String srcFileUrl) {
     this.cyclomaticMultiplier = cyclomaticMultiplier;
     this.globalMultiplier = globalMultiplier;
+    this.constructorMultiplier = constructorMultiplier;
     this.maxExcellentCost = maxExcellentCost;
     this.maxAcceptableCost = maxAcceptableCost;
     this.worstOffenderCount = worstOffenderCount;
@@ -136,5 +139,9 @@ public class ReportOptions {
 
   public void setSrcFileUrl(String srcFileUrl) {
     this.srcFileUrl = srcFileUrl;
+  }
+
+  public double getConstructorMultiplier() {
+    return constructorMultiplier;
   }
 }

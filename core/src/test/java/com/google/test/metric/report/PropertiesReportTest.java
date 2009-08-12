@@ -32,7 +32,7 @@ import java.util.Properties;
 public class PropertiesReportTest extends TestCase {
 
   ByteArrayOutputStream out = new ByteArrayOutputStream();
-  CostModel costModel = new CostModel(1, 1);
+  CostModel costModel = new CostModel(1, 1, 1);
   PropertiesReportGenerator report = new PropertiesReportGenerator(out, costModel);
 
   private static final String CLASS_NAME = "com.google.foo.Bar";

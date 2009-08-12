@@ -44,11 +44,15 @@ public class MavenConfigModule extends AbstractModule {
   protected void configure() {
     bind(ClassPath.class).toInstance(new ClassPathFactory().createFromPath(
         testabilityExplorerMojo.mavenProject.getBuild().getOutputDirectory()));
-    bind(ReportOptions.class).toInstance(new ReportOptions(testabilityExplorerMojo.cyclomatic,
-        testabilityExplorerMojo.global, testabilityExplorerMojo.maxExcellentCost,
+    System.out.println("testabilityExplorerMojo = " + testabilityExplorerMojo.constructor);
+    System.out.println("testabilityExplorerMojo.cyclomatic = " + testabilityExplorerMojo.cyclomatic);
+    ReportOptions options = new ReportOptions(testabilityExplorerMojo.cyclomatic,
+        testabilityExplorerMojo.global, testabilityExplorerMojo.constructor,
+        testabilityExplorerMojo.maxExcellentCost,
         testabilityExplorerMojo.maxAcceptableCost,
         testabilityExplorerMojo.worstOffenderCount, 0, 0, testabilityExplorerMojo.printDepth,
-        testabilityExplorerMojo.minCost, "", ""));
+        testabilityExplorerMojo.minCost, "", "");
+    bind(ReportOptions.class).toInstance(options);
     bind(TestabilityExplorerMojo.class).toInstance(testabilityExplorerMojo);
     bind(WhiteList.class).toInstance(new RegExpWhiteList(testabilityExplorerMojo.whiteList));
     bind(ReportFormat.class).toInstance(ReportFormat.valueOf(testabilityExplorerMojo.format));

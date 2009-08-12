@@ -88,7 +88,7 @@ public class HtmlReportTest extends TestCase {
         return new ClassIssues("com/google/FooClass", 100, new LinkedList<Issue>(Arrays.asList(issue)));
       }
     };
-    ReportOptions options = new ReportOptions(1, 10, 10, 20, 5, 100, 100, 1, 10, "", "");
+    ReportOptions options = new ReportOptions(1, 10, 1, 10, 20, 5, 100, 100, 1, 10, "", "");
     SourceLinker linker = new SourceLinker("http://code.repository/basepath/{path}&line={line}",
         "http://code.repository/basepath/{path}");
 

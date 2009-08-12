@@ -28,6 +28,8 @@ public class TestabilityConstants {
       "testability.launch.configuration.cyclomatic.cost";
   public static final String CONFIGURATION_ATTR_GLOBAL_STATE_COST =
       "testability.launch.configuration.global.state.cost";
+  public static final String CONFIGURATION_ATTR_CONSTRUCTOR_MULT =
+      "testability.launch.configuration.constructor.multiplier";
   
   public static final String CONFIGURATION_ATTR_MAX_EXCELLENT_COST =
       "testability.launch.configuration.max.excellent.cost";
@@ -57,6 +59,7 @@ public class TestabilityConstants {
   public static final int MAX_EXCELLENT_COST = 50;
   public static final int CYCLOMATIC_COST = 1;
   public static final int GLOBAL_STATE_COST = 10;
+  public static final int CONSTRUCTOR_MULT = 1;
   public static final int RECORDING_DEPTH = 0;
   public static final List<String> WHITELIST = new ArrayList<String>();
   public static final String ERROR_LOG_FILENAME = "error-log";

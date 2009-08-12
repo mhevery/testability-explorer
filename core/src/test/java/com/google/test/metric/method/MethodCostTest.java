@@ -42,7 +42,7 @@ public class MethodCostTest extends TestCase {
     cost3.addCostSource(new CyclomaticCost(new SourceLocation(null, 0), Cost.cyclomatic(1)));
     cost.addCostSource(new MethodInvocationCost(new SourceLocation(null, 0), cost3,
         IMPLICIT_STATIC_INIT, Cost.cyclomatic(3)));
-    CostModel costModel = new CostModel(2, 10);
+    CostModel costModel = new CostModel(2, 10, 1);
     cost.link();
 
     assertEquals((long) 2 * (3 + 1) + 10 * 1, costModel.computeOverall(cost.getTotalCost()));

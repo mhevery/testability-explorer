@@ -137,7 +137,8 @@ public class TestabilityTask extends Task {
   }
 
   private ReportOptions setOptions() {
-    return new ReportOptions(model.getCyclomatic(), model.getGlobal(), model.getMaxExcellentCost(),
+    return new ReportOptions(model.getCyclomatic(), model.getGlobal(), model.getConstructor(), 
+        model.getMaxExcellentCost(),
         model.getMaxAcceptableCost(), model.getWorstOffenderCount(), 0, 0, model.getPrintDepth(),
         model.getMinCost(), null, null);
   }
