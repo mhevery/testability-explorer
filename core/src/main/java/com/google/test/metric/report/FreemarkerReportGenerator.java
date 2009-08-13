@@ -15,14 +15,14 @@
  */
 package com.google.test.metric.report;
 
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-
 import com.google.test.metric.ClassCost;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
+
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 
 /**
  * The base class for ReportGenerator's that use Freemarker for rendering.
@@ -46,6 +46,7 @@ public class FreemarkerReportGenerator implements ReportGenerator {
   public void renderReport(PrintStream out) throws IOException {
     try {
       cfg.getTemplate(templateFile).process(model, new PrintWriter(out));
+      out.flush();
     } catch (TemplateException e) {
       throw new RuntimeException(e);
     }
