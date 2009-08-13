@@ -44,8 +44,6 @@ public class MavenConfigModule extends AbstractModule {
   protected void configure() {
     bind(ClassPath.class).toInstance(new ClassPathFactory().createFromPath(
         testabilityExplorerMojo.mavenProject.getBuild().getOutputDirectory()));
-    System.out.println("testabilityExplorerMojo = " + testabilityExplorerMojo.constructor);
-    System.out.println("testabilityExplorerMojo.cyclomatic = " + testabilityExplorerMojo.cyclomatic);
     ReportOptions options = new ReportOptions(testabilityExplorerMojo.cyclomatic,
         testabilityExplorerMojo.global, testabilityExplorerMojo.constructor,
         testabilityExplorerMojo.maxExcellentCost,

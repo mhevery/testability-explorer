@@ -14,34 +14,31 @@ import java.io.FileReader;
 public class TestabilityMojoTest extends AbstractMojoTestCase {
   private TestabilityExplorerMojo mojo;
 
-  public void testPluginPomWorks() throws Exception {
+  @Override
+  protected void tearDown() throws Exception {
+    super.tearDown();
+    new File("target/testability.xml").delete();
+    new File("target/testability/testability.html").delete();
+  }
+
+  public void testPluginPomWorksAndOutputsHtmlReportAndXmlReport() throws Exception {
     mojo = lookupMojoFromPom("xmlTestability.xml");
     assertNotNull(mojo);
     mojo.execute();
-  }
 
-  public void testHtmlOutput() throws Exception {
-    mojo = lookupMojoFromPom("printsHtml.xml");
     File outputDir = (File) getVariableValueFromObject(mojo, "outputDirectory");
     String resultFile = (String) getVariableValueFromObject(mojo, "resultfile");
+    File targetDir = (File) getVariableValueFromObject(mojo, "targetDirectory");
 
     File results = new File(outputDir, resultFile + ".html");
-    assertTrue("should exist: " + results.getAbsolutePath(), results.exists());
+    assertTrue("HTML report should exist: " + results.getAbsolutePath(), results.exists());
     String content = IOUtil.toString(new FileReader(results));
-    // TODO: wire Guice to allow multiple report outputs in a single run - this report is empty
-    //assertTrue("HTML report content: " + content, content.contains("TestabilityExplorerMojo"));
-    results.delete();
-  }
+    assertTrue("HTML report content: " + content, content.contains("TestabilityExplorerMojo"));
 
-  public void testAlsoOutputsXml() throws Exception {
-    mojo = lookupMojoFromPom("printsHtml.xml");
-    File outputDir = (File) getVariableValueFromObject(mojo, "targetDirectory");
-    String resultFile = (String) getVariableValueFromObject(mojo, "resultfile");
-
-    File results = new File(outputDir, resultFile + ".xml");
-    assertTrue("should exist: " + results.getAbsolutePath(), results.exists());
-    assertTrue(IOUtil.toString(new FileReader(results)).contains("TestabilityExplorerMojo"));
-    results.delete();
+    results = new File(targetDir, resultFile + ".xml");
+    assertTrue("XML report should exist: " + results.getAbsolutePath(), results.exists());
+    content = IOUtil.toString(new FileReader(results));
+    assertTrue("XML report content: " + content, content.contains("TestabilityExplorerMojo"));
   }
 
   public void testNonJarProject() throws Exception {
