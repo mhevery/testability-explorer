@@ -56,8 +56,6 @@ public class ConfigModule extends AbstractModule {
       parser.setUsageWidth(120);
       parser.printUsage(err);
       err.println("Exiting...");
-      // TODO(alexeagle): do we actually need to force an exit here? problem will be manifested
-      // as a guice error on the missing binding of ClassPath
     }
     bind(CommandLineConfig.class).toInstance(config);
     bind(ReportOptions.class).toInstance(new ReportOptions(
