@@ -22,6 +22,7 @@ package com.google.test.metric;
  * Delegates to TestabilityRunner to actually run the analysis.
  */
 
+import com.google.inject.CreationException;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 
@@ -35,11 +36,15 @@ public class Testability {
   }
 
   public static void main(String... args) {
-    Guice.createInjector(
-        new ConfigModule(args, System.out, System.err),
-        new TestabilityModule()).
-        getInstance(Testability.class).
-        run();
+    try {
+      Guice.createInjector(
+          new ConfigModule(args, System.out, System.err),
+          new TestabilityModule()).
+          getInstance(Testability.class).
+          run();
+    } catch (CreationException e) {
+      // ignore, the error is printed in the ConfigModule
+    }
   }
 
   public void run() {
