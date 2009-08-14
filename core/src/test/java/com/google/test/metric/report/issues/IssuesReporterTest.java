@@ -47,6 +47,7 @@ import java.util.Map;
 public class IssuesReporterTest extends TestCase {
   private IssuesReporter issuesReporter;
   private MetricComputerJavaDecorator decoratedComputer;
+  private HypotheticalCostModel costModel;
 
   @Override
   protected void setUp() throws Exception {
@@ -54,9 +55,8 @@ public class IssuesReporterTest extends TestCase {
     ClassRepository repo = new JavaClassRepository();
     MetricComputer toDecorate = new MetricComputerBuilder().withClassRepository(repo).build();
     decoratedComputer = new MetricComputerJavaDecorator(toDecorate, repo);
-    HypotheticalCostModel costModel =
-        new HypotheticalCostModel(new CostModel(), new ClassMunger(repo), toDecorate);
-    issuesReporter = new IssuesReporter(new LinkedList<ClassIssues>(), costModel);
+    costModel = new HypotheticalCostModel(new CostModel(), new ClassMunger(repo), toDecorate);
+    issuesReporter = new IssuesReporter(new LinkedList<ClassIssues>(), this.costModel);
   }
 
   private static class SeveralConstructionIssues {
@@ -173,6 +173,15 @@ public class IssuesReporterTest extends TestCase {
     assertEquals(1, issues.size());
     assertEquals("com/google/test/metric/report/issues/HasSetterCost.java",
         issues.get(0).getLocation().getFile());
+  }
+
+  public void testClassesWithNoIssuesAreStillAddedToQueue() throws Exception {
+    TriageIssuesQueue<ClassIssues> queue =
+        new TriageIssuesQueue<ClassIssues>(1, 10, new ClassIssues.TotalCostComparator());
+    IssuesReporter issuesReporterWithRealQueue = new IssuesReporter(queue, costModel);
+    ClassCost cost = decoratedComputer.compute(SeveralConstructionIssues.class);
+    issuesReporterWithRealQueue.inspectClass(cost);
+    assertEquals(1, queue.size());
   }
 
 }
