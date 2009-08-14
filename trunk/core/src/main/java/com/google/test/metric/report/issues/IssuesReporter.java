@@ -56,21 +56,29 @@ public class IssuesReporter {
   }
 
   public void inspectClass(ClassCost classCost) {
-    // TODO: no need to determine issues for a class that doesn't get added to the important issues queue
-    mostImportantIssues.offer(determineIssues(classCost));
+    int cost = costModel.computeClass(classCost);
+    ClassIssues classIssues = new ClassIssues(classCost.getClassName(), cost);
+    if (mostImportantIssues.offer(classIssues)) {
+      populateIssues(classCost, classIssues);
+    }
   }
 
   public ClassIssues determineIssues(ClassCost classCost) {
     int cost = costModel.computeClass(classCost);
     ClassIssues classIssues = new ClassIssues(classCost.getClassName(), cost);
+    populateIssues(classCost, classIssues);
+    return classIssues;
+  }
+
+  private void populateIssues(ClassCost classCost, ClassIssues classIssues) {
     for (MethodCost methodCost : classCost.getMethods()) {
       addIssuesInMethod(classIssues, methodCost, classCost);
     }
-    if (classIssues.isEmpty() && cost > 100) {
+    int cost;
+    if (classIssues.isEmpty() && (cost = costModel.computeClass(classCost)) > 100) {
       logger.warning(String.format("No issues found in class %s which has a cost of %d",
           classCost.getClassName(), cost));
     }
-    return classIssues;
   }
 
   void addIssuesInMethod(ClassIssues classIssues, MethodCost methodCost, ClassCost classCost) {
