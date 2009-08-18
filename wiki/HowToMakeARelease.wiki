@@ -3,7 +3,8 @@
 
  # Make sure to build with Java 1.5, not Java 6. Set your JAVA_HOME environment variable to a 1.5 JDK. Run `mvn -v` to check what version will be used.
  # You cannot have local changes in your working copy. Commit anything as needed, and run `svn st` to check that your copy is clean. You'll get an error from the next step if it's not.
- # Test that the Maven plugin works. Run it with `mvn com.google.testability-explorer:maven-testability-plugin:testability` (You can see the help for the plugin with `mvn help:describe -Dplugin=com.google.testability-explorer:maven-testability-plugin`) The report is published in core/target/site/testability.html
+ # Test that the Maven plugin works. Run it with `mvn com.google.testability-explorer:maven-testability-plugin:testability` (You can see the help for the plugin with `mvn help:describe -Dplugin=com.google.testability-explorer:maven-testability-plugin`) The report is published in core/target/site/testability.html as well as an XML file in core/target/testability.xml
+ # Test the eclipse plugin. The unit tests are not run by the build, so pretty much only Shyam knows how to do this :(
  # TODO: mvn release:prepare, release:perform
  # Update the [Readme] in the wiki, and copy/paste any changes there into the Readme.txt in svn.
  # [http://code.google.com/p/testability-metrics/downloads/entry Upload] the zip and choose 'Featured' as a label to create a link from [Home].
