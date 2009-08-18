@@ -1,13 +1,17 @@
 package com.google.maven;
 
+import com.google.classpath.ClassPath;
+import com.google.classpath.ClassPathFactory;
 import com.google.inject.Guice;
 import com.google.test.metric.JavaTestabilityRunner;
 
+import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.reporting.AbstractMavenReport;
 import org.codehaus.doxia.site.renderer.SiteRenderer;
 
 import java.io.File;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -190,5 +194,16 @@ public class TestabilityExplorerMojo extends AbstractMavenReport {
 
   public String getDescription(Locale locale) {
     return getProperty(locale, DESCRIPTION_KEY);
+  }
+
+  ClassPath getProjectClasspath() {
+    List<String> compileClasspathElements;
+    try {
+      compileClasspathElements = mavenProject.getCompileClasspathElements();
+    } catch (DependencyResolutionRequiredException e) {
+      throw new RuntimeException(e);
+    }
+    return new ClassPathFactory().createFromPaths(
+        compileClasspathElements.toArray(new String[compileClasspathElements.size()]));
   }
 }
