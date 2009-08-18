@@ -75,8 +75,8 @@ public class MavenConfigModule extends AbstractModule {
     return new MultiReportGenerator(htmlReportGenerator, requestedReportProvider.get());
   }
 
-  @Provides ClassRepository getClassRepo(ClassPath classPath) {
-    return new JavaClassRepository(classPath);
+  @Provides ClassRepository getClassRepo(TestabilityExplorerMojo mojo) {
+    return new JavaClassRepository(mojo.getProjectClasspath());
   }
 
   @Provides @Output PrintStream getOutput(TestabilityExplorerMojo mojo, ReportFormat format) {
