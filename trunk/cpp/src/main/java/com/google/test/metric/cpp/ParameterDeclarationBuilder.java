@@ -15,9 +15,9 @@
  */
 package com.google.test.metric.cpp;
 
-import java.util.List;
-
 import com.google.test.metric.ParameterInfo;
+
+import java.util.List;
 
 public class ParameterDeclarationBuilder extends DefaultBuilder {
 

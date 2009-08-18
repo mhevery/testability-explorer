@@ -15,11 +15,11 @@
  */
 package com.google.test.metric.cpp;
 
-import java.util.List;
-import java.util.Stack;
-
 import com.google.test.metric.cpp.dom.Node;
 import com.google.test.metric.cpp.dom.TranslationUnit;
+
+import java.util.List;
+import java.util.Stack;
 
 class RootBuilder extends DefaultBuilder implements BuilderContext {
 

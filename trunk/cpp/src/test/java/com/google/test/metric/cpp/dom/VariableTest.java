@@ -15,9 +15,9 @@
  */
 package com.google.test.metric.cpp.dom;
 
-import junit.framework.TestCase;
-
 import com.google.test.metric.cpp.Parser;
+
+import junit.framework.TestCase;
 
 public class VariableTest extends TestCase {
 

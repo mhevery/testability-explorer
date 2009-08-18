@@ -15,13 +15,13 @@
  */
 package com.google.test.metric.cpp;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.test.metric.ParameterInfo;
 import com.google.test.metric.Visibility;
 import com.google.test.metric.cpp.dom.FunctionDefinition;
 import com.google.test.metric.cpp.dom.Node;
+
+import java.util.ArrayList;
+import java.util.List;
 
 class FunctionDefinitionBuilder extends DefaultBuilder {
 

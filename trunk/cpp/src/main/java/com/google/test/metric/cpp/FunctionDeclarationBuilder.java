@@ -15,11 +15,11 @@
  */
 package com.google.test.metric.cpp;
 
-import java.util.List;
-
 import com.google.test.metric.Visibility;
 import com.google.test.metric.cpp.dom.FunctionDeclaration;
 import com.google.test.metric.cpp.dom.Node;
+
+import java.util.List;
 
 /*
  * Ignoring function declarations for now because they don't contribute to

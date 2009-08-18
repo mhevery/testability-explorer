@@ -15,12 +15,6 @@
  */
 package com.google.test.metric.cpp;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import junit.framework.TestCase;
-
 import com.google.test.metric.ClassInfo;
 import com.google.test.metric.LocalVariableInfo;
 import com.google.test.metric.MethodInfo;
@@ -29,6 +23,12 @@ import com.google.test.metric.method.op.turing.FieldAssignment;
 import com.google.test.metric.method.op.turing.LocalAssignment;
 import com.google.test.metric.method.op.turing.Operation;
 import com.google.test.metric.method.op.turing.ReturnOperation;
+
+import junit.framework.TestCase;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class CppClassRepositoryTest extends TestCase {
 

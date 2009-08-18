@@ -15,10 +15,10 @@
  */
 package com.google.test.metric.cpp;
 
-import junit.framework.TestCase;
-
 import com.google.test.metric.cpp.dom.FunctionDefinition;
 import com.google.test.metric.cpp.dom.TranslationUnit;
+
+import junit.framework.TestCase;
 
 public class CyclomaticComplexityTest extends TestCase {
 

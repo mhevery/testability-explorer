@@ -15,12 +15,12 @@
  */
 package com.google.test.metric.cpp;
 
-import java.util.List;
-
 import com.google.test.metric.Visibility;
 import com.google.test.metric.cpp.dom.ClassDeclaration;
 import com.google.test.metric.cpp.dom.Node;
 import com.google.test.metric.cpp.dom.VariableDeclaration;
+
+import java.util.List;
 
 class ClassBuilder extends DefaultBuilder {
   private final ClassDeclaration node;
