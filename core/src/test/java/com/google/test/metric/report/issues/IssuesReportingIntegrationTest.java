@@ -43,8 +43,7 @@ public class IssuesReportingIntegrationTest extends TestCase {
     ClassRepository repo = new JavaClassRepository();
     MetricComputer toDecorate = new MetricComputerBuilder().withClassRepository(repo).build();
     decoratedComputer = new MetricComputerJavaDecorator(toDecorate, repo);
-    HypotheticalCostModel hypotheticalCostModel =
-        new HypotheticalCostModel(new CostModel(), new ClassMunger(repo), toDecorate);
+    HypotheticalCostModel hypotheticalCostModel = new HypotheticalCostModel(new CostModel());
     issuesReporter = new IssuesReporter(new LinkedList<ClassIssues>(), hypotheticalCostModel);
   }
 

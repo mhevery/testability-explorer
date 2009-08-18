@@ -37,7 +37,6 @@ import com.google.test.metric.report.ReportOptions;
 import com.google.test.metric.report.SourceLoader;
 import com.google.test.metric.report.html.HtmlReportModel;
 import com.google.test.metric.report.issues.ClassIssues;
-import com.google.test.metric.report.issues.ClassMunger;
 import com.google.test.metric.report.issues.HypotheticalCostModel;
 import com.google.test.metric.report.issues.IssuesReporter;
 import com.google.test.metric.report.issues.TriageIssuesQueue;
@@ -167,8 +166,7 @@ public class TestabilityLauncher implements ILaunchConfigurationDelegate2 {
       CostModel costModel = new CostModel(cyclomaticCost, globalCost, constructorMultiplier);
       JavaClassRepository classRepository = new JavaClassRepository(classPath);
       MetricComputer computer = new MetricComputer(classRepository, errorStream, whitelist, printDepth);
-      HypotheticalCostModel hypotheticalCostModel = new HypotheticalCostModel(costModel, 
-          new ClassMunger(classRepository), computer);
+      HypotheticalCostModel hypotheticalCostModel = new HypotheticalCostModel(costModel);
       IssuesReporter issuesReporter = new IssuesReporter(
           new TriageIssuesQueue<ClassIssues>(maxAcceptableCost,
               maxClassesInReport, new ClassIssues.TotalCostComparator()), hypotheticalCostModel);
