@@ -15,10 +15,10 @@
  */
 package com.google.test.metric.cpp;
 
-import java.util.List;
-
 import com.google.test.metric.cpp.dom.Namespace;
 import com.google.test.metric.cpp.dom.Node;
+
+import java.util.List;
 
 class NamespaceBuilder extends DefaultBuilder {
   private final Node node;

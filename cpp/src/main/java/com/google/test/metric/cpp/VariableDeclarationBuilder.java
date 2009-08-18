@@ -15,10 +15,10 @@
  */
 package com.google.test.metric.cpp;
 
-import java.util.List;
-
 import com.google.test.metric.cpp.dom.Node;
 import com.google.test.metric.cpp.dom.VariableDeclaration;
+
+import java.util.List;
 
 class VariableDeclarationBuilder extends DefaultBuilder {
 

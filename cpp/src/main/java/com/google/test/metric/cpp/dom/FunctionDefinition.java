@@ -15,10 +15,10 @@
  */
 package com.google.test.metric.cpp.dom;
 
-import java.util.List;
-
 import com.google.test.metric.ParameterInfo;
 import com.google.test.metric.Visibility;
+
+import java.util.List;
 
 public class FunctionDefinition extends Node {
 

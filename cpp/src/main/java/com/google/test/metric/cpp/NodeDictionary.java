@@ -15,10 +15,10 @@
  */
 package com.google.test.metric.cpp;
 
+import com.google.test.metric.cpp.dom.Node;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.google.test.metric.cpp.dom.Node;
 
 public class NodeDictionary {
   private final Map<String, Node> symbols = new HashMap<String, Node>();

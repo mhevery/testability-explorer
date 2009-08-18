@@ -60,12 +60,13 @@
     </dependency>
   </dependencies>
   <build>
+    <finalName>testability-explorer-${version}</finalName>    
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>antlr-maven-plugin</artifactId>
         <configuration>
-          <grammars>cppparser.g, java15.g, java15.tree.g</grammars>
+          <grammars>java15.g, java15.tree.g</grammars>
         </configuration>
         <executions>
           <execution>
@@ -87,6 +88,7 @@
           </execution>
         </executions>
         <configuration>
+          <shadedArtifactId>testability-explorer</shadedArtifactId>
           <shadedClassifierName>with-deps</shadedClassifierName>
           <shadedArtifactAttached>true</shadedArtifactAttached>
         </configuration>

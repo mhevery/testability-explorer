@@ -15,13 +15,6 @@
  */
 package com.google.test.metric.cpp;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-
 import com.google.test.metric.ClassInfo;
 import com.google.test.metric.ClassRepository;
 import com.google.test.metric.FieldInfo;
@@ -42,6 +35,13 @@ import com.google.test.metric.method.op.turing.FieldAssignment;
 import com.google.test.metric.method.op.turing.LocalAssignment;
 import com.google.test.metric.method.op.turing.Operation;
 import com.google.test.metric.method.op.turing.ReturnOperation;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 
 public class CppClassRepository implements ClassRepository {
 

@@ -15,14 +15,11 @@
  */
 package com.google.test.metric.cpp;
 
-import java.util.List;
-
-import junit.framework.TestCase;
-
 import com.google.test.metric.ParameterInfo;
 import com.google.test.metric.Visibility;
 import com.google.test.metric.cpp.dom.AssignmentExpression;
 import com.google.test.metric.cpp.dom.BaseClass;
+import com.google.test.metric.cpp.dom.BaseClass.AccessSpecifier;
 import com.google.test.metric.cpp.dom.BreakStatement;
 import com.google.test.metric.cpp.dom.CaseStatement;
 import com.google.test.metric.cpp.dom.ClassDeclaration;
@@ -43,7 +40,10 @@ import com.google.test.metric.cpp.dom.SwitchStatement;
 import com.google.test.metric.cpp.dom.TernaryOperation;
 import com.google.test.metric.cpp.dom.TranslationUnit;
 import com.google.test.metric.cpp.dom.VariableDeclaration;
-import com.google.test.metric.cpp.dom.BaseClass.AccessSpecifier;
+
+import junit.framework.TestCase;
+
+import java.util.List;
 
 public class CppParserTest extends TestCase {
 

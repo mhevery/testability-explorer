@@ -8,7 +8,7 @@
   </condition>
   <target name="default">
     <copy tofile="plugins/com.google.test.metric.eclipse.core/te.jar">
-      <fileset dir="../core/target" includes="core*-with-deps.jar"/>
+      <fileset dir="../core/target" includes="*-with-deps.jar"/>
     </copy>
     <java jar="${env.ECLIPSE_LAUNCHER_JAR}" fork="true" failonerror="true">
       <arg value="-application"/>

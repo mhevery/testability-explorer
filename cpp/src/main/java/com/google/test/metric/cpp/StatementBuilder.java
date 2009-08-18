@@ -15,8 +15,6 @@
  */
 package com.google.test.metric.cpp;
 
-import java.util.List;
-
 import com.google.test.metric.cpp.dom.BreakStatement;
 import com.google.test.metric.cpp.dom.CaseStatement;
 import com.google.test.metric.cpp.dom.DefaultStatement;
@@ -27,6 +25,8 @@ import com.google.test.metric.cpp.dom.LoopStatement;
 import com.google.test.metric.cpp.dom.Node;
 import com.google.test.metric.cpp.dom.ReturnStatement;
 import com.google.test.metric.cpp.dom.SwitchStatement;
+
+import java.util.List;
 
 class StatementBuilder extends DefaultBuilder {
   private final Node parent;
