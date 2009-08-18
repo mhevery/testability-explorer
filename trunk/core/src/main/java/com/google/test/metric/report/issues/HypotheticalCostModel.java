@@ -4,11 +4,9 @@ package com.google.test.metric.report.issues;
 
 import com.google.inject.Inject;
 import com.google.test.metric.ClassCost;
-import com.google.test.metric.ClassInfo;
 import com.google.test.metric.Cost;
 import com.google.test.metric.CostModel;
 import com.google.test.metric.MethodCost;
-import com.google.test.metric.MetricComputer;
 import com.google.test.metric.ViolationCost;
 import com.google.test.metric.WeightedAverage;
 
@@ -16,37 +14,31 @@ import com.google.test.metric.WeightedAverage;
  * A cost model that can answer the hypothetical question "what would be the cost of this class
  * if I made a certain change to it?"
  *
+ * The values returned are only rough approximations. Figuring out the real cost requires
+ * munging the ClassInfo to produce the class with the hypothetical change, then re-running the
+ * analysis, which is far too CPU intensive.
+ *
  * @author alexeagle@google.com (Alex Eagle)
  */
 public class HypotheticalCostModel {
 
   private final CostModel costModel;
-  private final ClassMunger classMunger;
-  private final MetricComputer computer;
 
   @Inject
-  public HypotheticalCostModel(CostModel costModel, ClassMunger classMunger,
-                               MetricComputer computer) {
+  public HypotheticalCostModel(CostModel costModel) {
     this.costModel = costModel;
-    this.classMunger = classMunger;
-    this.computer = computer;
   }
 
-  public float computeContributionFromMethodInvocation(ClassCost classCost, MethodCost caller,
-                                            MethodCost invoked) {
-    ClassInfo withoutInvocation =
-        classMunger.getClassWithoutInvocation(classCost.getClassName(), caller.getMethodName(),
-            invoked.getClassName(), invoked.getMethodName());
-    return contribution(classCost, withoutInvocation);
+  private int computeClassWithoutMethod(ClassCost classCost, MethodCost adjustedMethod,
+                                        Cost replacementCost) {
+
+    WeightedAverage average = costModel.createWeighedAverage();
+    for (MethodCost methodCost : classCost.getMethods()) {
+      Cost cost = (adjustedMethod == methodCost ? replacementCost : methodCost.getTotalCost());
+      average.addValue(costModel.computeOverall(cost));
+    }
+    return (int) average.getAverage();
   }
-
-  public float computeContributionFromMethodDirectCost(ClassCost classCost, MethodCost violationMethodCost) {
-    return contribution(classCost,
-        classMunger.getClassWithZeroDirectCostInMethod(classCost.getClassName(),
-        violationMethodCost.getMethodName()));
-  }
-
-
 
   public float computeContributionFromIssue(ClassCost classCost, MethodCost violationMethodCost,
                                             ViolationCost violationCost) {
@@ -59,26 +51,13 @@ public class HypotheticalCostModel {
     return 1 - (int) average.getAverage() / (float) computeClass(classCost);
   }
 
-  /**
-   * The overall contribution from an entire method. What would happen if this method did nothing?
-   */
   public float computeContributionFromMethod(ClassCost classCost, MethodCost violationMethodCost) {
-    return contribution(classCost,
-        classMunger.getClassWithoutMethod(classCost.getClassName(),
-        violationMethodCost.getMethodName()));
-  }
-
-  /**
-   * The ratio of the cost of the class if the hypothetical change were made, to the
-   * cost of the class with no changes
-   * @param originalCost the cost originally assigned to the class
-   * @param hypotheticalClass the changed class
-   * @return the ratio
-   */
-  private float contribution(ClassCost originalCost, ClassInfo hypotheticalClass) {
-    ClassCost costWithoutMethod = computer.compute(hypotheticalClass);
-    return 1 - computeClass(costWithoutMethod) / (float) computeClass(originalCost);
-  }
+    final float costWithoutIssue =
+        computeClassWithoutMethod(classCost, violationMethodCost,
+            violationMethodCost.getDependentCost());
+    final float totalCost = (float) computeClass(classCost);
+    return 1 - costWithoutIssue / totalCost;
+  }  
 
   /**
    * Provided for passthrough to the delegate {@link CostModel}.

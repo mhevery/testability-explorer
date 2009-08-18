@@ -109,14 +109,7 @@ public class IssuesReporter {
   private void addStaticInitializationIssues(ClassIssues classIssues, MethodCost methodCost,
                                              ClassCost classCost) {
     for (ViolationCost violationCost : methodCost.getViolationCosts()) {
-      float contribution;
-      if (violationCost instanceof MethodInvocationCost) {
-        MethodInvocationCost methodInvocationCost = (MethodInvocationCost) violationCost;
-        contribution = costModel.computeContributionFromMethodInvocation(classCost, methodCost,
-            methodInvocationCost.getMethodCost());
-      } else {
-        contribution = costModel.computeContributionFromIssue(classCost, methodCost, violationCost);
-      }
+      float contribution = costModel.computeContributionFromIssue(classCost, methodCost, violationCost);
       classIssues.add(new Issue(violationCost.getLocation(), violationCost.getDescription(),
           contribution, CONSTRUCTION, STATIC_INIT));
     }
@@ -124,7 +117,7 @@ public class IssuesReporter {
 
   private void addDirectCostIssue(ClassIssues classIssues, MethodCost methodCost,
                                   ClassCost classCost) {
-    float contributionToClassCost = costModel.computeContributionFromMethodDirectCost(classCost, methodCost);
+    float contributionToClassCost = costModel.computeContributionFromMethod(classCost, methodCost);
     Issue issue = new Issue(new SourceLocation(classCost.getClassName(), methodCost.getMethodLineNumber()),
         methodCost.getDescription(), contributionToClassCost, null, null);
     if (methodCost.isConstructor()) {
@@ -170,7 +163,7 @@ public class IssuesReporter {
     }
 
     classIssues.add(new Issue(invocationCost.getLocation(), invocationCost.getDescription(),
-        costModel.computeContributionFromMethodInvocation(classCost, methodCost, invocationCost.getMethodCost()),
+        costModel.computeContributionFromIssue(classCost, methodCost, invocationCost),
         type, subType));
     return collaboratorIssuesFound;
   }
