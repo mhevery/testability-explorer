@@ -9,15 +9,15 @@
 
   <groupId>com.google.testability-explorer</groupId>
   <artifactId>testability-explorer</artifactId>
-  <version>1.3.2-SNAPSHOT</version>
+  <version>1.3.2</version>
   <packaging>pom</packaging>
   <name>Testability Explorer</name>
   <description>A tool that identifies code that will be hard to unit test.</description>
   <url>http://testability-explorer.googlecode.com</url>
   <scm>
-    <connection>scm:svn:http://testability-explorer.googlecode.com/svn/trunk/</connection>
-    <developerConnection>scm:svn:https://testability-explorer.googlecode.com/svn/trunk</developerConnection>
-    <url>http://code.google.com/p/testability-explorer/source/browse/</url>
+    <connection>scm:svn:http://testability-explorer.googlecode.com/svn/tags/testability-explorer-1.3.2</connection>
+    <developerConnection>scm:svn:https://testability-explorer.googlecode.com/svn/tags/testability-explorer-1.3.2</developerConnection>
+    <url>http://code.google.com/p/testability-explorer/source/browse/tags/testability-explorer-1.3.2</url>
   </scm>
   <modules>
     <module>core</module>
