@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+  <#include "../costDetailBox.html" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>${message("report.about.title")}</title>
+	<meta name="author" content="Alex Eagle">
+  <style type="text/css">
+    <#include "../te.css"/>
+  </style>
+  <style type="text/css">
+    <#include "../prettify.css"/>
+  </style>
+  <script type="text/javascript">
+    <#include "../prettify.js"/>
+  </script>
+	<!-- Date: 2009-03-18 -->
+
+</head>
+<body onload="prettyPrint()">
+<h1>${message("report.about.title")}</h1>
+<p>${message("report.about.description")}</p>
+
+<ul>Index of examples
+  <#list classesByPackage?keys as package>
+    <li>${package}
+      <ul>
+        <#assign classes = classesByPackage[package] />
+        <#list classes as clazz>
+          <li><a href="#example_${package_index}_${clazz_index}">${clazz.name}</a></li>
+        </#list>
+      </ul>
+    </li>
+  </#list>
+</ul>
+
+<#list classesByPackage?keys as package>
+  <h2>${package}</h2>
+  <#assign classes = classesByPackage[package] />
+  <#list classes as clazz>
+    <a name="example_${package_index}_${clazz_index}"/>
+    <p class="header">${message("report.about.class", "<tt>", clazz.name, "</tt>")}</p>
+    <#assign pastPackageDeclaration = false />
+    <code class="prettyprint">
+      <#list clazz.source.lines as line>
+        <#if line.text?starts_with("package com.google.test.metric") >
+          <#assign pastPackageDeclaration = true />
+        </#if>
+        <#if pastPackageDeclaration &&
+             !line.text?matches("\\s*") &&
+             !line.text?starts_with("package") &&
+             !line.text?starts_with("import") >
+          <span class="nocode">${line.lineNumber}: </span>${line.text?html}
+        </#if>
+      </#list>
+    </code>
+    <#assign classIssues = clazz.issues />
+    <p class="header">${message("report.explain.class.hardToTest", "<tt>", classIssues.className, "</tt>")}</p>
+    <div class="classExplanation">
+      <div class="cost">${classIssues.totalCost}</div>
+      <#if classIssues.constructionIssues?keys?size != 0>
+        <em>${message("report.explain.class.construction")}</em>
+        <@costDetailBox classIssues.constructionIssues "construction" />
+      </#if>
+
+      <#if classIssues.collaboratorIssues?keys?size != 0>
+        <em>${message("report.explain.class.collaborator")}</em>
+        <@costDetailBox classIssues.collaboratorIssues "collaborator" />
+      </#if>
+
+      <#if classIssues.directCostIssues?keys?size != 0>
+        <em>${message("report.explain.class.directCost")}</em>
+        <@costDetailBox classIssues.directCostIssues "directCost" />
+      </#if>
+    </div>
+    <p>&nbsp;</p>
+  </#list>
+</#list>
+</body>
+</html>
