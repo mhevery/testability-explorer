@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<contexts>
+   <context id="project">
+      <description>The project to run Testability Explorer on</description>
+      <topic href="doc/TestabilityConfiguration.html#project" label="Project"/>
+   </context>
+   <context id="whitelist">
+      <description>The packages / classes to whitelist. These will not be penalized as bad classes by Testability Explorer</description>
+      <topic href="doc/TestabilityConfiguration.html#whitelist" label="White listing classes"/>
+   </context>
+   <context id="report_folder">
+      <description>Specify folder to store testability report in. It will create a folder with the project name inside the specified folder.</description>
+      <topic href="doc/TestabilityConfiguration.html#report_folder" label="Report Folder"/>
+   </context>
+   <context id="run_compilation">
+      <description>Specify whether this testability configuration should run as part of the build. If checked, then everytime a build is triggered, Testability Explorer will be run again and the Issues view will be updated with the latest information. This is not recommended if you have a very large project.</description>
+      <topic href="doc/TestabilityConfiguration.html#run_compilation" label="Run at every build"/>
+   </context>
+   <context id="depth">
+      <description>Specify maximum depth to recurse into when examining classes</description>
+      <topic href="doc/TestabilityConfiguration.html#depth" label="Depth"/>
+   </context>
+   <context id="cyclomatic_cost">
+      <description>Specify cost multiplier for Cyclomatic Complexity Issues</description>
+      <topic href="doc/TestabilityConfiguration.html#cyclomatic_cost" label="Cyclomatic Cost"/>
+   </context>
+   <context id="global_state_cost">
+      <description>Specify cost multiplier for Global State Issues</description>
+      <topic href="doc/TestabilityConfiguration.html#global_state_cost" label="Global State Cost"/>
+   </context>
+   <context id="max_cost_excellent_classes">
+      <description>Cost Threshold which differenties Excellent classes from Acceptable classes. Classes which have a cost below this are Excellent classes, while classes which have a cost higher are not very testable.</description>
+      <topic href="doc/TestabilityConfiguration.html#max_cost_excellent_classes" label="Max Cost for Excellent Classes"/>
+   </context>
+   <context id="max_cost_acceptable_classes">
+      <description>Cost Threshold which differenties Acceptable classes from classes which need work.  Classes which have a cost below this are Acceptable classes, while classes which have a cost higher than this need significant refactoring.</description>
+      <topic href="doc/TestabilityConfiguration.html#max_cost_acceptable_classes" label="Max Cost for Acceptable Classes"/>
+   </context>
+   <context id="max_classes_in_report">
+      <description>The maximum number of classes to show in the report.  Only the top specified number of classes will be displayed in the testability views.</description>
+      <topic href="doc/TestabilityConfiguration.html#max_classes_in_report" label="Max Classes In Report"/>
+   </context>
+</contexts>
