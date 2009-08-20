@@ -2,10 +2,13 @@
 #labels Phase-Implementation,Featured
 
  # Make sure to build with Java 1.5, not Java 6. Set your JAVA_HOME environment variable to a 1.5 JDK. Run `mvn -v` to check what version will be used.
- # You cannot have local changes in your working copy. Commit anything as needed, and run `svn st` to check that your copy is clean. You'll get an error from the next step if it's not.
+ # You cannot have local changes in your working copy. Commit anything as needed, and run `svn st` to check that your copy is clean. You'll get an error from the mvn release step if it's not.
  # Test that the Maven plugin works. Run it with `mvn com.google.testability-explorer:maven-testability-plugin:testability` (You can see the help for the plugin with `mvn help:describe -Dplugin=com.google.testability-explorer:maven-testability-plugin`) The report is published in core/target/site/testability.html as well as an XML file in core/target/testability.xml
  # Test the eclipse plugin. The unit tests are not run by the build, so pretty much only Shyam knows how to do this :(
- # TODO: mvn release:prepare, release:perform
+ # Update the version numbers in testability.sh and testability.bat to match the version you're about to release. TODO: make the build write these files, as it did under ant.
+ # In the root folder, run `mvn release:prepare`. It will try to figure out what version is being released, and what new version to write into all the pom.xml files. Release all the modules together with the same version. It will check in the changed poms to the repository, and also tag the current version.
+  * If you get an error like `svn: File '/svn/tags/testability-explorer-1.3.2/ant-task/pom.xml' already exists` - this is a known problem in subversion 1.5.1+. See http://jira.codehaus.org/browse/SCM-406 and http://subversion.tigris.org/issues/show_bug.cgi?id=3119
+ # Run `mvn release:perform`. This checks out a fresh copy of the project from the tag, to be 100% sure it's built from the tag. Note: until the project is accepted to maven, you'll have to run `mvn release:stage` instead, so it doesn't try to publish it.
  # Update the [Readme] in the wiki, and copy/paste any changes there into the Readme.txt in svn.
  # [http://code.google.com/p/testability-metrics/downloads/entry Upload] the zip and choose 'Featured' as a label to create a link from [Home].
  # Deprecate the old versions' binaries, and remove them from 'Featured.'
