@@ -1,5 +1,5 @@
 #summary For project developers, how to release a build
-#labels Phase-Implementation,Featured
+#labels Phase-Implementation
 
  # Make sure to build with Java 1.5, not Java 6. Set your JAVA_HOME environment variable to a 1.5 JDK. Run `mvn -v` to check what version will be used.
  # You cannot have local changes in your working copy. Commit anything as needed, and run `svn st` to check that your copy is clean. You'll get an error from the mvn release step if it's not.
