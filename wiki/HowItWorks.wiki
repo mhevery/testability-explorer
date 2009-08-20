@@ -1,4 +1,5 @@
 #summary How it Works
+#labels Featured
 
 = Introduction =
 
