@@ -1,5 +1,7 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.google.testability-explorer.test</groupId>
   <artifactId>multi-format-output</artifactId>
@@ -7,13 +9,13 @@
   <name>Testability Explorer IT - Test multi-format output from plugin</name>
   <build>
     <plugins>
-        <plugin> 
+        <plugin>
           <groupId>com.google.testability-explorer</groupId>
           <artifactId>maven-testability-plugin</artifactId>
           <version>@pom.version@</version>
-          <configuration> 
+          <configuration>
           </configuration>
-        </plugin> 
+        </plugin>
     </plugins>
   </build>
 </project>
