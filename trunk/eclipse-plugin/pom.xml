@@ -1,24 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.google.testability-explorer</groupId>
-    <artifactId>testability-explorer-parent</artifactId>
-    <version>1.3.3-SNAPSHOT</version>
+    <artifactId>testability-explorer</artifactId>
+    <version>1.3.2-SNAPSHOT</version>
   </parent>
 
   <dependencies>
     <dependency>
       <groupId>com.google.testability-explorer</groupId>
-      <artifactId>testability-explorer</artifactId>
+      <artifactId>core</artifactId>
       <version>${version}</version>
     </dependency>
   </dependencies>
   <artifactId>eclipse-plugin</artifactId>
-  <name>Testability Explorer - Eclipse plugin</name>
+  <name>Testability Explorer Eclipse Plugin</name>
   <packaging>jar</packaging>
   <build>
     <plugins>
@@ -31,7 +28,7 @@
             <phase>compile</phase>
             <configuration>
               <tasks>
-                <ant />
+                <ant/>
               </tasks>
             </configuration>
             <goals>
@@ -43,7 +40,7 @@
             <phase>clean</phase>
             <configuration>
               <tasks>
-                <ant target="clean" />
+                <ant target="clean"/>
               </tasks>
             </configuration>
             <goals>
