@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.google</groupId>
@@ -8,11 +11,11 @@
   </parent>
 
   <groupId>com.google.testability-explorer</groupId>
-  <artifactId>testability-explorer</artifactId>
-  <version>1.3.2-SNAPSHOT</version>
+  <artifactId>testability-explorer-parent</artifactId>
+  <version>1.3.3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Testability Explorer</name>
-  <description>A tool that identifies code that will be hard to unit test.</description>
+  <description>Static analysis tool which helps you make your code testable.</description>
   <url>http://testability-explorer.googlecode.com</url>
   <scm>
     <connection>scm:svn:http://testability-explorer.googlecode.com/svn/trunk/</connection>
@@ -20,7 +23,7 @@
     <url>http://code.google.com/p/testability-explorer/source/browse/</url>
   </scm>
   <modules>
-    <module>core</module>
+    <module>testability-explorer</module>
     <module>ant-task</module>
     <module>maven-testability-plugin</module>
     <module>eclipse-plugin</module>
@@ -31,14 +34,35 @@
     -->
   </modules>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>3.8.2</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <source>1.5</source>
+            <target>1.5</target>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.0-beta-9</version>
         <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
+          <stagingRepository>local::default::file://${java.io.tmpdir}</stagingRepository>
         </configuration>
       </plugin>
     </plugins>
