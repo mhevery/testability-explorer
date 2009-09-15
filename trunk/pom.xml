@@ -1,8 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                              http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.google</groupId>
@@ -12,15 +8,15 @@
 
   <groupId>com.google.testability-explorer</groupId>
   <artifactId>testability-explorer-parent</artifactId>
-  <version>1.3.3-SNAPSHOT</version>
+  <version>1.3.3</version>
   <packaging>pom</packaging>
   <name>Testability Explorer</name>
   <description>Static analysis tool which helps you make your code testable.</description>
   <url>http://testability-explorer.googlecode.com</url>
   <scm>
-    <connection>scm:svn:http://testability-explorer.googlecode.com/svn/trunk/</connection>
-    <developerConnection>scm:svn:https://testability-explorer.googlecode.com/svn/trunk</developerConnection>
-    <url>http://code.google.com/p/testability-explorer/source/browse/</url>
+    <connection>scm:svn:http://testability-explorer.googlecode.com/svn/tags/testability-explorer-parent-1.3.3</connection>
+    <developerConnection>scm:svn:https://testability-explorer.googlecode.com/svn/tags/testability-explorer-parent-1.3.3</developerConnection>
+    <url>http://code.google.com/p/testability-explorer/source/browse/tags/testability-explorer-parent-1.3.3</url>
   </scm>
   <modules>
     <module>testability-explorer</module>
