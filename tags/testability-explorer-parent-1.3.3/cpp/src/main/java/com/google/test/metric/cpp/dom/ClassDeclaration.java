@@ -1,0 +1,84 @@
+/*
+ * Copyright 2008 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+package com.google.test.metric.cpp.dom;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ClassDeclaration extends Node {
+  private final String name;
+  private final List<BaseClass> baseClasses = new ArrayList<BaseClass>();
+
+  public ClassDeclaration(String name) {
+    this.name = name;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  @Override
+  public void accept(Visitor visitor) {
+    visitor.beginVisit(this);
+    visitChildren(visitor);
+    visitor.endVisit(this);
+  }
+
+  public String getQualifiedName() {
+    String tmpname = this.getName();
+    Node anode = this.getParent();
+    while (!(anode instanceof TranslationUnit)
+        && (anode instanceof Namespace || anode instanceof ClassDeclaration)) {
+      if (anode instanceof Namespace) {
+        tmpname = ((Namespace) anode).getName() + "::" + tmpname;
+      } else {
+        tmpname = ((ClassDeclaration) anode).getName() + "::" + tmpname;
+      }
+      anode = anode.getParent();
+    }
+    return tmpname;
+  }
+
+  public void setBase(ClassDeclaration base) {
+    baseClasses.get(baseClasses.size() - 1).setDeclaration(base);
+  }
+
+  public void setAccessSpecifier(String access_specifier) {
+    baseClasses.add(new BaseClass(access_specifier));
+  }
+
+  public BaseClass getBaseClass(int index) {
+    return baseClasses.get(index);
+  }
+
+  public int getNumberOfBaseClasses() {
+    return baseClasses.size();
+  }
+
+  @Override
+  VariableDeclaration findVariableDeclaration(Variable var, Node context) {
+    VariableDeclaration result = null;
+    NodeList children = getChildren();
+    for (int index = 0; index < children.size() && result == null; ++index) {
+      VariableDeclarationFinder visitor = new VariableDeclarationFinder(var,
+          context);
+      Node child = children.get(index);
+      child.accept(visitor);
+      result = visitor.getResult();
+    }
+    return result;
+  }
+}
